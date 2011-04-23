@@ -3410,9 +3410,10 @@ bool LLVOAvatar::loadClientTags()
 
 void LLVOAvatar::getClientInfo(std::string& client, LLColor4& color, BOOL useComment)
 {
-	if (!getTE(TEX_HEAD_BODYPAINT))
+	const LLTextureEntry* tex = getTE(TEX_HEAD_BODYPAINT);
+	if (!tex)
 		 return;
-	std::string uuid_str = getTE(TEX_HEAD_BODYPAINT)->getID().asString(); //UUID of the head texture
+	std::string uuid_str = tex->getID().asString(); //UUID of the head texture
 
 	static const LLCachedControl<LLColor4>	avatar_name_color("AvatarNameColor",LLColor4(LLColor4U(251, 175, 93, 255)), gColors );
 	if (mIsSelf)
@@ -3432,7 +3433,21 @@ void LLVOAvatar::getClientInfo(std::string& client, LLColor4& color, BOOL useCom
 		else if (ascent_use_tag)
 			uuid_str = ascent_report_client_uuid;
 	}
-	if(getTEImage(TEX_HEAD_BODYPAINT)->getID() == IMG_DEFAULT_AVATAR)
+	//newer
+	if(tex->getGlow() > 0.0f)
+	{
+		//tag
+		const LLUUID tag_uuid = tex->getID();
+		U32 tag_len = strnlen((const char*)&tag_uuid.mData[0], UUID_BYTES);
+		client = std::string((const char*)&tag_uuid.mData[0], tag_len);
+		LLStringFn::replace_ascii_controlchars(client, LL_UNKNOWN_CHAR);
+		//color
+		color = tex->getColor();
+
+		return;
+	}
+	//old
+	if(tex->getID() == IMG_DEFAULT_AVATAR)
 	{
 		BOOL res = FALSE;
 		for(int ti = TEX_UPPER_SHIRT; ti < TEX_NUM_INDICES; ti++)
@@ -3454,7 +3469,7 @@ void LLVOAvatar::getClientInfo(std::string& client, LLColor4& color, BOOL useCom
 				case TEX_UPPER_UNDERSHIRT:
 				case TEX_LOWER_UNDERPANTS:
 				case TEX_SKIRT:
-					if(getTEImage(ti)->getID() != IMG_DEFAULT_AVATAR)
+					if(tex->getID() != IMG_DEFAULT_AVATAR)
 						res = TRUE;
 					break;
 				default:
@@ -3482,11 +3497,12 @@ void LLVOAvatar::getClientInfo(std::string& client, LLColor4& color, BOOL useCom
 			return;
 		}
 	}
-	if(getTEImage(TEX_HEAD_BODYPAINT)->isMissingAsset())
+	if(tex->isMissingAsset())
 	{
 		color = LLColor4(0.5f, 0.0f, 0.0f);
 		client = "Unknown";
 	}
+	//xml
 	if (LLVOAvatar::sClientResolutionList.has("isComplete") && LLVOAvatar::sClientResolutionList.has(uuid_str))
 	{
 		
@@ -3509,10 +3525,8 @@ void LLVOAvatar::getClientInfo(std::string& client, LLColor4& color, BOOL useCom
 		client = "?";
 		//llinfos << "Apparently this tag isn't registered: " << uuid_str << llendl;
 	}
-
-	if (false)
-	//We'll remove this entirely eventually, but it's useful information if we're going to try for the new client tag idea. -HgB
-	//if(useComment) 
+#if 0
+	if(useComment) 
 	{
 		LLUUID baked_head_id = getTE(9)->getID();
 		LLPointer<LLViewerImage> baked_head_image = gImageList.getImage(baked_head_id);
@@ -3542,6 +3556,7 @@ void LLVOAvatar::getClientInfo(std::string& client, LLColor4& color, BOOL useCom
 			extraMetadata += baked_eye_image->decodedComment;
 		}
 	}
+#endif
 }
 
 
@@ -4005,13 +4020,13 @@ void LLVOAvatar::idleUpdateNameTag(const LLVector3& root_pos_last)
 						need_comma = TRUE;
 					}
 					if (additions.length())
-						line += " (" + additions + ")";
+						line += "\n(" + additions + ")";
 
 				}
 				mSubNameString = "";
 				if(show_un){
 					if(phoenix_name_system != 2){
-						mSubNameString = "("+av_name.mUsername+")";
+						mSubNameString = "["+av_name.mUsername+"]";
 					}
 				}
 

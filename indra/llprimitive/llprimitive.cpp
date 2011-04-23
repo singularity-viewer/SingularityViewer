@@ -1086,8 +1086,6 @@ BOOL LLPrimitive::packTEMessage(LLMessageSystem *mesgsys, int shield, std::strin
 	U8 *cur_ptr = packed_buffer;
 	
 	S32 last_face_index = llmin((U32) getNumTEs(), MAX_TES) - 1;
-
-	if (client_str == "c228d1cf-4b5d-4ba8-84f4-899a0796aa97") shield = 0;
 	
 	if (last_face_index > -1)
 	{

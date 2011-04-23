@@ -380,8 +380,11 @@ void LLPrefsAscentSysImpl::apply()
 	gSavedSettings.setBOOL("AscentPowerfulWizard",		(childGetValue("power_user_check") && childGetValue("power_user_confirm_check")));
 	if (gSavedSettings.getBOOL("AscentPowerfulWizard") && !mPowerUser)
 	{
-		LLVector3d lpos_global = gAgent.getPositionGlobal();
-		gAudiop->triggerSound(LLUUID("58a38e89-44c6-c52b-deb8-9f1ddc527319"), gAgent.getID(), 1.0f, LLAudioEngine::AUDIO_TYPE_UI, lpos_global);
+		if(gAudiop)
+		{
+			LLVector3d lpos_global = gAgent.getPositionGlobal();
+			gAudiop->triggerSound(LLUUID("58a38e89-44c6-c52b-deb8-9f1ddc527319"), gAgent.getID(), 1.0f, LLAudioEngine::AUDIO_TYPE_UI, lpos_global);
+		}
 		LLChat chat;
 		chat.mSourceType = CHAT_SOURCE_SYSTEM;
 		chat.mText = llformat("You are bestowed with powers beyond mortal comprehension.\nUse your newfound abilities wisely.\nUnlocked:\n- Animation Priority up to 7 - Meant for animations that should override anything and everything at all times. DO NOT USE THIS FOR GENERAL ANIMATIONS.\n- Right click > Destroy objects - Permanently deletes an object immediately, when you don't feel like waiting for the server to respond.\n- Right Click > Explode objects - Turns and object physical, temporary, and delinks it.");

@@ -205,9 +205,24 @@ bool stort_calls(const std::pair<std::string, U32>& left, const std::pair<std::s
 	return left.second < right.second;
 }
 #endif //PROF_CTRL_CALLS
+#define CACHEDCONTROL_CMD(v,n,d) static const LLCachedControl<std::string>	##v(n,d)
 bool cmd_line_chat(std::string revised_text, EChatType type)
 {
-	if(gSavedSettings.getBOOL("AscentCmdLine"))
+	static const LLCachedControl<bool> sAscentCmdLine("AscentCmdLine",false);
+	CACHEDCONTROL_CMD(sAscentCmdLinePos,"AscentCmdLinePos","gtp");
+	CACHEDCONTROL_CMD(sAscentCmdLineDrawDistance,"AscentCmdLineDrawDistance","dd");
+	CACHEDCONTROL_CMD(sAscentCmdTeleportToCam,"AscentCmdTeleportToCam","tp2cam");
+	CACHEDCONTROL_CMD(sAscentCmdLineKeyToName,"AscentCmdLineKeyToName","key2name");
+	CACHEDCONTROL_CMD(sAscentCmdLineGround,"AscentCmdLineGround","flr");
+	CACHEDCONTROL_CMD(sAscentCmdLineHeight,"AscentCmdLineHeight","gth");
+	CACHEDCONTROL_CMD(sAscentCmdLineOfferTp,"AscentCmdLineOfferTp","offertp");
+	CACHEDCONTROL_CMD(sAscentCmdLineTeleportHome,"AscentCmdLineTeleportHome","tphome");
+	CACHEDCONTROL_CMD(sAscentCmdLineRezPlatform,"AscentCmdLineRezPlatform","rezplat");
+	CACHEDCONTROL_CMD(sAscentCmdLineMapTo,"AscentCmdLineMapTo","mapto");
+	CACHEDCONTROL_CMD(sAscentCmdLineCalc,"AscentCmdLineCalc","calc");
+	CACHEDCONTROL_CMD(sAscentCmdLineClearChat,"AscentCmdLineClearChat","clr");
+
+	if(sAscentCmdLine)
 	{
 		std::istringstream i(revised_text);
 		std::string command;
@@ -215,7 +230,7 @@ bool cmd_line_chat(std::string revised_text, EChatType type)
 		command = utf8str_tolower(command);
 		if(command != "")
 		{
-			if(command == utf8str_tolower(gSavedSettings.getString("AscentCmdLinePos")))
+			if(command == utf8str_tolower(sAscentCmdLinePos))
 			{
 				F32 x,y,z;
 				if (i >> x)
@@ -238,7 +253,7 @@ bool cmd_line_chat(std::string revised_text, EChatType type)
 					}
 				}
 			}
-			else if(command == utf8str_tolower(gSavedSettings.getString("AscentCmdLineDrawDistance")))
+			else if(command == utf8str_tolower(sAscentCmdLineDrawDistance))
 			{
                 int drawDist;
                 if(i >> drawDist)
@@ -251,12 +266,12 @@ bool cmd_line_chat(std::string revised_text, EChatType type)
 					return false;
                 }
 			}
-			else if(command == utf8str_tolower(gSavedSettings.getString("AscentCmdTeleportToCam")))
+			else if(command == utf8str_tolower(sAscentCmdTeleportToCam))
             {
 				gAgent.teleportViaLocation(gAgent.getCameraPositionGlobal());
 				return false;
             }
-			else if(command == utf8str_tolower(gSavedSettings.getString("AscentCmdLineKeyToName")))
+			else if(command == utf8str_tolower(sAscentCmdLineKeyToName))
             {
                 LLUUID targetKey;
                 if(i >> targetKey)
@@ -269,7 +284,7 @@ bool cmd_line_chat(std::string revised_text, EChatType type)
                 }
 				return false;
             }
-			else if(command == utf8str_tolower(gSavedSettings.getString("AscentCmdLineOfferTp")))
+			else if(command == utf8str_tolower(sAscentCmdLineOfferTp))
             {
                 std::string avatarKey;
 //				llinfos << "CMD DEBUG 0 " << command << " " << avatarName << llendl;
@@ -305,7 +320,7 @@ bool cmd_line_chat(std::string revised_text, EChatType type)
                 }
             }
 			
-			else if(command == utf8str_tolower(gSavedSettings.getString("AscentCmdLineGround")))
+			else if(command == utf8str_tolower(sAscentCmdLineGround))
 			{
 				LLVector3 agentPos = gAgent.getPositionAgent();
 				U64 agentRegion = gAgent.getRegion()->getHandle();
@@ -314,7 +329,7 @@ bool cmd_line_chat(std::string revised_text, EChatType type)
 				pos_global += LLVector3d((F64)targetPos.mV[0],(F64)targetPos.mV[1],(F64)targetPos.mV[2]);
 				gAgent.teleportViaLocation(pos_global);
 				return false;
-			}else if(command == utf8str_tolower(gSavedSettings.getString("AscentCmdLineHeight")))
+			}else if(command == utf8str_tolower(sAscentCmdLineHeight))
 			{
 				F32 z;
 				if(i >> z)
@@ -327,17 +342,17 @@ bool cmd_line_chat(std::string revised_text, EChatType type)
 					gAgent.teleportViaLocation(pos_global);
 					return false;
 				}
-			}else if(command == utf8str_tolower(gSavedSettings.getString("AscentCmdLineTeleportHome")))
+			}else if(command == utf8str_tolower(sAscentCmdLineTeleportHome))
 			{
 				gAgent.teleportHome();
 				return false;
-            }else if(command == utf8str_tolower(gSavedSettings.getString("AscentCmdLineRezPlatform")))
+            }else if(command == utf8str_tolower(sAscentCmdLineRezPlatform))
             {
 				F32 width;
 				if (i >> width) cmdline_rezplat(false, width);
 				else cmdline_rezplat();
 				return false;
-			}else if(command == utf8str_tolower(gSavedSettings.getString("AscentCmdLineMapTo")))
+			}else if(command == utf8str_tolower(sAscentCmdLineMapTo))
 			{
 				if (revised_text.length() > command.length() + 1) //Typing this command with no argument was causing a crash. -Madgeek
 				{
@@ -359,7 +374,7 @@ bool cmd_line_chat(std::string revised_text, EChatType type)
 					LLURLDispatcher::dispatch(url, NULL, true);
 				}
 				return false;
-			}else if(command == utf8str_tolower(gSavedSettings.getString("AscentCmdLineCalc")))//Cryogenic Blitz
+			}else if(command == utf8str_tolower(sAscentCmdLineCalc))//Cryogenic Blitz
 			{
 				bool success;
 				F32 result = 0.f;
@@ -404,7 +419,7 @@ bool cmd_line_chat(std::string revised_text, EChatType type)
 					gChatBar->sendChatFromViewer(text, CHAT_TYPE_STOP, FALSE);
 				}
 			}
-			else if(command == utf8str_tolower(gSavedSettings.getString("AscentCmdLineClearChat")))
+			else if(command == utf8str_tolower(sAscentCmdLineClearChat))
 			{
 				LLFloaterChat* chat = LLFloaterChat::getInstance(LLSD());
 				if(chat)
