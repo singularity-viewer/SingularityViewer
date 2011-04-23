@@ -32,6 +32,6 @@
 	     embedded_items="false" enabled="false" font="SansSerifSmall" height="40"
 	     hide_border="true" hide_scrollbar="true" left="0" max_length="65535"
 	     name="voice_intro_text4" tab_stop="false" width="400" word_wrap="true">
-		Click the Next button to configure Voice Chat preferences or click Finish to continue using Singularity Viewer.
+		Click the Next button to configure Voice Chat preferences or click Finish to continue using Party Hat Viewer.
 	</text_editor>
 </panel>

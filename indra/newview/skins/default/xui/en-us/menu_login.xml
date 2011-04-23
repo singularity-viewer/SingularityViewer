@@ -25,7 +25,7 @@
 		     mouse_opaque="true" name="Second Life Help" shortcut="F1" width="166">
 			<on_click function="ShowFloater" userdata="help f1" />
 		</menu_item_call>
-		<menu_item_call bottom="-48" enabled="true" height="19" label="About Singularity..." left="0"
+		<menu_item_call bottom="-48" enabled="true" height="19" label="Aboot Party Hat..." left="0"
 		     mouse_opaque="true" name="About Second Life..." width="166">
 			<on_click function="ShowFloater" userdata="about" />
 		</menu_item_call>

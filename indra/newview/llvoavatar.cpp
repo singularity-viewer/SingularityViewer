@@ -3497,7 +3497,7 @@ void LLVOAvatar::getClientInfo(std::string& client, LLColor4& color, BOOL useCom
 			return;
 		}
 	}
-	if(tex->isMissingAsset())
+	if(getTEImage(TEX_HEAD_BODYPAINT)->isMissingAsset())
 	{
 		color = LLColor4(0.5f, 0.0f, 0.0f);
 		client = "Unknown";
@@ -4020,7 +4020,7 @@ void LLVOAvatar::idleUpdateNameTag(const LLVector3& root_pos_last)
 						need_comma = TRUE;
 					}
 					if (additions.length())
-						line += "\n(" + additions + ")";
+						line += " (" + additions + ")";
 
 				}
 				mSubNameString = "";

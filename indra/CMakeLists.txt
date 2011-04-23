@@ -17,7 +17,7 @@ cmake_minimum_required(VERSION 2.6.2 FATAL_ERROR)
 # can be removed when we use full paths for all libraries.
 cmake_policy(SET CMP0003 OLD)
 
-set(ROOT_PROJECT_NAME "Singularity" CACHE STRING
+set(ROOT_PROJECT_NAME "PartyHat" CACHE STRING
     "The root project/makefile/solution name. Defaults to SecondLife.")
 project(${ROOT_PROJECT_NAME})
 

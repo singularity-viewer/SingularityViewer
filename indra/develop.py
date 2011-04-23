@@ -77,7 +77,7 @@ class PlatformSetup(object):
     standalone = 'OFF'
     unattended = 'OFF'
     universal = 'OFF'
-    project_name = 'Singularity'
+    project_name = 'PartyHat'
     distcc = True
     cmake_opts = []
     word_size = 32
@@ -693,7 +693,7 @@ class WindowsSetup(PlatformSetup):
                 continue
             vstool_cmd = (os.path.join('tools','vstool','VSTool.exe') +
                           ' --solution ' +
-                          os.path.join(build_dir,'Singularity.sln') +
+                          os.path.join(build_dir,'PartyHat.sln') +
                           ' --config ' + self.build_type +
                           ' --startup secondlife-bin')
             print 'Running %r in %r' % (vstool_cmd, getcwd())

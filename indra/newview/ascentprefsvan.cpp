@@ -48,6 +48,7 @@
 #include "llwind.h"
 #include "llviewernetwork.h"
 #include "pipeline.h"
+#include "llscrolllistctrl.h"
 
 class LLPrefsAscentVanImpl : public LLPanel
 {
@@ -102,6 +103,9 @@ LLPrefsAscentVanImpl::LLPrefsAscentVanImpl()
 	childSetCommitCallback("Z Modifier", LLPrefsAscentVan::onCommitUpdateAvatarOffsets);
 	
 	childSetAction("update_clientdefs", onManualClientUpdate, this);
+	//load client tags
+	if(!LLVOAvatar::sClientResolutionList.has("isComplete"))
+		LLVOAvatar::loadClientTags();
 	refresh();
 	
 }
@@ -231,6 +235,27 @@ void LLPrefsAscentVanImpl::refresh()
 
 	//Colors ---------------------------------------------------------------------------------
 	LLComboBox* combo = getChild<LLComboBox>("tag_spoofing_combobox");
+	if(LLVOAvatar::sClientResolutionList.has("isComplete"))
+	{
+		combo->clear();
+		for(LLSD::map_iterator itr = LLVOAvatar::sClientResolutionList.beginMap(); itr != LLVOAvatar::sClientResolutionList.endMap(); itr++)
+		{
+			LLSD value = (*itr).second;
+			if(value.has("name"))
+			{
+				std::string name = value.get("name");
+				std::string uuid = (*itr).first;
+				LLColor4 color = LLColor4(value.get("color"));
+				if(value["multiple"].asReal() != 0)
+				{
+					color *= 1.0/(value["multiple"].asReal()+1.0f);
+				}
+				LLScrollListItem* item = combo->add(name,uuid);
+				//bad practice
+				item->getColumn(0)->setColor(color);
+			}
+		}
+	}
 	combo->setCurrentByIndex(mSelectedClient);
 
 	childSetValue("show_self_tag_check", mShowSelfClientTag);

@@ -122,13 +122,13 @@ endif (${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
 set(GRID agni CACHE STRING "Target Grid")
 
 set(VIEWER ON CACHE BOOL "Build Second Life viewer.")
-set(VIEWER_CHANNEL "Singularity" CACHE STRING "Viewer Channel Name")
+set(VIEWER_CHANNEL "Party Hat" CACHE STRING "Viewer Channel Name")
 set(VIEWER_LOGIN_CHANNEL ${VIEWER_CHANNEL} CACHE STRING "Fake login channel for A/B Testing")
-set(VIEWER_BRANDING_ID "singularity" CACHE STRING "Viewer branding id (currently secondlife|snowglobe)")
+set(VIEWER_BRANDING_ID "partyhat" CACHE STRING "Viewer branding id (currently secondlife|snowglobe)")
 
 # *TODO: break out proper Branding-secondlife.cmake, Branding-snowglobe.cmake, etc
-set(VIEWER_BRANDING_NAME "Singularity")
-set(VIEWER_BRANDING_NAME_CAMELCASE "Singularity")
+set(VIEWER_BRANDING_NAME "Party Hat")
+set(VIEWER_BRANDING_NAME_CAMELCASE "Party Hat")
 
 set(STANDALONE OFF CACHE BOOL "Do not use Linden-supplied prebuilt libraries.")
 

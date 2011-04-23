@@ -709,6 +709,7 @@ private:
 	F32			mTimeLast;	
 
 	static LLSD sClientResolutionList;
+	friend class LLPrefsAscentVanImpl;
 
 	bool isUnknownClient();
 	static void resolveClient(LLColor4& avatar_name_color, std::string& client, LLVOAvatar* avatar);

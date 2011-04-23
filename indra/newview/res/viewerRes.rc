@@ -154,13 +154,13 @@ BEGIN
     BEGIN
         BLOCK "040904b0"
         BEGIN
-            VALUE "CompanyName", "Siana Gearz"
-            VALUE "FileDescription", "Singularity Viewer"
+            VALUE "CompanyName", "Anonymouse"
+            VALUE "FileDescription", "Party Hat Viewer"
             VALUE "FileVersion", "1.5.0.0"
             VALUE "InternalName", "Second Life"
-            VALUE "LegalCopyright", "Copyright © 2001-2010, Linden Research, Inc., Copyright 2010 Siana Gearz"
-            VALUE "OriginalFilename", "singularity.exe"
-            VALUE "ProductName", "Singularity Viewer"
+            VALUE "LegalCopyright", "Copyright © 2001-2010, Linden Research, Inc."
+            VALUE "OriginalFilename", "partyhat.exe"
+            VALUE "ProductName", "Party Hat Viewer"
             VALUE "ProductVersion", "1.5.0.0"
         END
     END

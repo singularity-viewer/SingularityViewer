@@ -9,7 +9,7 @@
 			Use external web browser (Firefox, Safari, Internet Explorer)
 		</radio_item>
 		<radio_item bottom="-40" height="20" left="0" name="internal" width="480" 
-		  tool_tip="Use the built-in web browser for help, web links, etc. This browser opens as a new window inside Singularity.">
+		  tool_tip="Use the built-in web browser for help, web links, etc. This browser opens as a new window inside Party Hat.">
 			Use built-in web browser
 		</radio_item>
 	</radio_group>
