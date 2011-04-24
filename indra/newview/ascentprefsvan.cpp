@@ -335,9 +335,7 @@ void LLPrefsAscentVanImpl::apply()
 			LLVOAvatar* avatar = gAgent.getAvatarObject();
 			if (!avatar) return;
 
-			// Slam pending upload count to "unstick" things
-			bool slam_for_debug = true;
-			avatar->forceBakeAllTextures(slam_for_debug);
+			gAgent.sendAgentSetAppearance();
 		}
 	}
 	gSavedSettings.setBOOL("AscentShowSelfTag",			childGetValue("show_self_tag_check"));

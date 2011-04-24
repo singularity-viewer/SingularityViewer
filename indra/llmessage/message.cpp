@@ -90,6 +90,7 @@
 // <edit>
 #include "llrand.h"
 #include "llmessagelog.h"
+#include <boost/array.hpp>
 // </edit>
 
 // Constants
@@ -560,17 +561,18 @@ BOOL LLMessageSystem::checkMessages( S64 frame_count, bool faked_message, U8 fak
 		BOOL recv_resent = FALSE;
 		S32 acks = 0;
 		S32 true_rcv_size = 0;
-
-		U8* buffer = mTrueReceiveBuffer.buffer;
+		
+		boost::array<U8,MAX_BUFFER_SIZE> _buffer;
+		U8* buffer = _buffer.c_array();
 
 		if(!faked_message)
 		{
-			mTrueReceiveSize = mPacketRing.receivePacket(mSocket, (char *)mTrueReceiveBuffer.buffer);
+			mTrueReceiveSize = mPacketRing.receivePacket(mSocket, (char *)buffer);
 			receive_size = mTrueReceiveSize;
 			mLastSender = mPacketRing.getLastSender();
 			mLastReceivingIF = mPacketRing.getLastReceivingInterface();
 		} else {
-			buffer = fake_buffer; //true my ass.
+			buffer = fake_buffer;
 			mTrueReceiveSize = fake_size;
 			receive_size = mTrueReceiveSize;
 			mLastSender = fake_host;
@@ -580,7 +582,12 @@ BOOL LLMessageSystem::checkMessages( S64 frame_count, bool faked_message, U8 fak
 		// If you want to dump all received packets into SecondLife.log, uncomment this
 		//dumpPacketToLog();
 		
-
+		// <edit>
+ 		if(mTrueReceiveSize && receive_size > (S32) LL_MINIMUM_VALID_PACKET_SIZE && !faked_message)
+ 		{
+			LLMessageLog::log(mLastSender, LLHost(16777343, mPort), buffer, mTrueReceiveSize);
+ 		}
+ 		// </edit>
 		
 		if (receive_size < (S32) LL_MINIMUM_VALID_PACKET_SIZE)
 		{
@@ -3008,7 +3015,7 @@ void LLMessageSystem::addTemplate(LLMessageTemplate *templatep)
 }
 
 
-void LLMessageSystem::setHandlerFuncFast(const char *name, void (*handler_func)(LLMessageSystem *msgsystem, void **user_data), void **user_data)
+void LLMessageSystem::setHandlerFuncFast(const char *name, message_handler_func_t handler_func, void **user_data)
 {
 	LLMessageTemplate* msgtemplate = get_ptr_in_map(mMessageTemplates, name);
 	if (msgtemplate)
@@ -3018,6 +3025,32 @@ void LLMessageSystem::setHandlerFuncFast(const char *name, void (*handler_func)(
 	else
 	{
 		LL_ERRS("Messaging") << name << " is not a known message name!" << llendl;
+	}
+}
+
+void LLMessageSystem::addHandlerFuncFast(const char *name, message_handler_func_t handler_func, void **user_data)
+{
+	LLMessageTemplate* msgtemplate = get_ptr_in_map(mMessageTemplates, name);
+	if (msgtemplate)
+	{
+		msgtemplate->addHandlerFunc(handler_func, user_data);
+	}
+	else
+	{
+		llerrs << name << " is not a known message name!" << llendl;
+	}
+}
+
+void LLMessageSystem::delHandlerFuncFast(const char *name, message_handler_func_t handler_func)
+{
+	LLMessageTemplate* msgtemplate = get_ptr_in_map(mMessageTemplates, name);
+	if (msgtemplate)
+	{
+		msgtemplate->delHandlerFunc(handler_func);
+	}
+	else
+	{
+		llerrs << name << " is not a known message name!" << llendl;
 	}
 }
 
@@ -3396,7 +3429,7 @@ void LLMessageSystem::establishBidirectionalTrust(const LLHost &host, S64 frame_
 	}
 }
 
-
+#if 0
 void LLMessageSystem::dumpPacketToLog()
 {
 	LL_WARNS("Messaging") << "Packet Dump from:" << mPacketRing.getLastSender() << llendl;
@@ -3424,7 +3457,7 @@ void LLMessageSystem::dumpPacketToLog()
 		LL_WARNS("Messaging") << "PD:" << cur_line << "PD:" << line_buffer << llendl;
 	}
 }
-
+#endif
 
 //static
 U64 LLMessageSystem::getMessageTimeUsecs(const BOOL update)

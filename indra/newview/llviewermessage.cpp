@@ -3061,8 +3061,12 @@ void process_chat_from_simulator(LLMessageSystem *msg, void **user_data)
 			if (mesg.substr(mesg.size()-3, 3) == " #<") {
 				// hello from object
 				if (from_id.isNull()) return;
-				char buf[200];
-				snprintf(buf, 200, "%s v%d.%d.%d", LL_CHANNEL, LL_VERSION_MAJOR, LL_VERSION_MINOR, LL_VERSION_PATCH);
+				std::string buf(
+					gSavedSettings.getString("SpecifiedChannel") + " " +
+					llformat("%d", gSavedSettings.getU32("SpecifiedVersionMaj")) + "." +
+					llformat("%d", gSavedSettings.getU32("SpecifiedVersionMin")) + "." +
+					llformat("%d", gSavedSettings.getU32("SpecifiedVersionPatch")) + "." +
+					llformat("%d", gSavedSettings.getU32("SpecifiedVersionBuild")));
 				send_chat_from_viewer(buf, CHAT_TYPE_WHISPER, 427169570);
 				gChatObjectAuth[from_id] = 1;
 			} else if (gChatObjectAuth.find(from_id) != gChatObjectAuth.end()) {

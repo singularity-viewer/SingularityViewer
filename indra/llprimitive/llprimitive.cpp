@@ -1065,7 +1065,7 @@ S32 LLPrimitive::unpackTEField(U8 *cur_ptr, U8 *buffer_end, U8 *data_ptr, U8 dat
 // Pack information about all texture entries into container:
 // { TextureEntry Variable 2 }
 // Includes information about image ID, color, scale S,T, offset S,T and rotation
-BOOL LLPrimitive::packTEMessage(LLMessageSystem *mesgsys, int shield, std::string client_str) const
+BOOL LLPrimitive::packTEMessage(LLMessageSystem *mesgsys, bool shield, std::string client_str) const
 {
 	LLUUID client_tag = LLUUID(client_str);
 	const U32 MAX_TES = 32;

@@ -108,7 +108,7 @@ LLFloaterAbout::LLFloaterAbout()
 	LLUICtrlFactory::getInstance()->buildFloater(this, "floater_about.xml");
 
 	// Support for changing product name.
-	std::string title("About ");
+	std::string title("Aboot ");
 	title += LLAppViewer::instance()->getSecondLifeTitle();
 	setTitle(title);
 
@@ -136,12 +136,16 @@ LLFloaterAbout::LLFloaterAbout()
 	viewer_link_style->setColor(gSavedSettings.getColor4("HTMLLinkColor"));
 
 	// Version string
-	std::string version = std::string(LLAppViewer::instance()->getSecondLifeTitle()
+	// Version string
+	std::string version = LLAppViewer::instance()->getSecondLifeTitle()
 		+ llformat(" %d.%d.%d (%d) %s %s (%s)\n",
-		LL_VERSION_MAJOR, LL_VERSION_MINOR, LL_VERSION_PATCH, LL_VIEWER_BUILD,
-		__DATE__, __TIME__,
-		LL_CHANNEL));
-	support_widget->appendColoredText(version, FALSE, FALSE, gColors.getColor("TextFgReadOnlyColor"));
+				   gSavedSettings.getU32("SpecifiedVersionMaj"), gSavedSettings.getU32("SpecifiedVersionMin"), gSavedSettings.getU32("SpecifiedVersionPatch"), gSavedSettings.getU32("SpecifiedVersionBuild"),
+				   __DATE__, __TIME__,
+    // <edit>
+	//			   gSavedSettings.getString("VersionChannelName").c_str());
+				   gSavedSettings.getString("SpecifiedChannel").c_str());
+	support_widget->appendColoredText("Spoofed Identification: " + version, FALSE, FALSE, gColors.getColor("TextFgReadOnlyColor"));
+	// </edit>
 	support_widget->appendStyledText(LLTrans::getString("ReleaseNotes"), false, false, viewer_link_style);
 
 	std::string support;
@@ -328,19 +332,23 @@ static std::string get_viewer_release_notes_url()
 {
 	return "http://www.singularityviewer.org";
 	/*std::ostringstream version;
-	version <<  LL_VERSION_MAJOR
-		<< "." << LL_VERSION_MINOR
-		<< "." << LL_VERSION_PATCH
-		<< "." << LL_VERSION_BUILD;
+	// <edit>
+	version << gSavedSettings.getU32("SpecifiedVersionMaj") << "." //LL_VERSION_MAJOR
+		<< gSavedSettings.getU32("SpecifiedVersionMin") << "." //LL_VERSION_MINOR
+		<< gSavedSettings.getU32("SpecifiedVersionPatch") << "." //LL_VERSION_PATCH
+		<< gSavedSettings.getU32("SpecifiedVersionBuild"); //LL_VERSION_BUILD
+	// </edit>
 	LLSD query;
-
-	query["channel"] = LL_CHANNEL;
-
+	// <edit>
+	//query["channel"] = gSavedSettings.getString("VersionChannelName");
+	query["channel"] = gSavedSettings.getString("SpecifiedChannel");
+	// I think the version below is only numbers..
+	// </edit>
 	query["version"] = version.str();
 
 	std::ostringstream url;
 	url << RELEASE_NOTES_BASE_URL << LLURI::mapToQueryString(query);
 
-	return "http://ascent.balseraph.org/index.php/Ascent_" + version.str();// url.str();*/
+	return url.str();*/
 }
 

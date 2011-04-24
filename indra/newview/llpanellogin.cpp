@@ -1044,11 +1044,14 @@ void LLPanelLogin::loadLoginPage()
 	{
 		oStr << "&firstlogin=TRUE";
 	}
-
+	// <edit>
+	// Channel and Version
 	std::string version = llformat("%d.%d.%d (%d)",
-						LL_VERSION_MAJOR, LL_VERSION_MINOR, LL_VERSION_PATCH, LL_VERSION_BUILD);
+						gSavedSettings.getU32("SpecifiedVersionMaj"), gSavedSettings.getU32("SpecifiedVersionMin"), gSavedSettings.getU32("SpecifiedVersionPatch"), gSavedSettings.getU32("SpecifiedVersionBuild"));
 
-	char* curl_channel = curl_escape(LL_CHANNEL, 0);
+	//char* curl_channel = curl_escape(gSavedSettings.getString("VersionChannelName").c_str(), 0);
+	char* curl_channel = curl_escape(gSavedSettings.getString("SpecifiedChannel").c_str(), 0);
+	// </edit>
 
 	char* curl_version = curl_escape(version.c_str(), 0);
 

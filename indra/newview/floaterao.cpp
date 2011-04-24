@@ -234,6 +234,7 @@ struct struct_overrides
 	int state;
 };
 std::vector<struct_overrides> mAOOverrides;
+std::map<LLUUID,struct_overrides> mQuickAOOverrides;
 
 struct struct_stands
 {
@@ -537,7 +538,9 @@ void LLFloaterAO::onComboBoxCommit(LLUICtrl* ctrl, void* userdata)
 			{
 				if (state == iter->state)
 				{
-					iter->ao_id = getAssetIDByName(stranim);
+					LLUUID anim_uuid = getAssetIDByName(stranim);
+					iter->ao_id = anim_uuid;
+					mQuickAOOverrides[iter->orig_id].ao_id = anim_uuid;
 				}
 			}
 		}
@@ -606,6 +609,7 @@ void LLFloaterAO::init()
 	mAOStands.clear();
 	mAOTokens.clear();
 	mAOOverrides.clear();
+	mQuickAOOverrides.clear();
 
 	struct_tokens tokenloader;
 	tokenloader.token = 
@@ -660,6 +664,11 @@ void LLFloaterAO::init()
 
 	overrideloader.orig_id = ANIM_AGENT_FLY;					overrideloader.ao_id = LLUUID::null; overrideloader.state = STATE_AGENT_FLY;			mAOOverrides.push_back(overrideloader);
 	overrideloader.orig_id = ANIM_AGENT_FLYSLOW;				overrideloader.ao_id = LLUUID::null; overrideloader.state = STATE_AGENT_FLYSLOW;		mAOOverrides.push_back(overrideloader);
+
+	for(std::vector<struct_overrides>::iterator iter = mAOOverrides.begin(); iter != mAOOverrides.end(); iter++)
+	{
+		mQuickAOOverrides[iter->orig_id] = (*iter);
+	}
 
 	BOOL success = TRUE;
 
@@ -797,18 +806,20 @@ void LLFloaterAO::AOItemDrop(LLViewerInventoryItem* item)
 
 LLUUID LLFloaterAO::GetAnimID(const LLUUID& id)
 {
-	for (std::vector<struct_overrides>::iterator iter = mAOOverrides.begin(); iter != mAOOverrides.end(); ++iter)
+	std::map<LLUUID,struct_overrides>::iterator iter = mQuickAOOverrides.find(id);
+	if(iter != mQuickAOOverrides.end())
 	{
-		if (iter->orig_id == id) return iter->ao_id;
+		return iter->second.ao_id;
 	}
 	return LLUUID::null;
 }
 
 int LLFloaterAO::GetStateFromAnimID(const LLUUID& id)
 {
-	for (std::vector<struct_overrides>::iterator iter = mAOOverrides.begin(); iter != mAOOverrides.end(); ++iter)
+	std::map<LLUUID,struct_overrides>::iterator iter = mQuickAOOverrides.find(id);
+	if(iter != mQuickAOOverrides.end())
 	{
-		if (iter->orig_id == id) return iter->state;
+		return iter->second.state;
 	}
 	return STATE_AGENT_IDLE;
 }
@@ -1231,6 +1242,7 @@ void LLFloaterAO::onNotecardLoadComplete(LLVFS *vfs,const LLUUID& asset_uuid,LLA
 									if (GetStateFromToken(strtoken.c_str()) == iter->state)
 									{
 										iter->ao_id = animid;
+										mQuickAOOverrides[iter->orig_id].ao_id = animid;
 									}
 								}
 							}
@@ -1241,121 +1253,112 @@ void LLFloaterAO::onNotecardLoadComplete(LLVFS *vfs,const LLUUID& asset_uuid,LLA
 
 				for (std::vector<struct_overrides>::iterator iter = mAOOverrides.begin(); iter != mAOOverrides.end(); ++iter)
 				{
+					std::string defaultanim = "";
 					switch(iter->state)
 					{
 
 					case STATE_AGENT_WALK:
 						{
-							std::string defaultanim = gSavedPerAccountSettings.getString("AODefaultWalk");
+							defaultanim = gSavedPerAccountSettings.getString("AODefaultWalk");
 							SetDefault(mcomboBox_walks,iter->ao_id,defaultanim);
-							if (getAssetIDByName(defaultanim) != LLUUID::null) iter->ao_id = getAssetIDByName(defaultanim);
+							
 						}
 						 break;
 					case STATE_AGENT_RUN:
 						{
-							std::string defaultanim = gSavedPerAccountSettings.getString("AODefaultRun");
+							defaultanim = gSavedPerAccountSettings.getString("AODefaultRun");
 							SetDefault(mcomboBox_runs,iter->ao_id,defaultanim);
-							if (getAssetIDByName(defaultanim) != LLUUID::null) iter->ao_id = getAssetIDByName(defaultanim);
 						}
 						 break;
 					case STATE_AGENT_JUMP:
 						{
-							std::string defaultanim = gSavedPerAccountSettings.getString("AODefaultJump");
+							defaultanim = gSavedPerAccountSettings.getString("AODefaultJump");
 							SetDefault(mcomboBox_jumps,iter->ao_id,defaultanim);
-							if (getAssetIDByName(defaultanim) != LLUUID::null) iter->ao_id = getAssetIDByName(defaultanim);
 						}
 						break;
 					case STATE_AGENT_SIT:
 						{
-							std::string defaultanim = gSavedPerAccountSettings.getString("AODefaultSit");
+							defaultanim = gSavedPerAccountSettings.getString("AODefaultSit");
 							SetDefault(mcomboBox_sits,iter->ao_id,defaultanim);
-							if (getAssetIDByName(defaultanim) != LLUUID::null) iter->ao_id = getAssetIDByName(defaultanim);
 						}
 						 break;
 					case STATE_AGENT_CROUCH:
 						{
-							std::string defaultanim = gSavedPerAccountSettings.getString("AODefaultCrouch");
+							defaultanim = gSavedPerAccountSettings.getString("AODefaultCrouch");
 							SetDefault(mcomboBox_crouchs,iter->ao_id,defaultanim);
-							if (getAssetIDByName(defaultanim) != LLUUID::null) iter->ao_id = getAssetIDByName(defaultanim);
 						}
 						 break;
 					case STATE_AGENT_GROUNDSIT:
 						{
-							std::string defaultanim = gSavedPerAccountSettings.getString("AODefaultGroundSit");
-							SetDefault(mcomboBox_gsits,iter->ao_id,defaultanim);
-							if (getAssetIDByName(defaultanim) != LLUUID::null) iter->ao_id = getAssetIDByName(defaultanim);
+							defaultanim = gSavedPerAccountSettings.getString("AODefaultGroundSit");
+							SetDefault(mcomboBox_gsits,iter->ao_id,defaultanim);;
 						}
 						 break;
 					case STATE_AGENT_CROUCHWALK:
 						{
-							std::string defaultanim = gSavedPerAccountSettings.getString("AODefaultCrouchWalk");
+							defaultanim = gSavedPerAccountSettings.getString("AODefaultCrouchWalk");
 							SetDefault(mcomboBox_cwalks,iter->ao_id,defaultanim);
-							if (getAssetIDByName(defaultanim) != LLUUID::null) iter->ao_id = getAssetIDByName(defaultanim);
 						}
 						 break;
 					case STATE_AGENT_FALLDOWN:
 						{
-							std::string defaultanim = gSavedPerAccountSettings.getString("AODefaultFall");
+							defaultanim = gSavedPerAccountSettings.getString("AODefaultFall");
 							SetDefault(mcomboBox_falls,iter->ao_id,defaultanim);
-							if (getAssetIDByName(defaultanim) != LLUUID::null) iter->ao_id = getAssetIDByName(defaultanim);
 						}
 						 break;
 					case STATE_AGENT_HOVER:
 						{
-							std::string defaultanim = gSavedPerAccountSettings.getString("AODefaultHover");
+							defaultanim = gSavedPerAccountSettings.getString("AODefaultHover");
 							SetDefault(mcomboBox_hovers,iter->ao_id,defaultanim);
-							if (getAssetIDByName(defaultanim) != LLUUID::null) iter->ao_id = getAssetIDByName(defaultanim);
 						}
 						 break;
 					case STATE_AGENT_FLY:
 						{
-							std::string defaultanim = gSavedPerAccountSettings.getString("AODefaultFly");
+							defaultanim = gSavedPerAccountSettings.getString("AODefaultFly");
 							SetDefault(mcomboBox_flys,iter->ao_id,defaultanim);
-							if (getAssetIDByName(defaultanim) != LLUUID::null) iter->ao_id = getAssetIDByName(defaultanim);
 						}
 						 break;
 					case STATE_AGENT_HOVER_UP:
 						{
-							std::string defaultanim = gSavedPerAccountSettings.getString("AODefaultFlyUp");
+							defaultanim = gSavedPerAccountSettings.getString("AODefaultFlyUp");
 							SetDefault(mcomboBox_flyups,iter->ao_id,defaultanim);
-							if (getAssetIDByName(defaultanim) != LLUUID::null) iter->ao_id = getAssetIDByName(defaultanim);
 						}
 						 break;
 					case STATE_AGENT_FLYSLOW:
 						{
-							std::string defaultanim = gSavedPerAccountSettings.getString("AODefaultFlySlow");
+							defaultanim = gSavedPerAccountSettings.getString("AODefaultFlySlow");
 							SetDefault(mcomboBox_flyslows,iter->ao_id,defaultanim);
-							if (getAssetIDByName(defaultanim) != LLUUID::null) iter->ao_id = getAssetIDByName(defaultanim);
 						}
 						 break;
 					case STATE_AGENT_HOVER_DOWN:
 						{
-							std::string defaultanim = gSavedPerAccountSettings.getString("AODefaultFlyDown");
+							defaultanim = gSavedPerAccountSettings.getString("AODefaultFlyDown");
 							SetDefault(mcomboBox_flydowns,iter->ao_id,defaultanim);
-							if (getAssetIDByName(defaultanim) != LLUUID::null) iter->ao_id = getAssetIDByName(defaultanim);
 						}
 						 break;
 					case STATE_AGENT_LAND:
 						{
-							std::string defaultanim = gSavedPerAccountSettings.getString("AODefaultLand");
+							defaultanim = gSavedPerAccountSettings.getString("AODefaultLand");
 							SetDefault(mcomboBox_lands,iter->ao_id,defaultanim);
-							if (getAssetIDByName(defaultanim) != LLUUID::null) iter->ao_id = getAssetIDByName(defaultanim);
 						}
 						 break;
 					case STATE_AGENT_STANDUP:
 						{
-							std::string defaultanim = gSavedPerAccountSettings.getString("AODefaultStandUp");
+							defaultanim = gSavedPerAccountSettings.getString("AODefaultStandUp");
 							SetDefault(mcomboBox_standups,iter->ao_id,defaultanim);
-							if (getAssetIDByName(defaultanim) != LLUUID::null) iter->ao_id = getAssetIDByName(defaultanim);
 						}
 						 break;
 					case STATE_AGENT_PRE_JUMP:
 						{
-							std::string defaultanim = gSavedPerAccountSettings.getString("AODefaultPreJump");
+							defaultanim = gSavedPerAccountSettings.getString("AODefaultPreJump");
 							SetDefault(mcomboBox_prejumps,iter->ao_id,defaultanim);
-							if (getAssetIDByName(defaultanim) != LLUUID::null) iter->ao_id = getAssetIDByName(defaultanim);
 						}
 						 break;
+					}
+					if (getAssetIDByName(defaultanim) != LLUUID::null)
+					{
+						iter->ao_id = getAssetIDByName(defaultanim);
+						mQuickAOOverrides[iter->orig_id].ao_id = iter->ao_id;
 					}
 				}
 				run();
@@ -1415,9 +1418,16 @@ private:
 	std::string sName;
 };
 
-const LLUUID& LLFloaterAO::getAssetIDByName(const std::string& name)
+const LLUUID LLFloaterAO::getAssetIDByName(const std::string& name)
 {
 	if (name.empty() || !(gInventory.isEverythingFetched())) return LLUUID::null;
+
+	if (name.length() == 32)
+	{
+		LLUUID test = LLUUID(name);
+		if(test.asString().compare(name) == 0)
+			return test;
+	}
 
 	LLViewerInventoryCategory::cat_array_t cats;
 	LLViewerInventoryItem::item_array_t items;

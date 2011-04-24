@@ -588,11 +588,11 @@ bool LLAppViewer::init()
 
 	// Build a string representing the current version number.
     gCurrentVersion = llformat("%s %d.%d.%d.%d",
-        LL_CHANNEL,
-        LL_VERSION_MAJOR,
-        LL_VERSION_MINOR,
-        LL_VERSION_PATCH,
-        LL_VERSION_BUILD );
+        gSavedSettings.getString("SpecifiedChannel"),
+		gSavedSettings.getU32("SpecifiedVersionMaj"),
+		gSavedSettings.getU32("SpecifiedVersionMin"),
+		gSavedSettings.getU32("SpecifiedVersionPatch"),
+		gSavedSettings.getU32("SpecifiedVersionBuild"));
 
 	//////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////
@@ -2446,12 +2446,11 @@ void LLAppViewer::handleViewerCrash()
 	//We already do this in writeSystemInfo(), but we do it again here to make /sure/ we have a version
 	//to check against no matter what
 
-	gDebugInfo["ClientInfo"]["Name"] = LL_CHANNEL;
-
-	gDebugInfo["ClientInfo"]["MajorVersion"] = LL_VERSION_MAJOR;
-	gDebugInfo["ClientInfo"]["MinorVersion"] = LL_VERSION_MINOR;
-	gDebugInfo["ClientInfo"]["PatchVersion"] = LL_VERSION_PATCH;
-	gDebugInfo["ClientInfo"]["BuildVersion"] = LL_VERSION_BUILD;
+	gDebugInfo["ClientInfo"]["Name"] = gSavedSettings.getString("SpecifiedChannel");
+	gDebugInfo["ClientInfo"]["MajorVersion"] = (S32)gSavedSettings.getU32("SpecifiedVersionMaj");
+	gDebugInfo["ClientInfo"]["MinorVersion"] = (S32)gSavedSettings.getU32("SpecifiedVersionMin");
+	gDebugInfo["ClientInfo"]["PatchVersion"] = (S32)gSavedSettings.getU32("SpecifiedVersionPatch");
+	gDebugInfo["ClientInfo"]["BuildVersion"] = (S32)gSavedSettings.getU32("SpecifiedVersionBuild");
 
 	LLParcel* parcel = LLViewerParcelMgr::getInstance()->getAgentParcel();
 	if ( parcel && parcel->getMusicURL()[0])
@@ -3162,7 +3161,7 @@ void LLAppViewer::forceDisconnect(const std::string& mesg)
 void LLAppViewer::badNetworkHandler()
 {
 	// Dump the packet
-	gMessageSystem->dumpPacketToLog();
+	//gMessageSystem->dumpPacketToLog();
 
 	// Flush all of our caches on exit in the case of disconnect due to
 	// invalid packets.
@@ -4202,12 +4201,11 @@ void LLAppViewer::handleLoginComplete()
 	initMainloopTimeout("Mainloop Init");
 
 	// Store some data to DebugInfo in case of a freeze.
-	gDebugInfo["ClientInfo"]["Name"] = LL_CHANNEL;
-
-	gDebugInfo["ClientInfo"]["MajorVersion"] = LL_VERSION_MAJOR;
-	gDebugInfo["ClientInfo"]["MinorVersion"] = LL_VERSION_MINOR;
-	gDebugInfo["ClientInfo"]["PatchVersion"] = LL_VERSION_PATCH;
-	gDebugInfo["ClientInfo"]["BuildVersion"] = LL_VERSION_BUILD;
+	gDebugInfo["ClientInfo"]["Name"] = gSavedSettings.getString("SpecifiedChannel");
+	gDebugInfo["ClientInfo"]["MajorVersion"] = (S32)gSavedSettings.getU32("SpecifiedVersionMaj");
+	gDebugInfo["ClientInfo"]["MinorVersion"] = (S32)gSavedSettings.getU32("SpecifiedVersionMin");
+	gDebugInfo["ClientInfo"]["PatchVersion"] = (S32)gSavedSettings.getU32("SpecifiedVersionPatch");
+	gDebugInfo["ClientInfo"]["BuildVersion"] = (S32)gSavedSettings.getU32("SpecifiedVersionBuild");
 
 	LLParcel* parcel = LLViewerParcelMgr::getInstance()->getAgentParcel();
 	if ( parcel && parcel->getMusicURL()[0])

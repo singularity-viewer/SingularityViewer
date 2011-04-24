@@ -3278,7 +3278,8 @@ bool update_dialog_callback(const LLSD& notification, const LLSD& response)
 	// userserver no longer exists.
 	query_map["userserver"] = LLViewerLogin::getInstance()->getGridLabel();
 	// <edit>
-	query_map["channel"] = LL_CHANNEL;
+	//query_map["channel"] = LL_CHANNEL;
+	query_map["channel"] = gSavedSettings.getString("SpecifiedChannel");
 
 	// *TODO constantize this guy
 	// *NOTE: This URL is also used in win_setup/lldownloader.cpp

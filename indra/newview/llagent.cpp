@@ -7715,7 +7715,7 @@ void LLAgent::sendAgentSetAppearance()
 		else
 		{*/
 			if (gSavedSettings.getBOOL("AscentUseTag"))
-				mAvatarObject->packTEMessage( gMessageSystem, 1, gSavedSettings.getString("AscentReportClientUUID"));
+				mAvatarObject->packTEMessage( gMessageSystem, true, gSavedSettings.getString("AscentReportClientUUID"));
 			else
 				mAvatarObject->packTEMessage( gMessageSystem );
 		//}

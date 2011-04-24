@@ -102,7 +102,7 @@ public:
 	static void onClickNewCard(void* userdata);
 
 	static LLUUID invfolderid;
-	static const LLUUID& getAssetIDByName(const std::string& name);
+	static const LLUUID getAssetIDByName(const std::string& name);
 
 	static bool getInstance();
 	

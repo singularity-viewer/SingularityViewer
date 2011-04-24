@@ -38,6 +38,10 @@
 #include "llstat.h"
 #include "llstl.h"
 
+#include <boost/signals.hpp>
+#include <boost/signals/connection.hpp>
+#include <boost/bind.hpp>
+
 class LLMsgVarData
 {
 public:
@@ -290,9 +294,7 @@ public:
 		mTotalDecodeTime(0.f),
 		mMaxDecodeTimePerMsg(0.f),
 		mBanFromTrusted(false),
-		mBanFromUntrusted(false),
-		mHandlerFunc(NULL), 
-		mUserData(NULL)
+		mBanFromUntrusted(false)
 	{ 
 		mName = LLMessageStringTable::getInstance()->getString(name);
 	}
@@ -360,18 +362,42 @@ public:
 		return mDeprecation;
 	}
 	
-	void setHandlerFunc(void (*handler_func)(LLMessageSystem *msgsystem, void **user_data), void **user_data)
+	void setHandlerFunc(message_handler_func_t handler_func, void **user_data)
 	{
-		mHandlerFunc = handler_func;
-		mUserData = user_data;
+		if(!mMessageSignal.empty() || mConnectionMap.size() > 0){
+			mMessageSignal.disconnect_all_slots();
+			mConnectionMap.erase(mConnectionMap.begin(),mConnectionMap.end());
+		}
+		//we want to make sure if we set to NULL it will not add a null entry to the signal.
+		if(handler_func != NULL)
+		{
+			addHandlerFunc(handler_func,user_data);
+		}
+	}
+
+	void addHandlerFunc(message_handler_func_t handler_func, void **user_data)
+	{
+		if(mConnectionMap.find(handler_func) == mConnectionMap.end())
+			mConnectionMap[handler_func] = mMessageSignal.connect(boost::bind(handler_func,_1,user_data));
+	}
+
+	void delHandlerFunc(message_handler_func_t handler_func)
+	{
+		connection_map_t::iterator iter = mConnectionMap.find(handler_func);
+		if(iter != mConnectionMap.end())
+		{
+			//make sure to disconnect first
+			mConnectionMap[handler_func].disconnect();
+			mConnectionMap.erase(iter);
+		}
 	}
 
 	BOOL callHandlerFunc(LLMessageSystem *msgsystem) const
 	{
-		if (mHandlerFunc)
+		if (!mMessageSignal.empty())
 		{
             LLPerfBlock msg_cb_time("msg_cb", mName);
-			mHandlerFunc(msgsystem, mUserData);
+			mMessageSignal(msgsystem);
 			return TRUE;
 		}
 		return FALSE;
@@ -419,9 +445,11 @@ public:
 	bool									mBanFromUntrusted;
 
 private:
-	// message handler function (this is set by each application)
-	void									(*mHandlerFunc)(LLMessageSystem *msgsystem, void **user_data);
-	void									**mUserData;
+	// message handler functions (this is set by each application)
+	typedef boost::signal<void (LLMessageSystem*)> message_signal_t;
+	message_signal_t mMessageSignal;
+	typedef std::map<message_handler_func_t,boost::signals::connection> connection_map_t;
+	connection_map_t mConnectionMap;
 };
 
 #endif // LL_LLMESSAGETEMPLATE_H
