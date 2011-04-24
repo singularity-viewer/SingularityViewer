@@ -62,6 +62,8 @@
 #include "llsdutil.h"
 // <edit>
 #include "lllocalinventory.h"
+#include "llfloaterimport.h"
+#include "llfloaterexport.h"
 #include "llfloaterexploreanimations.h"
 #include "llfloaterexploresounds.h"
 #include "llfloaterblacklist.h"
@@ -250,7 +252,6 @@
 #include "llavatarnamecache.h"
 #include "floaterao.h"
 #include "slfloatermediafilter.h"
-#include "llviewerobjectbackup.h"
 
 #include "hippogridmanager.h"
 
@@ -2797,58 +2798,26 @@ class LLGoToObject : public view_listener_t
 };
 
 //---------------------------------------------------------------------------
-// Object backup
+// Object import / export
 //---------------------------------------------------------------------------
 
-class LLObjectEnableExport : public view_listener_t
+class LLObjectEnableSaveAs : public view_listener_t
 {
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
 	{
 		LLViewerObject* object = LLSelectMgr::getInstance()->getSelection()->getPrimaryObject();
 		bool new_value = (object != NULL);
-		if (new_value)
-		{
-			struct ff : public LLSelectedNodeFunctor
-			{
-				ff(const LLSD& data) : LLSelectedNodeFunctor(), userdata(data)
-				{
-				}
-				const LLSD& userdata;
-				virtual bool apply(LLSelectNode* node)
-				{
-					// Note: the actual permission checking algorithm depends on the grid TOS and must be
-					// performed for each prim and texture. This is done later in llviewerobjectbackup.cpp.
-					// This means that even if the item is enabled in the menu, the export may fail should
-					// the permissions not be met for each exported asset. The permissions check below
-					// therefore only corresponds to the minimal permissions requirement common to all grids.
-					LLPermissions *item_permissions = node->mPermissions;
-					return (gAgent.getID() == item_permissions->getOwner() &&
-							(gAgent.getID() == item_permissions->getCreator() ||
-							 (item_permissions->getMaskOwner() & PERM_ITEM_UNRESTRICTED) == PERM_ITEM_UNRESTRICTED));
-				}
-			};
-			ff * the_ff = new ff(userdata);
-			new_value = LLSelectMgr::getInstance()->getSelection()->applyToNodes(the_ff, false);
-		}
 		gMenuHolder->findControl(userdata["control"].asString())->setValue(new_value);
 		return true;
 	}
 };
 
-class LLObjectExport : public view_listener_t
+class LLObjectSaveAs : public view_listener_t
 {
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
 	{
-		LLViewerObject* object = LLSelectMgr::getInstance()->getSelection()->getPrimaryObject();
-		if (!object) return true;
-
-		LLVOAvatar* avatar = find_avatar_from_object(object); 
-
-		if (!avatar)
-		{
-			LLObjectBackup::getInstance()->exportObject();
-		}
-
+		LLFloaterExport* floater = new LLFloaterExport();
+		floater->center();
 		return true;
 	}
 };
@@ -2857,7 +2826,22 @@ class LLObjectEnableImport : public view_listener_t
 {
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
 	{
-		gMenuHolder->findControl(userdata["control"].asString())->setValue(TRUE);
+		LLViewerObject* object = LLSelectMgr::getInstance()->getSelection()->getPrimaryObject();
+		bool new_value = (object != NULL);
+		if(object)
+		{
+			if(!object->permCopy())
+				new_value = false;
+			else if(!object->permModify())
+				new_value = false;
+			else if(!object->permMove())
+				new_value = false;
+			else if(object->numChildren() != 0)
+				new_value = false;
+			else if(object->getParent())
+				new_value = false;
+		}
+		gMenuHolder->findControl(userdata["control"].asString())->setValue(new_value);
 		return true;
 	}
 };
@@ -2866,16 +2850,32 @@ class LLObjectImport : public view_listener_t
 {
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
 	{
-		LLObjectBackup::getInstance()->importObject(FALSE);
-		return true;
-	}
-};
-
-class LLObjectImportUpload : public view_listener_t
-{
-	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
-	{
-		LLObjectBackup::getInstance()->importObject(TRUE);
+		LLViewerObject* object = LLSelectMgr::getInstance()->getSelection()->getPrimaryObject();
+		bool new_value = (object != NULL);
+		if(object)
+		{
+			if(!object->permCopy())
+				new_value = false;
+			else if(!object->permModify())
+				new_value = false;
+			else if(!object->permMove())
+				new_value = false;
+			else if(object->numChildren() != 0)
+				new_value = false;
+			else if(object->getParent())
+				new_value = false;
+		}
+		if(new_value == false) return true;
+		
+		LLFilePicker& picker = LLFilePicker::instance();
+		if (!picker.getOpenFile(LLFilePicker::FFLOAD_XML))
+		{
+			return true;
+		}
+		std::string file_name = picker.getFirstFile();
+		LLXmlImportOptions* options = new LLXmlImportOptions(file_name);
+		options->mSupplier = object;
+		new LLFloaterXmlImportOptions(options);
 		return true;
 	}
 };
@@ -7432,6 +7432,10 @@ class LLObjectEnableWear : public view_listener_t
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
 	{
 		bool is_wearable = object_selected_and_point_valid(NULL);
+		// <edit> Don't allow attaching objects while importing attachments
+		if(LLXmlImport::sImportInProgress && LLXmlImport::sImportHasAttachments)
+			is_wearable = false;
+		// </edit>
 		gMenuHolder->findControl(userdata["control"].asString())->setValue(is_wearable);
 		return TRUE;
 	}
@@ -10458,9 +10462,10 @@ void initialize_menus()
 	addMenu(new LLObjectInspect(), "Object.Inspect");
 	// <dogmode> Visual mute, originally by Phox.
 	addMenu(new LLObjectDerender(), "Object.DERENDER");
-	addMenu(new LLObjectExport(), "Object.Export");
+	// <edit>
+	addMenu(new LLObjectSaveAs(), "Object.SaveAs");
 	addMenu(new LLObjectImport(), "Object.Import");
-	addMenu(new LLObjectImportUpload(), "Object.ImportUpload");
+	// </edit>
 	
 
 	addMenu(new LLObjectEnableOpen(), "Object.EnableOpen");
@@ -10472,8 +10477,10 @@ void initialize_menus()
 	addMenu(new LLObjectEnableReportAbuse(), "Object.EnableReportAbuse");
 	addMenu(new LLObjectEnableMute(), "Object.EnableMute");
 	addMenu(new LLObjectEnableBuy(), "Object.EnableBuy");
-	addMenu(new LLObjectEnableExport(), "Object.EnableExport");
+	// <edit>
+	addMenu(new LLObjectEnableSaveAs(), "Object.EnableSaveAs");
 	addMenu(new LLObjectEnableImport(), "Object.EnableImport");
+	// </edit>
 
 	/*addMenu(new LLObjectVisibleTouch(), "Object.VisibleTouch");
 	addMenu(new LLObjectVisibleCustomTouch(), "Object.VisibleCustomTouch");

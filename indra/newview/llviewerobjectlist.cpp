@@ -75,7 +75,7 @@
 
 #include "llappviewer.h"
 
-#include "llviewerobjectbackup.h"
+#include "llimportobject.h"
 
 extern F32 gMinObjectDistance;
 extern BOOL gAnimateTextures;
@@ -249,9 +249,11 @@ void LLViewerObjectList::processUpdateCore(LLViewerObject* objectp,
 	{
 		gPipeline.addObject(objectp);
 	}
-	else
+	else if( LLXmlImport::sImportInProgress 
+		&& objectp->permYouOwner()
+		&& LLXmlImport::sExpectedUpdate == objectp->getID()) 
 	{
-		LLObjectBackup::getInstance()->primUpdate(objectp);
+		LLXmlImport::onUpdatePrim(objectp);
 	}
 	
 
@@ -263,6 +265,22 @@ void LLViewerObjectList::processUpdateCore(LLViewerObject* objectp,
 	// so that the drawable parent is set properly
 	findOrphans(objectp, msg->getSenderIP(), msg->getSenderPort());
 	
+	// <edit>
+	if (just_created
+		&& update_type != OUT_TERSE_IMPROVED
+		&& LLXmlImport::sImportInProgress)
+	{
+		LLViewerObject* parent = (LLViewerObject*)objectp->getParent();
+		if(parent)
+		{
+			if(parent->getID() == gAgent.getID())
+			{
+				LLXmlImport::onNewAttachment(objectp);
+			}
+		}
+	}
+	//</edit>
+
 	// If we're just wandering around, don't create new objects selected.
 	if (just_created 
 		&& update_type != OUT_TERSE_IMPROVED 
@@ -280,7 +298,17 @@ void LLViewerObjectList::processUpdateCore(LLViewerObject* objectp,
 		gViewerWindow->getWindow()->decBusyCount();
 		gViewerWindow->getWindow()->setCursor( UI_CURSOR_ARROW );
 		
-		LLObjectBackup::getInstance()->newPrim(objectp);		
+		// <edit>
+		if(LLXmlImport::sImportInProgress)
+		{
+			if( objectp->permYouOwner()
+				&& (objectp->getPCode() == LLXmlImport::sSupplyParams->getPCode())
+				&& (objectp->getScale() == LLXmlImport::sSupplyParams->getScale()))
+			{
+				LLXmlImport::onNewPrim(objectp);
+			}
+		}
+		// </edit>	
 	}
 }
 

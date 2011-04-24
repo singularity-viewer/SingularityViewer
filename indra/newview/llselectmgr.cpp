@@ -87,7 +87,9 @@
 #include "llvoavatar.h"
 #include "llvovolume.h"
 #include "pipeline.h"
-
+//<edit>
+#include "llfloaterexport.h"
+//</edit>
 #include "llglheaders.h"
 #include "hippogridmanager.h"
 
@@ -4487,8 +4489,12 @@ void LLSelectMgr::processObjectProperties(LLMessageSystem* msg, void** user_data
 			node->mSitName.assign(sit_name);
 			node->mTouchName.assign(touch_name);
 		}
+		// <edit> Send to export floaters
+		LLFloaterExport::receiveObjectProperties(id, name, desc);
+		// </edit>
 	}
 
+	
 	dialog_refresh_all();
 
 	// silly hack to allow 'save into inventory' 
@@ -4545,7 +4551,9 @@ void LLSelectMgr::processObjectPropertiesFamily(LLMessageSystem* msg, void** use
 		// We got the reply, so remove the object from the list of pending requests
 		sObjectPropertiesFamilyRequests.erase(id);
 	}
-
+	// <edit> Send to export floaters
+	LLFloaterExport::receiveObjectProperties(id, name, desc);
+	// </edit>
 	// the reporter widget askes the server for info about picked objects
 	if (request_flags & (COMPLAINT_REPORT_REQUEST | BUG_REPORT_REQUEST))
 	{

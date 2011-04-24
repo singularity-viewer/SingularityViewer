@@ -46,6 +46,11 @@
 			<menu_item_call enabled="true" label="Derender" mouse_opaque="true" name="Derender">
 				<on_click function="Object.DERENDER" />
 			</menu_item_call>
+			<menu_item_call enabled="false" hidden="false" label="Save As..." mouse_opaque="true"
+							 name="Save As...">
+				<on_click function="Object.SaveAs" />
+				<on_enable function="Object.EnableSaveAs" />
+			</menu_item_call>
 		</pie_menu>
 		<menu_item_call enabled="false" label="Eject..." mouse_opaque="true" name="Eject...">
 			<on_click function="Avatar.Eject" />

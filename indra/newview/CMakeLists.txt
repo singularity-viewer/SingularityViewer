@@ -64,7 +64,9 @@ include_directories(
     )
 
 set(viewer_SOURCE_FILES
-    llviewerobjectbackup.cpp
+    llimportobject.cpp
+    llfloaterexport.cpp
+    llfloaterimport.cpp
     slfloatermediafilter.cpp
     floaterlocalassetbrowse.cpp
     aoremotectrl.cpp
@@ -534,7 +536,9 @@ set(viewer_HEADER_FILES
     CMakeLists.txt
     ViewerInstall.cmake
 
-    llviewerobjectbackup.h
+    llimportobject.h
+    llfloaterexport.h
+    llfloaterimport.h
     slfloatermediafilter.h
     floaterlocalassetbrowse.h
     aoremotectrl.h

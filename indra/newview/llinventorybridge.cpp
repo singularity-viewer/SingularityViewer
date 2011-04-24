@@ -96,6 +96,7 @@
 #include "llappviewer.h" // System Folders
 #include "llfloateranimpreview.h" // for reuploads
 #include "llfloaterimagepreview.h" // for reuploads
+#include "llimportobject.h" // for disabling options during import
 //#include "llcheats.h"
 #include "dofloaterhex.h"
 #include "hgfloatertexteditor.h"
@@ -2396,10 +2397,15 @@ void LLFolderBridge::folderOptionsMenu()
 		// Only enable add/replace outfit for non-default folders.
 		if (!is_default_folder)
 		{
-			if (gHippoGridManager->getConnectedGrid()->supportsInvLinks())
-				mItems.push_back(std::string("Add To Outfit"));
-			mItems.push_back(std::string("Wear Items"));
-			mItems.push_back(std::string("Replace Outfit"));
+			// <edit> don't allow attaching stuff during attachment import
+			if(!(LLXmlImport::sImportInProgress && LLXmlImport::sImportHasAttachments))
+			{
+				// </edit>
+				if (gHippoGridManager->getConnectedGrid()->supportsInvLinks())
+					mItems.push_back(std::string("Add To Outfit"));
+				mItems.push_back(std::string("Wear Items"));
+				mItems.push_back(std::string("Replace Outfit"));
+			}
 		}
 		mItems.push_back(std::string("Take Off Items"));
 	}
@@ -4164,7 +4170,11 @@ void LLObjectBridge::buildContextMenu(LLMenuGL& menu, U32 flags)
 			}
 			else
 			// </edit>
-			if( !isInTrash() )
+			// </edit>
+			// <edit> don't allow attaching objects while importing attachments
+			//if( !isInTrash() )
+			if( !isInTrash() && !(LLXmlImport::sImportInProgress && LLXmlImport::sImportHasAttachments))
+			// </edit>
 			{
 				items.push_back(std::string("Attach Separator"));
 				items.push_back(std::string("Object Wear"));

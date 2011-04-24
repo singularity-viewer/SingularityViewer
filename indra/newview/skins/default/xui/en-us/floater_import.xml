@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<floater can_close="true" can_drag_on_left="false" can_minimize="false"
+     can_resize="false" height="440" name="Import" title="" width="680">
+	<text height="15" left="10" name="name_label" top="10">
+		Name:
+	</text>
+	<line_editor height="19" max_length="254" name="name_form" width="280" />
+	<text height="15" name="description_label">
+		Description:
+	</text>
+	<line_editor height="19" max_length="254" name="description_form" width="280" />
+	<text height="15" name="preview_label">
+		Files to upload:
+	</text>
+	<scroll_list draw_border="true" height="280" left="10" multi_select="true"
+	     name="upload_list" top="-30" width="400" />
+	<button bottom="10" height="20" label="Cancel" left="182" name="cancel_btn" width="64" />
+	<button bottom="10" height="20" label="Upload (L$10)" left="31" name="ok_btn"
+	     width="110" />
+	<text bottom="356" height="15" left="420" name="preview_label2">
+		Image Preview:
+	</text>
+	<icon height="256" left="420" name="dummy_preview" width="256" />
+</floater>

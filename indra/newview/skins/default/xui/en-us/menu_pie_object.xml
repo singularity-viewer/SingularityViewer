@@ -69,10 +69,16 @@
 					<on_click function="Tools.SelectedScriptAction" userdata="reset" />
 					<on_enable function="EditableSelected" />
 				</menu_item_call>
-				<menu_item_call enabled="false" hidden="false" label="Export" mouse_opaque="true" name="Export">
-						<on_click function="Object.Export" />
-						<on_enable function="Object.EnableExport" />
-				</menu_item_call>				
+				<menu_item_call enabled="false" hidden="false" label="Save As..." mouse_opaque="true"
+							 name="Save As...">
+					<on_click function="Object.SaveAs" />
+					<on_enable function="Object.EnableSaveAs" />
+				</menu_item_call>
+				<menu_item_call enabled="false" hidden="false" label="Import..." mouse_opaque="true"
+								 name="Import...">
+					<on_click function="Object.Import" />
+					<on_enable function="Object.EnableImport" />
+				</menu_item_call>		
 			</pie_menu>
 			<menu_item_call enabled="false" label="Mute" mouse_opaque="true" name="Object Mute">
 				<on_click function="Object.Mute" />

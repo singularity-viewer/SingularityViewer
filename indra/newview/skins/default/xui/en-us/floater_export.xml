@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<floater can_close="true" can_drag_on_left="false" can_minimize="true"
+     can_resize="true" height="400" width="310" min_width="310" min_height="200"  
+     name="floater_export" title="Export...">
+	<scroll_list bottom="76" can_resize="true" column_padding="0" draw_heading="false"
+	     follows="left|top|bottom|right" left="10" multi_select="true"
+	     name="export_list" right="-10" search_column="2" top="-25">
+		<column name="checked" width="20" />
+		<column name="type" width="20" />
+		<column dynamicwidth="true" label="Name" name="name" />
+		<column name="avatarid" visible="false" />
+	</scroll_list>
+	<text bottom="50" left="10" width="100" height="20">Select/Deselect:</text>
+	<button bottom="52" follows="bottom|left" height="20" label="All"
+		 left="110" name="select_all_btn" width="40" />
+	<button bottom="52" follows="bottom|left" height="20" label="Objects"
+		 left_delta="42" name="select_objects_btn" width="64" />
+	<button bottom="52" follows="bottom|left" height="20" label="Wearables"
+		 left_delta="66"  name="select_wearables_btn" width="80" />
+
+	<text bottom="25" left="10" width="250" height="20" name="names_progress_text"></text>
+	<check_box bottom="28" left="186" width="250" height="20" name="download_textures" label="Download Textures" initial_value="false"/>
+
+	<button bottom="8" follows="bottom|left" height="20" label="Save As..."
+		 left="10" width="142" name="save_as_btn" />
+	<button bottom="8" follows="bottom|left" height="20" label="Make Copy"
+		 left="158" width="142"  name="make_copy_btn" />
+</floater>
