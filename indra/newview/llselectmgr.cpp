@@ -41,6 +41,7 @@
 #include "lleconomy.h"
 #include "llgl.h"
 #include "llrender.h"
+#include "llparcel.h" //for ObjectDuplicate on land group
 #include "llpermissions.h"
 #include "llpermissionsflags.h"
 #include "llundo.h"
@@ -81,6 +82,7 @@
 #include "llviewerobject.h"
 #include "llviewerobjectlist.h"
 #include "llviewerregion.h"
+#include "llviewerparcelmgr.h" //for ObjectDuplicate on land group
 #include "llviewerstats.h"
 #include "llvoavatar.h"
 #include "llvovolume.h"
@@ -3970,6 +3972,16 @@ void LLSelectMgr::packAgentAndSessionAndGroupID(void* user_data)
 void LLSelectMgr::packDuplicateHeader(void* data)
 {
 	LLUUID group_id(gAgent.getGroupID());
+	// Alway rez objects as land group if available.
+	if (gSavedSettings.getBOOL("AscentAlwaysRezInGroup"))
+	{
+		LLParcel *parcel = LLViewerParcelMgr::getInstance()->getAgentParcel();
+		if(gAgent.isInGroup(parcel->getGroupID()))
+			group_id = parcel->getGroupID();
+		else if(gAgent.isInGroup(parcel->getOwnerID()))
+			group_id = parcel->getOwnerID();
+	}
+
 	packAgentAndSessionAndGroupID(&group_id);
 
 	LLDuplicateData* dup_data = (LLDuplicateData*) data;
