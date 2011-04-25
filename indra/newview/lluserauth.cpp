@@ -256,7 +256,6 @@ void LLUserAuth::authenticate(
 	
 	XMLRPC_VectorAppendString(params, "channel", gSavedSettings.getString("SpecifiedChannel").c_str(), 0);
 	// </edit>
-	XMLRPC_VectorAppendString(params, "channel", LL_CHANNEL, 0);
 	XMLRPC_VectorAppendString(params, "platform", PLATFORM_STRING, 0);
 	// <edit>
 	if(gSavedSettings.getBOOL("SpecifyMAC"))
