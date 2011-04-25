@@ -34,7 +34,7 @@
 #define LL_VIEWERAUDIO_H
 
 // comment out to turn off wind
-#define kAUDIO_ENABLE_WIND 
+//#define kAUDIO_ENABLE_WIND 
 //#define kAUDIO_ENABLE_WATER 1	// comment out to turn off water
 #define kAUDIO_NUM_BUFFERS 30
 #define kAUDIO_NUM_SOURCES 30 
