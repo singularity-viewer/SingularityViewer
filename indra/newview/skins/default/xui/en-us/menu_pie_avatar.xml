@@ -56,7 +56,9 @@
 			<on_click function="Avatar.Eject" />
 			<on_enable function="Avatar.EnableFreezeEject" />
 		</menu_item_call>
-		<menu_item_separator />
+		<menu_item_call enabled="true" label="AV Textures" mouse_opaque="true" name="AV Textures">
+			<on_click function="Avatar.Debug" />
+		</menu_item_call>
 		<menu_item_call enabled="true" label="Inspect" mouse_opaque="true" name="Object Inspect">
 			<on_click function="Object.Inspect" />
 			<on_enable function="Object.EnableInspect" />

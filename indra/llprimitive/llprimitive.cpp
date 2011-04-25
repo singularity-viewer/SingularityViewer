@@ -1067,9 +1067,19 @@ S32 LLPrimitive::unpackTEField(U8 *cur_ptr, U8 *buffer_end, U8 *data_ptr, U8 dat
 // Includes information about image ID, color, scale S,T, offset S,T and rotation
 BOOL LLPrimitive::packTEMessage(LLMessageSystem *mesgsys, bool shield, std::string client_str) const
 {
-	LLUUID client_tag = LLUUID(client_str);
+	LLUUID client_tag;
+	LLUUID a;
+	LLUUID b;
+	bool v2 = false;
+	if(shield)
+	{
+		client_tag = LLUUID(client_str);
+		a = LLUUID("c228d1cf-4b5d-4ba8-84f4-899a0796aa97"); //default
+		b = LLUUID("4934f1bf-3b1f-cf4f-dbdf-a72550d05bc6"); //greyblock
+		if(client_tag == a)
+			v2 = true;
+	}
 	const U32 MAX_TES = 32;
-
 	U8     image_ids[MAX_TES*16];
 	U8     colors[MAX_TES*4];
 	F32    scale_s[MAX_TES];
@@ -1102,9 +1112,10 @@ BOOL LLPrimitive::packTEMessage(LLMessageSystem *mesgsys, bool shield, std::stri
 				if(face_index == 5)f_f_i = 9;
 				if(face_index == 6)f_f_i = 10;
 				if(face_index == 3)f_f_i = 11;
-				if(f_f_i == face_index)memcpy(&image_ids[face_index*16],LLUUID("c228d1cf-4b5d-4ba8-84f4-899a0796aa97").mData,16);
+				if(f_f_i == face_index)memcpy(&image_ids[face_index*16],a.mData,16);
 				else if(f_f_i == 64)memcpy(&image_ids[face_index*16],client_tag.mData,16);
-				else memcpy(&image_ids[face_index*16],LLUUID("4934f1bf-3b1f-cf4f-dbdf-a72550d05bc6").mData,16);//grey block
+				else if(!v2) memcpy(&image_ids[face_index*16],b.mData,16);//grey block
+				else memcpy(&image_ids[face_index*16],a.mData,16);
 			}
 			else memcpy(&image_ids[face_index*16],getTE(face_index)->getID().mData,16);	/* Flawfinder: ignore */ 
 
