@@ -237,7 +237,7 @@ void LLPrefsAscentVanImpl::refresh()
 	LLComboBox* combo = getChild<LLComboBox>("tag_spoofing_combobox");
 	if(LLVOAvatar::sClientResolutionList.has("isComplete"))
 	{
-		combo->setColor(LLColor4::black);
+		//combo->setColor(LLColor4::black);
 		combo->clear();
 		for(LLSD::map_iterator itr = LLVOAvatar::sClientResolutionList.beginMap(); itr != LLVOAvatar::sClientResolutionList.endMap(); itr++)
 		{
@@ -259,7 +259,7 @@ void LLPrefsAscentVanImpl::refresh()
 		//add Viewer 2.0
 		LLScrollListItem* item = combo->add("Viewer 2.0",IMG_DEFAULT_AVATAR);
 		//bad practice
-		item->getColumn(0)->setColor(LLColor4::white);
+		item->getColumn(0)->setColor(LLColor4::black);
 	}
 	combo->setCurrentByIndex(mSelectedClient);
 

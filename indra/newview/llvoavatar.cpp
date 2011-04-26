@@ -3447,7 +3447,7 @@ void LLVOAvatar::getClientInfo(std::string& client, LLColor4& color, BOOL useCom
 		return;
 	}
 	//old
-	if(tex->getID() == IMG_DEFAULT_AVATAR)
+	if(uuid_str.compare(IMG_DEFAULT_AVATAR.asString()) == 0)
 	{
 		BOOL res = FALSE;
 		for(int ti = TEX_UPPER_SHIRT; ti < TEX_NUM_INDICES; ti++)
