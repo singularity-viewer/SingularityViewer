@@ -3450,33 +3450,36 @@ void LLVOAvatar::getClientInfo(std::string& client, LLColor4& color, BOOL useCom
 	if(uuid_str.compare(IMG_DEFAULT_AVATAR.asString()) == 0)
 	{
 		BOOL res = FALSE;
-		for(int ti = TEX_UPPER_SHIRT; ti < TEX_NUM_INDICES; ti++)
+		if(!mIsSelf)
 		{
-			switch((ETextureIndex)ti)
+			for(int ti = TEX_UPPER_SHIRT; ti < TEX_NUM_INDICES; ti++)
 			{
-				case TEX_HEAD_BODYPAINT:
-				case TEX_UPPER_SHIRT:
-				case TEX_LOWER_PANTS:
-				case TEX_EYES_IRIS:
-				case TEX_HAIR:
-				case TEX_UPPER_BODYPAINT:
-				case TEX_LOWER_BODYPAINT:
-				case TEX_LOWER_SHOES:
-				case TEX_LOWER_SOCKS:
-				case TEX_UPPER_JACKET:
-				case TEX_LOWER_JACKET:
-				case TEX_UPPER_GLOVES:
-				case TEX_UPPER_UNDERSHIRT:
-				case TEX_LOWER_UNDERPANTS:
-				case TEX_SKIRT:
-					if(tex->getID() != IMG_DEFAULT_AVATAR)
-						res = TRUE;
-					break;
-				default:
+				switch((ETextureIndex)ti)
+				{
+					case TEX_HEAD_BODYPAINT:
+					case TEX_UPPER_SHIRT:
+					case TEX_LOWER_PANTS:
+					case TEX_EYES_IRIS:
+					case TEX_HAIR:
+					case TEX_UPPER_BODYPAINT:
+					case TEX_LOWER_BODYPAINT:
+					case TEX_LOWER_SHOES:
+					case TEX_LOWER_SOCKS:
+					case TEX_UPPER_JACKET:
+					case TEX_LOWER_JACKET:
+					case TEX_UPPER_GLOVES:
+					case TEX_UPPER_UNDERSHIRT:
+					case TEX_LOWER_UNDERPANTS:
+					case TEX_SKIRT:
+						if(tex->getID() != IMG_DEFAULT_AVATAR)
+							res = TRUE;
+						break;
+					default:
+						break;
+				}
+				if(res)
 					break;
 			}
-			if(res)
-				break;
 		}
 		if(res)
 		{ 
