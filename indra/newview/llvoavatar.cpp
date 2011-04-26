@@ -3437,7 +3437,7 @@ void LLVOAvatar::getClientInfo(std::string& client, LLColor4& color, BOOL useCom
 	if(tex->getGlow() > 0.0f)
 	{
 		//tag
-		const LLUUID tag_uuid = tex->getID();
+		const LLUUID tag_uuid = LLUUID(uuid_str);
 		U32 tag_len = strnlen((const char*)&tag_uuid.mData[0], UUID_BYTES);
 		client = std::string((const char*)&tag_uuid.mData[0], tag_len);
 		LLStringFn::replace_ascii_controlchars(client, LL_UNKNOWN_CHAR);
