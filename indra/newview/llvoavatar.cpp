@@ -3890,6 +3890,12 @@ void LLVOAvatar::idleUpdateNameTag(const LLVector3& root_pos_last)
 			{
 				is_muted = LLMuteList::getInstance()->isMuted(getID());
 			}
+			//idle text
+			std::string idle_string;
+			if(!mIsSelf && mIdleTimer.getElapsedTimeF32() > 120 && gSavedSettings.getBOOL("AscentShowIdleTime"))
+			{
+				idle_string = getIdleTime();
+			}
 
 			if ((mNameString.empty() && !(mNameFromChatOverride && mNameFromChatText.empty())) ||
 				new_name ||
@@ -3898,7 +3904,7 @@ void LLVOAvatar::idleUpdateNameTag(const LLVector3& root_pos_last)
 				(!title && !mTitle.empty()) ||
 				(title && mTitle != title->getString()) ||
 				(is_away != mNameAway || is_busy != mNameBusy || is_muted != mNameMute) ||
-				is_appearance != mNameAppearance || client != mClientName ||
+				is_appearance != mNameAppearance || client != mClientName || idle_string != mIdleString ||
 				mNameFromAttachment != nameplate ||
 				mNameFromChatChanged)
 			{
@@ -3908,6 +3914,7 @@ void LLVOAvatar::idleUpdateNameTag(const LLVector3& root_pos_last)
 				mNameBusy = is_busy;
 				mNameMute = is_muted;
 				mClientName = client;
+				mIdleString = idle_string;
 				mUsedNameSystem = phoenix_name_system;
 				mNameAppearance = is_appearance;
 				mTitle = title? title->getString() : "";
@@ -4038,10 +4045,10 @@ void LLVOAvatar::idleUpdateNameTag(const LLVector3& root_pos_last)
 					line += "\n";
 					line += "(Editing Appearance)";
 				}
-				if(!mIsSelf && mIdleTimer.getElapsedTimeF32() > 120 && gSavedSettings.getBOOL("AscentShowIdleTime"))
+				if(!mIdleString.length())
 				{
 					line += "\n";
-					line += getIdleTime();
+					line += mIdleString;
 				}
 
 				mNameString = utf8str_to_wstring(line);
