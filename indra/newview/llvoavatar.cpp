@@ -3350,6 +3350,14 @@ bool LLVOAvatar::updateClientTags()
 	std::string client_list_filename = gDirUtilp->getExpandedFilename(LL_PATH_USER_SETTINGS, "client_tags_sg1.xml");
 	std::string client_list_url = gSavedSettings.getString("ClientDefinitionsURL");
 	LLSD response = LLHTTPClient::blockingGet(client_list_url);
+	S32 status = response["status"].asInteger();
+	if ((status != 200)) 
+	{
+		llinfos << "Client Tag Update failed (" << status << "): "
+			<< (response["body"].isString()? response["body"].asString(): "<unknown error>")
+			<< llendl;
+		return false;
+	}
 	if(response.has("body"))
 	{
 		const LLSD &client_list = response["body"];

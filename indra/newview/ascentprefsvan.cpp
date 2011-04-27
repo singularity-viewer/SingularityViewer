@@ -135,6 +135,8 @@ void LLPrefsAscentVanImpl::onCommitColor(LLUICtrl* ctrl, void* user_data)
 
 void LLPrefsAscentVanImpl::onManualClientUpdate(void* data)
 {
+	LLPrefsAscentVanImpl* self = (LLPrefsAscentVanImpl*)data;
+
 	LLChat chat;
 	chat.mSourceType = CHAT_SOURCE_SYSTEM;
 	chat.mText = llformat("Definitions already up-to-date.");
@@ -153,8 +155,37 @@ void LLPrefsAscentVanImpl::onManualClientUpdate(void* data)
 			}
 		}
 	}
+	//Colors ---------------------------------------------------------------------------------
+	LLComboBox* combo = self->getChild<LLComboBox>("tag_spoofing_combobox");
+	if(LLVOAvatar::sClientResolutionList.has("isComplete"))
+	{
+		//combo->setColor(LLColor4::black);
+		combo->clear();
+		for(LLSD::map_iterator itr = LLVOAvatar::sClientResolutionList.beginMap(); itr != LLVOAvatar::sClientResolutionList.endMap(); itr++)
+		{
+			LLSD value = (*itr).second;
+			if(value.has("name"))
+			{
+				std::string name = value.get("name");
+				std::string uuid = (*itr).first;
+				LLColor4 color = LLColor4(value.get("color"));
+				if(value["multiple"].asReal() != 0)
+				{
+					color *= 1.0/(value["multiple"].asReal()+1.0f);
+				}
+				LLScrollListItem* item = combo->add(name,uuid);
+				//bad practice
+				item->getColumn(0)->setColor(color);
+			}
+		}
+		//add Viewer 2.0
+		LLScrollListItem* item = combo->add("Viewer 2.0",IMG_DEFAULT_AVATAR);
+		//bad practice
+		item->getColumn(0)->setColor(LLColor4::black);
+	}
+	combo->setCurrentByIndex(self->mSelectedClient);
 	LLFloaterChat::addChat(chat);
-	
+		
 }
 
 //static
