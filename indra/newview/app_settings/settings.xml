@@ -259,7 +259,7 @@
     <key>Type</key>
     <string>String</string>
     <key>Value</key>
-	<string>http://viewertags.com/app/client_list.xml</string>
+	<string>http://app.singularityviewer.org/client_definitions.xml</string>
   </map>
 
   <key>LastSelectedGrid</key>
