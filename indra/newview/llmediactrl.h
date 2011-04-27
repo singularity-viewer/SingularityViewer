@@ -143,7 +143,7 @@ class LLMediaCtrl :
 		static bool onClickLinkExternalTarget( const LLSD&, const LLSD& );
 
 		const S32 mTextureDepthBytes;
-		LLWebBrowserTexture* mWebBrowserImage;
+		LLPointer<LLWebBrowserTexture> mWebBrowserImage;
 		LLViewBorder* mBorder;
 		bool mFrequentUpdates;
 		bool mForceUpdate;
@@ -165,7 +165,7 @@ class LLMediaCtrl :
 
 ////////////////////////////////////////////////////////////////////////////////
 //
-class LLWebBrowserTexture : public LLDynamicTexture
+class LLWebBrowserTexture : public LLViewerDynamicTexture
 {
 LOG_CLASS(LLWebBrowserTexture);
 	public:

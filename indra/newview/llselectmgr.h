@@ -53,7 +53,7 @@
 #include "boost/iterator/filter_iterator.hpp"
 
 class LLMessageSystem;
-class LLViewerImage;
+class LLViewerTexture;
 class LLViewerObject;
 class LLColor4;
 class LLVector3;
@@ -691,7 +691,7 @@ private:
 	static bool confirmDelete(const LLSD& notification, const LLSD& response, LLObjectSelectionHandle handle);
 	
 private:
-	LLPointer<LLViewerImage>				mSilhouetteImagep;
+	LLPointer<LLViewerTexture>				mSilhouetteImagep;
 	LLObjectSelectionHandle					mSelectedObjects;
 	LLObjectSelectionHandle					mHoverObjects;
 	LLObjectSelectionHandle					mHighlightedObjects;

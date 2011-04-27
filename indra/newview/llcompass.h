@@ -35,7 +35,7 @@
 
 #include "llmath.h"
 #include "llview.h"
-#include "llviewerimage.h"
+#include "llviewertexture.h"
 #ifndef LL_V4COLOR_H
 #include "v4color.h"
 #endif
@@ -43,8 +43,8 @@
 class LLCompass : public LLView
 {
 protected:
-	LLPointer<LLViewerImage>	mTexture;
-	LLPointer<LLViewerImage>	mBkgndTexture;
+	LLPointer<LLViewerTexture>	mTexture;
+	LLPointer<LLViewerTexture>	mBkgndTexture;
 public:
 	LLCompass( const std::string& name, const LLRect& rect);
 	
@@ -77,7 +77,7 @@ class LLHorizontalCompass : public LLView
 {
 protected:
 	LLColor4 mFocusColor;
-	LLPointer<LLViewerImage>	mTexture;
+	LLPointer<LLViewerTexture>	mTexture;
 
 public:
 	LLHorizontalCompass( const std::string& name, const LLRect& rect,

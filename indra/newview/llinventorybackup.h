@@ -12,7 +12,7 @@
 #include "llviewerinventory.h"
 #include "llfolderview.h"
 #include "llfilepicker.h"
-#include "llviewerimage.h"
+#include "llviewertexture.h"
 #include "llfloater.h"
 
 
@@ -71,7 +71,7 @@ private:
 	void finishItem(LLUUID itemid, std::string status);
 	void advance();
 	static void imageCallback(BOOL success, 
-					LLViewerImage *src_vi,
+					LLViewerFetchedTexture *src_vi,
 					LLImageRaw* src, 
 					LLImageRaw* aux_src, 
 					S32 discard_level,
@@ -114,7 +114,7 @@ public:
 
 private:
 	static void imageCallback(BOOL success, 
-					LLViewerImage *src_vi,
+					LLViewerFetchedTexture *src_vi,
 					LLImageRaw* src, 
 					LLImageRaw* aux_src, 
 					S32 discard_level,

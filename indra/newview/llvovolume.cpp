@@ -57,7 +57,7 @@
 #include "llsky.h"
 #include "lltexturefetch.h"
 #include "llviewercamera.h"
-#include "llviewerimagelist.h"
+#include "llviewertexturelist.h"
 #include "llviewerregion.h"
 #include "llviewertextureanim.h"
 #include "llworld.h"
@@ -485,7 +485,7 @@ void LLVOVolume::updateTextureVirtualSize()
 		return;
 	}
 	
-	if (LLViewerImage::sDontLoadVolumeTextures || LLAppViewer::getTextureFetch()->mDebugPause)
+	if (LLViewerTexture::sDontLoadVolumeTextures || LLAppViewer::getTextureFetch()->mDebugPause)
 	{
 		return;
 	}
@@ -502,7 +502,7 @@ void LLVOVolume::updateTextureVirtualSize()
 	{
 		LLFace* face = mDrawable->getFace(i);
 		const LLTextureEntry *te = face->getTextureEntry();
-		LLViewerImage *imagep = face->getTexture();
+		LLViewerTexture *imagep = face->getTexture();
 		if (!imagep || !te ||			
 			face->mExtents[0] == face->mExtents[1])
 		{
@@ -516,7 +516,7 @@ void LLVOVolume::updateTextureVirtualSize()
 		{
 			F32 area = (F32) LLViewerCamera::getInstance()->getScreenPixelArea();
 			vsize = area;
-			imagep->setBoostLevel(LLViewerImageBoostLevel::BOOST_HUD);
+			imagep->setBoostLevel(LLViewerTexture::BOOST_HUD);
  			face->setPixelArea(area); // treat as full screen
 			face->setVirtualSize(vsize);
 		}
@@ -531,7 +531,7 @@ void LLVOVolume::updateTextureVirtualSize()
 					// Our attachments must really rez fast and fully:
 					// we shouldn't have to zoom on them to get the textures
 					// fully loaded !
-					imagep->setBoostLevel(LLViewerImageBoostLevel::BOOST_HUD);
+					imagep->setBoostLevel(LLViewerTexture::BOOST_HUD);
 					imagep->dontDiscard();
 				}
 			}
@@ -575,14 +575,14 @@ void LLVOVolume::updateTextureVirtualSize()
 		if (mSculptTexture.notNull())
 		{
 			mSculptTexture->setBoostLevel(llmax((S32)mSculptTexture->getBoostLevel(),
-												(S32)LLViewerImageBoostLevel::BOOST_SCULPTED));
+												(S32)LLViewerTexture::BOOST_SCULPTED));
 			mSculptTexture->setForSculpt() ;
 			
 			if(!mSculptTexture->isCachedRawImageReady())
 			{
 				S32 lod = llmin(mLOD, 3);
 				F32 lodf = ((F32)(lod + 1.0f)/4.f);
-				F32 tex_size = lodf * LLViewerImage::sMaxSculptRez ;
+				F32 tex_size = lodf * LLViewerTexture::sMaxSculptRez ;
 				mSculptTexture->addTextureStats(2.f * tex_size * tex_size, FALSE);
 			
 				//if the sculpty very close to the view point, load first
@@ -675,7 +675,7 @@ void LLVOVolume::setScale(const LLVector3 &scale, BOOL damped)
 LLFace* LLVOVolume::addFace(S32 f)
 {
 	const LLTextureEntry* te = getTE(f);
-	LLViewerImage* imagep = getTEImage(f);
+	LLViewerTexture* imagep = getTEImage(f);
 	return mDrawable->addFace(te, imagep);
 }
 
@@ -767,7 +767,7 @@ BOOL LLVOVolume::setVolume(const LLVolumeParams &volume_params, const S32 detail
 
 void LLVOVolume::updateSculptTexture()
 {
-	LLPointer<LLViewerImage> old_sculpt = mSculptTexture;
+	LLPointer<LLViewerFetchedTexture> old_sculpt = mSculptTexture;
 
 	if (isSculpted())
 	{
@@ -775,7 +775,7 @@ void LLVOVolume::updateSculptTexture()
 		LLUUID id =  sculpt_params->getSculptTexture();
 		if (id.notNull())
 		{
-			mSculptTexture = gImageList.getImage(id);
+			mSculptTexture = LLViewerTextureManager::getFetchedTexture(id, TRUE, LLViewerTexture::BOOST_NONE, LLViewerTexture::LOD_TEXTURE);
 		}
 	}
 	else
@@ -1309,7 +1309,7 @@ BOOL LLVOVolume::isRootEdit() const
 	return TRUE;
 }
 
-void LLVOVolume::setTEImage(const U8 te, LLViewerImage *imagep)
+void LLVOVolume::setTEImage(const U8 te, LLViewerTexture *imagep)
 {
 	BOOL changed = (mTEImages[te] != imagep);
 	LLViewerObject::setTEImage(te, imagep);
@@ -1801,7 +1801,7 @@ void LLVOVolume::generateSilhouette(LLSelectNode* nodep, const LLVector3& view_p
 			trans_mat.translate(getRegion()->getOriginAgent());
 		}
 
-		volume->generateSilhouetteVertices(nodep->mSilhouetteVertices, nodep->mSilhouetteNormals, nodep->mSilhouetteSegments, view_vector, trans_mat, mRelativeXformInvTrans);
+		volume->generateSilhouetteVertices(nodep->mSilhouetteVertices, nodep->mSilhouetteNormals, nodep->mSilhouetteSegments, view_vector, trans_mat, mRelativeXformInvTrans, nodep->getTESelectMask());
 
 		nodep->mSilhouetteExists = TRUE;
 	}
@@ -2104,7 +2104,7 @@ BOOL LLVOVolume::lineSegmentIntersect(const LLVector3& start, const LLVector3& e
 			{
 				LLFace* face = mDrawable->getFace(face_hit);				
 
-				if (pick_transparent || !face->getTexture() || !face->getTexture()->getHasGLTexture() || face->getTexture()->getMask(face->surfaceToTexture(tc, p, n)))
+				if (pick_transparent || !face->getTexture() || !face->getTexture()->hasGLTexture() || face->getTexture()->getMask(face->surfaceToTexture(tc, p, n)))
 				{
 					v_end = p;
 					if (face_hitp != NULL)
@@ -2156,7 +2156,7 @@ U32 LLVOVolume::getPartitionType() const
 LLVolumePartition::LLVolumePartition()
 : LLSpatialPartition(LLVOVolume::VERTEX_DATA_MASK, TRUE, GL_DYNAMIC_DRAW_ARB)
 {
-	mLODPeriod = 16;
+	mLODPeriod = 32;
 	mDepthMask = FALSE;
 	mDrawableType = LLPipeline::RENDER_TYPE_VOLUME;
 	mPartitionType = LLViewerRegion::PARTITION_VOLUME;
@@ -2168,7 +2168,7 @@ LLVolumeBridge::LLVolumeBridge(LLDrawable* drawablep)
 : LLSpatialBridge(drawablep, TRUE, LLVOVolume::VERTEX_DATA_MASK)
 {
 	mDepthMask = FALSE;
-	mLODPeriod = 16;
+	mLODPeriod = 32;
 	mDrawableType = LLPipeline::RENDER_TYPE_VOLUME;
 	mPartitionType = LLViewerRegion::PARTITION_BRIDGE;
 	
@@ -2224,9 +2224,10 @@ void LLVolumeGeometryManager::registerFace(LLSpatialGroup* group, LLFace* facep,
 		model_mat = &(drawable->getRegion()->mRenderMatrix);
 	}
 
-	U8 bump = (type == LLRenderPass::PASS_BUMP ? facep->getTextureEntry()->getBumpmap() : 0);
+
+	U8 bump = (type == LLRenderPass::PASS_BUMP || type == LLRenderPass::PASS_POST_BUMP) ? facep->getTextureEntry()->getBumpmap() : 0;
 	
-	LLViewerImage* tex = facep->getTexture();
+	LLViewerTexture* tex = facep->getTexture();
 
 	U8 glow = 0;
 		
@@ -2381,7 +2382,7 @@ void LLVolumeGeometryManager::rebuildGeom(LLSpatialGroup* group)
 			if (facep->hasGeometry() && facep->mPixelArea > FORCE_CULL_AREA)
 			{
 				const LLTextureEntry* te = facep->getTextureEntry();
-				LLViewerImage* tex = facep->getTexture();
+				LLViewerTexture* tex = facep->getTexture();
 
 				if (facep->isState(LLFace::TEXTURE_ANIM))
 				{
@@ -2634,7 +2635,7 @@ void LLVolumeGeometryManager::genDrawInfo(LLSpatialGroup* group, U32 mask, std::
 	
 	LLSpatialGroup::buffer_map_t buffer_map;
 
-	LLViewerImage* last_tex = NULL;
+	LLViewerTexture* last_tex = NULL;
 	S32 buffer_index = 0;
 
 	if (distance_sort)
@@ -2646,7 +2647,7 @@ void LLVolumeGeometryManager::genDrawInfo(LLSpatialGroup* group, U32 mask, std::
 	{
 		//pull off next face
 		LLFace* facep = *face_iter;
-		LLViewerImage* tex = facep->getTexture();
+		LLViewerTexture* tex = facep->getTexture();
 
 		if (distance_sort)
 		{
@@ -2707,9 +2708,11 @@ void LLVolumeGeometryManager::genDrawInfo(LLSpatialGroup* group, U32 mask, std::
 		{
 			if (LLVertexBuffer::sEnableVBOs && buffer->getUsage() != group->mBufferUsage)
 			{
-				buffer = createVertexBuffer(group->mSpatialPartition->mVertexDataMask, 
+				//Using group->mSpatialPartition->mVertexDataMask may be dropping MAP_BINORMAL on RENDER_BUMP...
+				buffer = createVertexBuffer(mask /*group->mSpatialPartition->mVertexDataMask*/, 
 											group->mBufferUsage);
 				buffer->allocateBuffer(geom_count, index_count, TRUE);
+				llassert_always(buffer->getTypeMask() == mask);
 			}
 			else
 			{
@@ -2761,7 +2764,7 @@ void LLVolumeGeometryManager::genDrawInfo(LLSpatialGroup* group, U32 mask, std::
 
 			const LLTextureEntry* te = facep->getTextureEntry();
 
-			BOOL is_alpha = facep->getPoolType() == LLDrawPool::POOL_ALPHA ? TRUE : FALSE;
+			BOOL is_alpha = (facep->getPoolType() == LLDrawPool::POOL_ALPHA) ? TRUE : FALSE;
 		
 			if (is_alpha)
 			{
@@ -2801,13 +2804,17 @@ void LLVolumeGeometryManager::genDrawInfo(LLSpatialGroup* group, U32 mask, std::
 				}
 				else if (LLPipeline::sRenderDeferred)
 				{ //deferred rendering
-					if (te->getBumpmap())
-					{ //register in deferred bump pass
-						registerFace(group, facep, LLRenderPass::PASS_BUMP);
-					}
-					else if (te->getFullbright())
+					if (te->getFullbright())
 					{ //register in post deferred fullbright shiny pass
 						registerFace(group, facep, LLRenderPass::PASS_FULLBRIGHT_SHINY);
+						if (te->getBumpmap())
+						{ //register in post deferred bump pass
+							registerFace(group, facep, LLRenderPass::PASS_POST_BUMP);
+						}
+					}
+					else if (te->getBumpmap())
+					{ //register in deferred bump pass
+						registerFace(group, facep, LLRenderPass::PASS_BUMP);
 					}
 					else
 					{ //register in deferred simple pass (deferred simple includes shiny)
@@ -2833,6 +2840,10 @@ void LLVolumeGeometryManager::genDrawInfo(LLSpatialGroup* group, U32 mask, std::
 				else if (fullbright)
 				{ //fullbright
 					registerFace(group, facep, LLRenderPass::PASS_FULLBRIGHT);
+					if (LLPipeline::sRenderDeferred && LLPipeline::sRenderBump && te->getBumpmap())
+					{ //if this is the deferred render and a bump map is present, register in post deferred bump
+						registerFace(group, facep, LLRenderPass::PASS_POST_BUMP);
+					}
 				}
 				else
 				{

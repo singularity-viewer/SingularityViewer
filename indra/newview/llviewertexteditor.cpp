@@ -52,7 +52,7 @@
 #include "llscrollbar.h"
 #include "lltooldraganddrop.h"
 #include "llviewercontrol.h"
-#include "llviewerimagelist.h"
+#include "llviewertexturelist.h"
 #include "llviewerwindow.h"
 #include "llviewerinventory.h"
 #include "lluictrlfactory.h"

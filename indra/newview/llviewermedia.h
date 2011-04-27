@@ -42,7 +42,8 @@
 
 class LLViewerMediaImpl;
 class LLUUID;
-class LLViewerImage;
+//class LLViewerMediaTexture;
+class LLViewerTexture;
 
 typedef LLPointer<LLViewerMediaImpl> viewer_media_t;
 ///////////////////////////////////////////////////////////////////////////////
@@ -213,12 +214,14 @@ public:
 	bool mMediaAutoScale;
 	bool mMediaLoop;
 	bool mNeedsNewTexture;
+	S32 mTextureUsedWidth;
+	S32 mTextureUsedHeight;
 	bool mSuspendUpdates;
 	bool mVisible;
 
 
 private:
-	LLViewerImage *updatePlaceholderImage();
+	/*LLViewerMediaTexture*/LLViewerTexture *updatePlaceholderImage();
 };
 
 #endif	// LLVIEWERMEDIA_H

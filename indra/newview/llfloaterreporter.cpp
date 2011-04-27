@@ -74,7 +74,7 @@
 #include "lltoolmgr.h"
 #include "llresourcedata.h"		// for LLResourceData
 #include "llviewerwindow.h"
-#include "llviewerimagelist.h"
+#include "llviewertexturelist.h"
 #include "llworldmap.h"
 #include "llfilepicker.h"
 #include "llfloateravatarpicker.h"
@@ -927,7 +927,7 @@ void LLFloaterReporter::takeScreenshot()
 		llwarns << "Unable to take screenshot" << llendl;
 		return;
 	}
-	LLPointer<LLImageJ2C> upload_data = LLViewerImageList::convertToUploadFile(raw);
+	LLPointer<LLImageJ2C> upload_data = LLViewerTextureList::convertToUploadFile(raw);
 
 	// create a resource data
 	mResourceDatap->mInventoryType = LLInventoryType::IT_NONE;
@@ -961,9 +961,9 @@ void LLFloaterReporter::takeScreenshot()
 						mResourceDatap->mAssetInfo.mType);
 
 	// store in the image list so it doesn't try to fetch from the server
-	LLPointer<LLViewerImage> image_in_list = new LLViewerImage(mResourceDatap->mAssetInfo.mUuid);
-	image_in_list->createGLTexture(0, raw, 0, TRUE, LLViewerImageBoostLevel::OTHER);
-	gImageList.addImage(image_in_list); 
+	LLPointer<LLViewerFetchedTexture> image_in_list = 
+		LLViewerTextureManager::getFetchedTexture(mResourceDatap->mAssetInfo.mUuid, TRUE, LLViewerTexture::BOOST_NONE, LLViewerTexture::FETCHED_TEXTURE);
+	image_in_list->createGLTexture(0, raw, 0, TRUE, LLViewerTexture::OTHER);
 
 	// the texture picker then uses that texture
 	LLTexturePicker* texture = getChild<LLTextureCtrl>("screenshot");

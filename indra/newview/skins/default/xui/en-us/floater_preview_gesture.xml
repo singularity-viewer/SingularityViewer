@@ -19,7 +19,7 @@
 		Description:
 	</text>
 	<line_editor bottom_delta="-6" follows="left|top" height="20" left="100" max_length="254"
-	     name="desc" width="330" />
+	     name="desc" width="330" spell_check="true" />
 	<text bottom_delta="-23" follows="top|left" font="SansSerif" left="16"
 	     name="trigger_label">
 		Trigger:
@@ -34,7 +34,7 @@
 	<line_editor bottom_delta="-6" follows="left|top" height="20" left="300" max_length="31"
 	     name="replace_editor"
 	     tool_tip="Replace the trigger word(s) with these words. For example, trigger &apos;hello&apos; replace with &apos;howdy&apos; will turn the chat &apos;I wanted to say hello&apos; into &apos;I wanted to say howdy&apos; as well as playing the gesture"
-	     width="130" />
+	     width="130" spell_check="true" />
 	<text bottom_delta="-23" follows="top|left" font="SansSerif" left="16"
 	     name="key_label">
 		Shortcut Key:
@@ -78,7 +78,7 @@ unless you add wait steps.
 	<combo_box bottom_delta="0" follows="top|left" height="20" left_delta="0"
 	     name="sound_list" width="100" />
 	<line_editor bottom_delta="0" follows="top|left" height="20" left_delta="0" max_length="127"
-	     name="chat_editor" width="100" />
+	     name="chat_editor" width="100" spell_check="true" />
 	<radio_group bottom_delta="-20" draw_border="false" follows="top|left" height="40"
 	     left="340" name="animation_trigger_type" width="80">
 		<radio_item bottom_delta="-5" follows="left|top" height="16" left="3" mouse_opaque="true"

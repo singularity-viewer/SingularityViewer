@@ -11,7 +11,7 @@
 		Description:
 	</text>
 	<line_editor bottom_delta="-24" follows="top|left|right" height="19" max_length="254"
-	     name="description_form" width="280" />
+	     name="description_form" width="280" spell_check="true" />
 	<text bottom_delta="-20" follows="top|left" height="15" name="preview_label">
 		Preview image as:
 	</text>

@@ -29,7 +29,7 @@
 	     enabled="true" follows="left|top|right" font="SansSerif"
 	     handle_edit_keys_directly="false" height="19" left="93" max_length="127"
 	     mouse_opaque="true" name="desc" select_all_on_focus_received="false"
-	     select_on_focus="false" width="294" />
+	     select_on_focus="false" width="294" spell_check="true" />
 	<string name="no_object">Unable to find object containing this note.:</string>
 	<string name="not_allowed">You are not allowed to view this note.</string>
 </floater>

@@ -1079,15 +1079,15 @@ void LLFontGL::clearEmbeddedChars()
 	mEmbeddedChars.clear();
 }
 
-void LLFontGL::addEmbeddedChar( llwchar wc, LLImageGL* image, const std::string& label ) const
+void LLFontGL::addEmbeddedChar( llwchar wc, LLTexture* image, const std::string& label ) const
 {
 	LLWString wlabel = utf8str_to_wstring(label);
 	addEmbeddedChar(wc, image, wlabel);
 }
 
-void LLFontGL::addEmbeddedChar( llwchar wc, LLImageGL* image, const LLWString& wlabel ) const
+void LLFontGL::addEmbeddedChar( llwchar wc, LLTexture* image, const LLWString& wlabel ) const
 {
-	embedded_data_t* ext_data = new embedded_data_t(image, wlabel);
+	embedded_data_t* ext_data = new embedded_data_t(image->getGLTexture(), wlabel);
 	mEmbeddedChars[wc] = ext_data;
 }
 

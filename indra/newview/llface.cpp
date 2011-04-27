@@ -47,7 +47,7 @@
 #include "lllightconstants.h"
 #include "llsky.h"
 #include "llviewercamera.h"
-#include "llviewerimagelist.h"
+#include "llviewertexturelist.h"
 #include "llvosky.h"
 #include "llvovolume.h"
 #include "pipeline.h"
@@ -228,7 +228,7 @@ void LLFace::setWorldMatrix(const LLMatrix4 &mat)
 	llerrs << "Faces on this drawable are not independently modifiable\n" << llendl;
 }
 
-void LLFace::setPool(LLFacePool* new_pool, LLViewerImage *texturep)
+void LLFace::setPool(LLFacePool* new_pool, LLViewerTexture *texturep)
 {
 	LLMemType mt1(LLMemType::MTYPE_DRAWABLE);
 	
@@ -262,7 +262,7 @@ void LLFace::setPool(LLFacePool* new_pool, LLViewerImage *texturep)
 	setTexture(texturep) ;
 }
 
-void LLFace::setTexture(LLViewerImage* tex) 
+void LLFace::setTexture(LLViewerTexture* tex) 
 {
 	if(mTexture == tex)
 	{
@@ -287,7 +287,7 @@ void LLFace::dirtyTexture()
 	gPipeline.markTextured(getDrawable());
 }
 
-void LLFace::switchTexture(LLViewerImage* new_texture)
+void LLFace::switchTexture(LLViewerTexture* new_texture)
 {
 	if(mTexture == new_texture)
 	{
@@ -299,7 +299,7 @@ void LLFace::switchTexture(LLViewerImage* new_texture)
 		llerrs << "Can not switch to a null texture." << llendl;
 		return;
 	}
-	new_texture->addTextureStats(mTexture->mMaxVirtualSize) ;
+	new_texture->addTextureStats(mTexture->getMaxVirtualSize()) ;
 
 	getViewerObject()->changeTEImage(mTEOffset, new_texture) ;
 	setTexture(new_texture) ;	
@@ -476,8 +476,7 @@ void LLFace::renderForSelect(U32 data_mask)
 		}
 	}
 }
-
-void LLFace::renderSelected(LLImageGL *imagep, const LLColor4& color)
+void LLFace::renderSelected(LLViewerTexture *imagep, const LLColor4& color)
 {
 	if (mDrawablep->getSpatialGroup() == NULL)
 	{
@@ -521,8 +520,8 @@ void LLFace::renderSelected(LLImageGL *imagep, const LLColor4& color)
 /* removed in lieu of raycast uv detection
 void LLFace::renderSelectedUV()
 {
-	LLViewerImage* red_blue_imagep = gImageList.getImageFromFile("uv_test1.j2c", TRUE, TRUE);
-	LLViewerImage* green_imagep = gImageList.getImageFromFile("uv_test2.tga", TRUE, TRUE);
+	LLViewerTexture* red_blue_imagep = gTextureList.getImageFromFile("uv_test1.j2c", TRUE, TRUE);
+	LLViewerTexture* green_imagep = gTextureList.getImageFromFile("uv_test2.tga", TRUE, TRUE);
 
 	LLGLSUVSelect object_select;
 
@@ -961,7 +960,15 @@ BOOL LLFace::getGeometryVolume(const LLVolume& volume,
 	{
 		if (num_indices + (S32) mIndicesIndex > mVertexBuffer->getNumIndices())
 		{
-			llwarns << "Index buffer overflow!" << llendl;
+			llwarns	<< "Index buffer overflow!" << llendl;
+			llwarns << "Indices Count: " << mIndicesCount
+					<< " VF Num Indices: " << num_indices
+					<< " Indices Index: " << mIndicesIndex
+					<< " VB Num Indices: " << mVertexBuffer->getNumIndices() << llendl;
+			llwarns	<< "Last Indices Count: " << mLastIndicesCount
+					<< " Last Indices Index: " << mLastIndicesIndex
+					<< " Face Index: " << f
+					<< " Pool Type: " << mPoolType << llendl;
 			return FALSE;
 		}
 
@@ -1152,7 +1159,7 @@ BOOL LLFace::getGeometryVolume(const LLVolume& volume,
 			break;
 			case BE_BRIGHTNESS:
 			case BE_DARKNESS:
-			if( mTexture.notNull() && mTexture->getHasGLTexture())
+			if( mTexture.notNull() && mTexture->hasGLTexture())
 			{
 				// Offset by approximately one texel
 				S32 cur_discard = mTexture->getDiscardLevel();
@@ -1346,7 +1353,7 @@ F32 LLFace::getTextureVirtualSize()
 	}
 
 	face_area = LLFace::adjustPixelArea(mImportanceToCamera, face_area);
-	if (/*mImportanceToCamera < 1.0f && */face_area > LLViewerImage::sMinLargeImageSize) //if is large image, shrink face_area by considering the partial overlapping.
+	if (/*mImportanceToCamera < 1.0f && */face_area > LLViewerTexture::sMinLargeImageSize) //if is large image, shrink face_area by considering the partial overlapping.
 	{
 		if (mImportanceToCamera > LEAST_IMPORTANCE_FOR_LARGE_IMAGE && mTexture.notNull() && mTexture->isLargeImage())
 		{
@@ -1357,28 +1364,6 @@ F32 LLFace::getTextureVirtualSize()
 	setVirtualSize(face_area);
 
 	return face_area;
-}
-
-//static 
-F32 LLFace::adjustPixelArea(F32 importance, F32 pixel_area)
-{
-	if (pixel_area > LLViewerImage::sMaxSmallImageSize)
-		{
-		if (importance < LEAST_IMPORTANCE) //if the face is not important, do not load hi-res.
-			{
-			static const F32 MAX_LEAST_IMPORTANCE_IMAGE_SIZE = 128.0f * 128.0f;
-			pixel_area = llmin(pixel_area * 0.5f, MAX_LEAST_IMPORTANCE_IMAGE_SIZE);
-			}	
-		else if (pixel_area > LLViewerImage::sMinLargeImageSize)	//if is large image, shrink face_area by considering the partial overlapping.
-			{		
-			if (importance < LEAST_IMPORTANCE_FOR_LARGE_IMAGE)		//if the face is not important, do not load hi-res.
-			{
-				pixel_area = LLViewerImage::sMinLargeImageSize;
-			}			
-		}
-	}
-
-	return pixel_area ;
 }
 
 BOOL LLFace::calcPixelArea(F32& cos_angle_to_view_dir, F32& radius)
@@ -1398,7 +1383,7 @@ BOOL LLFace::calcPixelArea(F32& cos_angle_to_view_dir, F32& radius)
 	mPixelArea = radius*radius * 3.14159f;
 	cos_angle_to_view_dir = lookAt * camera->getXAxis();
 
-	if (dist < mBoundingSphereRadius || dist < 10.0f) //camera is very close
+	if(dist < mBoundingSphereRadius) //camera is very close
 	{
 		cos_angle_to_view_dir = 1.0f;
 		mImportanceToCamera = 1.0f;
@@ -1477,6 +1462,28 @@ F32 LLFace::calcImportanceToCamera(F32 cos_angle_to_view_dir, F32 dist)
 	}
 
 	return importance ;
+}
+
+//static 
+F32 LLFace::adjustPixelArea(F32 importance, F32 pixel_area)
+{
+	if(pixel_area > LLViewerTexture::sMaxSmallImageSize)
+	{
+		if(importance < LEAST_IMPORTANCE) //if the face is not important, do not load hi-res.
+		{
+			static const F32 MAX_LEAST_IMPORTANCE_IMAGE_SIZE = 128.0f * 128.0f ;
+			pixel_area = llmin(pixel_area * 0.5f, MAX_LEAST_IMPORTANCE_IMAGE_SIZE) ;
+		}
+		else if(pixel_area > LLViewerTexture::sMinLargeImageSize) //if is large image, shrink face_area by considering the partial overlapping.
+		{
+			if(importance < LEAST_IMPORTANCE_FOR_LARGE_IMAGE)//if the face is not important, do not load hi-res.
+			{
+				pixel_area = LLViewerTexture::sMinLargeImageSize ;
+			}				
+		}
+	}
+
+	return pixel_area ;
 }
 
 BOOL LLFace::verify(const U32* indices_array) const
@@ -1666,4 +1673,8 @@ LLVector3 LLFace::getPositionAgent() const
 	{
 		return mCenterLocal * getRenderMatrix();
 	}
+}
+LLViewerTexture* LLFace::getTexture() const
+{
+		return mTexture ;
 }

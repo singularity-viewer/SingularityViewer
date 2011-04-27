@@ -405,7 +405,15 @@ template <> inline void LLCachedControl<LLColor4>::setValue(const LLSD& newvalue
 	else
 		this->mCachedValue = (const LLColor4 &)newvalue;
 }
-
+template <> inline void LLCachedControl<U32>::setValue(const LLSD& newvalue)
+{
+	if(mControl->isType(TYPE_U32) || mControl->isType(TYPE_S32)) //LLSD does not support U32 fully
+		mCachedValue = (U32)newvalue.asInteger();
+	else if(this->mControl->isType(TYPE_F32))
+		mCachedValue = (U32)newvalue.asReal();
+	else
+		mCachedValue = (U32)0; //What to do...
+}
 
 //Following is actually defined in newview/llviewercontrol.cpp, but extern access is fine (Unless GCC bites me)
 template <> eControlType get_control_type<U32>(const U32& in, LLSD& out);

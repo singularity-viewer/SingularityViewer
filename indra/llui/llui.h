@@ -42,7 +42,7 @@
 //#include "llhtmlhelp.h"
 #include "llgl.h"			// *TODO: break this dependency
 #include <stack>
-//#include "llimagegl.h"
+#include "lltexture.h"
 #include <boost/signal.hpp>
 
 // LLUIFactory
@@ -50,7 +50,6 @@
 
 class LLColor4; 
 class LLHtmlHelp;
-class LLImageGL;
 class LLVector3;
 class LLVector2;
 class LLUUID;
@@ -91,14 +90,14 @@ void gl_washer_2d(F32 outer_radius, F32 inner_radius, S32 steps, const LLColor4&
 void gl_washer_segment_2d(F32 outer_radius, F32 inner_radius, F32 start_radians, F32 end_radians, S32 steps, const LLColor4& inner_color, const LLColor4& outer_color);
 void gl_washer_spokes_2d(F32 outer_radius, F32 inner_radius, S32 count, const LLColor4& inner_color, const LLColor4& outer_color);
 
-void gl_draw_image(S32 x, S32 y, LLImageGL* image, const LLColor4& color = UI_VERTEX_COLOR, const LLRectf& uv_rect = LLRectf(0.f, 1.f, 1.f, 0.f));
-void gl_draw_scaled_image(S32 x, S32 y, S32 width, S32 height, LLImageGL* image, const LLColor4& color = UI_VERTEX_COLOR, const LLRectf& uv_rect = LLRectf(0.f, 1.f, 1.f, 0.f));
-void gl_draw_rotated_image(S32 x, S32 y, F32 degrees, LLImageGL* image, const LLColor4& color = UI_VERTEX_COLOR, const LLRectf& uv_rect = LLRectf(0.f, 1.f, 1.f, 0.f));
-void gl_draw_scaled_rotated_image(S32 x, S32 y, S32 width, S32 height, F32 degrees,LLImageGL* image, const LLColor4& color = UI_VERTEX_COLOR, const LLRectf& uv_rect = LLRectf(0.f, 1.f, 1.f, 0.f));
-void gl_draw_scaled_image_with_border(S32 x, S32 y, S32 border_width, S32 border_height, S32 width, S32 height, LLImageGL* image, const LLColor4 &color, BOOL solid_color = FALSE, const LLRectf& uv_rect = LLRectf(0.f, 1.f, 1.f, 0.f));
-void gl_draw_scaled_image_with_border(S32 x, S32 y, S32 width, S32 height, LLImageGL* image, const LLColor4 &color, BOOL solid_color = FALSE, const LLRectf& uv_rect = LLRectf(0.f, 1.f, 1.f, 0.f), const LLRectf& scale_rect = LLRectf(0.f, 1.f, 1.f, 0.f));
+void gl_draw_image(S32 x, S32 y, LLTexture* image, const LLColor4& color = UI_VERTEX_COLOR, const LLRectf& uv_rect = LLRectf(0.f, 1.f, 1.f, 0.f));
+void gl_draw_scaled_image(S32 x, S32 y, S32 width, S32 height, LLTexture* image, const LLColor4& color = UI_VERTEX_COLOR, const LLRectf& uv_rect = LLRectf(0.f, 1.f, 1.f, 0.f));
+void gl_draw_rotated_image(S32 x, S32 y, F32 degrees, LLTexture* image, const LLColor4& color = UI_VERTEX_COLOR, const LLRectf& uv_rect = LLRectf(0.f, 1.f, 1.f, 0.f));
+void gl_draw_scaled_rotated_image(S32 x, S32 y, S32 width, S32 height, F32 degrees,LLTexture* image, const LLColor4& color = UI_VERTEX_COLOR, const LLRectf& uv_rect = LLRectf(0.f, 1.f, 1.f, 0.f));
+void gl_draw_scaled_image_with_border(S32 x, S32 y, S32 border_width, S32 border_height, S32 width, S32 height, LLTexture* image, const LLColor4 &color, BOOL solid_color = FALSE, const LLRectf& uv_rect = LLRectf(0.f, 1.f, 1.f, 0.f));
+void gl_draw_scaled_image_with_border(S32 x, S32 y, S32 width, S32 height, LLTexture* image, const LLColor4 &color, BOOL solid_color = FALSE, const LLRectf& uv_rect = LLRectf(0.f, 1.f, 1.f, 0.f), const LLRectf& scale_rect = LLRectf(0.f, 1.f, 1.f, 0.f));
 // Flip vertical, used for LLFloaterHTML
-void gl_draw_scaled_image_inverted(S32 x, S32 y, S32 width, S32 height, LLImageGL* image, const LLColor4& color = UI_VERTEX_COLOR, const LLRectf& uv_rect = LLRectf(0.f, 1.f, 1.f, 0.f));
+void gl_draw_scaled_image_inverted(S32 x, S32 y, S32 width, S32 height, LLTexture* image, const LLColor4& color = UI_VERTEX_COLOR, const LLRectf& uv_rect = LLRectf(0.f, 1.f, 1.f, 0.f));
 
 void gl_rect_2d_xor(S32 left, S32 top, S32 right, S32 bottom);
 void gl_stippled_line_3d( const LLVector3& start, const LLVector3& end, const LLColor4& color, F32 phase = 0.f ); 
@@ -182,7 +181,8 @@ public:
 	static void getCursorPositionLocal(const LLView* viewp, S32 *x, S32 *y);
 	static void setScaleFactor(const LLVector2& scale_factor);
 	static void setLineWidth(F32 width);
-	static LLUIImage* getUIImage(const std::string& name);
+	static LLPointer<LLUIImage> getUIImageByID(const LLUUID& image_id, S32 priority = 0);
+	static LLPointer<LLUIImage> getUIImage(const std::string& name, S32 priority = 0);
 	static LLVector2 getWindowSize();
 	static void screenPointToGL(S32 screen_x, S32 screen_y, S32 *gl_x, S32 *gl_y);
 	static void glPointToScreen(S32 gl_x, S32 gl_y, S32 *screen_x, S32 *screen_y);
@@ -416,13 +416,13 @@ public:
 class LLUIImage : public LLRefCount
 {
 public:
-	LLUIImage(const std::string& name, LLPointer<LLImageGL> image);
+	LLUIImage(const std::string& name, LLPointer<LLTexture> image);
 
 	void setClipRegion(const LLRectf& region);
 	void setScaleRegion(const LLRectf& region);
 
-	LLPointer<LLImageGL> getImage() { return mImage; }
-	const LLPointer<LLImageGL>& getImage() const { return mImage; }
+	LLPointer<LLTexture> getImage() { return mImage; }
+	const LLPointer<LLTexture>& getImage() const { return mImage; }
 
 	void draw(S32 x, S32 y, S32 width, S32 height, const LLColor4& color = UI_VERTEX_COLOR) const;
 	void draw(S32 x, S32 y, const LLColor4& color = UI_VERTEX_COLOR) const;
@@ -449,7 +449,7 @@ protected:
 	std::string			mName;
 	LLRectf				mScaleRegion;
 	LLRectf				mClipRegion;
-	LLPointer<LLImageGL> mImage;
+	LLPointer<LLTexture> mImage;
 	BOOL				mUniformScaling;
 	BOOL				mNoClip;
 };
@@ -597,8 +597,8 @@ public:
 	LLImageProviderInterface() {};
 	virtual ~LLImageProviderInterface() {};
 
-	virtual LLUIImagePtr getUIImage(const std::string& name) = 0;
-	virtual LLUIImagePtr getUIImageByID(const LLUUID& id) = 0;
+	virtual LLUIImagePtr getUIImage(const std::string& name, S32 priority) = 0;
+	virtual LLUIImagePtr getUIImageByID(const LLUUID& id, S32 priority) = 0;
 	virtual void cleanUp() = 0;
 };
 

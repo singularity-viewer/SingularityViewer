@@ -42,8 +42,7 @@
 // Project includes
 #include "llui.h"
 #include "llagent.h"
-#include "llviewerimage.h"
-#include "llviewerimagelist.h"
+#include "llviewertexturelist.h"
 #include "llviewerwindow.h"
 #include "llmoveview.h"
 
@@ -651,7 +650,7 @@ void LLJoystickCameraRotate::draw()
 }
 
 // Draws image rotated by multiples of 90 degrees
-void LLJoystickCameraRotate::drawRotatedImage( LLImageGL* image, S32 rotations )
+void LLJoystickCameraRotate::drawRotatedImage( LLTexture* image, S32 rotations )
 {
 	S32 width = image->getWidth();
 	S32 height = image->getHeight();
@@ -735,8 +734,8 @@ LLJoystickCameraZoom::LLJoystickCameraZoom(const std::string& name, LLRect rect,
 	mInTop( FALSE ),
 	mInBottom( FALSE )
 {
-	mPlusInImage = LLUIImageList::getInstance()->getUIImage(plus_in_img);
-	mMinusInImage = LLUIImageList::getInstance()->getUIImage(minus_in_img);
+	mPlusInImage = LLUI::getUIImage(plus_in_img);
+	mMinusInImage = LLUI::getUIImage(minus_in_img);
 }
 
 

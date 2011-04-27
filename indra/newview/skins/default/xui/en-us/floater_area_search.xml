@@ -15,7 +15,7 @@
 	<line_editor name="Description query chunk" tool_tip=""
 		bevel_style="in" border_style="line" border_thickness="1"
 		height="20" width="200" left_delta="206" bottom_delta="0" follows="left|top"
-		font="SansSerifSmall" max_length="256" mouse_opaque="true" />
+		font="SansSerifSmall" max_length="256" mouse_opaque="true" spell_check="true" />
 	<text name="owner_label" bottom_delta="-20" follows="top|left" height="15" left="12">
 		Owner search string:
 	</text>

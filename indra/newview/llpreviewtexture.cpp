@@ -45,8 +45,7 @@
 #include "lltextbox.h"
 #include "lltextureview.h"
 #include "llui.h"
-#include "llviewerimage.h"
-#include "llviewerimagelist.h"
+#include "llviewertexturelist.h"
 #include "lluictrlfactory.h"
 #include "llviewerwindow.h"
 #include "lllineeditor.h"
@@ -74,11 +73,13 @@ LLPreviewTexture::LLPreviewTexture(const std::string& name,
 	mLoadingFullImage( FALSE ),
 	mShowKeepDiscard(show_keep_discard),
 	mCopyToInv(FALSE),
-	mIsCopyable(FALSE),
+	  mIsCopyable(FALSE),
+	  mUpdateDimensions(TRUE),
 	mLastHeight(0),
 	mLastWidth(0),
 	mAspectRatio(0.f),
-	mCreatorKey(LLUUID())
+	mImage(NULL),
+	mImageOldBoostLevel(LLViewerTexture::BOOST_NONE)
 {
 	const LLInventoryItem *item = getItem();
 	if(item)
@@ -155,15 +156,13 @@ LLPreviewTexture::LLPreviewTexture(
 
 LLPreviewTexture::~LLPreviewTexture()
 {
+	LLLoadedCallbackEntry::cleanUpCallbackList(&mCallbackTextureList) ;
+
 	if( mLoadingFullImage )
 	{
 		getWindow()->decBusyCount();
 	}
-
-	if(mImage.notNull())
-	{
-		mImage->destroySavedRawImage() ;
-	}
+	mImage->setBoostLevel(mImageOldBoostLevel);
 	mImage = NULL;
 	sInstance = NULL;
 }
@@ -252,8 +251,11 @@ void LLPreviewTexture::callbackLoadAvatarName(const LLUUID& id, const std::strin
 
 void LLPreviewTexture::draw()
 {
-	updateDimensions();
-
+	if (mUpdateDimensions)
+	{
+		updateDimensions();
+	}
+	
 	LLPreview::draw();
 
 	if (!isMinimized())
@@ -324,7 +326,7 @@ void LLPreviewTexture::draw()
 					LLColor4::white, LLFontGL::LEFT, LLFontGL::BOTTOM,
 					LLFontGL::DROP_SHADOW);
 				
-				F32 data_progress = mImage->mDownloadProgress;
+				F32 data_progress = mImage->getDownloadProgress();
 				
 				// Draw the progress bar.
 				const S32 BAR_HEIGHT = 12;
@@ -375,7 +377,8 @@ BOOL LLPreviewTexture::canSaveAs() const
 // virtual
 void LLPreviewTexture::saveAs()
 {
-	if( mLoadingFullImage ) return;
+	if( mLoadingFullImage )
+		return;
 
 	LLFilePicker& file_picker = LLFilePicker::instance();
 	const LLViewerInventoryItem* item = getItem() ;
@@ -388,14 +391,15 @@ void LLPreviewTexture::saveAs()
 	mSaveFileName = file_picker.getFirstFile();
 	mLoadingFullImage = TRUE;
 	getWindow()->incBusyCount();
+	mImage->forceToSaveRawImage(0) ;//re-fetch the raw image if the old one is removed.
 	mImage->setLoadedCallback( LLPreviewTexture::onFileLoadedForSave, 
-								0, TRUE, FALSE, new LLUUID( mItemUUID ) );
+								0, TRUE, FALSE, new LLUUID( mItemUUID ), &mCallbackTextureList );
 }
 
 
 // static
 void LLPreviewTexture::onFileLoadedForSave(BOOL success, 
-											LLViewerImage *src_vi,
+											LLViewerFetchedTexture *src_vi,
 											LLImageRaw* src, 
 											LLImageRaw* aux_src, 
 											S32 discard_level,
@@ -522,8 +526,8 @@ void LLPreviewTexture::updateDimensions()
 	S32 view_height = client_height + vert_pad;
 	
 	// set text on dimensions display (should be moved out of here and into a callback of some sort)
-	childSetTextArg("dimensions", "[WIDTH]", llformat("%d", mImage->mFullWidth));
-	childSetTextArg("dimensions", "[HEIGHT]", llformat("%d", mImage->mFullHeight));
+	childSetTextArg("dimensions", "[WIDTH]", llformat("%d", mImage->getFullWidth()));
+	childSetTextArg("dimensions", "[HEIGHT]", llformat("%d", mImage->getFullHeight()));
 	
 	// add space for dimensions and aspect ratio
 	S32 info_height = 0;
@@ -626,6 +630,8 @@ void LLPreviewTexture::updateDimensions()
 // Return true if everything went fine, false if we somewhat modified the ratio as we bumped on border values
 bool LLPreviewTexture::setAspectRatio(const F32 width, const F32 height)
 {
+	mUpdateDimensions = TRUE;
+
 	// We don't allow negative width or height. Also, if height is positive but too small, we reset to default
 	// A default 0.f value for mAspectRatio means "unconstrained" in the rest of the code
 	if ((width <= 0.f) || (height <= F_APPROXIMATELY_ZERO))
@@ -633,9 +639,11 @@ bool LLPreviewTexture::setAspectRatio(const F32 width, const F32 height)
 		mAspectRatio = 0.f;
 		return false;
 	}
+	
 	// Compute and store the ratio
 	F32 ratio = width / height;
 	mAspectRatio = llclamp(ratio, PREVIEW_TEXTURE_MIN_ASPECT, PREVIEW_TEXTURE_MAX_ASPECT);
+	
 	// Return false if we clamped the value, true otherwise
 	return (ratio == mAspectRatio);
 }
@@ -672,15 +680,18 @@ void LLPreviewTexture::onAspectRatioCommit(LLUICtrl* ctrl, void* userdata)
 
 void LLPreviewTexture::loadAsset()
 {
-	mImage = gImageList.getImage(mImageID, MIPMAP_TRUE, FALSE);
-	mImage->setBoostLevel(LLViewerImageBoostLevel::BOOST_PREVIEW);
+	mImage = LLViewerTextureManager::getFetchedTexture(mImageID, MIPMAP_TRUE, LLViewerTexture::BOOST_NONE, LLViewerTexture::LOD_TEXTURE);
+	mImageOldBoostLevel = mImage->getBoostLevel();
+	mImage->setBoostLevel(LLViewerTexture::BOOST_PREVIEW);
 	mImage->forceToSaveRawImage(0) ;
 	mAssetStatus = PREVIEW_ASSET_LOADING;
+	mUpdateDimensions = TRUE;
+	updateDimensions();
 }
 
 LLPreview::EAssetStatus LLPreviewTexture::getAssetStatus()
 {
-	if (mImage.notNull() && (mImage->mFullWidth * mImage->mFullHeight > 0))
+	if (mImage.notNull() && (mImage->getFullWidth() * mImage->getFullHeight() > 0))
 	{
 		mAssetStatus = PREVIEW_ASSET_LOADED;
 	}

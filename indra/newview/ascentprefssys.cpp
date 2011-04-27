@@ -48,67 +48,11 @@
 #include "llwind.h"
 #include "llviewernetwork.h"
 #include "pipeline.h"
-
-//System page ------------------------------------------------------------------------------ -HgB
-class LLPrefsAscentSysImpl : public LLPanel
-{
-public:
-	LLPrefsAscentSysImpl();
-	/*virtual*/ ~LLPrefsAscentSysImpl() { };
-
-	virtual void refresh();
-
-	void apply();
-	void cancel();
-
-private:
-	static void onCommitCheckBox(LLUICtrl* ctrl, void* user_data);
-	void refreshValues();
-	//General -----------------------------------------------------------------------------
-	BOOL mDoubleClickTeleport;
-		BOOL mResetCameraAfterTP;
-		BOOL mOffsetTPByUserHeight;
-	BOOL mPreviewAnimInWorld;
-	BOOL mSaveScriptsAsMono;
-	BOOL mAlwaysRezInGroup;
-	//Disable Teleport Progress
-	//Disable Logout progress
-	//always show Build
-	BOOL mAlwaysShowFly;
-	//Disable camera minimum distance
-	BOOL mPowerUser;
-	BOOL mUseSystemFolder;
-	BOOL mUploadToSystem;
-	//Chat/IM -----------------------------------------------------------------------------
-	BOOL mHideNotificationsInChat;
-	BOOL mPlayTypingSound;
-	BOOL mHideTypingNotification;
-	BOOL mEnableMUPose;
-	BOOL mEnableOOCAutoClose;
-	U32 mLinksForChattingObjects;
-	U32 mTimeFormat;
-	U32 mDateFormat;
-	BOOL mSecondsInChatAndIMs;
-	//Performance -------------------------------------------------------------------------
-	BOOL mFetchInventoryOnLogin;
-	BOOL mEnableLLWind;
-	BOOL mEnableClouds;
-	BOOL mEnableClassicClouds;
-	BOOL mSpeedRez;
-	U32 mSpeedRezInterval;
-	//Command Line ------------------------------------------------------------------------
-	//Privacy -----------------------------------------------------------------------------
-	BOOL mBroadcastViewerEffects;
-	BOOL mDisablePointAtAndBeam;
-	BOOL mPrivateLookAt;
-	BOOL mShowLookAt;
-	BOOL mRevokePermsOnStandUp;
-	BOOL mDisableClickSit;
-};
+#include "lgghunspell_wrapper.h"
 
 
-LLPrefsAscentSysImpl::LLPrefsAscentSysImpl()
- : LLPanel(std::string("Ascent"))
+
+LLPrefsAscentSys::LLPrefsAscentSys()
 {
 	LLUICtrlFactory::getInstance()->buildPanel(this, "panel_preferences_ascent_system.xml");
 	childSetCommitCallback("speed_rez_check", onCommitCheckBox, this);
@@ -117,18 +61,28 @@ LLPrefsAscentSysImpl::LLPrefsAscentSysImpl()
 	childSetCommitCallback("show_look_at_check", onCommitCheckBox, this);
 	childSetCommitCallback("enable_clouds", onCommitCheckBox, this);
 
+	childSetCommitCallback("SpellBase", onSpellBaseComboBoxCommit, this);
+    childSetAction("EmSpell_EditCustom", onSpellEditCustom, this);
+    childSetAction("EmSpell_GetMore", onSpellGetMore, this);
+    childSetAction("EmSpell_Add", onSpellAdd, this);
+    childSetAction("EmSpell_Remove", onSpellRemove, this);
+
 	refreshValues();
 	refresh();
 }
 
-//static
-void LLPrefsAscentSysImpl::onCommitCheckBox(LLUICtrl* ctrl, void* user_data)
+LLPrefsAscentSys::~LLPrefsAscentSys()
 {
-	LLPrefsAscentSysImpl* self = (LLPrefsAscentSysImpl*)user_data;	
+}
+
+//static
+void LLPrefsAscentSys::onCommitCheckBox(LLUICtrl* ctrl, void* user_data)
+{
+	LLPrefsAscentSys* self = (LLPrefsAscentSys*)user_data;	
 	
 	llinfos << "Change to " << ctrl->getControlName()  << " aka " << ctrl->getName() << llendl;
 	
-	if (ctrl->getControlName() == "SpeedRez")
+	if (ctrl->getName() == "speed_rez_check")   // Why is this one getControlName() and the rest are getName()?
 	{
 		bool enabled = self->childGetValue("speed_rez_check").asBoolean();
 		self->childSetEnabled("speed_rez_interval", enabled);
@@ -158,7 +112,51 @@ void LLPrefsAscentSysImpl::onCommitCheckBox(LLUICtrl* ctrl, void* user_data)
 	}
 }
 
-void LLPrefsAscentSysImpl::refreshValues()
+void LLPrefsAscentSys::onSpellAdd(void* data)
+{
+	LLPrefsAscentSys* self = (LLPrefsAscentSys*)data;
+
+	if(self)
+	{
+		glggHunSpell->addButton(self->childGetValue("EmSpell_Avail").asString());
+	}
+
+	self->refresh();
+}
+
+void LLPrefsAscentSys::onSpellRemove(void* data)
+{
+	LLPrefsAscentSys* self = (LLPrefsAscentSys*)data;
+
+	if(self)
+	{
+		glggHunSpell->removeButton(self->childGetValue("EmSpell_Installed").asString());
+	}
+
+	self->refresh();
+}
+
+void LLPrefsAscentSys::onSpellGetMore(void* data)
+{
+	glggHunSpell->getMoreButton(data);
+}
+
+void LLPrefsAscentSys::onSpellEditCustom(void* data)
+{
+	glggHunSpell->editCustomButton();
+}
+
+void LLPrefsAscentSys::onSpellBaseComboBoxCommit(LLUICtrl* ctrl, void* userdata)
+{
+	LLComboBox* box = (LLComboBox*)ctrl;
+
+    if (box)
+	{
+		glggHunSpell->newDictSelection(box->getValue().asString());
+	}
+}
+
+void LLPrefsAscentSys::refreshValues()
 {
 	//General -----------------------------------------------------------------------------
 	mDoubleClickTeleport		= gSavedSettings.getBOOL("DoubleClickTeleport");
@@ -204,9 +202,11 @@ void LLPrefsAscentSysImpl::refreshValues()
 	mShowLookAt					= LLHUDEffectLookAt::sDebugLookAt;
 	mRevokePermsOnStandUp		= gSavedSettings.getBOOL("RevokePermsOnStandUp");
 	mDisableClickSit			= gSavedSettings.getBOOL("DisableClickSit");
+	//Text Options ------------------------------------------------------------------------
+    mSpellDisplay               = gSavedSettings.getBOOL("SpellDisplay");
 }
 
-void LLPrefsAscentSysImpl::refresh()
+void LLPrefsAscentSys::refresh()
 {	
 	//General -----------------------------------------------------------------------------
 	childSetValue("double_click_teleport_check",	mDoubleClickTeleport);
@@ -309,9 +309,59 @@ void LLPrefsAscentSysImpl::refresh()
 	childSetValue("show_look_at_check", mShowLookAt);
 	childSetValue("revoke_perms_on_stand_up_check", mRevokePermsOnStandUp);
 	childSetValue("disable_click_sit_check", mDisableClickSit);
+
+	//Text Options ------------------------------------------------------------------------
+    combo = getChild<LLComboBox>("SpellBase");
+
+    if (combo != NULL) 
+	{
+		combo->removeall();
+		std::vector<std::string> names = glggHunSpell->getDicts();
+
+		for (int i = 0; i < (int)names.size(); i++) 
+		{
+			combo->add(names[i]);
+		}
+
+		combo->setSimple(gSavedSettings.getString("SpellBase"));
+	}
+
+    combo = getChild<LLComboBox>("EmSpell_Avail");
+
+    if (combo != NULL) 
+	{
+		combo->removeall();
+
+		combo->add("");
+		std::vector<std::string> names = glggHunSpell->getAvailDicts();
+
+		for (int i = 0; i < (int)names.size(); i++) 
+		{
+			combo->add(names[i]);
+		}
+
+		combo->setSimple(std::string(""));
+	}
+
+    combo = getChild<LLComboBox>("EmSpell_Installed");
+
+    if (combo != NULL) 
+	{
+		combo->removeall();
+
+		combo->add("");
+		std::vector<std::string> names = glggHunSpell->getInstalledDicts();
+
+		for (int i = 0; i < (int)names.size(); i++) 
+		{
+			combo->add(names[i]);
+		}
+
+		combo->setSimple(std::string(""));
+	}
 }
 
-void LLPrefsAscentSysImpl::cancel()
+void LLPrefsAscentSys::cancel()
 {
 	//General -----------------------------------------------------------------------------
 	childSetValue("double_click_teleport_check",	mDoubleClickTeleport);
@@ -359,9 +409,12 @@ void LLPrefsAscentSysImpl::cancel()
 	childSetValue("enable_classic_clouds", mEnableClassicClouds);
 
 	gLLWindEnabled = mEnableLLWind;
+
+	//Text Options ------------------------------------------------------------------------
+    childSetValue("SpellDisplay", mSpellDisplay);
 }
 
-void LLPrefsAscentSysImpl::apply()
+void LLPrefsAscentSys::apply()
 {
 	std::string short_date, long_date, short_time, long_time, timestamp;
 	
@@ -502,31 +555,4 @@ void LLPrefsAscentSysImpl::apply()
 	
 	refreshValues();
 	refresh();
-}
-
-//---------------------------------------------------------------------------
-
-LLPrefsAscentSys::LLPrefsAscentSys()
-:	impl(* new LLPrefsAscentSysImpl())
-{
-}
-
-LLPrefsAscentSys::~LLPrefsAscentSys()
-{
-	delete &impl;
-}
-
-void LLPrefsAscentSys::apply()
-{
-	impl.apply();
-}
-
-void LLPrefsAscentSys::cancel()
-{
-	impl.cancel();
-}
-
-LLPanel* LLPrefsAscentSys::getPanel()
-{
-	return &impl;
 }

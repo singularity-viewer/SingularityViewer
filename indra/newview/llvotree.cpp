@@ -50,7 +50,7 @@
 #include "lldrawable.h"
 #include "llface.h"
 #include "llviewercamera.h"
-#include "llviewerimagelist.h"
+#include "llviewertexturelist.h"
 #include "llviewerobjectlist.h"
 #include "llviewerregion.h"
 #include "llworld.h"
@@ -68,12 +68,14 @@ const F32 LEAF_TOP = 1.0f;
 const F32 LEAF_BOTTOM = 0.52f;
 const F32 LEAF_WIDTH = 1.f;
 
-S32 LLVOTree::sLODVertexOffset[4];
-S32 LLVOTree::sLODVertexCount[4];
-S32 LLVOTree::sLODIndexOffset[4];
-S32 LLVOTree::sLODIndexCount[4];
-S32 LLVOTree::sLODSlices[4] = {10, 5, 4, 3};
-F32 LLVOTree::sLODAngles[4] = {30.f, 20.f, 15.f, 0.f};
+const S32 LLVOTree::sMAX_NUM_TREE_LOD_LEVELS = 4 ;
+
+S32 LLVOTree::sLODVertexOffset[sMAX_NUM_TREE_LOD_LEVELS];
+S32 LLVOTree::sLODVertexCount[sMAX_NUM_TREE_LOD_LEVELS];
+S32 LLVOTree::sLODIndexOffset[sMAX_NUM_TREE_LOD_LEVELS];
+S32 LLVOTree::sLODIndexCount[sMAX_NUM_TREE_LOD_LEVELS];
+S32 LLVOTree::sLODSlices[sMAX_NUM_TREE_LOD_LEVELS] = {10, 5, 4, 3};
+F32 LLVOTree::sLODAngles[sMAX_NUM_TREE_LOD_LEVELS] = {30.f, 20.f, 15.f, F_ALMOST_ZERO};
 
 F32 LLVOTree::sTreeFactor = 1.f;
 
@@ -104,7 +106,7 @@ LLVOTree::~LLVOTree()
 //static
 bool LLVOTree::isTreeRenderingStopped()
 {
-	return LLVOTree::sTreeFactor < LLVOTree::sLODAngles[4 - 1] ;
+	return LLVOTree::sTreeFactor < LLVOTree::sLODAngles[sMAX_NUM_TREE_LOD_LEVELS - 1] ;
 }
 
 // static
@@ -319,11 +321,10 @@ U32 LLVOTree::processUpdateMessage(LLMessageSystem *mesgsys,
 	//
 	//  Load Species-Specific data 
 	//
-	mTreeImagep = gImageList.getImage(sSpeciesTable[mSpecies]->mTextureID);
-	if (mTreeImagep)
-	{
-		gGL.getTexUnit(0)->bind(mTreeImagep.get());
-	}
+	static const S32 MAX_TREE_TEXTURE_VIRTURE_SIZE_RESET_INTERVAL = 32 ; //frames.
+	mTreeImagep = LLViewerTextureManager::getFetchedTexture(sSpeciesTable[mSpecies]->mTextureID, TRUE, LLViewerTexture::BOOST_NONE, LLViewerTexture::LOD_TEXTURE);
+	mTreeImagep->setMaxVirtualSizeResetInterval(MAX_TREE_TEXTURE_VIRTURE_SIZE_RESET_INTERVAL); //allow to wait for at most 16 frames to reset virtual size.
+
 	mBranchLength = sSpeciesTable[mSpecies]->mBranchLength;
 	mTrunkLength = sSpeciesTable[mSpecies]->mTrunkLength;
 	mLeafScale = sSpeciesTable[mSpecies]->mLeafScale;
@@ -459,9 +460,8 @@ void LLVOTree::setPixelAreaAndAngle(LLAgent &agent)
 	F32 cos_angle_to_view_dir = lookAt * LLViewerCamera::getInstance()->getXAxis() ;	
 	
 	F32 range = dist - getMinScale()/2;
-	if (range < F_ALMOST_ZERO)		// range == zero
+	if (range < F_ALMOST_ZERO || isHUDAttachment())		// range == zero
 	{
-		range = 0;
 		mAppAngle = 180.f;
 	}
 	else
@@ -548,7 +548,7 @@ BOOL LLVOTree::updateGeometry(LLDrawable *drawable)
 		face->mCenterAgent = getPositionAgent();
 		face->mCenterLocal = face->mCenterAgent;
 
-		for (lod = 0; lod < 4; lod++)
+		for (lod = 0; lod < sMAX_NUM_TREE_LOD_LEVELS; lod++)
 		{
 			slices = sLODSlices[lod];
 			sLODVertexOffset[lod] = max_vertices;
@@ -726,7 +726,7 @@ BOOL LLVOTree::updateGeometry(LLDrawable *drawable)
 		// Generate the vertices
 		// Generate the indices
 
-		for (lod = 0; lod < 4; lod++)
+		for (lod = 0; lod < sMAX_NUM_TREE_LOD_LEVELS; lod++)
 		{
 			slices = sLODSlices[lod];
 			F32 base_radius = 0.65f;

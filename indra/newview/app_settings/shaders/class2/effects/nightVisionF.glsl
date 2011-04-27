@@ -4,6 +4,8 @@
  * Copyright (c) 2007-$CurrentYear$, Linden Research, Inc.
  * $License$
  */
+ 
+#extension GL_ARB_texture_rectangle : enable
 
 uniform sampler2DRect RenderTexture;
 uniform sampler2D NoiseTexture;

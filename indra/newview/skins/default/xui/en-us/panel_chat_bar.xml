@@ -13,7 +13,7 @@
 	     handle_edit_keys_directly="false" height="20" label="Click here to chat."
 	     left="107" max_length="254" name="Chat Editor"
 	     select_all_on_focus_received="false" select_on_focus="false" tab_group="1"
-	     tool_tip="Press Enter to say, Ctrl-Enter to shout." width="105" />
+	     tool_tip="Press Enter to say, Ctrl-Enter to shout." width="105" spell_check="true" />
 	<flyout_button bottom="-23" follows="right|bottom" height="20" label="Say" left_delta="110"
 	     list_position="above" mouse_opaque="true" name="Say" tool_tip="(Enter)"
 	     width="80">

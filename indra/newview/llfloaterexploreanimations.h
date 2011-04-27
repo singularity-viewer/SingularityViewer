@@ -29,7 +29,7 @@ public:
 	void update();
 
 	LLUUID mAvatarID;
-	LLPreviewAnimation* mAnimPreview;
+	LLPointer<LLPreviewAnimation> mAnimPreview;
 
 private:
 	virtual ~LLFloaterExploreAnimations();

@@ -44,7 +44,7 @@ void LLFloaterExploreAnimations::close(bool app_quitting)
 
 LLFloaterExploreAnimations::~LLFloaterExploreAnimations()
 {
-	delete mAnimPreview;
+	mAnimPreview = NULL;
 	LLFloaterExploreAnimations::sInstance = NULL;
 }
 
@@ -99,7 +99,7 @@ void LLFloaterExploreAnimations::draw()
 
 	gGL.color3f(1.f, 1.f, 1.f);
 
-	gGL.getTexUnit(0)->bind(mAnimPreview->getTexture());
+	gGL.getTexUnit(0)->bind(mAnimPreview);
 
 	gGL.begin( LLRender::QUADS );
 	{

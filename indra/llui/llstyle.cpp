@@ -36,7 +36,7 @@
 #include "llstring.h"
 #include "llui.h"
 
-//#include "llviewerimagelist.h"
+//#include "llviewertexturelist.h"
 
 LLStyle::LLStyle()
 {
@@ -166,7 +166,7 @@ LLUIImagePtr LLStyle::getImage() const
 
 void LLStyle::setImage(const LLUUID& src)
 {
-	mImagep = LLUI::sImageProvider->getUIImageByID(src);
+	mImagep = LLUI::getUIImageByID(src);
 }
 
 

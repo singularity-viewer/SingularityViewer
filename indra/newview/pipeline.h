@@ -48,7 +48,7 @@
 
 #include <stack>
 
-class LLViewerImage;
+class LLViewerTexture;
 class LLEdge;
 class LLFace;
 class LLViewerObject;
@@ -99,7 +99,7 @@ public:
 	void setDisableVBOMapping(BOOL no_vbo_mapping);
 	void generateImpostor(LLVOAvatar* avatar);
 	void bindScreenToTexture();
-	void renderBloom(BOOL for_snapshot, F32 zoom_factor = 1.f, int subfield = 0);
+	void renderBloom(BOOL for_snapshot, F32 zoom_factor = 1.f, int subfield = 0, bool tiling = false);
 
 	void init();
 	void cleanup();
@@ -107,15 +107,15 @@ public:
 
 	/// @brief Get a draw pool from pool type (POOL_SIMPLE, POOL_MEDIA) and texture.
 	/// @return Draw pool, or NULL if not found.
-	LLDrawPool *findPool(const U32 pool_type, LLViewerImage *tex0 = NULL);
+	LLDrawPool *findPool(const U32 pool_type, LLViewerTexture *tex0 = NULL);
 
 	/// @brief Get a draw pool for faces of the appropriate type and texture.  Create if necessary.
 	/// @return Always returns a draw pool.
-	LLDrawPool *getPool(const U32 pool_type, LLViewerImage *tex0 = NULL);
+	LLDrawPool *getPool(const U32 pool_type, LLViewerTexture *tex0 = NULL);
 
 	/// @brief Figures out draw pool type from texture entry. Creates pool if necessary.
-	static LLDrawPool* getPoolFromTE(const LLTextureEntry* te, LLViewerImage* te_image);
-	static U32 getPoolTypeFromTE(const LLTextureEntry* te, LLViewerImage* imagep);
+	static LLDrawPool* getPoolFromTE(const LLTextureEntry* te, LLViewerTexture* te_image);
+	static U32 getPoolTypeFromTE(const LLTextureEntry* te, LLViewerTexture* imagep);
 
 	void		 addPool(LLDrawPool *poolp);	// Only to be used by LLDrawPool classes for splitting pools!
 	void		 removePool( LLDrawPool* poolp );
@@ -155,7 +155,7 @@ public:
 		);
 
 	// Something about these textures has changed.  Dirty them.
-	void        dirtyPoolObjectTextures(const std::set<LLViewerImage*>& textures);
+	void        dirtyPoolObjectTextures(const std::set<LLViewerFetchedTexture*>& textures);
 
 	void        resetDrawOrders();
 
@@ -345,6 +345,7 @@ public:
 		RENDER_TYPE_PASS_FULLBRIGHT_SHINY		= LLRenderPass::PASS_FULLBRIGHT_SHINY,
 		RENDER_TYPE_PASS_SHINY					= LLRenderPass::PASS_SHINY,
 		RENDER_TYPE_PASS_BUMP					= LLRenderPass::PASS_BUMP,
+		RENDER_TYPE_PASS_POST_BUMP				= LLRenderPass::PASS_POST_BUMP,
 		RENDER_TYPE_PASS_GLOW					= LLRenderPass::PASS_GLOW,
 		RENDER_TYPE_PASS_ALPHA					= LLRenderPass::PASS_ALPHA,
 		RENDER_TYPE_PASS_ALPHA_MASK				= LLRenderPass::PASS_ALPHA_MASK,
@@ -603,7 +604,7 @@ public:
 protected:
 	std::vector<LLFace*>		mSelectedFaces;
 
-	LLPointer<LLViewerImage>	mFaceSelectImagep;
+	LLPointer<LLViewerFetchedTexture>	mFaceSelectImagep;
 	
 	U32						mLightMask;
 	U32						mLightMovingMask;

@@ -49,7 +49,7 @@
 #include "llviewerparceloverlay.h"
 #include "llvosurfacepatch.h"
 #include "llviewercamera.h"
-#include "llviewerimagelist.h" // To get alpha gradients
+#include "llviewertexturelist.h" // To get alpha gradients
 #include "llworld.h"
 #include "pipeline.h"
 #include "llviewershadermgr.h"
@@ -62,28 +62,32 @@ S32 LLDrawPoolTerrain::sDetailMode = 1;
 F32 LLDrawPoolTerrain::sDetailScale = DETAIL_SCALE;
 static LLGLSLShader* sShader = NULL;
 
-LLDrawPoolTerrain::LLDrawPoolTerrain(LLViewerImage *texturep) :
+LLDrawPoolTerrain::LLDrawPoolTerrain(LLViewerTexture *texturep) :
 	LLFacePool(POOL_TERRAIN),
 	mTexturep(texturep)
 {
 	// Hack!
 	sDetailScale = 1.f/gSavedSettings.getF32("RenderTerrainScale");
 	sDetailMode = gSavedSettings.getS32("RenderTerrainDetail");
-	mAlphaRampImagep = gImageList.getImageFromFile("alpha_gradient.tga",
-													TRUE, TRUE, GL_ALPHA8, GL_ALPHA,
+	mAlphaRampImagep = LLViewerTextureManager::getFetchedTextureFromFile("alpha_gradient.tga", 
+													TRUE, LLViewerTexture::BOOST_UI, 
+													LLViewerTexture::FETCHED_TEXTURE,
+													GL_ALPHA8, GL_ALPHA,
 													LLUUID("e97cf410-8e61-7005-ec06-629eba4cd1fb"));
 
 	//gGL.getTexUnit(0)->bind(mAlphaRampImagep.get());
 	mAlphaRampImagep->setAddressMode(LLTexUnit::TAM_CLAMP);
 
-	m2DAlphaRampImagep = gImageList.getImageFromFile("alpha_gradient_2d.j2c",
-													TRUE, TRUE, GL_ALPHA8, GL_ALPHA,
+	m2DAlphaRampImagep = LLViewerTextureManager::getFetchedTextureFromFile("alpha_gradient_2d.j2c", 
+													TRUE, LLViewerTexture::BOOST_UI, 
+													LLViewerTexture::FETCHED_TEXTURE,
+													GL_ALPHA8, GL_ALPHA,
 													LLUUID("38b86f85-2575-52a9-a531-23108d8da837"));
 
 	//gGL.getTexUnit(0)->bind(m2DAlphaRampImagep.get());
 	m2DAlphaRampImagep->setAddressMode(LLTexUnit::TAM_CLAMP);
 	
-	mTexturep->setBoostLevel(LLViewerImageBoostLevel::BOOST_TERRAIN);
+	mTexturep->setBoostLevel(LLViewerTexture::BOOST_TERRAIN);
 	
 	//gGL.getTexUnit(0)->unbind(LLTexUnit::TT_TEXTURE);
 }
@@ -170,7 +174,7 @@ void LLDrawPoolTerrain::render(S32 pass)
 	LLVLComposition *compp = regionp->getComposition();
 	for (S32 i = 0; i < 4; i++)
 	{
-		compp->mDetailTextures[i]->setBoostLevel(LLViewerImageBoostLevel::BOOST_TERRAIN);
+		compp->mDetailTextures[i]->setBoostLevel(LLViewerTexture::BOOST_TERRAIN);
 		compp->mDetailTextures[i]->addTextureStats(1024.f*1024.f); // assume large pixel area
 	}
 
@@ -290,10 +294,10 @@ void LLDrawPoolTerrain::renderFullShader()
 	// Hack! Get the region that this draw pool is rendering from!
 	LLViewerRegion *regionp = mDrawFace[0]->getDrawable()->getVObj()->getRegion();
 	LLVLComposition *compp = regionp->getComposition();
-	LLViewerImage *detail_texture0p = compp->mDetailTextures[0];
-	LLViewerImage *detail_texture1p = compp->mDetailTextures[1];
-	LLViewerImage *detail_texture2p = compp->mDetailTextures[2];
-	LLViewerImage *detail_texture3p = compp->mDetailTextures[3];
+	LLViewerTexture *detail_texture0p = compp->mDetailTextures[0];
+	LLViewerTexture *detail_texture1p = compp->mDetailTextures[1];
+	LLViewerTexture *detail_texture2p = compp->mDetailTextures[2];
+	LLViewerTexture *detail_texture3p = compp->mDetailTextures[3];
 
 	LLVector3d region_origin_global = gAgent.getRegion()->getOriginGlobal();
 	F32 offset_x = (F32)fmod(region_origin_global.mdV[VX], 1.0/(F64)sDetailScale)*sDetailScale;
@@ -364,7 +368,7 @@ void LLDrawPoolTerrain::renderFullShader()
 	// Alpha Ramp 
 	//
 	S32 alpha_ramp = sShader->enableTexture(LLViewerShaderMgr::TERRAIN_ALPHARAMP);
-	gGL.getTexUnit(alpha_ramp)->bind(m2DAlphaRampImagep.get());
+	gGL.getTexUnit(alpha_ramp)->bind(m2DAlphaRampImagep);
 		
 	// GL_BLEND disabled by default
 	drawLoop();
@@ -430,10 +434,10 @@ void LLDrawPoolTerrain::renderFull4TU()
 	// Hack! Get the region that this draw pool is rendering from!
 	LLViewerRegion *regionp = mDrawFace[0]->getDrawable()->getVObj()->getRegion();
 	LLVLComposition *compp = regionp->getComposition();
-	LLViewerImage *detail_texture0p = compp->mDetailTextures[0];
-	LLViewerImage *detail_texture1p = compp->mDetailTextures[1];
-	LLViewerImage *detail_texture2p = compp->mDetailTextures[2];
-	LLViewerImage *detail_texture3p = compp->mDetailTextures[3];
+	LLViewerTexture *detail_texture0p = compp->mDetailTextures[0];
+	LLViewerTexture *detail_texture1p = compp->mDetailTextures[1];
+	LLViewerTexture *detail_texture2p = compp->mDetailTextures[2];
+	LLViewerTexture *detail_texture3p = compp->mDetailTextures[3];
 
 	LLVector3d region_origin_global = gAgent.getRegion()->getOriginGlobal();
 	F32 offset_x = (F32)fmod(region_origin_global.mdV[VX], 1.0/(F64)sDetailScale)*sDetailScale;
@@ -528,7 +532,7 @@ void LLDrawPoolTerrain::renderFull4TU()
 	//
 	// Stage 1: Generate alpha ramp for detail2/detail3 transition
 	//
-	gGL.getTexUnit(1)->bind(m2DAlphaRampImagep.get());
+	gGL.getTexUnit(1)->bind(m2DAlphaRampImagep);
 	gGL.getTexUnit(1)->enable(LLTexUnit::TT_TEXTURE);
 	gGL.getTexUnit(1)->activate();
 
@@ -560,7 +564,7 @@ void LLDrawPoolTerrain::renderFull4TU()
 	//
 	// Stage 3: Generate alpha ramp for detail1/detail2 transition
 	//
-	gGL.getTexUnit(3)->bind(m2DAlphaRampImagep.get());
+	gGL.getTexUnit(3)->bind(m2DAlphaRampImagep);
 	gGL.getTexUnit(3)->enable(LLTexUnit::TT_TEXTURE);
 	gGL.getTexUnit(3)->activate();
 
@@ -631,10 +635,10 @@ void LLDrawPoolTerrain::renderFull2TU()
 	// Hack! Get the region that this draw pool is rendering from!
 	LLViewerRegion *regionp = mDrawFace[0]->getDrawable()->getVObj()->getRegion();
 	LLVLComposition *compp = regionp->getComposition();
-	LLViewerImage *detail_texture0p = compp->mDetailTextures[0];
-	LLViewerImage *detail_texture1p = compp->mDetailTextures[1];
-	LLViewerImage *detail_texture2p = compp->mDetailTextures[2];
-	LLViewerImage *detail_texture3p = compp->mDetailTextures[3];
+	LLViewerTexture *detail_texture0p = compp->mDetailTextures[0];
+	LLViewerTexture *detail_texture1p = compp->mDetailTextures[1];
+	LLViewerTexture *detail_texture2p = compp->mDetailTextures[2];
+	LLViewerTexture *detail_texture3p = compp->mDetailTextures[3];
 
 	LLVector3d region_origin_global = gAgent.getRegion()->getOriginGlobal();
 	F32 offset_x = (F32)fmod(region_origin_global.mdV[VX], 1.0/(F64)sDetailScale)*sDetailScale;
@@ -672,7 +676,7 @@ void LLDrawPoolTerrain::renderFull2TU()
 	//
 	// Stage 0: Generate alpha ramp for detail0/detail1 transition
 	//
-	gGL.getTexUnit(0)->bind(m2DAlphaRampImagep.get());
+	gGL.getTexUnit(0)->bind(m2DAlphaRampImagep);
 	
 	glDisable(GL_TEXTURE_GEN_S);
 	glDisable(GL_TEXTURE_GEN_T);
@@ -710,7 +714,7 @@ void LLDrawPoolTerrain::renderFull2TU()
 	//
 	// Stage 0: Generate alpha ramp for detail1/detail2 transition
 	//
-	gGL.getTexUnit(0)->bind(m2DAlphaRampImagep.get());
+	gGL.getTexUnit(0)->bind(m2DAlphaRampImagep);
 
 	// Set the texture matrix
 	glMatrixMode(GL_TEXTURE);
@@ -750,7 +754,7 @@ void LLDrawPoolTerrain::renderFull2TU()
 	// Stage 0: Generate alpha ramp for detail2/detail3 transition
 	//
 	gGL.getTexUnit(0)->activate();
-	gGL.getTexUnit(0)->bind(m2DAlphaRampImagep.get());
+	gGL.getTexUnit(0)->bind(m2DAlphaRampImagep);
 	// Set the texture matrix
 	glMatrixMode(GL_TEXTURE);
 	glLoadIdentity();
@@ -823,7 +827,7 @@ void LLDrawPoolTerrain::renderSimple()
 
 	gGL.getTexUnit(0)->activate();
 	gGL.getTexUnit(0)->enable(LLTexUnit::TT_TEXTURE);
-	gGL.getTexUnit(0)->bind(mTexturep.get());
+	gGL.getTexUnit(0)->bind(mTexturep);
 	
 	LLVector3 origin_agent = mDrawFace[0]->getDrawable()->getVObj()->getRegion()->getOriginAgent();
 	F32 tscale = 1.f/256.f;
@@ -873,7 +877,7 @@ void LLDrawPoolTerrain::renderOwnership()
 	LLSurface				*surfacep			= surface_patchp->getSurface();
 	LLViewerRegion			*regionp			= surfacep->getRegion();
 	LLViewerParcelOverlay	*overlayp			= regionp->getParcelOverlay();
-	LLImageGL				*texturep			= overlayp->getTexture();
+	LLViewerTexture			*texturep			= overlayp->getTexture();
 
 	gGL.getTexUnit(0)->bind(texturep);
 
@@ -921,9 +925,10 @@ void LLDrawPoolTerrain::renderForSelect()
 	}
 }
 
-void LLDrawPoolTerrain::dirtyTextures(const std::set<LLViewerImage*>& textures)
+void LLDrawPoolTerrain::dirtyTextures(const std::set<LLViewerFetchedTexture*>& textures)
 {
-	if (textures.find(mTexturep) != textures.end())
+	LLViewerFetchedTexture* tex = LLViewerTextureManager::staticCastToFetchedTexture(mTexturep) ;
+	if (tex && textures.find(tex) != textures.end())
 	{
 		for (std::vector<LLFace*>::iterator iter = mReferences.begin();
 			 iter != mReferences.end(); iter++)
@@ -934,12 +939,12 @@ void LLDrawPoolTerrain::dirtyTextures(const std::set<LLViewerImage*>& textures)
 	}
 }
 
-LLViewerImage *LLDrawPoolTerrain::getTexture()
+LLViewerTexture *LLDrawPoolTerrain::getTexture()
 {
 	return mTexturep;
 }
 
-LLViewerImage *LLDrawPoolTerrain::getDebugTexture()
+LLViewerTexture *LLDrawPoolTerrain::getDebugTexture()
 {
 	return mTexturep;
 }

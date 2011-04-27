@@ -5,6 +5,8 @@
  * $License$
  */
 
+#extension GL_ARB_texture_rectangle : enable
+
 uniform sampler2DRect RenderTexture;
 
 void main(void) 

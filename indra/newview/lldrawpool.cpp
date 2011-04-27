@@ -60,7 +60,7 @@ S32 LLDrawPool::sNumDrawPools = 0;
 //=============================
 // Draw Pool Implementation
 //=============================
-LLDrawPool *LLDrawPool::createPool(const U32 type, LLViewerImage *tex0)
+LLDrawPool *LLDrawPool::createPool(const U32 type, LLViewerTexture *tex0)
 {
 	LLDrawPool *poolp = NULL;
 	switch (type)
@@ -130,7 +130,7 @@ LLDrawPool::~LLDrawPool()
 
 }
 
-LLViewerImage *LLDrawPool::getDebugTexture()
+LLViewerTexture *LLDrawPool::getDebugTexture()
 {
 	return NULL;
 }
@@ -245,7 +245,7 @@ void LLFacePool::destroy()
 	}
 }
 
-void LLFacePool::dirtyTextures(const std::set<LLViewerImage*>& textures)
+void LLFacePool::dirtyTextures(const std::set<LLViewerFetchedTexture*>& textures)
 {
 }
 
@@ -297,7 +297,7 @@ void LLFacePool::drawLoop()
 }
 
 void LLFacePool::renderFaceSelected(LLFace *facep, 
-									LLImageGL *image, 
+									LLViewerTexture *image, 
 									const LLColor4 &color,
 									const S32 index_offset, const S32 index_count)
 {
@@ -331,7 +331,7 @@ void LLFacePool::resetDrawOrders()
 	mDrawFace.resize(0);
 }
 
-LLViewerImage *LLFacePool::getTexture()
+LLViewerTexture *LLFacePool::getTexture()
 {
 	return NULL;
 }

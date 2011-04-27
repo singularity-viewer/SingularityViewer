@@ -247,6 +247,15 @@ void LLDir_Solaris::initAppDirs(const std::string &app_name)
 		}
 	}
 
+	res = LLFile::mkdir(getExpandedFilename(LL_PATH_USER_SETTINGS, "dictionaries"));
+	if (res == -1)
+	{
+		if (errno != EEXIST)
+		{
+			llwarns << "Couldn't create LL_PATH_USER_SETTINGS/dictionaries dir " << getExpandedFilename(LL_PATH_MOZILLA_PROFILE,"") << llendl;
+		}
+	}
+
 	mCAFile = getExpandedFilename(LL_PATH_APP_SETTINGS, "CA.pem");
 }
 

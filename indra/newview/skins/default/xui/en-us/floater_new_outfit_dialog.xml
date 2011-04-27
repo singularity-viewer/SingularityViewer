@@ -273,7 +273,7 @@ now wearing into it.
 	     enabled="true" follows="left|top" font="SansSerif"
 	     handle_edit_keys_directly="true" height="20" left="13" max_length="63"
 	     mouse_opaque="true" name="name ed" select_all_on_focus_received="false"
-	     select_on_focus="false" width="489">
+	     select_on_focus="false" width="489" spell_check="true">
 		New Outfit
 	</line_editor>
 </floater>

@@ -90,7 +90,7 @@ LLDebugView::LLDebugView(const std::string& name, const LLRect &rect)
 	mMemoryView->setVisible(FALSE);			// start invisible
 	addChild(mMemoryView);
 
-	r.set(150, rect.getHeight() - 50, 820, 100);
+	r.set(150, rect.getHeight() - 50, 870, 100);
 	gTextureView = new LLTextureView("gTextureView", r);
 	gTextureView->setRect(r);
 	gTextureView->setFollowsBottom();

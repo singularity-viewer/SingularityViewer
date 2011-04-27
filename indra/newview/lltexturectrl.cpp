@@ -37,13 +37,12 @@
 
 #include "llrender.h"
 #include "llagent.h"
-#include "llviewerimagelist.h"
+#include "llviewertexturelist.h"
 #include "llcheckboxctrl.h"
 #include "llcombobox.h"
 #include "llbutton.h"
 #include "lldraghandle.h"
 #include "llfocusmgr.h"
-#include "llviewerimage.h"
 #include "llfolderview.h"
 #include "llinventory.h"
 #include "llinventorymodel.h"
@@ -187,7 +186,7 @@ public:
 	// tag: vaa emerald local_asset_browser [end]
 
 protected:
-	LLPointer<LLViewerImage> mTexturep;
+	LLPointer<LLViewerTexture> mTexturep;
 	LLTextureCtrl*		mOwner;
 
 	LLUUID				mImageAssetID; // Currently selected texture
@@ -394,15 +393,19 @@ void LLFloaterTexturePicker::updateImageStats()
 	if (mTexturep.notNull())
 	{
 		//RN: have we received header data for this image?
-		if (mTexturep->getWidth(0) > 0 && mTexturep->getHeight(0) > 0)
+		if (mTexturep->getFullWidth() > 0 && mTexturep->getFullHeight() > 0)
 		{
-			std::string formatted_dims = llformat("%d x %d", mTexturep->getWidth(0),mTexturep->getHeight(0));
+			std::string formatted_dims = llformat("%d x %d", mTexturep->getFullWidth(),mTexturep->getFullHeight());
 			mResolutionLabel->setTextArg("[DIMENSIONS]", formatted_dims);
 		}
 		else
 		{
 			mResolutionLabel->setTextArg("[DIMENSIONS]", std::string("[? x ?]"));
 		}
+	}
+	else
+	{
+		mResolutionLabel->setTextArg("[DIMENSIONS]", std::string(""));
 	}
 }
 
@@ -606,13 +609,11 @@ void LLFloaterTexturePicker::draw()
 		mTexturep = NULL;
 		if(mImageAssetID.notNull())
 		{
-			mTexturep = gImageList.getImage(mImageAssetID, MIPMAP_YES, IMMEDIATE_NO);
-			mTexturep->setBoostLevel(LLViewerImageBoostLevel::BOOST_PREVIEW);
+			mTexturep = LLViewerTextureManager::getFetchedTexture(mImageAssetID, MIPMAP_YES, LLViewerTexture::BOOST_PREVIEW);
 		}
 		else if (!mFallbackImageName.empty())
 		{
-			mTexturep = gImageList.getImageFromFile(mFallbackImageName);
-			mTexturep->setBoostLevel(LLViewerImageBoostLevel::BOOST_PREVIEW);
+			mTexturep = LLViewerTextureManager::getFetchedTextureFromFile(mFallbackImageName, MIPMAP_YES, LLViewerTexture::BOOST_PREVIEW);
 		}
 
 		if (mTentativeLabel)
@@ -1515,14 +1516,13 @@ void LLTextureCtrl::draw()
 	}
 	else if (!mImageAssetID.isNull())
 	{
-		mTexturep = gImageList.getImage(mImageAssetID, MIPMAP_YES, IMMEDIATE_NO);
-		mTexturep->setBoostLevel(LLViewerImageBoostLevel::BOOST_PREVIEW);
+		mTexturep = LLViewerTextureManager::getFetchedTexture(mImageAssetID, MIPMAP_YES,LLViewerTexture::BOOST_PREVIEW, LLViewerTexture::LOD_TEXTURE);
+		mTexturep->forceToSaveRawImage(0) ;
 	}
 	else if (!mFallbackImageName.empty())
 	{
 		// Show fallback image.
-		mTexturep = gImageList.getImageFromFile(mFallbackImageName);
-		mTexturep->setBoostLevel(LLViewerImageBoostLevel::BOOST_PREVIEW);
+		mTexturep =	LLViewerTextureManager::getFetchedTextureFromFile(mFallbackImageName, MIPMAP_YES,LLViewerTexture::BOOST_PREVIEW, LLViewerTexture::LOD_TEXTURE);
 	}
 	else	// mImageAssetID == LLUUID::null
 	{
@@ -1561,10 +1561,9 @@ void LLTextureCtrl::draw()
 	// Show "Loading..." string on the top left corner while this texture is loading.
 	// Using the discard level, do not show the string if the texture is almost but not 
 	// fully loaded.
-	if ( mTexturep.notNull() &&
-		 (mShowLoadingPlaceholder == TRUE) && 
-		 (mTexturep->getDiscardLevel() != 1) &&
-		 (mTexturep->getDiscardLevel() != 0))
+	if (mTexturep.notNull() &&
+		(!mTexturep->isFullyLoaded()) &&
+		(mShowLoadingPlaceholder == TRUE))
 	{
 		LLFontGL* font = LLFontGL::getFontSansSerifBig();
 		font->renderUTF8(
@@ -1691,7 +1690,7 @@ BOOL LLToolTexEyedropper::handleMouseDown(S32 x, S32 y, MASK mask)
 	{
 		if( (0 <= pick.mObjectFace) && (pick.mObjectFace < hit_obj->getNumTEs()) )
 		{
-			LLViewerImage* image = hit_obj->getTEImage( pick.mObjectFace );
+			LLViewerTexture* image = hit_obj->getTEImage( pick.mObjectFace );
 			if( image )
 			{
 				if( mCallback )

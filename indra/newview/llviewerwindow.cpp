@@ -161,7 +161,7 @@
 #include "llvieweraudio.h"
 #include "llviewercamera.h"
 #include "llviewergesture.h"
-#include "llviewerimagelist.h"
+#include "llviewertexturelist.h"
 #include "llviewerinventory.h"
 #include "llviewerkeyboard.h"
 #include "llviewermedia.h"
@@ -200,7 +200,7 @@
 //
 // Globals
 //
-void render_ui(F32 zoom_factor = 1.f, int subfield = 0);
+void render_ui(F32 zoom_factor = 1.f, int subfield = 0, bool tiling = false);
 LLBottomPanel* gBottomPanel = NULL;
 
 extern BOOL gDebugClicks;
@@ -686,11 +686,12 @@ BOOL LLViewerWindow::handleMouseDown(LLWindow *window,  LLCoordGL pos, MASK mask
 		llinfos << "Left Mouse Down not handled by view" << llendl;
 	}
 
+	// Do not allow tool manager to handle mouseclicks if we have disconnected	
 	if (gDisconnected)
 	{
 		return FALSE;
 	}
-
+		
 	if(LLToolMgr::getInstance()->getCurrentTool()->handleMouseDown( x, y, mask ) )
 	{
 		// This is necessary to force clicks in the world to cause edit
@@ -1499,6 +1500,15 @@ LLViewerWindow::LLViewerWindow(
 		LL_WARNS("Window") << " Someone took over my signal/exception handler (post createWindow)!" << LL_ENDL;
 	}
 
+	LLCoordScreen scr;
+    mWindow->getSize(&scr);
+
+    if(fullscreen && ( scr.mX!=width || scr.mY!=height))
+    {
+		llwarns << "Fullscreen has forced us in to a different resolution now using "<<scr.mX<<" x "<<scr.mY<<llendl;
+		gSavedSettings.setS32("FullScreenWidth",scr.mX);
+		gSavedSettings.setS32("FullScreenHeight",scr.mY);
+    }
 
 	if (NULL == mWindow)
 	{
@@ -1573,9 +1583,9 @@ LLViewerWindow::LLViewerWindow(
 
 	// Init the image list.  Must happen after GL is initialized and before the images that
 	// LLViewerWindow needs are requested.
-	LLImageGL::initClass(LLViewerImageBoostLevel::MAX_GL_IMAGE_CATEGORY) ;
-	gImageList.init();
-	LLViewerImage::initClass();
+	LLImageGL::initClass(LLViewerTexture::MAX_GL_IMAGE_CATEGORY) ;
+	gTextureList.init();
+	LLViewerTextureManager::init() ;
 	gBumpImageList.init();
 
 	// Create container for all sub-views
@@ -2031,7 +2041,7 @@ void LLViewerWindow::shutdownGL()
 	gSky.cleanup();
 	stop_glerror();
 
-	gImageList.shutdown();
+	gTextureList.shutdown();
 	stop_glerror();
 
 	gBumpImageList.shutdown();
@@ -2043,8 +2053,11 @@ void LLViewerWindow::shutdownGL()
 	gPipeline.cleanup();
 	stop_glerror();
 
-	LLViewerImage::cleanupClass();
-	
+	LLViewerTextureManager::cleanup() ;
+	LLImageGL::cleanupClass() ;
+
+	llinfos << "All textures and llimagegl images are destroyed!" << llendl ;
+
 	llinfos << "Cleaning up select manager" << llendl;
 	LLSelectMgr::getInstance()->cleanup();
 
@@ -2130,6 +2143,7 @@ void LLViewerWindow::reshape(S32 width, S32 height)
 			return;
 		}
 
+		gWindowResized = TRUE;
 		glViewport(0, 0, width, height );
 
 		if (height > 0)
@@ -4248,7 +4262,7 @@ BOOL LLViewerWindow::thumbnailSnapshot(LLImageRaw *raw, S32 preview_width, S32 p
 
 // Saves the image from the screen to the specified filename and path.
 BOOL LLViewerWindow::rawSnapshot(LLImageRaw *raw, S32 image_width, S32 image_height, 
-								 BOOL keep_window_aspect, BOOL is_texture, BOOL show_ui, BOOL do_rebuild, ESnapshotType type, S32 max_size)
+								 BOOL keep_window_aspect, BOOL is_texture, BOOL show_ui, BOOL do_rebuild, ESnapshotType type, S32 max_size, F32 supersample)
 {
 	if (!raw)
 	{
@@ -4278,25 +4292,26 @@ BOOL LLViewerWindow::rawSnapshot(LLImageRaw *raw, S32 image_width, S32 image_hei
 	// Copy screen to a buffer
 	// crop sides or top and bottom, if taking a snapshot of different aspect ratio
 	// from window
-	S32 snapshot_width = mWindowRect.getWidth();
-	S32 snapshot_height =  mWindowRect.getHeight();
-	// SNAPSHOT
-	S32 window_width = mWindowRect.getWidth();
-	S32 window_height = mWindowRect.getHeight();	
 	LLRect window_rect = mWindowRect;
-	BOOL use_fbo = FALSE;
 
-	LLRenderTarget target;
+	S32 snapshot_width = window_rect.getWidth();
+	S32 snapshot_height = window_rect.getHeight();
+	// SNAPSHOT
+	S32 window_width = snapshot_width;
+	S32 window_height = snapshot_height;	
+	
+
 	F32 scale_factor = 1.0f ;
+	
+	bool is_tiling = false; 
 
-#if SHY_MOD // screenshot improvement
-	F32 internal_scale = 1.f;
-	static const LLCachedControl<bool> force_tile("SHHighResSnapshotForceTile",false);
-	if(force_tile)
-	{
-		static const LLCachedControl<F32> super_sample_scale("SHHighResSnapshotSuperSample",1.f);
-		internal_scale = llmax(super_sample_scale.get(),1.f);
-	}
+	//fbo method no longer supported. Good riddance
+	/*LLRenderTarget target;
+	bool use_fbo = false;
+	static const LLCachedControl<bool> force_tile("SHHighResSnapshotForceTile",false);*/
+
+#if 1//SHY_MOD // screenshot improvement
+	F32 internal_scale = llmin(llmax(supersample,1.f),3.f);
 	// render at specified internal resolution. >1 results in supersampling.
 	image_height *= internal_scale;
 	image_width *= internal_scale;
@@ -4313,10 +4328,8 @@ BOOL LLViewerWindow::rawSnapshot(LLImageRaw *raw, S32 image_width, S32 image_hei
 	{
 		if(image_width > window_width || image_height > window_height) //need to enlarge the scene
 		{
-#if SHY_MOD // screenshot improvement
-			if(!force_tile)
-#endif //shy_mod
-			if (gGLManager.mHasFramebufferObject && !show_ui)
+			//Unsupported
+			/*if (!force_tile && gGLManager.mHasFramebufferObject && !show_ui)
 			{
 				GLint max_size = 0;
 				glGetIntegerv(GL_MAX_RENDERBUFFER_SIZE_EXT, &max_size);
@@ -4336,12 +4349,13 @@ BOOL LLViewerWindow::rawSnapshot(LLImageRaw *raw, S32 image_width, S32 image_hei
 				}
 			}
 
-			if(!use_fbo) //no re-projection, so tiling the scene
+			if(!use_fbo) //no re-projection, so tiling the scene*/
 			{
 				F32 ratio = llmin( (F32)window_width / image_width , (F32)window_height / image_height) ;
 				snapshot_width = (S32)(ratio * image_width) ;
 				snapshot_height = (S32)(ratio * image_height) ;
 				scale_factor = llmax(1.0f, 1.0f / ratio) ;	
+				is_tiling = true;
 			}
 		}
 		//else: keep the current scene scale, re-scale it if necessary after reading out.
@@ -4351,9 +4365,9 @@ BOOL LLViewerWindow::rawSnapshot(LLImageRaw *raw, S32 image_width, S32 image_hei
 	S32 buffer_y_offset = llfloor(((window_height - snapshot_height) * scale_factor) / 2.f);
 
 	S32 image_buffer_x = llfloor(snapshot_width*scale_factor) ;
-	S32 image_buffer_y = llfloor(snapshot_height *scale_factor) ;
-#if SHY_MOD // screenshot improvement
-	if(internal_scale > 1.f) //If supersampling... Don't care about max_size.
+	S32 image_buffer_y = llfloor(snapshot_height*scale_factor) ;
+#if 1//SHY_MOD // screenshot improvement
+	if(internal_scale <= 1.f) //If supersampling... Don't care about max_size.
 #endif //shy_mod
 	if(image_buffer_x > max_size || image_buffer_y > max_size) //boundary check to avoid memory overflow
 	{
@@ -4418,20 +4432,16 @@ BOOL LLViewerWindow::rawSnapshot(LLImageRaw *raw, S32 image_width, S32 image_hei
 			else
 			{
 				const U32 subfield = subimage_x+(subimage_y*llceil(scale_factor));
-#if SHY_MOD // screenshot improvement
-				//tiling requires gPipeline.generateWaterReflection to be called in display(). CANNOT be done if using an fbo.
-				display(do_rebuild, scale_factor, subfield, TRUE, !use_fbo && (scale_factor > 1.0f));
-#else //shy_mod
-				display(do_rebuild, scale_factor, subfield, TRUE);
-#endif
+				display(do_rebuild, scale_factor, subfield, TRUE, is_tiling);
 				// Required for showing the GUI in snapshots?  See DEV-16350 for details. JC
-				render_ui(scale_factor, subfield);
+				render_ui(scale_factor, subfield, is_tiling);
 			}
 
 			S32 subimage_x_offset = llclamp(buffer_x_offset - (subimage_x * window_width), 0, window_width);
 			// handle fractional rows
 			U32 read_width = llmax(0, (window_width - subimage_x_offset) -
 									llmax(0, (window_width * (subimage_x + 1)) - (buffer_x_offset + raw->getWidth())));
+
 			for(U32 out_y = 0; out_y < read_height ; out_y++)
 			{
 				S32 output_buffer_offset = ( 
@@ -4451,7 +4461,8 @@ BOOL LLViewerWindow::rawSnapshot(LLImageRaw *raw, S32 image_width, S32 image_hei
 				if (type == SNAPSHOT_TYPE_OBJECT_ID || type == SNAPSHOT_TYPE_COLOR)
 				{
 					glReadPixels(
-						subimage_x_offset, out_y + subimage_y_offset,
+						subimage_x_offset, 
+						out_y + subimage_y_offset, 
 						read_width, 1,
 						GL_RGB, GL_UNSIGNED_BYTE,
 						raw->getData() + output_buffer_offset
@@ -4487,12 +4498,12 @@ BOOL LLViewerWindow::rawSnapshot(LLImageRaw *raw, S32 image_width, S32 image_hei
 		output_buffer_offset_y += subimage_y_offset;
 	}
 
-	if (use_fbo)
+	/*if (use_fbo)
 	{
 		mWindowRect = window_rect;
 		target.flush();
 		glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
-	}
+	}*/
 	gDisplaySwapBuffers = FALSE;
 	gDepthDirty = TRUE;
 
@@ -4528,7 +4539,7 @@ BOOL LLViewerWindow::rawSnapshot(LLImageRaw *raw, S32 image_width, S32 image_hei
 		ret = raw->scale( image_width, image_height, FALSE );  
 	}
 	
-#if SHY_MOD // screenshot improvement
+#if 1//SHY_MOD // screenshot improvement
 	if(raw->isBufferInvalid()) //Just checking!
 		return FALSE;
 	if(internal_scale != 1.f)  //Scale down our render to the desired dimensions.
@@ -4711,7 +4722,7 @@ void LLViewerWindow::stopGL(BOOL save_state)
 	//Note: --bao
 	//if not necessary, do not change the order of the function calls in this function.
 	//if change something, make sure it will not break anything.
-	//especially be careful to put anything behind gImageList.destroyGL(save_state);
+	//especially be careful to put anything behind gTextureList.destroyGL(save_state);
 	if (!gGLManager.mIsDisabled)
 	{
 		llinfos << "Shutting down GL..." << llendl;
@@ -4736,7 +4747,7 @@ void LLViewerWindow::stopGL(BOOL save_state)
 		LLVOAvatar::destroyGL();
 		stop_glerror();
 
-		LLDynamicTexture::destroyGL();
+		LLViewerDynamicTexture::destroyGL();
 		stop_glerror();
 
 		if (gPipeline.isInit())
@@ -4754,7 +4765,7 @@ void LLViewerWindow::stopGL(BOOL save_state)
 			gPostProcess->invalidate();
 		}
 
-		gImageList.destroyGL(save_state);
+		gTextureList.destroyGL(save_state);
 		stop_glerror();
 
 		gGLManager.mIsDisabled = TRUE;
@@ -4769,7 +4780,7 @@ void LLViewerWindow::restoreGL(const std::string& progress_message)
 	//Note: --bao
 	//if not necessary, do not change the order of the function calls in this function.
 	//if change something, make sure it will not break anything. 
-	//especially, be careful to put something before gImageList.restoreGL();
+	//especially, be careful to put something before gTextureList.restoreGL();
 	if (gGLManager.mIsDisabled)
 	{
 		llinfos << "Restoring GL..." << llendl;
@@ -4777,7 +4788,7 @@ void LLViewerWindow::restoreGL(const std::string& progress_message)
 		
 		initGLDefaults();
 		LLGLState::restoreGL();
-		gImageList.restoreGL();
+		gTextureList.restoreGL();
 
 		// for future support of non-square pixels, and fonts that are properly stretched
 		//LLFontGL::destroyDefaultFonts();
@@ -4789,10 +4800,11 @@ void LLViewerWindow::restoreGL(const std::string& progress_message)
 		LLManipTranslate::restoreGL();
 		
 		gBumpImageList.restoreGL();
-		LLDynamicTexture::restoreGL();
+		LLViewerDynamicTexture::restoreGL();
 		LLVOAvatar::restoreGL();
 		
 		gResizeScreenTexture = TRUE;
+		gWindowResized = TRUE;
 
 		if (gFloaterCustomize && gFloaterCustomize->getVisible())
 		{
@@ -5461,7 +5473,7 @@ void LLPickInfo::updateXYCoords()
 	if (mObjectFace > -1)
 	{
 		const LLTextureEntry* tep = getObject()->getTE(mObjectFace);
-		LLPointer<LLViewerImage> imagep = gImageList.getImage(tep->getID());
+		LLPointer<LLViewerTexture> imagep = LLViewerTextureManager::getFetchedTexture(tep->getID());
 		if(mUVCoords.mV[VX] >= 0.f && mUVCoords.mV[VY] >= 0.f && imagep.notNull())
 		{
 			mXYCoords.mX = llround(mUVCoords.mV[VX] * (F32)imagep->getWidth());

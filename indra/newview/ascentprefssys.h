@@ -32,10 +32,11 @@
 #ifndef ASCENTPREFSSYS_H
 #define ASCENTPREFSSYS_H
 
-class LLPanel;
-class LLPrefsAscentSysImpl;
 
-class LLPrefsAscentSys
+#include "llpanel.h"
+
+
+class LLPrefsAscentSys : public LLPanel
 {
 public:
 	LLPrefsAscentSys();
@@ -43,11 +44,60 @@ public:
 
 	void apply();
 	void cancel();
+    void refresh();
 
 	LLPanel* getPanel();
 
 protected:
-	LLPrefsAscentSysImpl& impl;
+	static void onCommitCheckBox(LLUICtrl* ctrl, void* user_data);
+    static void onSpellAdd(void* data);
+    static void onSpellRemove(void* data);
+    static void onSpellGetMore(void* data);
+    static void onSpellEditCustom(void* data);
+    static void onSpellBaseComboBoxCommit(LLUICtrl* ctrl, void* userdata);
+	void refreshValues();
+	//General -----------------------------------------------------------------------------
+	BOOL mDoubleClickTeleport;
+		BOOL mResetCameraAfterTP;
+		BOOL mOffsetTPByUserHeight;
+	BOOL mPreviewAnimInWorld;
+	BOOL mSaveScriptsAsMono;
+	BOOL mAlwaysRezInGroup;
+	//Disable Teleport Progress
+	//Disable Logout progress
+	//always show Build
+	BOOL mAlwaysShowFly;
+	//Disable camera minimum distance
+	BOOL mPowerUser;
+	BOOL mUseSystemFolder;
+	BOOL mUploadToSystem;
+	//Chat/IM -----------------------------------------------------------------------------
+	BOOL mHideNotificationsInChat;
+	BOOL mPlayTypingSound;
+	BOOL mHideTypingNotification;
+	BOOL mEnableMUPose;
+	BOOL mEnableOOCAutoClose;
+	U32 mLinksForChattingObjects;
+	U32 mTimeFormat;
+	U32 mDateFormat;
+	BOOL mSecondsInChatAndIMs;
+	//Performance -------------------------------------------------------------------------
+	BOOL mFetchInventoryOnLogin;
+	BOOL mEnableLLWind;
+	BOOL mEnableClouds;
+	BOOL mEnableClassicClouds;
+	BOOL mSpeedRez;
+	U32 mSpeedRezInterval;
+	//Command Line ------------------------------------------------------------------------
+	//Privacy -----------------------------------------------------------------------------
+	BOOL mBroadcastViewerEffects;
+	BOOL mDisablePointAtAndBeam;
+	BOOL mPrivateLookAt;
+	BOOL mShowLookAt;
+	BOOL mRevokePermsOnStandUp;
+	BOOL mDisableClickSit;
+	//Text Options ------------------------------------------------------------------------
+    BOOL mSpellDisplay;
 };
 
 #endif

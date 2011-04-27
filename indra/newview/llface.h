@@ -45,16 +45,16 @@
 #include "xform.h"
 #include "lldarrayptr.h"
 #include "llvertexbuffer.h"
-#include "llviewerimage.h"
+#include "llviewertexture.h"
 #include "llstat.h"
 #include "lldrawable.h"
 
 class LLFacePool;
 class LLVolume;
-class LLViewerImage;
+class LLViewerTexture;
 class LLTextureEntry;
 class LLVertexProgram;
-class LLViewerImage;
+class LLViewerTexture;
 class LLGeometryManager;
 
 const F32 MIN_ALPHA_SIZE = 1024.f;
@@ -87,8 +87,8 @@ public:
 	U16				getGeomCount()		const	{ return mGeomCount; }		// vertex count for this face
 	U16				getGeomIndex()		const	{ return mGeomIndex; }		// index into draw pool
 	U16				getGeomStart()		const	{ return mGeomIndex; }		// index into draw pool
-	void			setTexture(LLViewerImage* tex) ;
-	void            switchTexture(LLViewerImage* new_texture);
+	void			setTexture(LLViewerTexture* tex) ;
+	void            switchTexture(LLViewerTexture* new_texture);
 	void            dirtyTexture();
 	LLXformMatrix*	getXform()			const	{ return mXform; }
 	BOOL			hasGeometry()		const	{ return mGeomCount > 0; }
@@ -127,10 +127,10 @@ public:
 	LLVertexBuffer* getVertexBuffer()	const	{ return mVertexBuffer; }
 	void			setPoolType(U32 type)		{ mPoolType = type; }
 	S32				getTEOffset()				{ return mTEOffset; }
-	LLViewerImage*	getTexture()		const	{ return mTexture; }
+	LLViewerTexture*	getTexture() const;
 	
 	void			setViewerObject(LLViewerObject* object);
-	void			setPool(LLFacePool *pool, LLViewerImage *texturep);
+	void			setPool(LLFacePool *pool, LLViewerTexture *texturep);
 	
 	void			setDrawable(LLDrawable *drawable);
 	void			setTEOffset(const S32 te_offset);
@@ -180,7 +180,7 @@ public:
 	void		renderSelectedUV();
 
 	void		renderForSelect(U32 data_mask = LLVertexBuffer::MAP_VERTEX | LLVertexBuffer::MAP_TEXCOORD0);
-	void		renderSelected(LLImageGL *image, const LLColor4 &color);
+	void		renderSelected(LLViewerTexture *image, const LLColor4 &color);
 
 	F32			getKey()					const	{ return mDistance; }
 
@@ -240,7 +240,7 @@ private:
 	U32			mLastIndicesIndex;
 
 	LLXformMatrix* mXform;
-	LLPointer<LLViewerImage> mTexture;
+	LLPointer<LLViewerTexture> mTexture;
 	LLPointer<LLDrawable> mDrawablep;
 	LLPointer<LLViewerObject> mVObjp;
 	S32			mTEOffset;

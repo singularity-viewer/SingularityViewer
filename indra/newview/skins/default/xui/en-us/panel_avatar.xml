@@ -161,7 +161,7 @@
 			<text_editor bottom="-399" embedded_items="false"
 			     enabled="true" follows="left|top" font="SansSerifSmall" height="110"
 			     is_unicode="false" left="79" max_length="511" mouse_opaque="true"
-			     name="about" width="321" word_wrap="true" />
+			     name="about" width="321" word_wrap="true" spell_check="true" />
 			<text bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
 			     bottom="-427" drop_shadow_visible="true" follows="left|top"
 			     font="SansSerifSmall" h_pad="0" halign="right" height="16" left="0"
@@ -276,7 +276,7 @@
 			     border_thickness="1" bottom_delta="-20" enabled="true" follows="left|top"
 			     font="SansSerifSmall" height="16" is_unicode="false" left="74"
 			     max_length="254" mouse_opaque="true" name="want_to_edit"
-			     width="330" />
+			     width="330" spell_check="true" />
 			<text bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
 			     bottom_delta="-26" drop_shadow_visible="true" follows="left|top"
 			     font="SansSerifSmall" h_pad="0" halign="right" height="16" left="4"
@@ -305,7 +305,7 @@
 			     border_thickness="1" bottom_delta="-20" enabled="true" follows="left|top"
 			     font="SansSerifSmall" height="16" is_unicode="false" left="74"
 			     max_length="254" mouse_opaque="true" name="skills_edit"
-			     width="330" />
+			     width="330" spell_check="true" />
 			<text bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
 			     bottom_delta="-30" drop_shadow_visible="true" follows="left|top"
 			     font="SansSerifSmall" h_pad="0" halign="right" height="16" left="4"
@@ -411,7 +411,7 @@
 			<text_editor bottom="-347" embedded_items="false"
 			     enabled="true" follows="left|top" font="SansSerifSmall" height="160"
 			     is_unicode="false" left="70" max_length="254" mouse_opaque="false"
-			     name="about" width="330" word_wrap="true" />
+			     name="about" width="330" word_wrap="true" spell_check="true" />
 		</panel>
 		<panel border="true" bottom="-482" follows="left|top|right|bottom" height="466"
 		     label="My Notes" left="1" mouse_opaque="true" name="My Notes" width="418">
@@ -429,7 +429,7 @@ notes.  This person cannot see them, nor can other people.
 			<text_editor bottom_delta="-260" embedded_items="false" enabled="true" follows="left|top"
 			     font="SansSerif" height="256" is_unicode="false" left="10"
 			     max_length="1023" mouse_opaque="true" name="notes edit" width="400"
-			     word_wrap="false" />
+			     word_wrap="false" spell_check="true" />
 		</panel>
 	</tab_container>
 	<button bottom="-482" font="SansSerif" halign="center" height="20" label="OK"

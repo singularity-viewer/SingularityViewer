@@ -2525,6 +2525,11 @@ BOOL LLMenuGL::handleJumpKey(KEY key)
 // Add the menu item to this menu.
 BOOL LLMenuGL::append( LLMenuItemGL* item )
 {
+	if (mSpilloverMenu)
+	{
+		return mSpilloverMenu->append(item);
+	}
+
 	mItems.push_back( item );
 	addChild( item );
 	arrange();
@@ -2570,6 +2575,31 @@ BOOL LLMenuGL::appendMenu( LLMenuGL* menu )
 	menu->setBackgroundColor( mBackgroundColor );
 
 	return success;
+}
+
+// Remove a menu item from this menu.
+BOOL LLMenuGL::remove( LLMenuItemGL* item )
+{
+	if (mSpilloverMenu)
+	{
+		cleanupSpilloverBranch();
+	}
+
+	item_list_t::iterator found_iter = std::find(mItems.begin(), mItems.end(), item);
+	if (found_iter != mItems.end())
+	{
+		mItems.erase(found_iter);
+	}
+
+	removeChild( item );
+
+	// We keep it around in case someone is pointing at it.
+	// The caller can delete it if it's safe.
+	// Note that getMenu() will still not work since its parent isn't a menu.
+	sMenuContainer->addChild( item );
+
+	arrange();
+	return TRUE;
 }
 
 void LLMenuGL::setEnabledSubMenus(BOOL enable)
@@ -2828,6 +2858,11 @@ void LLMenuGL::updateParent(LLView* parentp)
 	for (item_iter = mItems.begin(); item_iter != mItems.end(); ++item_iter)
 	{
 		(*item_iter)->updateBranchParent(parentp);
+	}
+
+	if (mSpilloverMenu)
+	{
+		mSpilloverMenu->updateParent(parentp);
 	}
 }
 

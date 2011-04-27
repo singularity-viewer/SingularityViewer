@@ -439,7 +439,7 @@ void LLMultiSlider::draw()
 	F32 opacity = getEnabled() ? 1.f : 0.3f;
 
 	// Track
-	LLUIImagePtr thumb_imagep = LLUI::sImageProvider->getUIImage("rounded_square.tga");
+	LLUIImagePtr thumb_imagep = LLUI::getUIImage("rounded_square.tga");
 
 	S32 height_offset = (getRect().getHeight() - MULTI_TRACK_HEIGHT) / 2;
 	LLRect track_rect(0, getRect().getHeight() - height_offset, getRect().getWidth(), height_offset );

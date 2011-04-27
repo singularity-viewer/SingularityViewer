@@ -55,8 +55,7 @@
 #include "llscrollcontainer.h" // hack to allow scrolling
 #include "lltooldraganddrop.h"
 #include "llui.h"
-#include "llviewerimage.h"
-#include "llviewerimagelist.h"
+#include "llviewertexturelist.h"
 #include "llviewerjointattachment.h"
 #include "llviewermenu.h"
 #include "lluictrlfactory.h"

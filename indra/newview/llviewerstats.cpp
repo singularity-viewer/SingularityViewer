@@ -43,7 +43,7 @@
 #include "pipeline.h" 
 #include "lltexturefetch.h" 
 #include "llviewerobjectlist.h" 
-#include "llviewerimagelist.h" 
+#include "llviewertexturelist.h" 
 #include "lltexlayer.h"
 #include "llsurface.h"
 #include "llvlmanager.h"
@@ -363,7 +363,7 @@ void output_statistics(void*)
 {
 	llinfos << "Number of orphans: " << gObjectList.getOrphanCount() << llendl;
 	llinfos << "Number of dead objects: " << gObjectList.mNumDeadObjects << llendl;
-	llinfos << "Num images: " << gImageList.getNumImages() << llendl;
+	llinfos << "Num images: " << gTextureList.getNumImages() << llendl;
 	llinfos << "Texture usage: " << LLImageGL::sGlobalTextureMemoryInBytes << llendl;
 	llinfos << "Texture working set: " << LLImageGL::sBoundTextureMemoryInBytes << llendl;
 	llinfos << "Raw usage: " << LLImageRaw::sGlobalRawMemory << llendl;
@@ -495,7 +495,7 @@ F32		gWorstLandCompression = 0.f, gWorstWaterCompression = 0.f;
 U32		gTotalWorldBytes = 0, gTotalObjectBytes = 0, gTotalTextureBytes = 0, gSimPingCount = 0;
 U32		gObjectBits = 0;
 F32		gAvgSimPing = 0.f;
-
+U32     gTotalTextureBytesPerBoostLevel[LLViewerTexture::MAX_GL_IMAGE_CATEGORY] = {0};
 
 extern U32  gVisCompared;
 extern U32  gVisTested;
@@ -602,11 +602,11 @@ void update_statistics(U32 frame_count)
 		static LLFrameTimer texture_stats_timer;
 		if (texture_stats_timer.getElapsedTimeF32() >= texture_stats_freq)
 		{
-			LLViewerStats::getInstance()->mTextureKBitStat.addValue(LLViewerImageList::sTextureBits/1024.f);
-			LLViewerStats::getInstance()->mTexturePacketsStat.addValue(LLViewerImageList::sTexturePackets);
-			gTotalTextureBytes += LLViewerImageList::sTextureBits / 8;
-			LLViewerImageList::sTextureBits = 0;
-			LLViewerImageList::sTexturePackets = 0;
+			LLViewerStats::getInstance()->mTextureKBitStat.addValue(LLViewerTextureList::sTextureBits/1024.f);
+			LLViewerStats::getInstance()->mTexturePacketsStat.addValue(LLViewerTextureList::sTexturePackets);
+			gTotalTextureBytes += LLViewerTextureList::sTextureBits / 8;
+			LLViewerTextureList::sTextureBits = 0;
+			LLViewerTextureList::sTexturePackets = 0;
 			texture_stats_timer.reset();
 		}
 	}

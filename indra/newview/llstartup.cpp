@@ -163,7 +163,7 @@
 #include "llviewerdisplay.h"
 #include "llviewergenericmessage.h"
 #include "llviewergesture.h"
-#include "llviewerimagelist.h"
+#include "llviewertexturelist.h"
 #include "llviewermedia.h"
 #include "llviewermenu.h"
 #include "llviewermessage.h"
@@ -210,6 +210,7 @@
 // </edit>
 
 #include "llavatarnamecache.h"
+#include "lgghunspell_wrapper.h"
 
 // [RLVa:KB]
 #include "rlvhandler.h"
@@ -241,7 +242,7 @@ extern bool gLLWindEnabled;
 // local globals
 //
 
-LLPointer<LLImageGL> gStartImageGL;
+LLPointer<LLViewerTexture> gStartTexture;
 
 static LLHost gAgentSimHost;
 static BOOL gSkipOptionalUpdate = FALSE;
@@ -330,7 +331,7 @@ void update_texture_fetch()
 	LLAppViewer::getTextureCache()->update(1); // unpauses the texture cache thread
 	LLAppViewer::getImageDecodeThread()->update(1); // unpauses the image thread
 	LLAppViewer::getTextureFetch()->update(1); // unpauses the texture fetch thread
-	gImageList.updateImages(0.10f);
+	gTextureList.updateImages(0.10f);
 }
 
 void hooked_process_sound_trigger(LLMessageSystem *msg, void **)
@@ -400,7 +401,7 @@ bool idle_startup()
 	else
 	{
 		// Update images?
-		gImageList.updateImages(0.01f);
+		gTextureList.updateImages(0.01f);
 	}
 
 	if ( STATE_FIRST == LLStartUp::getStartupState() )
@@ -412,6 +413,7 @@ bool idle_startup()
 		//
 		// Initialize stuff that doesn't need data from simulators
 		//
+		glggHunSpell->initSettings();
 
 // [RLVa:KB] - Version: 1.23.4 | Checked: 2009-07-10 (RLVa-1.0.0g) | Modified: RLVa-0.2.1d
 		if ( (gSavedSettings.controlExists(RLV_SETTING_MAIN)) && (gSavedSettings.getBOOL(RLV_SETTING_MAIN)) )
@@ -1903,7 +1905,7 @@ bool idle_startup()
 		//
 		// Initialize classes w/graphics stuff.
 		//
-		gImageList.doPrefetchImages();		
+		gTextureList.doPrefetchImages();		
 		LLSurface::initClasses();
 
 		LLFace::initClass();
@@ -2162,7 +2164,7 @@ bool idle_startup()
 			F32 frac = (F32)i / (F32)DECODE_TIME_SEC;
 			set_startup_status(0.45f + frac*0.1f, LLTrans::getString("LoginDecodingImages"), gAgent.mMOTD);
 			display_startup();
-			gImageList.decodeAllImages(1.f);
+			gTextureList.decodeAllImages(1.f);
 		}
 		LLStartUp::setStartupState( STATE_WORLD_WAIT );
 
@@ -3404,8 +3406,8 @@ void pass_processObjectPropertiesFamily(LLMessageSystem *msg, void**)
 void register_viewer_callbacks(LLMessageSystem* msg)
 {
 	msg->setHandlerFuncFast(_PREHASH_LayerData,				process_layer_data );
-	msg->setHandlerFuncFast(_PREHASH_ImageData,				LLViewerImageList::receiveImageHeader );
-	msg->setHandlerFuncFast(_PREHASH_ImagePacket,				LLViewerImageList::receiveImagePacket );
+	msg->setHandlerFuncFast(_PREHASH_ImageData,				LLViewerTextureList::receiveImageHeader );
+	msg->setHandlerFuncFast(_PREHASH_ImagePacket,				LLViewerTextureList::receiveImagePacket );
 	msg->setHandlerFuncFast(_PREHASH_ObjectUpdate,				process_object_update );
 	msg->setHandlerFunc("ObjectUpdateCompressed",				process_compressed_object_update );
 	msg->setHandlerFunc("ObjectUpdateCached",					process_cached_object_update );
@@ -3536,7 +3538,7 @@ void register_viewer_callbacks(LLMessageSystem* msg)
 	msg->setHandlerFunc("TeleportFailed", process_teleport_failed, NULL);
 	msg->setHandlerFunc("TeleportLocal", process_teleport_local, NULL);
 
-	msg->setHandlerFunc("ImageNotInDatabase", LLViewerImageList::processImageNotInDatabase, NULL);
+	msg->setHandlerFunc("ImageNotInDatabase", LLViewerTextureList::processImageNotInDatabase, NULL);
 
 	msg->setHandlerFuncFast(_PREHASH_GroupMembersReply,
 						LLGroupMgr::processGroupMembersReply);
@@ -3677,9 +3679,9 @@ void LLStartUp::loadInitialOutfit( const std::string& outfit_folder_name,
 // location_id = 1 => home position
 void init_start_screen(S32 location_id)
 {
-	if (gStartImageGL.notNull())
+	if (gStartTexture.notNull())
 	{
-		gStartImageGL = NULL;
+		gStartTexture = NULL;
 		LL_INFOS("AppInit") << "re-initializing start screen" << LL_ENDL;
 	}
 
@@ -3711,7 +3713,6 @@ void init_start_screen(S32 location_id)
 		return;
 	}
 
-	gStartImageGL = new LLImageGL(FALSE);
 	gStartImageWidth = start_image_bmp->getWidth();
 	gStartImageHeight = start_image_bmp->getHeight();
 
@@ -3719,12 +3720,12 @@ void init_start_screen(S32 location_id)
 	if (!start_image_bmp->decode(raw, 0.0f))
 	{
 		LL_WARNS("AppInit") << "Bitmap decode failed" << LL_ENDL;
-		gStartImageGL = NULL;
+		gStartTexture = NULL;
 		return;
 	}
 
 	raw->expandToPowerOfTwo();
-	gStartImageGL->createGLTexture(0, raw, 0, TRUE, LLViewerImageBoostLevel::OTHER);
+	gStartTexture = LLViewerTextureManager::getLocalTexture(raw.get(), FALSE) ;
 }
 
 
@@ -3732,7 +3733,7 @@ void init_start_screen(S32 location_id)
 void release_start_screen()
 {
 	LL_DEBUGS("AppInit") << "Releasing bitmap..." << LL_ENDL;
-	gStartImageGL = NULL;
+	gStartTexture = NULL;
 }
 
 

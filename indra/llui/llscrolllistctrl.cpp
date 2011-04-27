@@ -132,7 +132,7 @@ void LLScrollListIcon::setValue(const LLSD& value)
 	{
 		// don't use default image specified by LLUUID::null, use no image in that case
 		LLUUID image_id = value.asUUID();
-		mIcon = image_id.notNull() ? LLUI::sImageProvider->getUIImageByID(image_id) : LLUIImagePtr(NULL);
+		mIcon = image_id.notNull() ? LLUI::getUIImageByID(image_id) : LLUIImagePtr(NULL);
 	}
 	else
 	{
@@ -325,7 +325,7 @@ LLScrollListText::LLScrollListText( const std::string& text, const LLFontGL* fon
 	// initialize rounded rect image
 	if (!mRoundedRectImage)
 	{
-		mRoundedRectImage = LLUI::sImageProvider->getUIImage("rounded_square.tga");
+		mRoundedRectImage = LLUI::getUIImage("rounded_square.tga");
 	}
 }
 //virtual 

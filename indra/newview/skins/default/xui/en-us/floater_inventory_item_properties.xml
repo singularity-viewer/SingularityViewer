@@ -24,7 +24,7 @@
 	<line_editor bevel_style="in" border_style="line" border_thickness="1" bottom="-61"
 	     enabled="true" follows="left|top|right" font="SansSerifSmall" height="16"
 	     is_unicode="false" left="88" max_length="127" mouse_opaque="true"
-	     name="LabelItemDesc" width="252" />
+	     name="LabelItemDesc" width="252" spell_check="true" />
 	<text bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
 	     bottom="-81" drop_shadow_visible="true" follows="left|top"
 	     font="SansSerifSmall" h_pad="0" halign="left" height="16" left="10"

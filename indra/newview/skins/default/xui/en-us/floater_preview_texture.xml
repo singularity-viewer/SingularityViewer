@@ -8,7 +8,7 @@
 	<line_editor bevel_style="in" border_style="line" border_thickness="1" bottom="-43" enabled="false"
 		follows="left|top|right" font="SansSerifSmall" handle_edit_keys_directly="false" height="17" left="93" 
 		max_length="127" mouse_opaque="true" name="desc" select_all_on_focus_received="false" select_on_focus="false" 
-		width="229" />
+		width="229" spell_check="true" />
 	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false" 
 		bottom_delta="-20" drop_shadow_visible="true" enabled="true" follows="left|top" font="SansSerifSmall" h_pad="0" 
 		halign="left" height="16" left="13" mouse_opaque="true" name="uuid txt" v_pad="0" width="80">

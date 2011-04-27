@@ -12,7 +12,7 @@
 	     enabled="true" follows="left|top|right" font="SansSerif"
 	     handle_edit_keys_directly="false" height="19" left="93" max_length="127"
 	     mouse_opaque="true" name="desc" select_all_on_focus_received="false"
-	     select_on_focus="false" width="194" />
+	     select_on_focus="false" width="194" spell_check="true" />
 	<button bottom="-322" enabled="true" follows="left|bottom" font="SansSerif"
 	     halign="center" height="20" label="Keep" label_selected="Keep" left="9"
 	     mouse_opaque="true" name="Keep" scale_image="true" width="100" />

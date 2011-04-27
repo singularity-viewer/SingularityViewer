@@ -38,7 +38,7 @@
 #include <vector>
 
 #include "llfloater.h"
-//#include "llviewerimagelist.h"
+//#include "llviewertexturelist.h"
 #include "llmemory.h"	// LLPointer<>
 
 typedef std::set<LLUUID, lluuid_less> uuid_list_t;

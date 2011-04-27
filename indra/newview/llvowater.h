@@ -34,7 +34,7 @@
 #define LL_VOWATER_H
 
 #include "llviewerobject.h"
-#include "llviewerimage.h"
+#include "llviewertexture.h"
 #include "pipeline.h"
 #include "v2math.h"
 

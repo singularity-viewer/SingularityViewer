@@ -6,7 +6,7 @@
 	     enabled="true" follows="left|top|right" font="SansSerif"
 	     handle_edit_keys_directly="false" height="19" left="93" max_length="127"
 	     mouse_opaque="true" name="desc" select_all_on_focus_received="false"
-	     select_on_focus="false" width="194" />
+	     select_on_focus="false" width="194" spell_check="true" />
 	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
 	     bottom="-38" drop_shadow_visible="true" enabled="true" follows="left|top"
 	     font="SansSerif" h_pad="0" halign="left" height="19" left="13"

@@ -39,7 +39,7 @@
 
 class LLFace;
 class LLDrawPool;
-
+class LLViewerFetchedTexture;
 
 class LLVOTree : public LLViewerObject
 {
@@ -153,6 +153,7 @@ public:
 	};
 
 	static F32 sTreeFactor;			// Tree level of detail factor
+	static const S32 sMAX_NUM_TREE_LOD_LEVELS ;
 
 	friend class LLDrawPoolTree;
 protected:
@@ -161,7 +162,7 @@ protected:
 	LLVector3		mWind;
 
 	LLPointer<LLVertexBuffer> mReferenceBuffer; //reference geometry for generating tree mesh
-	LLPointer<LLViewerImage> mTreeImagep;	// Pointer to proper tree image
+	LLPointer<LLViewerFetchedTexture> mTreeImagep;	// Pointer to proper tree image
 
 	U8				mSpecies;		// Species of tree
 	F32				mBranchLength;	// Scale (length) of tree branches

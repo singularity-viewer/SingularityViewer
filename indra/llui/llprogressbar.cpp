@@ -98,12 +98,12 @@ void LLProgressBar::setPercent(const F32 percent)
 
 void LLProgressBar::setImageBar( const std::string &bar_name )
 {
-	mImageBar = LLUI::sImageProvider->getUIImage(bar_name)->getImage();
+	mImageBar = LLUI::getUIImage(bar_name)->getImage();
 }
 
 void LLProgressBar::setImageShadow(const std::string &shadow_name)
 {
-	mImageShadow = LLUI::sImageProvider->getUIImage(shadow_name)->getImage();
+	mImageShadow = LLUI::getUIImage(shadow_name)->getImage();
 }
 
 void LLProgressBar::setColorBar(const LLColor4 &c)

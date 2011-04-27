@@ -61,6 +61,7 @@ std::list<U32> LLImageGL::sDeadTextureList;
 BOOL LLImageGL::sGlobalUseAnisotropic	= FALSE;
 F32 LLImageGL::sLastFrameTime			= 0.f;
 BOOL LLImageGL::sAllowReadBackRaw       = FALSE ;
+LLImageGL* LLImageGL::sDefaultGLTexture = NULL ;
 
 std::set<LLImageGL*> LLImageGL::sImageList;
 
@@ -105,9 +106,9 @@ void check_all_images()
 	}
 }
 
-void LLImageGL::checkTexSize() const
+void LLImageGL::checkTexSize(bool forced) const
 {
-	if (gDebugGL && mTarget == GL_TEXTURE_2D)
+	if ((forced || gDebugGL) && mTarget == GL_TEXTURE_2D)
 	{
 		GLint texname;
 		glGetIntegerv(GL_TEXTURE_BINDING_2D, &texname);
@@ -186,7 +187,6 @@ void LLImageGL::setHighlightTexture(S32 category)
 		}
 	}
 	sHighlightTexturep->createGLTexture(0, image_raw, 0, TRUE, category);
-	sHighlightTexturep->dontDiscard();
 	image_raw = NULL;
 }
 
@@ -272,27 +272,15 @@ void LLImageGL::updateStats(F32 current_time)
 }
 
 //static
-S32 LLImageGL::updateBoundTexMemStatic(const S32 delta, const S32 size, S32 category)
+S32 LLImageGL::updateBoundTexMem(const S32 mem, const S32 ncomponents, S32 category)
 {
-	if(gAuditTexture)
+	if(gAuditTexture && ncomponents > 0 && category > -1)
 	{
-		sTextureCurBoundCounter[getTextureCounterIndex(size)]++ ;
-		sTextureCurMemByCategoryBound[category] += delta ;
+		sTextureCurBoundCounter[getTextureCounterIndex(mem / ncomponents)]++ ;
+		sTextureCurMemByCategoryBound[category] += mem ;
 	}
 	
-	LLImageGL::sCurBoundTextureMemory += delta ;
-	return LLImageGL::sCurBoundTextureMemory;
-}
-
-S32 LLImageGL::updateBoundTexMem()const
-{
-	if(gAuditTexture)
-	{
-		sTextureCurBoundCounter[getTextureCounterIndex(mTextureMemory / mComponents)]++ ;
-		sTextureCurMemByCategoryBound[mCategory] += mTextureMemory ;
-	}
-
-	LLImageGL::sCurBoundTextureMemory += mTextureMemory ;
+	LLImageGL::sCurBoundTextureMemory += mem ;
 	return LLImageGL::sCurBoundTextureMemory;
 }
 
@@ -301,11 +289,13 @@ S32 LLImageGL::updateBoundTexMem()const
 //static 
 void LLImageGL::destroyGL(BOOL save_state)
 {
+	deleteDeadTextures(); //Dump unimportant textures.
 	for (S32 stage = 0; stage < gGLManager.mNumTextureUnits; stage++)
 	{
 		gGL.getTexUnit(stage)->unbind(LLTexUnit::TT_TEXTURE);
 	}
 	
+	int stored_count = 0;
 	sAllowReadBackRaw = true ;
 	for (std::set<LLImageGL*>::iterator iter = sImageList.begin();
 		 iter != sImageList.end(); iter++)
@@ -320,18 +310,24 @@ void LLImageGL::destroyGL(BOOL save_state)
 				{
 					glimage->mSaveData = NULL ;
 				}
+				else
+					stored_count++;
 			}
 
 			glimage->destroyGLTexture();
 			stop_glerror();
 		}
 	}
+	llinfos << "Storing " << stored_count << " images..." << llendl;
 	sAllowReadBackRaw = false ;
+	deleteDeadTextures();//Now, actually call glDeleteTextures for everything.
 }
 
 //static 
 void LLImageGL::restoreGL()
 {
+	
+	int recovered_count = 0;
 	for (std::set<LLImageGL*>::iterator iter = sImageList.begin();
 		 iter != sImageList.end(); iter++)
 	{
@@ -346,10 +342,12 @@ void LLImageGL::restoreGL()
 			{
 				glimage->createGLTexture(glimage->mCurrentDiscardLevel, glimage->mSaveData, 0, TRUE, glimage->getCategory());
 				stop_glerror();
+				recovered_count++;
 			}
 			glimage->mSaveData = NULL; // deletes data
 		}
 	}
+	llinfos << "Restored " << recovered_count << " images" << llendl;
 }
 
 //static 
@@ -478,11 +476,7 @@ void LLImageGL::init(BOOL usemipmaps)
 	mMissed				= FALSE;
 #endif
 
-	mCategory = -1 ;
-	
-	//LLTexture stuff
-	mDontDiscard = FALSE;
-	mTextureState       = NO_DELETE ;
+	mCategory = -1;
 }
 
 void LLImageGL::cleanup()
@@ -592,7 +586,7 @@ void LLImageGL::forceUpdateBindStats(void) const
 	mLastBindTime = sLastFrameTime;
 }
 
-BOOL LLImageGL::updateBindStats() const
+BOOL LLImageGL::updateBindStats(S32 tex_mem) const
 {	
 	if (mTexName != 0)
 	{
@@ -604,32 +598,18 @@ BOOL LLImageGL::updateBindStats() const
 		{
 			// we haven't accounted for this texture yet this frame
 			sUniqueCount++;
-	
-			updateBoundTexMem();
+			updateBoundTexMem(tex_mem, mComponents, mCategory);
 			mLastBindTime = sLastFrameTime;
-			
+
 			return TRUE ;
 		}
 	}
-	return FALSE;
+	return FALSE ;
 }
 
-//virtual
-bool LLImageGL::bindError(const S32 stage) const
+F32 LLImageGL::getTimePassedSinceLastBound()
 {
-	return false;
-}
-
-//virtual
-bool LLImageGL::bindDefaultImage(const S32 stage) 
-{
-	return false;
-}
-
-//virtual
-void LLImageGL::forceImmediateUpdate()
-{
-	return ;
+	return sLastFrameTime - mLastBindTime ;
 }
 
 void LLImageGL::setExplicitFormat( LLGLint internal_format, LLGLenum primary_format, LLGLenum type_format, BOOL swap_bytes )
@@ -1184,7 +1164,7 @@ BOOL LLImageGL::createGLTexture(S32 discard_level, const U8* data_in, BOOL data_
 
 		if(gAuditTexture)
 		{
-			decTextureCounter() ;
+			decTextureCounter(mTextureMemory, mComponents, mCategory) ;
 		}
 
 		LLImageGL::deleteTextures(1, &old_name);
@@ -1194,11 +1174,10 @@ BOOL LLImageGL::createGLTexture(S32 discard_level, const U8* data_in, BOOL data_
 
 	mTextureMemory = getMipBytes(discard_level);
 	sGlobalTextureMemoryInBytes += mTextureMemory;
-	setActive() ;
 
 	if(gAuditTexture)
 	{
-		incTextureCounter() ;
+		incTextureCounter(mTextureMemory, mComponents, mCategory) ;
 	}
 	// mark this as bound at this point, so we don't throw it out immediately
 	mLastBindTime = sLastFrameTime;
@@ -1281,7 +1260,7 @@ BOOL LLImageGL::readBackRaw(S32 discard_level, LLImageRaw* imageraw, bool compre
 	llverify(gGL.getTexUnit(0)->bindManual(mBindTarget, mTexName));	
 
 	//debug code, leave it there commented.
-	//checkTexSize() ;
+	checkTexSize() ;
 
 	LLGLint glwidth = 0;
 	glGetTexLevelParameteriv(mTarget, gl_discard, GL_TEXTURE_WIDTH, (GLint*)&glwidth);
@@ -1398,19 +1377,20 @@ void LLImageGL::destroyGLTexture()
 		{
 			if(gAuditTexture)
 			{
-				decTextureCounter() ;
+				decTextureCounter(mTextureMemory, mComponents, mCategory) ;
 			}
 			sGlobalTextureMemoryInBytes -= mTextureMemory;
 			mTextureMemory = 0;
 		}
 		
-		LLImageGL::deleteTextures(1, &mTexName);
-		mTextureState = DELETED ;
+		LLImageGL::deleteTextures(1, &mTexName);			
 		mTexName = 0;
 		mCurrentDiscardLevel = -1 ; //invalidate mCurrentDiscardLevel.
 		mGLTextureCreated = FALSE ;
 	}
 }
+
+
 
 //----------------------------------------------------------------------------
 
@@ -1724,59 +1704,6 @@ void LLImageGL::analyzeAlpha(const void* data_in, U32 w, U32 h)
 	}
 }
 
-BOOL LLImageGL::isDeleted()  
-{ 
-	return mTextureState == DELETED ; 
-}
-
-BOOL LLImageGL::isInactive()  
-{ 
-	return mTextureState == INACTIVE ; 
-}
-
-BOOL LLImageGL::isDeletionCandidate()  
-{ 
-	return mTextureState == DELETION_CANDIDATE ; 
-}
-//----------------------------------------------------------------------------
- 
-
-void LLImageGL::setDeletionCandidate()  
-{ 
-	if(mTexName && (mTextureState == INACTIVE))
-	{
-		mTextureState = DELETION_CANDIDATE ;		
-	}
-}
-
-void LLImageGL::forceActive()
-{
-	mTextureState = ACTIVE ; 
-}
-
-void LLImageGL::setActive() 
-{ 
-	if(mTextureState != NO_DELETE)
-	{
-		mTextureState = ACTIVE ; 
-	}
-}
-
-//set the texture inactive
-void LLImageGL::setInactive()
-{
-	if(mTexName && (mTextureState == ACTIVE) && !getBoundRecently())
-	{
-		mTextureState = INACTIVE ; 
-	}
-}
-
-//set the texture to stay in memory
-void LLImageGL::setNoDelete() 
-{ 
-	mTextureState = NO_DELETE ;
-}
-
 //----------------------------------------------------------------------------
 void LLImageGL::updatePickMask(S32 width, S32 height, const U8* data_in)
 {
@@ -1928,26 +1855,21 @@ S32 LLImageGL::getTextureCounterIndex(U32 val)
 		return ret ;
 	}
 }
-void LLImageGL::incTextureCounterStatic(U32 val, S32 ncomponents, S32 category) 
+
+//static
+void LLImageGL::incTextureCounter(U32 val, S32 ncomponents, S32 category) 
 {
 	sTextureLoadedCounter[getTextureCounterIndex(val)]++ ;
 	sTextureMemByCategory[category] += (S32)val * ncomponents ;
 }
-void LLImageGL::decTextureCounterStatic(U32 val, S32 ncomponents, S32 category) 
+
+//static
+void LLImageGL::decTextureCounter(U32 val, S32 ncomponents, S32 category) 
 {
 	sTextureLoadedCounter[getTextureCounterIndex(val)]-- ;
 	sTextureMemByCategory[category] += (S32)val * ncomponents ;
 }
-void LLImageGL::incTextureCounter() 
-{
-	sTextureLoadedCounter[getTextureCounterIndex(mTextureMemory / mComponents)]++ ;
-	sTextureMemByCategory[mCategory] += mTextureMemory ;
-}
-void LLImageGL::decTextureCounter() 
-{
-	sTextureLoadedCounter[getTextureCounterIndex(mTextureMemory / mComponents)]-- ;
-	sTextureMemByCategory[mCategory] -= mTextureMemory ;
-}
+
 void LLImageGL::setCurTexSizebar(S32 index, BOOL set_pick_size)
 {
 	sCurTexSizeBar = index ;

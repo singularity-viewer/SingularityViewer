@@ -56,6 +56,7 @@ class ViewerManifest(LLManifest):
 
             # include the entire shaders directory recursively
             self.path("shaders")
+            self.path("dictionaries")
             # ... and the entire windlight directory
             self.path("windlight")
             self.end_prefix("app_settings")
@@ -444,6 +445,9 @@ class DarwinManifest(ViewerManifest):
             self.path("../../libraries/universal-darwin/lib_release/libvorbis.0.dylib", dst="MacOS/libvorbis.0.dylib")
             self.path("../../libraries/universal-darwin/lib_release/libogg.0.dylib", dst="MacOS/libogg.0.dylib")
 
+            # hunspell library
+            #self.path("../../libraries/universal-darwin/lib_release/libhunspell-1.2.dylib", "MacOS/libhunspell-1.2.dylib");
+
             # most everything goes in the Resources directory
             if self.prefix(src="", dst="Resources"):
                 super(DarwinManifest, self).construct()
@@ -789,6 +793,7 @@ class Linux_i686Manifest(LinuxManifest):
             self.path("libalut.so")
             self.path("libopenal.so", "libopenal.so.1")
             self.path("libtcmalloc_minimal.so.0")
+            #self.path("libhunspell-1.2.so.0.0.0", "libhunspell-1.2.so.0")
             self.path("libtcmalloc_minimal.so.0.0.0")
             self.end_prefix("lib")
 

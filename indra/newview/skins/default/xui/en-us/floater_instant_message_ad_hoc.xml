@@ -56,7 +56,7 @@
 			     handle_edit_keys_directly="false" height="20"
 			     label="Click here to instant message" left="5" max_length="1022"
 			     mouse_opaque="true" name="chat_editor" select_all_on_focus_received="false"
-			     select_on_focus="false" tab_group="1" width="426" />
+			     select_on_focus="false" tab_group="1" width="426" spell_check="true" />
 			<button bottom_delta="0" enabled="true" follows="right|bottom" font="SansSerif"
 			     halign="center" height="20" label="Send" left="436" mouse_opaque="true"
 			     name="send_btn" scale_image="true" width="60" />

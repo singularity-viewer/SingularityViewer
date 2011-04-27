@@ -46,7 +46,7 @@ class LLFolderViewItem;
 class LLSearchEditor;
 class LLInventoryPanel;
 class LLSaveFolderState;
-class LLViewerImage;
+class LLViewerTexture;
 
 // used for setting drag & drop callbacks.
 typedef BOOL (*drag_n_drop_callback)(LLUICtrl*, LLInventoryItem*, void*);
@@ -89,7 +89,7 @@ public:
 	static void		onSearchEdit(const std::string& search_string, void* user_data );
 
 protected:
-	LLPointer<LLViewerImage> mLandmarkp;
+	LLPointer<LLViewerTexture> mLandmarkp;
 
 	LLUUID				mImageAssetID; // Currently selected texture
 

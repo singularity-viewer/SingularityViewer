@@ -442,6 +442,9 @@ public:
 	// Add the menu item to this menu.
 	virtual BOOL append( LLMenuItemGL* item );
 
+	// Remove a menu item from this menu.
+	virtual BOOL remove( LLMenuItemGL* item );
+
 	// *NOTE:Mani - appendNoArrange() should be removed when merging to skinning/viewer2.0
 	// Its added as a fix to a viewer 1.23 bug that has already been address by skinning work.
 	virtual BOOL appendNoArrange( LLMenuItemGL* item ); 

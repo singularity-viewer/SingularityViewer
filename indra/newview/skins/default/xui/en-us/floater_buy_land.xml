@@ -67,7 +67,7 @@
 	<text_editor bottom_delta="-242" enabled="false"
 	     follows="top|right" font="SansSerifSmall" height="237" left="444"
 	     max_length="65535" name="covenant_editor" right="725"
-	     width="271" word_wrap="true">
+	     width="271" word_wrap="true" spell_check="true">
 		Loading...
 	</text_editor>
 	<check_box follows="left|top" height="20" label="I Agree to the Covenant Defined Above."

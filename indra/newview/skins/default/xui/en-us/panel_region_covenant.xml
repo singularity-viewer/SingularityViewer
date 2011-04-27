@@ -48,7 +48,7 @@
 	<text_editor type="string" length="1" bottom="-279" embedded_items="false" enabled="false"
 	     follows="left|top" font="SansSerifSmall" height="194"
 	     left="120" max_length="65535" mouse_opaque="true" name="covenant_editor"
-	     width="340" word_wrap="true">
+	     width="340" word_wrap="true" spell_check="true">
 		There is no Covenant provided for this Estate.
 	</text_editor>
 	<button bottom_delta="-25" follows="left|top" font="SansSerifSmall" height="18"

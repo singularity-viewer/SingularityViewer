@@ -63,7 +63,7 @@
 #include "llurlhistory.h" // OGPX : regionuri text box has a history of region uris (if FN/LN are loaded at startup)
 #include "llurlsimstring.h"
 #include "llviewerbuild.h"
-#include "llviewerimagelist.h"
+#include "llviewertexturelist.h"
 #include "llviewermenu.h"			// for handle_preferences()
 #include "llviewernetwork.h"
 #include "llviewerwindow.h"			// to link into child list
@@ -593,7 +593,7 @@ LLPanelLogin::~LLPanelLogin()
 		gResponsePtr->setParent( 0 );
 
 	//// We know we're done with the image, so be rid of it.
-	//gImageList.deleteImage( mLogoImage );
+	//gTextureList.deleteImage( mLogoImage );
 	
 	if ( gFocusMgr.getDefaultKeyboardFocus() == this )
 	{

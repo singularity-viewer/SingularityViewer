@@ -45,7 +45,7 @@
 #include "llagent.h"
 #include "llcombobox.h"
 #include "llnotify.h"	
-#include "llviewerimagelist.h"
+#include "llviewertexturelist.h"
 #include "llviewerparcelmgr.h"
 #include "llviewerregion.h"
 #include "lluictrlfactory.h"
@@ -196,7 +196,7 @@ void LLFloaterAuction::onClickSnapshot(void* data)
 		tga->encode(raw);
 		LLVFile::writeFile(tga->getData(), tga->getDataSize(), gVFS, self->mImageID, LLAssetType::AT_IMAGE_TGA);
 		
-		raw->biasedScaleToPowerOfTwo(LLViewerImage::MAX_IMAGE_SIZE_DEFAULT);
+		raw->biasedScaleToPowerOfTwo(LLViewerTexture::MAX_IMAGE_SIZE_DEFAULT);
 
 		llinfos << "Writing J2C..." << llendl;
 
@@ -204,7 +204,7 @@ void LLFloaterAuction::onClickSnapshot(void* data)
 		j2c->encode(raw, 0.0f);
 		LLVFile::writeFile(j2c->getData(), j2c->getDataSize(), gVFS, self->mImageID, LLAssetType::AT_TEXTURE);
 
-		self->mImage = new LLImageGL((LLImageRaw*)raw, FALSE);
+		self->mImage = LLViewerTextureManager::getLocalTexture((LLImageRaw*)raw, FALSE);
 		gGL.getTexUnit(0)->bind(self->mImage);
 		self->mImage->setAddressMode(LLTexUnit::TAM_CLAMP);
 	}

@@ -46,7 +46,7 @@ class LLVOAvatar;
 class LLTextBox;
 class LLVertexBuffer;
 
-class LLPreviewSculpted : public LLDynamicTexture
+class LLPreviewSculpted : public LLViewerDynamicTexture
 {
  public:
 	LLPreviewSculpted(S32 width, S32 height);
@@ -75,7 +75,7 @@ class LLPreviewSculpted : public LLDynamicTexture
 };
 
 
-class LLPreviewAvatar : public LLDynamicTexture
+class LLPreviewAvatar : public LLViewerDynamicTexture
 {
 public:
 	LLPreviewAvatar(S32 width, S32 height);
@@ -129,13 +129,13 @@ protected:
 	bool			loadImage(LLImageRaw* src);
 
 	LLPointer<LLImageRaw> mRawImagep;
-	LLPreviewAvatar* mAvatarPreview;
-	LLPreviewSculpted* mSculptedPreview;
+	LLPointer<LLPreviewAvatar> mAvatarPreview;
+	LLPointer<LLPreviewSculpted> mSculptedPreview;
 	S32				mLastMouseX;
 	S32				mLastMouseY;
 	LLRect			mPreviewRect;
 	LLRectf			mPreviewImageRect;
-	LLPointer<LLImageGL> mImagep ;
+	LLPointer<LLViewerTexture> mImagep ;
 	LLViewerObject* tmpvolume;
 	
 	static S32		sUploadAmount;

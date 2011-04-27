@@ -44,7 +44,7 @@
 #include "llviewerstats.h"
 #include "pipeline.h"
 #include "llviewerobjectlist.h"
-#include "llviewerimagelist.h"
+#include "llviewertexturelist.h"
 
 const S32 LL_SCROLL_BORDER = 1;
 
@@ -144,7 +144,7 @@ void LLFloaterStats::buildStats()
 	// Texture statistics
 	LLStatView *texture_statviewp = render_statviewp->addStatView("texture stat view", "Texture", "OpenDebugStatTexture", rect);
 
-	stat_barp = texture_statviewp->addStat("Count", &(gImageList.sNumImagesStat), "DebugStatModeTextureCount");
+	stat_barp = texture_statviewp->addStat("Count", &(gTextureList.sNumImagesStat), "DebugStatModeTextureCount");
 	stat_barp->setUnitLabel("");
 	stat_barp->mMinBar = 0.f;
 	stat_barp->mMaxBar = 8000.f;
@@ -152,7 +152,7 @@ void LLFloaterStats::buildStats()
 	stat_barp->mLabelSpacing = 4000.f;
 	stat_barp->mPerSec = FALSE;
 
-	stat_barp = texture_statviewp->addStat("Raw Count", &(gImageList.sNumRawImagesStat), "DebugStatModeRawCount");
+	stat_barp = texture_statviewp->addStat("Raw Count", &(gTextureList.sNumRawImagesStat), "DebugStatModeRawCount");
 	stat_barp->setUnitLabel("");
 	stat_barp->mMinBar = 0.f;
 	stat_barp->mMaxBar = 8000.f;
@@ -160,7 +160,7 @@ void LLFloaterStats::buildStats()
 	stat_barp->mLabelSpacing = 4000.f;
 	stat_barp->mPerSec = FALSE;
 
-	stat_barp = texture_statviewp->addStat("GL Mem", &(gImageList.sGLTexMemStat), "DebugStatModeGLMem");
+	stat_barp = texture_statviewp->addStat("GL Mem", &(gTextureList.sGLTexMemStat), "DebugStatModeGLMem");
 	stat_barp->setUnitLabel("");
 	stat_barp->mMinBar = 0.f;
 	stat_barp->mMaxBar = 400.f;
@@ -169,7 +169,7 @@ void LLFloaterStats::buildStats()
 	stat_barp->mPrecision = 1;
 	stat_barp->mPerSec = FALSE;
 
-	stat_barp = texture_statviewp->addStat("Formatted Mem", &(gImageList.sFormattedMemStat), "DebugStatModeFormattedMem");
+	stat_barp = texture_statviewp->addStat("Formatted Mem", &(gTextureList.sFormattedMemStat), "DebugStatModeFormattedMem");
 	stat_barp->setUnitLabel("");
 	stat_barp->mMinBar = 0.f;
 	stat_barp->mMaxBar = 400.f;
@@ -178,7 +178,7 @@ void LLFloaterStats::buildStats()
 	stat_barp->mPrecision = 1;
 	stat_barp->mPerSec = FALSE;
 
-	stat_barp = texture_statviewp->addStat("Raw Mem", &(gImageList.sRawMemStat), "DebugStatModeRawMem");
+	stat_barp = texture_statviewp->addStat("Raw Mem", &(gTextureList.sRawMemStat), "DebugStatModeRawMem");
 	stat_barp->setUnitLabel("");
 	stat_barp->mMinBar = 0.f;
 	stat_barp->mMaxBar = 400.f;
@@ -187,7 +187,7 @@ void LLFloaterStats::buildStats()
 	stat_barp->mPrecision = 1;
 	stat_barp->mPerSec = FALSE;
 
-	stat_barp = texture_statviewp->addStat("Bound Mem", &(gImageList.sGLBoundMemStat), "DebugStatModeBoundMem");
+	stat_barp = texture_statviewp->addStat("Bound Mem", &(gTextureList.sGLBoundMemStat), "DebugStatModeBoundMem");
 	stat_barp->setUnitLabel("");
 	stat_barp->mMinBar = 0.f;
 	stat_barp->mMaxBar = 400.f;

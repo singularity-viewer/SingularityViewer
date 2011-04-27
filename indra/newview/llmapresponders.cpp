@@ -35,7 +35,7 @@
 #include "llmapresponders.h"
 
 #include "llfloaterworldmap.h"
-#include "llviewerimagelist.h"
+#include "llviewertexturelist.h"
 #include "llworldmap.h"
 #include "llagent.h"
 
@@ -80,7 +80,7 @@ void LLMapLayerResponder::result(const LLSD& result)
 //		}
 //		else
 //		{
-			new_layer.LayerImage = gImageList.getImage(new_layer.LayerImageID, MIPMAP_TRUE, FALSE);
+			new_layer.LayerImage = LLViewerTextureManager::getFetchedTexture(new_layer.LayerImageID);
 //		}
 		gGL.getTexUnit(0)->bind(new_layer.LayerImage.get());
 		new_layer.LayerImage->setAddressMode(LLTexUnit::TAM_CLAMP);
@@ -179,14 +179,14 @@ void LLMapLayerResponder::result(const LLSD& result)
 				}
 				else
 				{
-					siminfo->mCurrentImage = gImageList.getImage(siminfo->mMapImageID[LLWorldMap::getInstance()->mCurrentMap], MIPMAP_TRUE, FALSE);
+					siminfo->mCurrentImage = LLViewerTextureManager::getFetchedTexture(siminfo->mMapImageID[LLWorldMap::getInstance()->mCurrentMap]);
 				}
 				siminfo->mCurrentImage->setAddressMode(LLTexUnit::TAM_CLAMP);
 				gGL.getTexUnit(0)->bind(siminfo->mCurrentImage.get());
 			
 				if (siminfo->mMapImageID[2].notNull())
 				{
-					siminfo->mOverlayImage = gImageList.getImage(siminfo->mMapImageID[2], MIPMAP_TRUE, FALSE);
+					siminfo->mOverlayImage = LLViewerTextureManager::getFetchedTexture(siminfo->mMapImageID[2]);
 				}
 				else
 				{

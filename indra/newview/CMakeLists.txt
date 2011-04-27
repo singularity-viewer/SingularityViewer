@@ -9,6 +9,7 @@ include(DirectX)
 include(ELFIO)
 include(FMOD)
 include(OPENAL)
+include(HUNSPELL)
 include(FindOpenGL)
 include(JsonCpp)
 include(LLAddBuildTest)
@@ -43,6 +44,7 @@ endif (WINDOWS)
 
 include_directories(
     ${DBUSGLIB_INCLUDE_DIRS}
+    ${HUNSPELL_INCLUDE_DIR}
     ${ELFIO_INCLUDE_DIR}
     ${JSONCPP_INCLUDE_DIRS}
     ${LLAUDIO_INCLUDE_DIRS}
@@ -70,6 +72,8 @@ set(viewer_SOURCE_FILES
     slfloatermediafilter.cpp
     floaterlocalassetbrowse.cpp
     aoremotectrl.cpp
+    lgghunspell_wrapper.cpp
+    lggdicdownload.cpp
     floaterao.cpp
     floatervoicelicense.cpp
     cofmgr.cpp
@@ -426,8 +430,8 @@ set(viewer_SOURCE_FILES
     llviewerdisplay.cpp
     llviewergenericmessage.cpp
     llviewergesture.cpp
-    llviewerimage.cpp
-    llviewerimagelist.cpp
+    #llviewerimage.cpp
+    #llviewerimagelist.cpp
     llviewerinventory.cpp
     llviewerjointattachment.cpp
     llviewerjoint.cpp
@@ -457,7 +461,9 @@ set(viewer_SOURCE_FILES
     llviewershadermgr.cpp
     llviewerstats.cpp
     llviewertexteditor.cpp
+    llviewertexture.cpp
     llviewertextureanim.cpp
+    llviewertexturelist.cpp
     llviewerthrottle.cpp
     llviewervisualparam.cpp
     llviewerwindow.cpp
@@ -562,6 +568,8 @@ set(viewer_HEADER_FILES
     hipporestrequest.h
     hippopanelgrids.h
     jcfloaterareasearch.h
+    lggdicdownload.h
+    lgghunspell_wrapper.h
     chatbar_as_cmdline.h
     qtoolalign.h
     llagent.h
@@ -902,8 +910,8 @@ set(viewer_HEADER_FILES
     llviewerdisplay.h
     llviewergenericmessage.h
     llviewergesture.h
-    llviewerimage.h
-    llviewerimagelist.h
+    #llviewerimage.h
+    #llviewerimagelist.h
     llviewerinventory.h
     llviewerjoint.h
     llviewerjointattachment.h
@@ -931,7 +939,9 @@ set(viewer_HEADER_FILES
     llviewershadermgr.h
     llviewerstats.h
     llviewertexteditor.h
+    llviewertexture.h
     llviewertextureanim.h
+    llviewertexturelist.h
     llviewerthrottle.h
     llviewervisualparam.h
     llviewerwindow.h
@@ -1446,6 +1456,7 @@ target_link_libraries(${VIEWER_BINARY_NAME}
     ${WINDOWS_LIBRARIES}
     ${XMLRPCEPI_LIBRARIES}
     ${ELFIO_LIBRARIES}
+    ${HUNSPELL_LIBRARY}
     )
 
 if (LINUX)

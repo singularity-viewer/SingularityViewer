@@ -200,7 +200,7 @@ things in this group. There&apos;s a broad variety of Abilities.
 		     border_visible="false" bottom_delta="-16" drop_shadow_visible="false"
 		     follows="left|top" font="SansSerifSmall" height="16" is_unicode="false"
 		     left="0" max_length="20" mouse_opaque="true" name="role_name"
-		     width="145">
+		     width="145" spell_check="true">
 			Employees
 		</line_editor>
 		<text bottom_delta="-16" font="SansSerif" halign="left" height="16" left="0"
@@ -212,7 +212,7 @@ things in this group. There&apos;s a broad variety of Abilities.
 		     bottom_delta="-16" drop_shadow_visible="false" follows="left|top"
 		     font="SansSerifSmall" height="16" is_unicode="false" left="0"
 		     max_length="20" mouse_opaque="true" name="role_title"
-		     width="145">
+		     width="145" spell_check="true">
 			(waiting)
 		</line_editor>
 		<text_editor bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
@@ -220,7 +220,7 @@ things in this group. There&apos;s a broad variety of Abilities.
 		     h_pad="0" halign="left" height="48" hide_scrollbar="true" left="150"
 		     max_length="254" name="role_description"
 		     v_pad="0" width="254"
-		     word_wrap="true">
+		     word_wrap="true" spell_check="true">
 			(waiting)
 		</text_editor>
 		<text bottom_delta="-26" font="SansSerif" halign="left" height="16" left="0"

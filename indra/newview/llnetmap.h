@@ -39,9 +39,9 @@
 #include "v3dmath.h"
 #include "v4color.h"
 #include "llimage.h"
-#include "llimagegl.h"
 
 class LLTextBox;
+class LLViewerTexture;
 
 typedef enum e_minimap_center
 {
@@ -112,7 +112,7 @@ private:
 	BOOL			mUpdateNow;
 	LLVector3d		mObjectImageCenterGlobal;
 	LLPointer<LLImageRaw> mObjectRawImagep;
-	LLPointer<LLImageGL>	mObjectImagep;
+	LLPointer<LLViewerTexture>	mObjectImagep;
 
 private:
 	LLUUID			mClosestAgentToCursor;

@@ -61,13 +61,13 @@ public:
 protected:
 	F32 mPercentDone;
 
-	LLPointer<LLImageGL>  mImageBar;
+	LLPointer<LLTexture>  mImageBar;
 	//LLUUID                mImageBarID;
 	//LLString              mImageBarName;
 	LLColor4              mColorBar;
 	LLColor4              mColorBar2;
 
-	LLPointer<LLImageGL>  mImageShadow;
+	LLPointer<LLTexture>  mImageShadow;
 	//LLUUID                mImageShadowID;
 	//LLString              mImageShadowName;
 	LLColor4              mColorShadow;

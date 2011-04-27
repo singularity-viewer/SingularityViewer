@@ -45,7 +45,7 @@ class LLFloaterTexturePicker;
 class LLInventoryItem;
 class LLTextBox;
 class LLViewBorder;
-class LLViewerImage;
+class LLViewerFetchedTexture;
 
 // used for setting drag & drop callbacks.
 typedef BOOL (*drag_n_drop_callback)(LLUICtrl*, LLInventoryItem*, void*);
@@ -170,7 +170,7 @@ private:
 	drag_n_drop_callback	 mDropCallback;
 	LLUICtrlCallback		 mOnCancelCallback;
 	LLUICtrlCallback		 mOnSelectCallback;
-	LLPointer<LLViewerImage> mTexturep;
+	LLPointer<LLViewerFetchedTexture> mTexturep;
 	LLColor4				 mBorderColor;
 	LLUUID					 mImageItemID;
 	LLUUID					 mImageAssetID;

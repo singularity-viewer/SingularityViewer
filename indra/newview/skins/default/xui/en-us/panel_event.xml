@@ -74,7 +74,7 @@
 		Description:
 	</text>
 	<text_editor bottom_delta="-230" follows="left|top" height="220" left="20" max_length="1024"
-	     name="event_desc" width="400" />
+	     name="event_desc" width="400" spell_check="true" />
 	<button bottom_delta="-24" follows="left|top" height="20" label="Teleport" left="20"
 	     name="teleport_btn" width="140" />
 	<button bottom_delta="0" follows="left|top" height="20" label="Show on Map" left="165"

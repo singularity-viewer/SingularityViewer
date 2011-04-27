@@ -38,11 +38,7 @@ class LLPostProcess;
 void display_startup();
 void display_cleanup();
 
-#if SHY_MOD // screenshot improvement
-void display(BOOL rebuild = TRUE, F32 zoom_factor = 1.f, int subfield = 0, BOOL for_snapshot = FALSE, BOOL tiling = FALSE);
-#else //shy_mod
-void display(BOOL rebuild = TRUE, F32 zoom_factor = 1.f, int subfield = 0, BOOL for_snapshot = FALSE);
-#endif //ignore
+void display(BOOL rebuild = TRUE, F32 zoom_factor = 1.f, int subfield = 0, BOOL for_snapshot = FALSE, bool tiling = false);
 
 extern BOOL gDisplaySwapBuffers;
 extern BOOL gDepthDirty;
@@ -50,6 +46,7 @@ extern BOOL	gTeleportDisplay;
 extern LLFrameTimer	gTeleportDisplayTimer;
 extern BOOL			gForceRenderLandFence;
 extern BOOL gResizeScreenTexture;
+extern BOOL gWindowResized;
 extern F32  gSavedDrawDistance;
 
 #endif // LL_LLVIEWERDISPLAY_H

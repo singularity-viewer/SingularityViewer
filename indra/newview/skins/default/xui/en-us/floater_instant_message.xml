@@ -73,7 +73,7 @@
 	     follows="left|right|bottom" font="SansSerif" height="20"
 	     label="Click here to instant message" left="5" max_length="1022"
 	     mouse_opaque="true" name="chat_editor" select_all_on_focus_received="false"
-	     select_on_focus="false" tab_group="1" width="423" />
+	     select_on_focus="false" tab_group="1" width="423" spell_check="true" />
 	<button bottom="7" follows="right|bottom" font="SansSerif" halign="center" height="20"
 	     label="Send" left="433" mouse_opaque="true" name="send_btn"
 	     scale_image="true" width="60" />

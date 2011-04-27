@@ -32,7 +32,7 @@
 			     font="SansSerifSmall" handle_edit_keys_directly="false" height="52"
 			     left="96" max_length="255" mouse_opaque="true" name="Description"
 			     select_all_on_focus_received="false" select_on_focus="false"
-			     width="350" word_wrap="true" />
+			     width="350" word_wrap="true" spell_check="true" />
 			<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
 			     bottom="-100" drop_shadow_visible="true" enabled="true" follows="left|top"
 			     font="SansSerifSmall" h_pad="0" halign="left" height="16" left="4"
@@ -295,7 +295,7 @@ Go to World menu > About Land or select another parcel to show its details.
 			<text_editor type="string" length="1" bottom="-175" embedded_items="false" enabled="false"
 			     follows="left|top|right|bottom" font="SansSerifSmall" height="115"
 			     left="120" max_length="65535" mouse_opaque="true" name="covenant_editor"
-			     width="330" word_wrap="true">
+			     width="330" word_wrap="true" spell_check="true">
 				There is no Covenant provided for this Estate.
 			</text_editor>
 			<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"

@@ -40,7 +40,7 @@
 #include "llrender.h"
 #include "llprimitive.h"
 #include "llview.h"
-#include "llviewerimagelist.h"
+#include "llviewertexturelist.h"
 
 #include "llagent.h"
 #include "llviewercontrol.h"
@@ -89,6 +89,7 @@ void LLManip::rebuild(LLViewerObject* vobj)
 		if (group)
 		{
 			group->dirtyGeom();
+			gPipeline.markRebuild(group, TRUE);
 		}
 	}
 }

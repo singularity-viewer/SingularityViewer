@@ -89,7 +89,7 @@ void LLIconCtrl::setImage(const std::string& image_name)
 	else
 	{
 		mImageName = image_name;
-		mImagep = LLUI::sImageProvider->getUIImage(image_name);
+		mImagep = LLUI::getUIImage(image_name);
 		mImageID.setNull();
 	}
 }
@@ -97,7 +97,7 @@ void LLIconCtrl::setImage(const std::string& image_name)
 void LLIconCtrl::setImage(const LLUUID& image_id)
 {
 	mImageName.clear();
-	mImagep = LLUI::sImageProvider->getUIImageByID(image_id);
+	mImagep = LLUI::getUIImageByID(image_id);
 	mImageID = image_id;
 }
 

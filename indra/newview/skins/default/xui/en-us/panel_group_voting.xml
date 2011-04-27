@@ -57,7 +57,7 @@ vote on open proposals, and view old proposals.
 	     border_visible="false" bottom="300" drop_shadow_visible="false"
 	     embedded_items="false" follows="left|top" font="SansSerif" height="90"
 	     is_unicode="false" left="11" max_length="254" mouse_opaque="true"
-	     name="proposal_text" width="289" word_wrap="true" />
+	     name="proposal_text" width="289" word_wrap="true" spell_check="true" />
 	<button bottom_delta="0" follows="left|top" font="SansSerif" halign="center"
 	     height="20" label="View List" label_selected="View List" left="304"
 	     mouse_opaque="true" name="btn_view_proposal_list" width="101" />

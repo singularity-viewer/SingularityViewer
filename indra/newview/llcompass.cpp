@@ -43,8 +43,7 @@
 #include "llagent.h"
 #include "llcompass.h"
 
-#include "llviewerimage.h"
-#include "llviewerimagelist.h"
+#include "llviewertexturelist.h"
 #include "llviewercontrol.h"
 #include "llviewercamera.h"
 
@@ -76,12 +75,12 @@ LLCompass::LLCompass( const std::string& name, const LLRect& rect)
 
 void LLCompass::setTexture(LLUUID image_id)
 {
-   	mTexture = gImageList.getImage(image_id, FALSE, TRUE);
+   	mTexture = LLViewerTextureManager::getFetchedTexture(image_id, FALSE, LLViewerTexture::BOOST_UI);
 }
 
 void LLCompass::setBkgndTexture(LLUUID image_id)
 {
-   	mBkgndTexture = gImageList.getImage(image_id, FALSE, TRUE);
+   	mBkgndTexture = LLViewerTextureManager::getFetchedTexture(image_id, FALSE, LLViewerTexture::BOOST_UI);
 }
 
 //
@@ -107,5 +106,5 @@ LLHorizontalCompass::LLHorizontalCompass( const std::string& name, const LLRect&
 
 void LLHorizontalCompass::setTexture( const LLUUID& image_id )
 {
-   	mTexture = gImageList.getImage(image_id, FALSE, TRUE);
+   	mTexture = LLViewerTextureManager::getFetchedTexture(image_id, FALSE, LLViewerTexture::BOOST_UI);
 }

@@ -1,3 +1,6 @@
+
+#extension GL_ARB_texture_rectangle : enable
+
 uniform sampler2DRect RenderTexture;
 uniform int horizontalPass;
 

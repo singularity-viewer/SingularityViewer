@@ -45,7 +45,7 @@
 #include "llmemory.h"
 #include "llstring.h"
 #include "llviewerpartsim.h"
-#include "llviewerimage.h"
+#include "llviewertexture.h"
 #include "llvowater.h"
 
 class LLViewerRegion;
@@ -141,7 +141,7 @@ public:
 	F32 getLandFarClip() const;
 	void setLandFarClip(const F32 far_clip);
 
-	LLViewerImage *getDefaultWaterTexture();
+	LLViewerTexture *getDefaultWaterTexture();
 	void updateWaterObjects();
 	void waterHeightRegionInfo(std::string const& sim_name, F32 water_height);
 	void shiftRegions(const LLVector3& offset);
@@ -193,7 +193,7 @@ private:
 	std::list<LLVOWater*> mHoleWaterObjects;
 	LLPointer<LLVOWater> mEdgeWaterObjects[8];
 
-	LLPointer<LLViewerImage> mDefaultWaterTexturep;
+	LLPointer<LLViewerTexture> mDefaultWaterTexturep;
 };
 
 

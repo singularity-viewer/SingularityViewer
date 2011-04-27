@@ -74,7 +74,7 @@
 #include "lltooldraganddrop.h"
 #include "llviewercontrol.h"
 #include "llviewerregion.h"
-#include "llviewerimagelist.h"
+#include "llviewertexturelist.h"
 #include "llviewerinventory.h"
 #include "llviewermessage.h"
 #include "llviewerobject.h"

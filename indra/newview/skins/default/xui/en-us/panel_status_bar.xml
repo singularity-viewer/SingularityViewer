@@ -103,7 +103,7 @@
 	     label="Search" left="-94" max_length="254" mouse_opaque="true"
 	     name="search_editor" select_all_on_focus_received="false"
 	     select_on_focus="false" tab_group="1" tool_tip="Search Second Life"
-	     width="78"/>
+	     width="78" spell_check="true"/>
 	<button bottom="-17" enabled="true" follows="right|bottom" font="SansSerifSmall"
 	     halign="center" height="16" image_unselected="status_search_btn.png" image_selected="status_search_btn_pressed.png" image_disabled_selected="status_search_btn_pressed.png" image_disabled="status_search_btn.png"
 	     label="" label_selected="" left="-16" mouse_opaque="true" name="search_btn"

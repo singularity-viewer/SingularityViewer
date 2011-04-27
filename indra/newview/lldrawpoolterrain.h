@@ -35,9 +35,11 @@
 
 #include "lldrawpool.h"
 
+class LLViewerFetchedTexture;
+
 class LLDrawPoolTerrain : public LLFacePool
 {
-	LLPointer<LLViewerImage> mTexturep;
+	LLPointer<LLViewerTexture> mTexturep;
 public:
 	enum
 	{
@@ -53,7 +55,7 @@ public:
 	virtual U32 getVertexDataMask();
 	static S32 getDetailMode();
 
-	LLDrawPoolTerrain(LLViewerImage *texturep);
+	LLDrawPoolTerrain(LLViewerTexture *texturep);
 	virtual ~LLDrawPoolTerrain();
 
 	/*virtual*/ LLDrawPool *instancePool();
@@ -73,14 +75,14 @@ public:
 	/*virtual*/ void beginRenderPass( S32 pass );
 	/*virtual*/ void endRenderPass( S32 pass );
 	/*virtual*/ void renderForSelect();
-	/*virtual*/ void dirtyTextures(const std::set<LLViewerImage*>& textures);
-	/*virtual*/ LLViewerImage *getTexture();
-	/*virtual*/ LLViewerImage *getDebugTexture();
+	/*virtual*/ void dirtyTextures(const std::set<LLViewerFetchedTexture*>& textures);
+	/*virtual*/ LLViewerTexture *getTexture();
+	/*virtual*/ LLViewerTexture *getDebugTexture();
 	/*virtual*/ LLColor3 getDebugColor() const; // For AGP debug display
 
-	LLPointer<LLViewerImage> mAlphaRampImagep;
-	LLPointer<LLViewerImage> m2DAlphaRampImagep;
-	LLPointer<LLViewerImage> mAlphaNoiseImagep;
+	LLPointer<LLViewerTexture> mAlphaRampImagep;
+	LLPointer<LLViewerTexture> m2DAlphaRampImagep;
+	LLPointer<LLViewerTexture> mAlphaNoiseImagep;
 
 	static S32 sDetailMode;
 	static F32 sDetailScale; // meters per texture

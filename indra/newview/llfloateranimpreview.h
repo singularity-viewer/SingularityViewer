@@ -41,11 +41,15 @@
 class LLVOAvatar;
 class LLViewerJointMesh;
 
-class LLPreviewAnimation : public LLDynamicTexture
+class LLPreviewAnimation : public LLViewerDynamicTexture
 {
-public:
-	LLPreviewAnimation(S32 width, S32 height);
+protected:
 	virtual ~LLPreviewAnimation();
+
+public:
+	LLPreviewAnimation(S32 width, S32 height);	
+
+	/*virtual*/ S8 getType() const ;
 
 	BOOL	render();
 	void	requestUpdate();
@@ -116,7 +120,7 @@ protected:
 	void			draw();
 	void			resetMotion();
 
-	LLPreviewAnimation* mAnimPreview;
+	LLPointer< LLPreviewAnimation> mAnimPreview;
 	S32					mLastMouseX;
 	S32					mLastMouseY;
 	LLButton*			mPlayButton;

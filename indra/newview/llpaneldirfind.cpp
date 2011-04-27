@@ -53,7 +53,7 @@
 #include "llpluginclassmedia.h"
 #include "lltextbox.h"
 #include "lluiconstants.h"
-#include "llviewerimagelist.h"
+#include "llviewertexturelist.h"
 #include "llviewermessage.h"
 #include "llfloateravatarinfo.h"
 #include "lldir.h"

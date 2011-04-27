@@ -204,8 +204,8 @@ LLPreferenceCore::LLPreferenceCore(LLTabContainer* tab_container, LLButton * def
 	mGridsPanel->setDefaultBtn(default_btn);
 
 	mPrefsAscentSys = new LLPrefsAscentSys();
-	mTabContainer->addTabPanel(mPrefsAscentSys->getPanel(), mPrefsAscentSys->getPanel()->getLabel(), FALSE, onTabChanged, mTabContainer);
-	mPrefsAscentSys->getPanel()->setDefaultBtn(default_btn);
+	mTabContainer->addTabPanel(mPrefsAscentSys, mPrefsAscentSys->getLabel(), FALSE, onTabChanged, mTabContainer);
+	mPrefsAscentSys->setDefaultBtn(default_btn);
 
 	mPrefsAscentVan = new LLPrefsAscentVan();
 	mTabContainer->addTabPanel(mPrefsAscentVan->getPanel(), mPrefsAscentVan->getPanel()->getLabel(), FALSE, onTabChanged, mTabContainer);

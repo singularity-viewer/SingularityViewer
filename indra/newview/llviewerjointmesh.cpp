@@ -52,7 +52,7 @@
 #include "lltexlayer.h"
 #include "llviewercamera.h"
 #include "llviewercontrol.h"
-#include "llviewerimagelist.h"
+#include "llviewertexturelist.h"
 #include "llviewerjointmesh.h"
 #include "llvoavatar.h"
 #include "llsky.h"
@@ -231,7 +231,7 @@ void LLViewerJointMesh::setColor( F32 red, F32 green, F32 blue, F32 alpha )
 //--------------------------------------------------------------------
 // LLViewerJointMesh::getTexture()
 //--------------------------------------------------------------------
-//LLViewerImage *LLViewerJointMesh::getTexture()
+//LLViewerTexture *LLViewerJointMesh::getTexture()
 //{
 //	return mTexture;
 //}
@@ -239,7 +239,7 @@ void LLViewerJointMesh::setColor( F32 red, F32 green, F32 blue, F32 alpha )
 //--------------------------------------------------------------------
 // LLViewerJointMesh::setTexture()
 //--------------------------------------------------------------------
-void LLViewerJointMesh::setTexture( LLViewerImage *texture )
+void LLViewerJointMesh::setTexture( LLViewerTexture *texture )
 {
 	mTexture = texture;
 
@@ -558,7 +558,7 @@ U32 LLViewerJointMesh::drawShape( F32 pixelArea, BOOL first_pass, BOOL is_dummy)
 	{
 		if(	mLayerSet->hasComposite() )
 		{
-			gGL.getTexUnit(0)->bind(mLayerSet->getComposite()->getTexture());
+			gGL.getTexUnit(0)->bind(mLayerSet->getComposite());
 		}
 		else
 		{
@@ -568,22 +568,22 @@ U32 LLViewerJointMesh::drawShape( F32 pixelArea, BOOL first_pass, BOOL is_dummy)
 			{
 				llwarns << "Layerset without composite" << llendl;
 			}
-			gGL.getTexUnit(0)->bind(gImageList.getImage(IMG_DEFAULT));
+			gGL.getTexUnit(0)->bind(LLViewerTextureManager::getFetchedTexture(IMG_DEFAULT));
 		}
 	}
 	else
 	if ( !is_dummy && mTexture.notNull() )
 	{
-		if(mTexture->getHasGLTexture())
+		if(mTexture->hasGLTexture())
 		{
 			old_mode = mTexture->getAddressMode();
 		}
-		gGL.getTexUnit(0)->bind(mTexture.get());
+		gGL.getTexUnit(0)->bind(mTexture);
 		gGL.getTexUnit(0)->setTextureAddressMode(LLTexUnit::TAM_CLAMP);
 	}
 	else
 	{
-		gGL.getTexUnit(0)->bind(gImageList.getImage(IMG_DEFAULT_AVATAR));
+		gGL.getTexUnit(0)->bind(LLViewerTextureManager::getFetchedTexture(IMG_DEFAULT_AVATAR));
 	}
 	
 	if (gRenderForSelect)

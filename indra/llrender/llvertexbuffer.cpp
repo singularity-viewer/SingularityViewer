@@ -1299,7 +1299,31 @@ void LLVertexBuffer::setupVertexBuffer(U32 data_mask) const
 
 	if ((data_mask & mTypeMask) != data_mask)
 	{
-		llerrs << "LLVertexBuffer::setupVertexBuffer missing required components for supplied data mask." << llendl;
+		llerrs << "LLVertexBuffer::setupVertexBuffer missing required components for supplied data mask. Missing: ";
+
+		static const char* mask_names[] = {"VERTEX","NORMAL","TEXCOORD0","TEXCOORD1","TEXCOORD2","TEXCOORD3","COLOR","BINORMAL","WEIGHT","CLOTH_WEIGHT"};
+		for(int i = 0; i < 32; ++i)
+		{
+			if((data_mask & (1<<i)) && !(mTypeMask & (1<<i)))
+			{
+				if(i < (sizeof(mask_names)/sizeof(mask_names[0])))
+					llcont << "MAP_" << mask_names[i] << ", ";
+				else
+					llcont << "MAP_UNKNOWN (1<<" << i << "), ";
+			}
+		}
+		llcont << "\n Has: ";
+		for(int i = 0; i < 32; ++i)
+		{
+			if(mTypeMask & (1<<i))
+			{
+				if(i < (sizeof(mask_names)/sizeof(mask_names[0])))
+					llcont << "MASK_" << mask_names[i] << ", ";
+				else
+					llcont << "MAP_UNKNOWN (1<<" << i << "), ";
+			}
+		}
+		llcont << llendl;
 	}
 
 	if (data_mask & MAP_NORMAL)

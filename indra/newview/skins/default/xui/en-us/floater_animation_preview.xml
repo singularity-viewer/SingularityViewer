@@ -13,7 +13,7 @@
 		Description:
 	</text>
 	<line_editor bottom_delta="-2" follows="top|left|right" height="19" left="85"
-	     max_length="254" name="description_form" right="-10" />
+	     max_length="254" name="description_form" right="-10" spell_check="true" />
 	<pad height="0" />
 	<spinner decimal_digits="0" follows="left|top" height="18" increment="1" initial_val="0"
 	     label="Priority" label_width="50" left="10" max_val="5" min_val="0"

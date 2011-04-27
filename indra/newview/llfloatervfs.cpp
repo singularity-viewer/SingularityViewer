@@ -8,8 +8,7 @@
 #include "lllocalinventory.h"
 #include "llviewerwindow.h"
 #include "llassetconverter.h"
-#include "llviewerimagelist.h"
-#include "llviewerimage.h"
+#include "llviewertexturelist.h"
 #include "llimagej2c.h"
 
 LLFloaterVFS* LLFloaterVFS::sInstance;
@@ -206,7 +205,7 @@ void LLFloaterVFS::removeEntry()
 		if((*iter).mID == mEditID)
 		{
 			if((*iter).mType == LLAssetType::AT_TEXTURE)
-				gImageList.deleteImage(gImageList.hasImage( (*iter).mID ));
+				gTextureList.deleteImage(gTextureList.findImage( (*iter).mID ));
 			else
 				gVFS->removeFile((*iter).mID, (*iter).mType);
 			iter = mFiles.erase(iter);
@@ -270,9 +269,9 @@ void LLFloaterVFS::onClickAdd(void* user_data)
 					llinfos << "Image: " << file_name << " is corrupt." << llendl;
 					return;
 				}
-				LLPointer<LLViewerImage> imagep = new LLViewerImage(asset_id);
-				imagep->createGLTexture(0, image_raw, 0, TRUE, LLViewerImageBoostLevel::BOOST_NONE);
-				gImageList.addImage(imagep);
+				LLPointer<LLViewerFetchedTexture> imagep = new LLViewerFetchedTexture(asset_id);
+				imagep->createGLTexture(0, image_raw, 0, TRUE, LLViewerTexture::BOOST_NONE);
+				gTextureList.addImage(imagep);
 			}
 			else
 			{

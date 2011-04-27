@@ -53,7 +53,7 @@ this feature is still a work in progress.
 /* misc headers */
 #include <time.h>
 #include <ctime>
-#include "llviewerimagelist.h"
+#include "llviewertexturelist.h"
 #include "llviewerobjectlist.h"
 #include "llfilepicker.h"
 #include "llviewermenufile.h"
@@ -129,16 +129,16 @@ LocalBitmap::LocalBitmap(std::string fullpath)
 		LLImageRaw* raw_image = new LLImageRaw();
 		if ( this->decodeSelf(raw_image) )
 		{
-			/* creating a shell LLViewerImage and fusing raw image into it */
-			LLViewerImage* viewer_image = new LLViewerImage( "file://"+this->filename, this->id, LOCAL_USE_MIPMAPS );
+			/* creating a shell LLViewerTexture and fusing raw image into it */
+			LLViewerFetchedTexture* viewer_image = new LLViewerFetchedTexture( "file://"+this->filename, this->id, LOCAL_USE_MIPMAPS );
 			viewer_image->createGLTexture( LOCAL_DISCARD_LEVEL, raw_image );
-			viewer_image->mCachedRawImage = raw_image;
+			viewer_image->setCachedRawImage(-1,raw_image);
 
-			/* making damn sure gImageList will not delete it prematurely */
+			/* making damn sure gTextureList will not delete it prematurely */
 			viewer_image->ref(); 
 
-			/* finalizing by adding LLViewerImage instance into gImageList */
-			gImageList.addImage(viewer_image);
+			/* finalizing by adding LLViewerTexture instance into gTextureList */
+			gTextureList.addImage(viewer_image);
 
 			/* filename is valid, bitmap is decoded and valid, i can haz liftoff! */
 			this->valid = true;
@@ -172,12 +172,12 @@ void LocalBitmap::updateSelf()
 		if ( !decodeSelf(new_imgraw) ) { this->linkstatus = LINK_UPDATING; return; }
 		else { this->linkstatus = LINK_ON; }
 
-		LLViewerImage* image = gImageList.hasImage(this->id);
+		LLViewerFetchedTexture* image = gTextureList.findImage(this->id);
 		
-		if (!image->mForSculpt) 
+		if (!image->forSculpt()) 
 		    { image->createGLTexture( LOCAL_DISCARD_LEVEL, new_imgraw ); }
 		else
-		    { image->mCachedRawImage = new_imgraw; }
+			{ image->setCachedRawImage(-1,new_imgraw); }
 
 		/* finalizing by updating lastmod to current */
 		this->last_modified = new_last_modified;
@@ -222,7 +222,7 @@ bool LocalBitmap::decodeSelf(LLImageRaw* rawimg)
 				if ( !bmp_image->load(filename) ) { break; }
 				if ( !bmp_image->decode(rawimg, 0.0f) ) { break; }
 
-				rawimg->biasedScaleToPowerOfTwo( LLViewerImage::MAX_IMAGE_SIZE_DEFAULT );
+				rawimg->biasedScaleToPowerOfTwo( LLViewerTexture::MAX_IMAGE_SIZE_DEFAULT );
 				return true;
 			}
 
@@ -235,7 +235,7 @@ bool LocalBitmap::decodeSelf(LLImageRaw* rawimg)
 				if(	( tga_image->getComponents() != 3) &&
 					( tga_image->getComponents() != 4) ) { break; }
 
-				rawimg->biasedScaleToPowerOfTwo( LLViewerImage::MAX_IMAGE_SIZE_DEFAULT );
+				rawimg->biasedScaleToPowerOfTwo( LLViewerTexture::MAX_IMAGE_SIZE_DEFAULT );
 				return true;
 			}
 
@@ -245,7 +245,7 @@ bool LocalBitmap::decodeSelf(LLImageRaw* rawimg)
 				if ( !jpeg_image->load(filename) ) { break; }
 				if ( !jpeg_image->decode(rawimg, 0.0f) ) { break; }
 
-				rawimg->biasedScaleToPowerOfTwo( LLViewerImage::MAX_IMAGE_SIZE_DEFAULT );
+				rawimg->biasedScaleToPowerOfTwo( LLViewerTexture::MAX_IMAGE_SIZE_DEFAULT );
 				return true;
 			}
 
@@ -255,7 +255,7 @@ bool LocalBitmap::decodeSelf(LLImageRaw* rawimg)
 				if ( !png_image->load(filename) ) { break; }
 				if ( !png_image->decode(rawimg, 0.0f) ) { break; }
 
-				rawimg->biasedScaleToPowerOfTwo( LLViewerImage::MAX_IMAGE_SIZE_DEFAULT );
+				rawimg->biasedScaleToPowerOfTwo( LLViewerTexture::MAX_IMAGE_SIZE_DEFAULT );
 				return true;
 			}
 
@@ -493,8 +493,8 @@ void LocalAssetBrowser::DelBitmap( std::vector<LLScrollListItem*> delete_vector,
 
 				if ( unit->getID() == id )
 				{	
-					LLViewerImage* image = gImageList.hasImage(id);
-					gImageList.deleteImage( image );
+					LLViewerFetchedTexture* image = gTextureList.findImage(id);
+					gTextureList.deleteImage( image );
 					image->unref();
 
 					iter = loaded_bitmaps.erase(iter);
@@ -685,7 +685,7 @@ void LocalAssetBrowser::PerformSculptUpdates(LocalBitmap* unit)
 			// update code [begin]
 			if ( unit->volume_dirty )
 			{
-				LLImageRaw* rawimage = gImageList.hasImage( unit->getID() )->getCachedRawImage();
+				LLImageRaw* rawimage = gTextureList.findImage( unit->getID() )->getCachedRawImage();
 
 				aobj.object->getVolume()->sculpt(rawimage->getWidth(), rawimage->getHeight(), 
 												  rawimage->getComponents(), rawimage->getData(), 0);	

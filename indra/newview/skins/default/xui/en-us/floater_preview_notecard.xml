@@ -23,11 +23,11 @@
 	     enabled="true" follows="left|top|right" font="SansSerif"
 	     handle_edit_keys_directly="false" height="19" left="93" max_length="127"
 	     mouse_opaque="true" name="desc" select_all_on_focus_received="false"
-	     select_on_focus="false" width="294" />
+	     select_on_focus="false" width="294" spell_check="true" />
 	<text_editor type="string" length="1" bottom="-327" embedded_items="true" enabled="true"
 	     follows="left|top|right|bottom" font="SansSerif" height="281"
 	     ignore_tab="false" left="4" max_length="65536" mouse_opaque="true"
-	     name="Notecard Editor" width="392" word_wrap="true">
+	     name="Notecard Editor" width="392" word_wrap="true" spell_check="true">
 		Loading...
 	</text_editor>
 	<string name="no_object">

@@ -283,7 +283,7 @@
 			</text>
 			<text_editor type="string" length="1" bottom_delta="-110" embedded_items="false" enabled="true"
 				follows="left|top" font="SansSerifSmall" height="110" left_delta="0" max_length="1100"
-				mouse_opaque="true" name="im_response" width="230" word_wrap="true"/>
+				mouse_opaque="true" name="im_response" width="230" word_wrap="true" spell_check="true"/>
 			<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
 				bottom_delta="-25" drop_shadow_visible="true" enabled="true" follows="left|top" font="SansSerifSmall"
 				h_pad="0" halign="left" height="18" left_delta="0" mouse_opaque="false"
@@ -524,5 +524,47 @@ Use #f for user's first name, #l for last name,
 				name="EmBuildPrefsActualRoot_toggle" control_name="AscentBuildPrefs_ActualRoot"
 				radio_style="false" width="270"/>
 		</panel>
-	</tab_container>
+
+    <panel border="true" bottom="-580" follows="left|top|right|bottom" height="525" label="Text Options"
+       left="1" mouse_opaque="true" name="TextOptions" width="418">
+      <check_box bottom="-25" enabled="true" follows="left|top" font="SansSerifSmall" height="16"
+         label="Show misspelled words in red" left="12" mouse_opaque="true" name="SpellDisplay"
+         control_name="SpellDisplay" width="126"/>
+      <text bottom_delta="-30" follows="left|top" font="SansSerifSmall" height="16" left="12"
+         name="EmSpell_txt1" width="512">
+        Current language (dictionary):
+      </text>
+      <combo_box allow_text_entry="false" bottom_delta="-20" left_delta="0" follows="left|top" height="18"
+         max_chars="200" mouse_opaque="true" name="SpellBase" width="250"
+         control_name="SpellBase" tool_tip=""/>
+      <text bottom_delta="-30" follows="left|top" font="SansSerifSmall" height="16" left="12"
+         name="EmSpell_txt3" width="512">
+        Downloaded languages (dictionaries):
+      </text>
+      <combo_box allow_text_entry="false" bottom_delta="-20" left_delta="0" follows="left|top" height="18"
+         max_chars="200" mouse_opaque="true" name="EmSpell_Avail" width="250"
+         control_name="EmSpell_Avail" tool_tip=""/>
+      <button bottom_delta="0" follows="left|top" font="SansSerifSmall" height="20" label="Install"
+         name="EmSpell_Add" tool_tip="" left_delta="255" width="80"/>
+      <button bottom_delta="-22" follows="left|top" font="SansSerifSmall" height="20" label="Download More..."
+         name="EmSpell_GetMore" tool_tip="Get more dictionaries availabe online" left="12" width="250"/>
+      <text bottom_delta="-30" follows="left|top" font="SansSerifSmall" height="16" left="12"
+         name="EmSpell_txt2" width="512">
+        Additional custom languages (dictionaries):
+      </text>
+      <combo_box allow_text_entry="false" bottom_delta="-20" left_delta="0" follows="left|top" height="18"
+         max_chars="200" mouse_opaque="true" name="EmSpell_Installed" width="250"
+         control_name="EmSpell_Installed" tool_tip=""/>
+      <button bottom_delta="0" follows="left|top" font="SansSerifSmall" height="20" label="Remove"
+         name="EmSpell_Remove" tool_tip="" left_delta="255" width="80"/>
+      <button bottom_delta="-20" follows="left|top" font="SansSerifSmall" height="18" label="Edit Custom dictionary"
+         name="EmSpell_EditCustom" tool_tip="" left="12" width="250"/>
+      <text bottom_delta="-30" follows="left|top" font="SansSerifSmall" height="16" left="12"
+         name="EmSpell_txt4" width="512">
+        To use spellcheck, right-click a misspelled word
+        (red or otherwise) and select its replacement
+      </text>
+    </panel>
+
+  </tab_container>
 </panel>

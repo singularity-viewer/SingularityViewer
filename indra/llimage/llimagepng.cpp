@@ -131,6 +131,7 @@ BOOL LLImagePNG::encode(const LLImageRaw* raw_image, F32 encode_time)
 	if (! pngWrapper.writePng(raw_image, getData()))
 	{
 		setLastError(pngWrapper.getErrorMessage());
+		deleteData();
  		return FALSE;
  	}
 
@@ -138,6 +139,7 @@ BOOL LLImagePNG::encode(const LLImageRaw* raw_image, F32 encode_time)
 	if(!reallocateData(pngWrapper.getFinalSize())) //Shrink. Returns NULL on failure.
 	{
 		setLastError("LLImagePNG::encode failed reallocateData");
+		deleteData();
 		return FALSE;
 	}
 	return TRUE;

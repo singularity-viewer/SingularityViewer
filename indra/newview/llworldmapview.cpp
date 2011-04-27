@@ -54,8 +54,7 @@
 #include "lltextureview.h"
 #include "lltracker.h"
 #include "llviewercamera.h"
-#include "llviewerimage.h"
-#include "llviewerimagelist.h"
+#include "llviewertexturelist.h"
 #include "llviewermenu.h"
 #include "llviewerparceloverlay.h"
 #include "llviewerregion.h"
@@ -645,7 +644,7 @@ void LLWorldMapView::drawTiles(S32 width, S32 height) {
 			continue;
 		}
 		LLWorldMapLayer *layer = &LLWorldMap::getInstance()->mMapLayers[LLWorldMap::getInstance()->mCurrentMap][layer_idx];
-		LLViewerImage *current_image = layer->LayerImage;
+		LLViewerTexture *current_image = layer->LayerImage;
 
 		if (current_image->isMissingAsset())
 		{
@@ -680,10 +679,10 @@ void LLWorldMapView::drawTiles(S32 width, S32 height) {
 			continue;
 		}
 		
-		current_image->setBoostLevel(LLViewerImageBoostLevel::BOOST_MAP_VISIBLE);
+		current_image->setBoostLevel(LLViewerTexture::BOOST_MAP_VISIBLE);
 		current_image->setKnownDrawSize(llround(pix_width * LLUI::sGLScaleFactor.mV[VX]), llround(pix_height * LLUI::sGLScaleFactor.mV[VY]));
 		
-		if (!current_image->getHasGLTexture())
+		if (!current_image->hasGLTexture())
 		{
 			continue; // better to draw nothing than the default image
 		}
@@ -748,8 +747,8 @@ void LLWorldMapView::drawTiles(S32 width, S32 height) {
 		U64 handle = (*it).first;
 		LLSimInfo* info = (*it).second;
 
-		LLViewerImage* simimage = info->mCurrentImage;
-		LLViewerImage* overlayimage = info->mOverlayImage;
+		LLViewerTexture* simimage = info->mCurrentImage;
+		LLViewerTexture* overlayimage = info->mOverlayImage;
 
 		if (sMapScale < SIM_MAP_SCALE)
 		{
@@ -784,7 +783,7 @@ void LLWorldMapView::drawTiles(S32 width, S32 height) {
 		bool sim_visible =
 			(sMapScale >= map_scale_cutoff) &&
 			(simimage != NULL) &&
-			(simimage->getHasGLTexture());
+			(simimage->hasGLTexture());
 
 		if (sim_visible)
 		{
@@ -829,7 +828,7 @@ void LLWorldMapView::drawTiles(S32 width, S32 height) {
 				}
 				else
 				{
-					info->mCurrentImage = gImageList.getImage(info->mMapImageID[LLWorldMap::getInstance()->mCurrentMap], MIPMAP_TRUE, FALSE);
+					info->mCurrentImage = LLViewerTextureManager::getFetchedTexture(info->mMapImageID[LLWorldMap::getInstance()->mCurrentMap], MIPMAP_TRUE);
 				}
                 info->mCurrentImage->setAddressMode(LLTexUnit::TAM_CLAMP);
 				simimage = info->mCurrentImage;
@@ -843,7 +842,7 @@ void LLWorldMapView::drawTiles(S32 width, S32 height) {
 				 (textures_requested_this_tick < MAX_REQUEST_PER_TICK)))
 			{
 				textures_requested_this_tick++;
-				info->mOverlayImage = gImageList.getImage(info->mMapImageID[2], MIPMAP_TRUE, FALSE);
+				info->mOverlayImage = LLViewerTextureManager::getFetchedTexture(info->mMapImageID[2], MIPMAP_TRUE);
 				info->mOverlayImage->setAddressMode(LLTexUnit::TAM_CLAMP);
 				overlayimage = info->mOverlayImage;
 				gGL.getTexUnit(0)->bind(overlayimage);
@@ -858,13 +857,13 @@ void LLWorldMapView::drawTiles(S32 width, S32 height) {
 		S32 draw_size = llround(sMapScale);
 		if (simimage != NULL)
 		{
-			simimage->setBoostLevel(LLViewerImageBoostLevel::BOOST_MAP);
+			simimage->setBoostLevel(LLViewerTexture::BOOST_MAP);
 			simimage->setKnownDrawSize(llround(draw_size * LLUI::sGLScaleFactor.mV[VX]), llround(draw_size * LLUI::sGLScaleFactor.mV[VY]));
 		}
 
 		if (overlayimage != NULL)
 		{
-			overlayimage->setBoostLevel(LLViewerImageBoostLevel::BOOST_MAP);
+			overlayimage->setBoostLevel(LLViewerTexture::BOOST_MAP);
 			overlayimage->setKnownDrawSize(llround(draw_size * LLUI::sGLScaleFactor.mV[VX]), llround(draw_size * LLUI::sGLScaleFactor.mV[VY]));
 		}
 			
@@ -893,7 +892,7 @@ void LLWorldMapView::drawTiles(S32 width, S32 height) {
 				gGL.vertex3f(right, top, 0.f);
 			gGL.end();
 
-			if (gSavedSettings.getBOOL("MapShowLandForSale") && overlayimage && overlayimage->getHasGLTexture())
+			if (gSavedSettings.getBOOL("MapShowLandForSale") && overlayimage && overlayimage->hasGLTexture())
 			{
 				gGL.getTexUnit(0)->bind(overlayimage);
 				gGL.color4f(1.f, 1.f, 1.f, alpha);
@@ -1240,11 +1239,11 @@ bool LLWorldMapView::drawMipmapLevel(S32 width, S32 height, S32 level, bool load
 			// Convert to the mipmap level coordinates for that point (i.e. which tile to we hit)
 			LLWorldMipmap::globalToMipmap(pos_global[VX], pos_global[VY], level, &grid_x, &grid_y);
 			// Get the tile. Note: NULL means that the image does not exist (so it's considered "complete" as far as fetching is concerned)
-			LLPointer<LLViewerImage> simimage = LLWorldMap::getInstance()->getObjectsTile(grid_x, grid_y, level, load);
+			LLPointer<LLViewerFetchedTexture> simimage = LLWorldMap::getInstance()->getObjectsTile(grid_x, grid_y, level, load);
 			if (simimage)
 			{
 				// Check the texture state
-				if (simimage->getHasGLTexture())
+				if (simimage->hasGLTexture())
 				{
 					// Increment the number of completly fetched tiles
 					completed_tiles++;

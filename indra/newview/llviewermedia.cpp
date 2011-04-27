@@ -37,9 +37,8 @@
 #include "llhoverview.h"
 #include "llmimetypes.h"
 #include "llviewercontrol.h"
-#include "llviewerimage.h"
 #include "llviewerwindow.h"
-#include "llviewerimagelist.h"
+#include "llviewertexturelist.h"
 //#include "viewerversion.h"
 
 #include "llpluginclassmedia.h"
@@ -377,6 +376,8 @@ LLViewerMediaImpl::LLViewerMediaImpl(const std::string& media_url,
 	mMediaURL(media_url),
 	mMimeType(mime_type),
 	mNeedsNewTexture(true),
+	mTextureUsedWidth(0),
+	mTextureUsedHeight(0),
 	mSuspendUpdates(false),
 	mVisible(true)
 { 
@@ -881,23 +882,25 @@ void LLViewerMediaImpl::updateMovieImage(const LLUUID& uuid, BOOL active)
 	// If we have changed media uuid, restore the old one
 	if (!mTextureId.isNull())
 	{
-		LLViewerImage* oldImage = LLViewerImage::getImage( mTextureId );
-		if (oldImage)
+		LLViewerTexture* oldImage = LLViewerTextureManager::findTexture( mTextureId );
+		if (oldImage) 
 		{
-			oldImage->reinit(mMovieImageHasMips);
+			// Casting to LLViewerMediaTexture is a huge hack. Implement LLViewerMediaTexture some time later.
+			((LLViewerMediaTexture*)oldImage)->reinit(mMovieImageHasMips);
 			oldImage->mIsMediaTexture = FALSE;
 		}
 	}
 	// If the movie is playing, set the new media image
 	if (active && !uuid.isNull())
 	{
-		LLViewerImage* viewerImage = LLViewerImage::getImage( uuid );
+		LLViewerTexture* viewerImage = LLViewerTextureManager::findTexture( uuid );
 		if( viewerImage )
 		{
 			mTextureId = uuid;
 			// Can't use mipmaps for movies because they don't update the full image
-			mMovieImageHasMips = viewerImage->getUseMipMaps();
-			viewerImage->reinit(FALSE);
+			// Casting to LLViewerMediaTexture is a huge hack. Implement LLViewerMediaTexture some time later.
+			mMovieImageHasMips = ((LLViewerMediaTexture*)viewerImage)->getUseMipMaps();
+			((LLViewerMediaTexture*)viewerImage)->reinit(FALSE);
 			viewerImage->mIsMediaTexture = TRUE;
 		}
 	}
@@ -929,7 +932,7 @@ void LLViewerMediaImpl::update()
 		return;
 	}
 	
-	LLViewerImage* placeholder_image = updatePlaceholderImage();
+	LLViewerTexture* placeholder_image = updatePlaceholderImage();
 		
 	if(placeholder_image)
 	{
@@ -976,7 +979,7 @@ void LLViewerMediaImpl::updateImagesMediaStreams()
 
 
 //////////////////////////////////////////////////////////////////////////////////////////
-LLViewerImage* LLViewerMediaImpl::updatePlaceholderImage()
+/*LLViewerMediaTexture*/LLViewerTexture* LLViewerMediaImpl::updatePlaceholderImage()
 {
 	if(mTextureId.isNull())
 	{
@@ -984,13 +987,16 @@ LLViewerImage* LLViewerMediaImpl::updatePlaceholderImage()
 		return NULL;
 	}
 	
-	LLViewerImage* placeholder_image = gImageList.getImage( mTextureId );
+	LLViewerMediaTexture* placeholder_image = (LLViewerMediaTexture*)LLViewerTextureManager::findTexture( mTextureId );
 	
 	if (mNeedsNewTexture 
 		|| placeholder_image->getUseMipMaps()
 		|| ! placeholder_image->mIsMediaTexture
-		|| placeholder_image->getWidth() != mMediaSource->getTextureWidth()
-		|| placeholder_image->getHeight() != mMediaSource->getTextureHeight())
+		|| (placeholder_image->getWidth() != mMediaSource->getTextureWidth())
+		|| (placeholder_image->getHeight() != mMediaSource->getTextureHeight())
+		|| (mTextureUsedWidth != mMediaSource->getWidth())
+		|| (mTextureUsedHeight != mMediaSource->getHeight())
+		)
 	{
 		llinfos << "initializing media placeholder" << llendl;
 		llinfos << "movie image id " << mTextureId << llendl;
@@ -1024,6 +1030,11 @@ LLViewerImage* LLViewerMediaImpl::updatePlaceholderImage()
 		// MEDIAOPT: set this dynamically on play/stop
 		placeholder_image->mIsMediaTexture = true;
 		mNeedsNewTexture = false;
+				
+		// If the amount of the texture being drawn by the media goes down in either width or height, 
+		// recreate the texture to avoid leaving parts of the old image behind.
+		mTextureUsedWidth = mMediaSource->getWidth();
+		mTextureUsedHeight = mMediaSource->getHeight();
 	}
 	
 	return placeholder_image;

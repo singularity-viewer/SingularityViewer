@@ -48,7 +48,7 @@
 S32 LLDrawPoolTree::sDiffTex = 0;
 static LLGLSLShader* shader = NULL;
 
-LLDrawPoolTree::LLDrawPoolTree(LLViewerImage *texturep) :
+LLDrawPoolTree::LLDrawPoolTree(LLViewerTexture *texturep) :
 	LLFacePool(POOL_TREE),
 	mTexturep(texturep)
 {
@@ -380,12 +380,12 @@ BOOL LLDrawPoolTree::verify() const
 	return TRUE;
 }
 
-LLViewerImage *LLDrawPoolTree::getTexture()
+LLViewerTexture *LLDrawPoolTree::getTexture()
 {
 	return mTexturep;
 }
 
-LLViewerImage *LLDrawPoolTree::getDebugTexture()
+LLViewerTexture *LLDrawPoolTree::getDebugTexture()
 {
 	return mTexturep;
 }

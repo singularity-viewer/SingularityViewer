@@ -141,7 +141,7 @@
 	     border_thickness="1" bottom_delta="-16" follows="left|top"
 	     font="SansSerifSmall" height="16" left="16" max_length="64"
 	     mouse_opaque="true" name="summary_edit" 
-	     width="356" />
+	     width="356" spell_check="true" />
 	<text bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
 	     bottom_delta="-20" drop_shadow_visible="true" follows="left|top"
 	     font="SansSerifSmall" h_pad="0" halign="left" height="16" left="16"
@@ -151,7 +151,7 @@
 	<text_editor bottom_delta="-112" embedded_items="false"
 	     follows="left|top" font="SansSerifSmall" height="112" left="16"
 	     max_length="900" mouse_opaque="false" name="details_edit"
-	     width="356" word_wrap="true">
+	     width="356" word_wrap="true" spell_check="true">
 		Steps to reproduce the bug:
 
 Observed results:

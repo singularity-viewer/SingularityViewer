@@ -11,7 +11,7 @@
 		Description:
 	</text>
 	<line_editor follows="top|left|right" height="19" max_length="254" name="description_form"
-	     width="280" />
+	     width="280" spell_check="true" />
 	<button bottom="10" follows="bottom|right" height="20" label="Cancel" left="182"
 	     name="cancel_btn" width="64" />
 	<button bottom="10" follows="bottom|left" height="20" label="Upload ([UPLOADFEE])" left="31"

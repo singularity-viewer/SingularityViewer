@@ -110,7 +110,19 @@ public:
 	virtual void	setFocus( BOOL b );
 	virtual BOOL	acceptsTextInput() const;
 	virtual BOOL	isDirty() const { return( mLastCmd != NULL || (mPristineCmd && (mPristineCmd != mLastCmd)) ); }
+	BOOL	isSpellDirty() const { return mWText != mPrevSpelledText; }	// Returns TRUE if user changed value at all
+	void	resetSpellDirty() { mPrevSpelledText = mWText; }		// Clear dirty state
 
+	struct SpellMenuBind
+	{
+		LLTextEditor* origin;
+		LLMenuItemCallGL * menuItem;
+		std::string word;
+		S32 wordPositionStart;
+		S32 wordPositionEnd;
+		S32 wordY;
+	};
+	
 	// LLEditMenuHandler interface
 	virtual void	undo();
 	virtual BOOL	canUndo() const;
@@ -122,6 +134,8 @@ public:
 	virtual BOOL	canCopy() const;
 	virtual void	paste();
 	virtual BOOL	canPaste() const;
+ 
+	virtual void	spellReplace(SpellMenuBind* spellData);
  
 	virtual void	updatePrimary();
 	virtual void	copyPrimary();
@@ -140,6 +154,10 @@ public:
 	static void context_paste(void* data);
 	static void context_delete(void* data);
 	static void context_selectall(void* data);
+	static void spell_correct(void* data);
+	static void spell_add(void* data);
+	static void spell_show(void* data);
+	std::vector<S32> getMisspelledWordsPositions();
 
 	void			selectNext(const std::string& search_text_in, BOOL case_insensitive, BOOL wrap = TRUE);
 	BOOL			replaceText(const std::string& search_text, const std::string& replace_text, BOOL case_insensitive, BOOL wrap = TRUE);
@@ -206,6 +224,7 @@ public:
 	void			setHighlightColor( const LLColor4& color );
 	void			setShadowColor( const LLColor4& color );
 	LLColor4		getReadOnlyFgColor() { return mReadOnlyFgColor; }
+	void			setSpellCheckable(BOOL b)					{ mSpellCheckable = b; }
 
 	// Hacky methods to make it into a word-wrapping, potentially scrolling,
 	// read-only text box.
@@ -272,7 +291,7 @@ public:
 	const LLTextSegment*	getPreviousSegment() const;
 	void getSelectedSegments(std::vector<const LLTextSegment*>& segments) const;
 
-	static bool		isPartOfWord(llwchar c) { return (c == '_') || LLStringOps::isAlnum((char)c); }
+	static bool		isPartOfWord(llwchar c) { return ( (c == '_')  || (c == '\'') || LLStringOps::isAlnum((char)c)); }
 
 	BOOL isReadOnly() { return mReadOnly; }
 protected:
@@ -329,6 +348,7 @@ protected:
 
 	S32				prevWordPos(S32 cursorPos) const;
 	S32				nextWordPos(S32 cursorPos) const;
+	BOOL			getWordBoundriesAt(const S32 at, S32* word_begin, S32* word_length) const;
 
 	S32 			getLineCount() const { return mLineStartList.size(); }
 	S32 			getLineStart( S32 line ) const;
@@ -467,6 +487,7 @@ private:
 	void			drawBackground();
 	void			drawSelectionBackground();
 	void			drawCursor();
+	void			drawMisspelled();
 	void			drawText();
 	void			drawClippedSegment(const LLWString &wtext, S32 seg_start, S32 seg_end, F32 x, F32 y, S32 selection_left, S32 selection_right, const LLStyleSP& color, F32* right_x);
 
@@ -496,6 +517,12 @@ private:
 	LLWString		mWText;
 	mutable std::string mUTF8Text;
 	mutable BOOL	mTextIsUpToDate;
+	
+	LLWString		mPrevSpelledText;		// saved string so we know whether to respell or not
+	S32 spellStart;
+	S32 spellEnd;
+	std::vector<S32> misspellLocations;     // where all the mispelled words are
+	BOOL			mSpellCheckable;			// set in xui as "spell_check". Default value for a field
 	
 	S32				mMaxTextByteLength;		// Maximum length mText is allowed to be in bytes
 
@@ -533,11 +560,18 @@ private:
 		}
 	};
 	typedef std::vector<line_info> line_list_t;
+
+	//to keep track of what we have to remove before showing menu
+	std::vector<SpellMenuBind* > suggestionMenuItems;
+	S32 mLastContextMenuX;
+	S32 mLastContextMenuY;
+
 	line_list_t mLineStartList;
 	BOOL			mReflowNeeded;
 	BOOL			mScrollNeeded;
 
 	LLFrameTimer	mKeystrokeTimer;
+	LLFrameTimer	mSpellTimer;
 
 	LLColor4		mCursorColor;
 

@@ -69,7 +69,7 @@
 #include "lltrans.h"
 #include "lluiconstants.h"
 #include "llviewercontrol.h"
-#include "llviewerimagelist.h"
+#include "llviewertexturelist.h"
 #include "llviewermessage.h"
 #include "lluictrlfactory.h"
 #include "llnotify.h"

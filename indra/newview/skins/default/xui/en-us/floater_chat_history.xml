@@ -92,14 +92,14 @@
 			     max_length="2147483647" mouse_opaque="true" name="Chat History Editor"
            track_bottom="true" 
 			     text_color="ChatHistoryTextColor"
-			     text_readonly_color="ChatHistoryTextColor" width="299" word_wrap="true" />
+			     text_readonly_color="ChatHistoryTextColor" width="299" word_wrap="true" spell_check="true" />
       <text_editor type="string" length="1" bg_readonly_color="ChatHistoryBgColor" bg_writeable_color="ChatHistoryBgColor"
 			     bottom="28" embedded_items="false" enabled="false"
 			     follows="left|top|right|bottom" font="SansSerif" height="74" left="5"
 			     max_length="2147483647" mouse_opaque="true"
 			     name="Chat History Editor with mute" text_color="ChatHistoryTextColor"
            track_bottom="true" 
-			     text_readonly_color="ChatHistoryTextColor" width="300" word_wrap="true"/>
+			     text_readonly_color="ChatHistoryTextColor" width="300" word_wrap="true" spell_check="true"/>
 			<panel bottom="5" follows="left|right|bottom" left="5" name="chat_panel" right="-5"
 			     tab_group="1" top="25">
         <string name="gesture_label">Gestures</string>
@@ -108,7 +108,7 @@
 				     handle_edit_keys_directly="false" height="20" label="Click here to chat."
 				     left="0" max_length="254" mouse_opaque="true" name="Chat Editor"
 				     right="-70" select_all_on_focus_received="false" select_on_focus="false"
-				     tab_group="1" />
+				     tab_group="1" spell_check="true" />
 				<flyout_button bottom="0" follows="right|bottom" height="20" label="Say" left="-65"
 				     list_position="above" mouse_opaque="true" name="Say" tool_tip="(Enter)"
 				     width="70">

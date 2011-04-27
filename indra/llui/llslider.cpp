@@ -73,9 +73,9 @@ LLSlider::LLSlider(
 	mMouseDownCallback( NULL ),
 	mMouseUpCallback( NULL )
 {
-	mThumbImage = LLUI::sImageProvider->getUIImage("icn_slide-thumb_dark.tga");
-	mTrackImage = LLUI::sImageProvider->getUIImage("icn_slide-groove_dark.tga");
-	mTrackHighlightImage = LLUI::sImageProvider->getUIImage("icn_slide-highlight.tga");
+	mThumbImage = LLUI::getUIImage("icn_slide-thumb_dark.tga");
+	mTrackImage = LLUI::getUIImage("icn_slide-groove_dark.tga");
+	mTrackHighlightImage = LLUI::getUIImage("icn_slide-highlight.tga");
 
 	// properly handle setting the starting thumb rect
 	// do it this way to handle both the operating-on-settings

@@ -685,6 +685,46 @@
           </map>
         </map>
       </map>
+      <key>hunspell</key>
+      <map>
+        <key>copyright</key>
+        <string>various</string>
+        <key>description</key>
+        <string>A open source spell check library</string>
+        <key>license</key>
+        <string>lgpl</string>
+        <key>packages</key>
+        <map>
+          <key>windows</key>
+          <map>
+            <key>md5sum</key>
+            <string>1eb49bf9bcce30f5fe0dddaed2a3c628</string>
+            <key>url</key>
+            <uri>http://imprudenceviewer.org/download/libs/windows_hunspell.tar.bz2</uri>
+          </map>
+          <key>linux</key>
+          <map>
+            <key>md5sum</key>
+            <string>dbe264ef2e932980e31db646ea29bbe7</string>
+            <key>url</key>
+            <uri>http://imprudenceviewer.org/download/libs/hunspell-1.2-linux32-20100902.tar.bz2</uri>
+          </map>
+          <key>linux64</key>
+          <map>
+            <key>md5sum</key>
+            <string>5388725d012c3bfabcc420be53442018</string>
+            <key>url</key>
+            <uri>http://imprudenceviewer.org/download/libs/hunspell-1.2-linux64-20100902.tar.bz2</uri>
+          </map>
+          <key>darwin</key>
+          <map>
+            <key>md5sum</key>
+            <string>9b970abfc9df40ad6d183a4b1f732fb2</string>
+            <key>url</key>
+            <uri>http://imprudenceviewer.org/download/libs/hunspell-1.2-darwin.tar.gz</uri>
+          </map>
+        </map>
+      </map>
       <key>dbusglib</key>
       <map>
         <key>copyright</key>

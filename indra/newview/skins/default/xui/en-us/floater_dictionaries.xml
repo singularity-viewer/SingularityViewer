@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<floater border="false" can_close="true" can_minimize="true" bottom="500" left="500" can_resize="false" height="180" name="EmeraldIRC_dictionaries" title="Download new Dictionaries" width="300">
+     <text bottom="-50" follows="left|top" font="SansSerifSmall" height="20" left="15" name="EmDics_txt" width="300">
+Below is a list of additional dictionaries that can
+be downloaded from the Imprudence website.
+
+Please select the dictionary you wish to have available
+for install, and then press the download button.</text>
+	<combo_box allow_text_entry="false" bottom_delta="-85" left_delta="-10" follows="left|top" height="18"
+		max_chars="255" mouse_opaque="true" name="Emerald_combo_dics" width="290"
+		control_name="Emerald_combo_dics" tool_tip=""/>
+     <button bottom_delta="-35" enabled="true" follows="left|top" font="SansSerif"
+	     halign="center" height="22" label="Download" left_delta="0"
+	     mouse_opaque="true" name="Emerald_dic_download" scale_image="true" width="290" />
+</floater> 

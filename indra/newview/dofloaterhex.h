@@ -7,7 +7,7 @@
 #include "llfloater.h"
 #include "dohexeditor.h"
 #include "llinventory.h"
-#include "llviewerimage.h"
+#include "llviewertexture.h"
 #include "llassettype.h"
 
 class DOFloaterHex
@@ -19,7 +19,7 @@ public:
 	BOOL postBuild(void);
 	void close(bool app_quitting);
 	static void imageCallback(BOOL success, 
-					LLViewerImage *src_vi,
+					LLViewerFetchedTexture *src_vi,
 					LLImageRaw* src, 
 					LLImageRaw* aux_src, 
 					S32 discard_level,

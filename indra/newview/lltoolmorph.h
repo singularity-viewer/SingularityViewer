@@ -42,7 +42,7 @@
 #include "llstrider.h"
 #include "llviewervisualparam.h"
 #include "llframetimer.h"
-#include "llviewerimage.h"
+#include "llviewertexture.h"
 
 class LLViewerJointMesh;
 class LLPolyMesh;
@@ -51,9 +51,10 @@ class LLViewerObject;
 //-----------------------------------------------------------------------------
 // LLVisualParamHint
 //-----------------------------------------------------------------------------
-class LLVisualParamHint
-:	public LLDynamicTexture
+class LLVisualParamHint : public LLViewerDynamicTexture
 {
+protected:
+	virtual ~LLVisualParamHint();
 public:
 	LLVisualParamHint(
 		S32 pos_x, S32 pos_y,
@@ -61,7 +62,8 @@ public:
 		LLViewerJointMesh *mesh, 
 		LLViewerVisualParam *param,
 		F32 param_weight);
-	virtual ~LLVisualParamHint();
+
+	/*virtual*/ S8 getType() const ;
 
 	BOOL					needsRender();
 	void					preRender(BOOL clear_depth);
@@ -99,11 +101,14 @@ protected:
 };
 
 // this class resets avatar data at the end of an update cycle
-class LLVisualParamReset : public LLDynamicTexture
+class LLVisualParamReset : public LLViewerDynamicTexture
 {
+protected:
+	/*virtual */ ~LLVisualParamReset(){}
 public:
 	LLVisualParamReset();
 	/*virtual */ BOOL render();
+	/*virtual*/ S8 getType() const ;
 
 	static BOOL sDirty;
 };

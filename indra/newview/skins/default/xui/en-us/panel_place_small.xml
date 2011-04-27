@@ -14,7 +14,7 @@
 	</text>
 	<text_editor bg_readonly_color="clear" bottom_delta="-68" enabled="false" follows="left|top"
 	     font="SansSerif" height="70" left="20" max_length="1023" name="desc_editor"
-	     width="360" word_wrap="true" />
+	     width="360" word_wrap="true" spell_check="true" />
 	<text bottom_delta="-20" follows="left|top" font="SansSerif" height="20" left="20" name="information_label">
 		Information:
 	</text>

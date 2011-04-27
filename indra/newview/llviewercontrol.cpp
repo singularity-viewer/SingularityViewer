@@ -50,7 +50,7 @@
 #include "llpanelinput.h"
 #include "llsky.h"
 #include "llvieweraudio.h"
-#include "llviewerimagelist.h"
+#include "llviewertexturelist.h"
 #include "llviewerthrottle.h"
 #include "llviewerwindow.h"
 #include "llvoavatar.h"
@@ -76,6 +76,7 @@
 #include "llrender.h"
 #include "llfloaterchat.h"
 #include "llviewerobjectlist.h"
+#include "lldrawpoolbump.h"
 #include "emeraldboobutils.h"
 
 #ifdef TOGGLE_HACKED_GODLIKE_VIEWER
@@ -121,6 +122,17 @@ static bool handleTerrainDetailChanged(const LLSD& newvalue)
 
 static bool handleSetShaderChanged(const LLSD& newvalue)
 {
+	// changing shader level may invalidate existing cached bump maps, as the shader type determines the format of the bump map it expects - clear and repopulate the bump cache
+	gBumpImageList.destroyGL();
+	gBumpImageList.restoreGL();
+
+	// Changing shader also changes the terrain detail to high, reflect that change here
+	if (newvalue.asBoolean())
+	{
+		// shaders enabled, set terrain detail to high
+		gSavedSettings.setS32("RenderTerrainDetail", 1);
+	}
+	// else, leave terrain detail as is
 	LLViewerShaderMgr::instance()->setShaders();
 	return true;
 }
@@ -181,6 +193,13 @@ static bool handleReleaseGLBufferChanged(const LLSD& newvalue)
 		gPipeline.releaseGLBuffers();
 		gPipeline.createGLBuffers();
 	}
+	return true;
+}
+
+static bool handleAnisotropicChanged(const LLSD& newvalue)
+{
+	LLImageGL::sGlobalUseAnisotropic = newvalue.asBoolean();
+	LLImageGL::dirtyTexOptions();
 	return true;
 }
 
@@ -262,7 +281,7 @@ static bool handleMaxPartCountChanged(const LLSD& newvalue)
 
 static bool handleVideoMemoryChanged(const LLSD& newvalue)
 {
-	gImageList.updateMaxResidentTexMem(newvalue.asInteger());
+	gTextureList.updateMaxResidentTexMem(newvalue.asInteger());
 	return true;
 }
 
@@ -549,6 +568,8 @@ void settings_setup_listeners()
 	gSavedSettings.getControl("RenderAnimateTrees")->getSignal()->connect(boost::bind(&handleResetVertexBuffersChanged, _1));
 	gSavedSettings.getControl("RenderAvatarVP")->getSignal()->connect(boost::bind(&handleSetShaderChanged, _1));
 	gSavedSettings.getControl("VertexShaderEnable")->getSignal()->connect(boost::bind(&handleSetShaderChanged, _1));
+	gSavedSettings.getControl("RenderFSAASamples")->getSignal()->connect(boost::bind(&handleReleaseGLBufferChanged, _1));
+	gSavedSettings.getControl("RenderAnisotropic")->getSignal()->connect(boost::bind(&handleAnisotropicChanged, _1));
 	gSavedSettings.getControl("RenderGlow")->getSignal()->connect(boost::bind(&handleReleaseGLBufferChanged, _1));
 	gSavedSettings.getControl("RenderGlow")->getSignal()->connect(boost::bind(&handleSetShaderChanged, _1));
 	gSavedSettings.getControl("EnableRippleWater")->getSignal()->connect(boost::bind(&handleSetShaderChanged, _1));

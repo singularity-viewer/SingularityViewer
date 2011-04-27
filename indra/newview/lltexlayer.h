@@ -39,7 +39,7 @@
 #include "llrect.h"
 #include "llstring.h"
 #include "lluuid.h"
-#include "llviewerimage.h"
+#include "llviewertexture.h"
 #include "llviewervisualparam.h"
 #include "llvoavatardefines.h"
 #include "llwearable.h"
@@ -50,7 +50,7 @@ class LLTexLayerSetInfo;
 class LLTexLayerSet;
 class LLTexLayerInfo;
 class LLTexLayer;
-class LLImageGL;
+class LLViewerTexture;
 class LLImageTGA;
 class LLTexGlobalColorInfo;
 class LLTexLayerParamAlphaInfo;
@@ -61,6 +61,7 @@ class LLPolyMesh;
 class LLXmlTreeNode;
 class LLImageRaw;
 class LLPolyMorphTarget;
+class LLViewerTexture;
 
 class LLTextureCtrl;
 class LLVOAvatar;
@@ -204,7 +205,7 @@ protected:
 // LLTexLayerSetBuffer
 // The composite image that a LLTexLayerSet writes to.  Each LLTexLayerSet has one.
 //-----------------------------------------------------------------------------
-class LLTexLayerSetBuffer : public LLDynamicTexture
+class LLTexLayerSetBuffer : public LLViewerDynamicTexture
 {
 public:
 	LLTexLayerSetBuffer(LLTexLayerSet*	owner, S32 width, S32 height);
@@ -229,6 +230,7 @@ public:
 													 S32 result, LLExtStat ext_status);
 	static void				dumpTotalByteCount();
 
+	virtual S8 getType() const ;
 	virtual void restoreGLTexture() ;
 	virtual void destroyGLTexture() ;
 
@@ -284,7 +286,7 @@ public:
 	void					gatherAlphaMasks(U8 *data, S32 width, S32 height);
 	void					applyMorphMask(U8* tex_data, S32 width, S32 height, S32 num_components);
 	const std::string		getBodyRegion() 				{ return mInfo->mBodyRegion; }
-	BOOL					hasComposite()					{ return (mComposite != NULL); }
+	BOOL					hasComposite()					{ return (mComposite.notNull()); }
 	LLVOAvatarDefines::EBakedTextureIndex getBakedTexIndex() { return mBakedTexIndex; }
 	void					setBakedTexIndex(LLVOAvatarDefines::EBakedTextureIndex index) { mBakedTexIndex = index; }
 	BOOL					isVisible() const 				{ return mIsVisible; }
@@ -296,7 +298,7 @@ protected:
 	typedef std::vector<LLTexLayer *> layer_list_t;
 	layer_list_t			mLayerList;
 	layer_list_t			mMaskLayerList;
-	LLTexLayerSetBuffer*	mComposite;
+	LLPointer<LLTexLayerSetBuffer>	mComposite;
 	// Backlink only; don't make this an LLPointer.
 	LLVOAvatar*				mAvatar;
 	BOOL					mUpdatesEnabled;
@@ -419,7 +421,7 @@ public:
 	BOOL					getMultiplyBlend()	{ return getInfo()->mMultiplyBlend; }
 
 protected:
-	LLPointer<LLImageGL>	mCachedProcessedImageGL;
+	LLPointer<LLViewerTexture>	mCachedProcessedTexture;
 	LLTexLayer*				mTexLayer;
 	LLPointer<LLImageTGA>	mStaticImageTGA;
 	LLPointer<LLImageRaw>	mStaticImageRaw;
@@ -519,27 +521,25 @@ public:
 	LLTexStaticImageList();
 	~LLTexStaticImageList();
 
-	LLImageRaw*	getImageRaw( const std::string& file_name );
-	LLImageGL*	getImageGL( const std::string& file_name, BOOL is_mask  );
-	LLImageTGA*	getImageTGA( const std::string& file_name );
+	LLImageRaw*			getImageRaw( const std::string& file_name );
+	LLViewerTexture*	getTexture( const std::string& file_name, BOOL is_mask  );
+	LLImageTGA*			getImageTGA( const std::string& file_name );
 
-	void		deleteCachedImages();
-	void		dumpByteCount();
-
-private:
-	BOOL		loadImageRaw( const std::string& file_name, LLImageRaw* image_raw );
+	void				deleteCachedImages();
+	void				dumpByteCount() const;
+protected:
+	BOOL				loadImageRaw(const std::string& file_name, LLImageRaw* image_raw);
 
 private:
 	static LLStringTable sImageNames;
 
-	typedef std::map< const char *, LLPointer<LLImageGL> > image_gl_map_t;
-	typedef std::map< const char *, LLPointer<LLImageTGA> > image_tga_map_t;
-	image_gl_map_t mStaticImageListGL;
-	image_tga_map_t mStaticImageListTGA;
-
+	typedef std::map<const char*, LLPointer<LLViewerTexture> > texture_map_t;
+	texture_map_t 		mStaticImageList;
+	typedef std::map<const char*, LLPointer<LLImageTGA> > image_tga_map_t;
+	image_tga_map_t 	mStaticImageListTGA;
 public:
-	S32 mGLBytes;
-	S32 mTGABytes;
+	S32 				mGLBytes;
+	S32 				mTGABytes;
 };
 
 // Used by LLTexLayerSetBuffer for a callback.
@@ -558,7 +558,7 @@ public:
 
 	LLUUID					mID;
 	LLVOAvatar*				mAvatar;	 // just backlink, don't LLPointer 
-	LLTexLayerSet*			mLayerSet;
+	LLTexLayerSet*			mTexLayerSet;
 	LLTexLayerSetBuffer*	mLayerSetBuffer;
 	LLUUID					mWearableAssets[WT_COUNT];
 	U64						mStartTime;		// Used to measure time baked texture upload requires

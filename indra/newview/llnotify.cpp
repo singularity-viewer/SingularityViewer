@@ -50,7 +50,7 @@
 #include "llalertdialog.h"
 #include "llviewercontrol.h"
 #include "llviewerdisplay.h"
-#include "llviewerimagelist.h"
+#include "llviewertexturelist.h"
 #include "llfloaterchat.h"	// for add_chat_history()
 #include "lloverlaybar.h" // for gOverlayBar
 #include "lluictrlfactory.h"

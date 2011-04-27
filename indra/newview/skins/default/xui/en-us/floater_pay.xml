@@ -47,7 +47,7 @@
 	<line_editor name="message" max_length="140"
 	             bottom_delta="1" left="80" height="18" right="-15"
 	             bevel_style="in" border_style="line" border_thickness="1"
-	             follows="left|top|right" font="SansSerif" />
+	             follows="left|top|right" font="SansSerif" spell_check="true" />
 	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
 	     bottom="-162" drop_shadow_visible="true" enabled="true" follows="left|top"
 	     font="SansSerif" h_pad="0" halign="left" height="18" left="12"

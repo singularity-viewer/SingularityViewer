@@ -35,7 +35,7 @@
 #define LL_LLFONTGL_H
 
 #include "llfont.h"
-#include "llimagegl.h"
+#include "lltexture.h"
 #include "v2math.h"
 #include "llcoord.h"
 #include "llrect.h"
@@ -194,10 +194,10 @@ public:
 									BOOL round = TRUE, BOOL use_embedded = FALSE) const;
 
 
-	LLImageGL *getImageGL() const;
+	LLTexture *getTexture() const;
 
-	void	   addEmbeddedChar( llwchar wc, LLImageGL* image, const std::string& label) const;
-	void	   addEmbeddedChar( llwchar wc, LLImageGL* image, const LLWString& label) const;
+	void	   addEmbeddedChar( llwchar wc, LLTexture* image, const std::string& label) const;
+	void	   addEmbeddedChar( llwchar wc, LLTexture* image, const LLWString& label) const;
 	void	   removeEmbeddedChar( llwchar wc ) const;
 
 	static std::string nameFromFont(const LLFontGL* fontp);

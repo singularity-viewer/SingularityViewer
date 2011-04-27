@@ -68,7 +68,7 @@
 #include "lltexturectrl.h"
 #include "lluiconstants.h"
 #include "lluictrlfactory.h"
-#include "llviewerimagelist.h"		// LLUIImageList
+#include "llviewertexturelist.h"		// LLUIImageList
 #include "llviewermessage.h"
 #include "llviewerparcelmgr.h"
 #include "llviewerregion.h"
@@ -1072,10 +1072,10 @@ BOOL LLPanelLandObjects::postBuild()
 	mBtnReturnOwnerList = getChild<LLButton>("Return objects...");
 	mBtnReturnOwnerList->setClickedCallback(onClickReturnOwnerList, this);
 
-	mIconAvatarOnline = LLUIImageList::getInstance()->getUIImage("icon_avatar_online.tga");
-	mIconAvatarInSim = LLUIImageList::getInstance()->getUIImage("ff_visible_map.tga");
-	mIconAvatarOffline = LLUIImageList::getInstance()->getUIImage("icon_avatar_offline.tga");
-	mIconGroup = LLUIImageList::getInstance()->getUIImage("icon_group.tga");
+	mIconAvatarOnline = LLUI::getUIImage("icon_avatar_online.tga");
+	mIconAvatarInSim = LLUI::getUIImage("ff_visible_map.tga");
+	mIconAvatarOffline = LLUI::getUIImage("icon_avatar_offline.tga");
+	mIconGroup = LLUI::getUIImage("icon_group.tga");
 
 	mOwnerList = getChild<LLNameListCtrl>("owner list");
 	mOwnerList->sortByColumnIndex(3, FALSE);

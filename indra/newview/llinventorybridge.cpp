@@ -77,7 +77,7 @@
 
 #include "lltooldraganddrop.h"
 
-#include "llviewerimagelist.h"
+#include "llviewertexturelist.h"
 #include "llviewerinventory.h"
 
 #include "llviewerobjectlist.h"
@@ -144,7 +144,7 @@ bool confirm_replace_attachment_rez(const LLSD& notification, const LLSD& respon
 
 // <edit>
 void gotImageForSaveItemAs(BOOL success, 
-											LLViewerImage *src_vi,
+											LLViewerTexture *src_vi,
 											LLImageRaw* src, 
 											LLImageRaw* aux_src, 
 											S32 discard_level,

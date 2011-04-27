@@ -58,8 +58,7 @@
 #include "lluictrlfactory.h"
 #include "lluuid.h"
 #include "llviewercamera.h"
-#include "llviewerimage.h"
-#include "llviewerimagelist.h"
+#include "llviewertexturelist.h"
 #include "llviewermenu.h"
 #include "llviewerobjectlist.h"
 #include "llviewerregion.h"
@@ -883,7 +882,7 @@ void LLNetMap::createObjectImage()
 		mObjectRawImagep = new LLImageRaw(img_size, img_size, 4);
 		U8* data = mObjectRawImagep->getData();
 		memset( data, 0, img_size * img_size * 4 );
-		mObjectImagep = new LLImageGL( mObjectRawImagep, FALSE);
+		mObjectImagep = LLViewerTextureManager::getLocalTexture( mObjectRawImagep.get(), FALSE);
 	}
 	setScale(mScale);
 	mUpdateNow = TRUE;

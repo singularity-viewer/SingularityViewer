@@ -55,7 +55,7 @@
 #include "llstatusbar.h"
 
 #include "llviewercontrol.h"	// gSavedSettings
-#include "llviewerimagelist.h"
+#include "llviewertexturelist.h"
 #include "lluictrlfactory.h"
 #include "llviewermenu.h"	// gMenuHolder
 #include "llviewerregion.h"
@@ -556,12 +556,15 @@ class LLFileTakeSnapshotToDisk : public view_listener_t
 		S32 width = gViewerWindow->getWindowDisplayWidth();
 		S32 height = gViewerWindow->getWindowDisplayHeight();
 
+		F32 supersample = 1.f;
 		if (gSavedSettings.getBOOL("HighResSnapshot"))
 		{
-#if SHY_MOD // screenshot improvement
+#if 1//SHY_MOD // screenshot improvement
 			const F32 mult = gSavedSettings.getF32("SHHighResSnapshotScale");
 			width *= mult;
 			height *= mult;
+			static const LLCachedControl<F32> super_sample_scale("SHHighResSnapshotSuperSample",1.f);
+			supersample = super_sample_scale;
 #else //shy_mod
 			width *= 2;
 			height *= 2;
@@ -574,7 +577,10 @@ class LLFileTakeSnapshotToDisk : public view_listener_t
 									   TRUE,
 									   FALSE,
 									   gSavedSettings.getBOOL("RenderUIInSnapshot"),
-									   FALSE))
+									   FALSE,
+									   LLViewerWindow::SNAPSHOT_TYPE_COLOR,
+									   6144,
+									   supersample))
 		{
 			gViewerWindow->playSnapshotAnimAndSound();
 			
@@ -653,7 +659,7 @@ void handle_compress_image(void*)
 
 			BOOL success;
 
-			success = LLViewerImageList::createUploadFile(infile, outfile, IMG_CODEC_TGA);
+			success = LLViewerTextureList::createUploadFile(infile, outfile, IMG_CODEC_TGA);
 
 			if (success)
 			{
@@ -709,7 +715,7 @@ void upload_new_resource(const std::string& src_filename, std::string name,
 	else if( exten == "bmp")
 	{
 		asset_type = LLAssetType::AT_TEXTURE;
-		if (!LLViewerImageList::createUploadFile(src_filename,
+		if (!LLViewerTextureList::createUploadFile(src_filename,
 												 filename,
 												 IMG_CODEC_BMP ))
 		{
@@ -724,7 +730,7 @@ void upload_new_resource(const std::string& src_filename, std::string name,
 	else if( exten == "tga")
 	{
 		asset_type = LLAssetType::AT_TEXTURE;
-		if (!LLViewerImageList::createUploadFile(src_filename,
+		if (!LLViewerTextureList::createUploadFile(src_filename,
 												 filename,
 												 IMG_CODEC_TGA ))
 		{
@@ -739,7 +745,7 @@ void upload_new_resource(const std::string& src_filename, std::string name,
 	else if( exten == "jpg" || exten == "jpeg")
 	{
 		asset_type = LLAssetType::AT_TEXTURE;
-		if (!LLViewerImageList::createUploadFile(src_filename,
+		if (!LLViewerTextureList::createUploadFile(src_filename,
 												 filename,
 												 IMG_CODEC_JPEG ))
 		{
@@ -754,7 +760,7 @@ void upload_new_resource(const std::string& src_filename, std::string name,
  	else if( exten == "png")
  	{
  		asset_type = LLAssetType::AT_TEXTURE;
- 		if (!LLViewerImageList::createUploadFile(src_filename,
+ 		if (!LLViewerTextureList::createUploadFile(src_filename,
  												 filename,
  												 IMG_CODEC_PNG ))
  		{

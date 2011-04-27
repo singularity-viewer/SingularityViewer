@@ -27,7 +27,7 @@
 			</text>
 			<line_editor bevel_style="in" border_style="line" border_thickness="1" bottom="-24"
 			     follows="left|top" font="SansSerif" height="18" left_delta="38"
-			     max_length="63" mouse_opaque="true" name="name" width="128" />
+			     max_length="63" mouse_opaque="true" name="name" width="128" spell_check="true" />
 			<button bottom="-26" follows="left|top" font="SansSerif" halign="center" height="20"
 			     label="Search" label_selected="Search" left_delta="136" mouse_opaque="true"
 			     name="Search" width="70" />
@@ -80,7 +80,7 @@
 			</text>
 			<line_editor bevel_style="in" border_style="line" border_thickness="1" bottom="-24"
 			     follows="left|right|top" font="SansSerif" height="18" left="56"
-			     max_length="63" mouse_opaque="true" name="name" width="160" />
+			     max_length="63" mouse_opaque="true" name="name" width="160" spell_check="true" />
 			<check_box bottom="-22" control_name="ShowPGClassifieds" follows="right|top"
 			     font="SansSerifSmall" height="16" initial_value="true"
 			     label="PG content" left="420" mouse_opaque="true"
@@ -174,7 +174,7 @@
 			</text>
 			<line_editor bevel_style="in" border_style="line" border_thickness="1" bottom="-24"
 			     follows="left|right|top" font="SansSerif" height="18" left="56"
-			     max_length="63" mouse_opaque="true" name="event_search_text" width="160" />
+			     max_length="63" mouse_opaque="true" name="event_search_text" width="160" spell_check="true" />
 			<radio_group bottom="-40" draw_border="false" follows="right|top" height="40" left="560"
 			     mouse_opaque="true" name="date_mode" width="300">
 				<radio_item bottom="-20" follows="left|top" height="20" left="0" mouse_opaque="true"
@@ -351,10 +351,10 @@ To buy direct, visit the land and click on the place name in the title bar.
 			</text>
 			<line_editor bevel_style="in" border_style="line" border_thickness="1" bottom="-22"
 			     follows="left|top" font="SansSerifSmall" height="16" left="132"
-			     max_length="10" mouse_opaque="true" name="priceedit" tab_group="2" width="50" />
+			     max_length="10" mouse_opaque="true" name="priceedit" tab_group="2" width="50" spell_check="true" />
 			<line_editor bevel_style="in" border_style="line" border_thickness="1" bottom_delta="-18"
 			     follows="left|top" font="SansSerifSmall" height="16" left="117"
-			     max_length="10" mouse_opaque="true" name="areaedit" tab_group="4" width="50" />
+			     max_length="10" mouse_opaque="true" name="areaedit" tab_group="4" width="50" spell_check="true" />
 			<button bottom="-48" follows="left|top" font="SansSerif" halign="center" height="20"
 			     label="Search" label_selected="Search" left="208" mouse_opaque="true"
 			     name="Search" tab_group="5" width="70" />
@@ -397,7 +397,7 @@ To buy direct, visit the land and click on the place name in the title bar.
 			</text>
 			<line_editor bevel_style="in" border_style="line" border_thickness="1" bottom="-24"
 			     follows="left|right|top" font="SansSerif" height="18" left="56"
-			     max_length="63" mouse_opaque="true" name="name" width="160" />
+			     max_length="63" mouse_opaque="true" name="name" width="160" spell_check="true" />
 			<check_box bottom="-22" control_name="ShowPGSims" follows="right|top"
 			     font="SansSerifSmall" height="16" initial_value="true"
 			     label="PG content" left="420" mouse_opaque="true"
@@ -535,7 +535,7 @@ To buy direct, visit the land and click on the place name in the title bar.
       </text>
 	  <line_editor bevel_style="in" border_style="line" border_thickness="1" bottom="-24"
 			     follows="left|right|top" font="SansSerif" height="18" left="56"
-			     max_length="63" mouse_opaque="true" name="name" width="160" />
+			     max_length="63" mouse_opaque="true" name="name" width="160" spell_check="true" />
 		<button bottom="-48" follows="right|top" font="SansSerif" halign="center" height="20"
 			     label="Search" label_selected="Search" left="121" mouse_opaque="true"
 			     name="Search" width="95" />
@@ -582,7 +582,7 @@ To buy direct, visit the land and click on the place name in the title bar.
 			</text>
 			<line_editor bevel_style="in" border_style="line" border_thickness="1" bottom="-24"
 			     follows="left|top" font="SansSerif" height="18" left_delta="38"
-			     max_length="63" mouse_opaque="true" name="name" width="200" />
+			     max_length="63" mouse_opaque="true" name="name" width="200" spell_check="true" />
 			<button bottom="-26" follows="left|top" font="SansSerif" halign="center" height="20"
 			     label="Search" label_selected="Search" left_delta="210" mouse_opaque="true"
 			     name="Search" width="70" />

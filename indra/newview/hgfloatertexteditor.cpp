@@ -102,7 +102,7 @@ BOOL HGFloaterTextEditor::postBuild(void)
 
 // static
 void HGFloaterTextEditor::imageCallback(BOOL success, 
-					LLViewerImage *src_vi,
+					LLViewerFetchedTexture *src_vi,
 					LLImageRaw* src, 
 					LLImageRaw* aux_src, 
 					S32 discard_level,
@@ -141,7 +141,7 @@ void HGFloaterTextEditor::imageCallback(BOOL success,
 	}
 	else
 	{
-		src_vi->setBoostLevel(LLViewerImageBoostLevel::BOOST_UI);
+		src_vi->setBoostLevel(LLViewerTexture::BOOST_UI);
 	}
 }
 

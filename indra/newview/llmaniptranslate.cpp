@@ -82,7 +82,7 @@ const F32 PLANE_TICK_SIZE = 0.4f;
 const F32 MANIPULATOR_SCALE_HALF_LIFE = 0.07f;
 const F32 SNAP_ARROW_SCALE = 0.7f;
 
-static LLPointer<LLImageGL> sGridTex = NULL ;
+static LLPointer<LLViewerTexture> sGridTex = NULL ;
 
 const LLManip::EManipPart MANIPULATOR_IDS[9] = 
 {
@@ -158,7 +158,7 @@ void LLManipTranslate::restoreGL()
 	U32 mip = 0;
 
 	destroyGL() ;
-	sGridTex = new LLImageGL() ;
+	sGridTex = LLViewerTextureManager::getLocalTexture() ;
 	if(!sGridTex->createGLTexture())
 	{
 		sGridTex = NULL ;
@@ -167,7 +167,7 @@ void LLManipTranslate::restoreGL()
 
 	GLuint* d = new GLuint[rez*rez];	
 
-	gGL.getTexUnit(0)->bindManual(LLTexUnit::TT_TEXTURE, sGridTex->getTexName());
+	gGL.getTexUnit(0)->bindManual(LLTexUnit::TT_TEXTURE, sGridTex->getTexName(), true);
 	gGL.getTexUnit(0)->setTextureFilteringOption(LLTexUnit::TFO_TRILINEAR);
 
 	while (rez >= 1)

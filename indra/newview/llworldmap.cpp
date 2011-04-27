@@ -44,7 +44,7 @@
 #include "llviewercontrol.h"
 #include "llfloaterworldmap.h"
 #include "lltracker.h"
-#include "llviewerimagelist.h"
+#include "llviewertexturelist.h"
 #include "llviewerregion.h"
 #include "llregionflags.h"
  #include "hippogridmanager.h"
@@ -548,7 +548,7 @@ void LLWorldMap::processMapLayerReply(LLMessageSystem* msg, void**)
 //		}
 //		else
 //		{
-			new_layer.LayerImage = gImageList.getImage(new_layer.LayerImageID, MIPMAP_TRUE, FALSE);
+			new_layer.LayerImage = LLViewerTextureManager::getFetchedTexture(new_layer.LayerImageID, MIPMAP_TRUE, LLViewerTexture::BOOST_MAP, LLViewerTexture::LOD_TEXTURE);
 //		}
 
 		gGL.getTexUnit(0)->bind(new_layer.LayerImage.get());
@@ -580,13 +580,13 @@ bool LLWorldMap::useWebMapTiles()
 }
 
 // public static
-LLPointer<LLViewerImage> LLWorldMap::loadObjectsTile(U32 grid_x, U32 grid_y)
+LLPointer<LLViewerFetchedTexture> LLWorldMap::loadObjectsTile(U32 grid_x, U32 grid_y)
 {
 	// Get the grid coordinates
 	std::string imageurl = gSavedSettings.getString("MapServerURL") + llformat("map-%d-%d-%d-objects.jpg", 1, grid_x, grid_y);
 
-	LLPointer<LLViewerImage> img = gImageList.getImageFromUrl(imageurl);
-	img->setBoostLevel(LLViewerImageBoostLevel::BOOST_MAP);
+	LLPointer<LLViewerFetchedTexture> img = LLViewerTextureManager::getFetchedTextureFromUrl(imageurl,TRUE,LLViewerTexture::BOOST_MAP,LLViewerTexture::LOD_TEXTURE);
+	img->setBoostLevel(LLViewerTexture::BOOST_MAP);
 
 	// Return the smart pointer
 	return img;
@@ -687,7 +687,7 @@ void LLWorldMap::processMapBlockReply(LLMessageSystem* msg, void**)
 			}
 			else
 			{
-				siminfo->mCurrentImage = gImageList.getImage(siminfo->mMapImageID[LLWorldMap::getInstance()->mCurrentMap], MIPMAP_TRUE, FALSE);
+				siminfo->mCurrentImage = LLViewerTextureManager::getFetchedTexture(siminfo->mMapImageID[LLWorldMap::getInstance()->mCurrentMap], MIPMAP_TRUE, FALSE);
 			}
 			gGL.getTexUnit(0)->bind(siminfo->mCurrentImage.get());
 			siminfo->mCurrentImage->setAddressMode(LLTexUnit::TAM_CLAMP);
@@ -696,7 +696,7 @@ void LLWorldMap::processMapBlockReply(LLMessageSystem* msg, void**)
 			if (siminfo->mMapImageID[2].notNull())
 			{
 #ifdef IMMEDIATE_IMAGE_LOAD
-				siminfo->mOverlayImage = gImageList.getImage(siminfo->mMapImageID[2], MIPMAP_TRUE, FALSE);
+				siminfo->mOverlayImage = LLViewerTextureManager::getFetchedTextureURL(siminfo->mMapImageID[2]);
 #endif
 			}
 			else
@@ -932,7 +932,7 @@ void LLWorldMap::dump()
 			llinfos << "image discard " << (S32)info->mCurrentImage->getDiscardLevel()
 					<< " fullwidth " << info->mCurrentImage->getWidth(0)
 					<< " fullheight " << info->mCurrentImage->getHeight(0)
-					<< " maxvirt " << info->mCurrentImage->mMaxVirtualSize
+					<< " maxvirt " << info->mCurrentImage->getMaxVirtualSize()
 					<< " maxdisc " << (S32)info->mCurrentImage->getMaxDiscardLevel()
 					<< llendl;
 		}

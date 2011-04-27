@@ -243,6 +243,24 @@ protected:
 public:
 	static S32 sGlobalRawMemory;
 	static S32 sRawImageCount;
+
+	static S32 sRawImageCachedCount;
+	S32 mCacheEntries;
+	void setInCache(bool in_cache)
+	{
+		if(in_cache)
+		{
+			if(!mCacheEntries)
+				sRawImageCachedCount++;
+			mCacheEntries++;
+		}
+		else if(mCacheEntries)
+		{
+			mCacheEntries--;
+			if(!mCacheEntries)
+				sRawImageCachedCount--;
+		}
+	}
 };
 
 // Compressed representation of image.

@@ -541,7 +541,7 @@ void LLPanelFace::getState()
 			{
 				LLUUID get(LLViewerObject* object, S32 te)
 				{
-					LLViewerImage* image = object->getTEImage(te);
+					LLViewerTexture* image = object->getTEImage(te);
 					return image ? image->getID() : LLUUID::null;
 				}
 			} func;

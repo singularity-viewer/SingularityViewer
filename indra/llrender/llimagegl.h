@@ -59,7 +59,8 @@ public:
 	static S32 dataFormatBytes(S32 dataformat, S32 width, S32 height);
 	static S32 dataFormatComponents(S32 dataformat);
 
-	BOOL updateBindStats(void) const;
+	BOOL updateBindStats(S32 tex_mem) const ;
+	F32 getTimePassedSinceLastBound();
 	void forceUpdateBindStats(void) const;
 
 	// needs to be called every frame
@@ -71,8 +72,7 @@ public:
 	static void dirtyTexOptions();
 
 	// Sometimes called externally for textures not using LLImageGL (should go away...)	
-	static S32 updateBoundTexMemStatic(const S32 delta, const S32 size, S32 category) ;
-	S32 updateBoundTexMem()const;
+	static S32 updateBoundTexMem(const S32 mem, const S32 ncomponents, S32 category) ;
 	
 	static bool checkSize(S32 width, S32 height);
 	
@@ -95,11 +95,9 @@ protected:
 
 public:
 	virtual void dump();	// debugging info to llinfos
-	virtual bool bindError(const S32 stage = 0) const;
-	virtual bool bindDefaultImage(const S32 stage = 0) ;
-	virtual void forceImmediateUpdate() ;
-
+	
 	void setSize(S32 width, S32 height, S32 ncomponents);
+	void setComponents(S32 ncomponents) { mComponents = (S8)ncomponents ;}
 
 	// These 3 functions currently wrap glGenTextures(), glDeleteTextures(), and glTexImage2D() 
 	// for tracking purposes and will be deprecated in the future
@@ -122,7 +120,6 @@ public:
 	void destroyGLTexture();
 
 	void setExplicitFormat(LLGLint internal_format, LLGLenum primary_format, LLGLenum type_format = 0, BOOL swap_bytes = FALSE);
-	void dontDiscard() { mDontDiscard = 1; mTextureState = NO_DELETE; }
 	void setComponents(S8 ncomponents) { mComponents = ncomponents; }
 
 	S32	 getDiscardLevel() const		{ return mCurrentDiscardLevel; }
@@ -154,14 +151,12 @@ public:
 	void setGLTextureCreated (bool initialized) { mGLTextureCreated = initialized; }
 
 	BOOL getUseMipMaps() const { return mUseMipMaps; }
-	void setUseMipMaps(BOOL usemips) { mUseMipMaps = usemips; }
-	BOOL getUseDiscard() const { return mUseMipMaps && !mDontDiscard; }
-	BOOL getDontDiscard() const { return mDontDiscard; }
+	void setUseMipMaps(BOOL usemips) { mUseMipMaps = usemips; }	
 
 	void updatePickMask(S32 width, S32 height, const U8* data_in);
 	BOOL getMask(const LLVector2 &tc);
 
-	void checkTexSize() const ;
+	void checkTexSize(bool forced = false) const ;
 	
 	// Sets the addressing mode used to sample the texture 
 	//  (such as wrapping, mirrored wrapping, and clamp)
@@ -175,17 +170,7 @@ public:
 	void setFilteringOption(LLTexUnit::eTextureFilterOptions option);
 	LLTexUnit::eTextureFilterOptions getFilteringOption(void) const { return mFilterOption; }
 
-	BOOL isDeleted() ;
-	BOOL isInactive() ;
-	BOOL isDeletionCandidate();
-	void setDeletionCandidate() ;
-	void setInactive() ;
-	void setActive() ;
-	void forceActive() ;
-	void setNoDelete() ;
-
-	void setTextureSize(S32 size) {mTextureMemory = size;}
-protected:
+		LLGLenum getTexTarget()const { return mTarget ;}
 	void init(BOOL usemipmaps);
 	virtual void cleanup(); // Clean up the LLImageGL so it can be reinitialized.  Be careful when using this in derived class destructors
 
@@ -224,8 +209,7 @@ protected:
 	
 	S8 mComponents;
 	S8 mMaxDiscardLevel;	
-	S8 mDontDiscard;			// Keep full res version of this image (for UI, etc)
-
+	
 	bool	mTexOptionsDirty;
 	LLTexUnit::eTextureAddressMode		mAddressMode;	// Defaults to TAM_WRAP
 	LLTexUnit::eTextureFilterOptions	mFilterOption;	// Defaults to TFO_TRILINEAR
@@ -235,17 +219,6 @@ protected:
 	LLGLenum mFormatPrimary;  // = GL format (pixel data format)
 	LLGLenum mFormatType;
 	BOOL	 mFormatSwapBytes;// if true, use glPixelStorei(GL_UNPACK_SWAP_BYTES, 1)
-
-protected:
-	typedef enum 
-	{
-		DELETED = 0,         //removed from memory
-		DELETION_CANDIDATE,  //ready to be removed from memory
-		INACTIVE,            //not be used for the last certain period (i.e., 30 seconds).
-		ACTIVE,              //just being used, can become inactive if not being used for a certain time (10 seconds).
-		NO_DELETE = 99       //stay in memory, can not be removed.
-	} LLGLTexureState;
-	LLGLTexureState  mTextureState ;
 	
 	// STATICS
 public:	
@@ -263,6 +236,8 @@ public:
 	static U32 sBindCount;					// Tracks number of texture binds for current frame
 	static U32 sUniqueCount;				// Tracks number of unique texture binds for current frame
 	static BOOL sGlobalUseAnisotropic;
+	static LLImageGL* sDefaultGLTexture ;	
+
 #if DEBUG_MISS
 	BOOL mMissed; // Missed on last bind?
 	BOOL getMissed() const { return mMissed; };
@@ -300,13 +275,10 @@ public:
 
 	static void setHighlightTexture(S32 category) ;
 	static S32 getTextureCounterIndex(U32 val) ;
-	static void incTextureCounterStatic(U32 val, S32 ncomponents, S32 category) ;
-	static void decTextureCounterStatic(U32 val, S32 ncomponents, S32 category) ;
+	static void incTextureCounter(U32 val, S32 ncomponents, S32 category) ;
+	static void decTextureCounter(U32 val, S32 ncomponents, S32 category) ;
 	static void setCurTexSizebar(S32 index, BOOL set_pick_size = TRUE) ;
 	static void resetCurTexSizebar();
-
-	void incTextureCounter() ;
-	void decTextureCounter() ;
 	//----------------------------------------
 
 	//for debug use: show texture category distribution 

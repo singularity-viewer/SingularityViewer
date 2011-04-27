@@ -48,7 +48,7 @@
 #include "llimagegl.h"
 #include "llui.h"
 #include "llviewercamera.h"
-#include "llviewerimagelist.h"
+#include "llviewertexturelist.h"
 #include "llviewerobject.h"
 #include "llvovolume.h"
 #include "llviewerwindow.h"

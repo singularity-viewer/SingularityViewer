@@ -19,5 +19,5 @@
 	     enabled="true" follows="left|top|right" font="SansSerif"
 	     handle_edit_keys_directly="false" height="19" left="93" max_length="127"
 	     mouse_opaque="true" name="desc" select_all_on_focus_received="false"
-	     select_on_focus="false" width="394" />
+	     select_on_focus="false" width="394" spell_check="true" />
 </floater>

@@ -105,7 +105,7 @@ LLComboBox::LLComboBox(	const std::string& name, const LLRect &rect, const std::
 	mList->setCommitOnKeyboardMovement(FALSE);
 	addChild(mList);
 
-	mArrowImage = LLUI::sImageProvider->getUIImage("combobox_arrow.tga");
+	mArrowImage = LLUI::getUIImage("combobox_arrow.tga");
 	mButton->setImageOverlay("combobox_arrow.tga", LLFontGL::RIGHT);
 
 	updateLayout();
@@ -248,6 +248,8 @@ void LLComboBox::onCommit()
 		mTextEntry->setValue(getSimple());
 		mTextEntry->setTentative(FALSE);
 	}
+
+	setControlValue(getValue());
 	LLUICtrl::onCommit();
 }
 

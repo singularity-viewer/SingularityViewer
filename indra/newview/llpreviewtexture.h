@@ -36,7 +36,7 @@
 #include "llpreview.h"
 #include "llbutton.h"
 #include "llframetimer.h"
-#include "llviewerimage.h"
+#include "llviewertexture.h"
 
 class LLComboBox;
 class LLImageRaw;
@@ -73,7 +73,7 @@ public:
 	static void			saveToFile(void* userdata);
 	static void			onFileLoadedForSave( 
 							BOOL success,
-							LLViewerImage *src_vi,
+							LLViewerFetchedTexture *src_vi,
 							LLImageRaw* src, 
 							LLImageRaw* aux_src,
 							S32 discard_level, 
@@ -90,12 +90,14 @@ protected:
 	virtual const char *getTitleName() const { return "Texture"; }
 	
 private:
+	void				updateImageID(); // set what image is being uploaded.
 	void				updateDimensions();
-	LLUUID						mImageID;
-	LLPointer<LLViewerImage>		mImage;
-	BOOL				mLoadingFullImage;
+	LLUUID				mImageID;
+	LLPointer<LLViewerFetchedTexture>		mImage;
+	S32                 mImageOldBoostLevel;
 	std::string			mSaveFileName;
 	LLFrameTimer		mSavedFileTimer;
+	BOOL				mLoadingFullImage;
 	BOOL                mShowKeepDiscard;
 	BOOL                mCopyToInv;
 	
@@ -106,12 +108,12 @@ private:
 	// This is stored off in a member variable, because the save-as
 	// button and drag and drop functionality need to know.
 	BOOL mIsCopyable;
-	
+	BOOL mUpdateDimensions;
 	S32 mLastHeight;
 	S32 mLastWidth;
 	F32 mAspectRatio;	// 0 = Unconstrained
 	S32 mAlphaMaskResult;
+
+	LLLoadedCallbackEntry::source_callback_list_t mCallbackTextureList ; 
 };
-
-
 #endif  // LL_LLPREVIEWTEXTURE_H

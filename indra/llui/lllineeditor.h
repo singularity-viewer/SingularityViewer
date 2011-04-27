@@ -96,6 +96,16 @@ public:
 	/*virtual*/ BOOL	handleUnicodeCharHere(llwchar uni_char);
 	/*virtual*/ void	onMouseCaptureLost();
 
+    struct SpellMenuBind
+    {
+        LLLineEditor* origin;
+        void * menuItem;
+        std::string word;
+        S32 wordPositionStart;
+        S32 wordPositionEnd;
+    };
+
+    virtual void spellReplace(SpellMenuBind* spellData);
 	virtual void insert(std::string what,S32 wher);
 
 	// LLEditMenuHandler overrides
@@ -127,8 +137,14 @@ public:
 	static void context_paste(void* data);
 	static void context_delete(void* data);
 	static void context_selectall(void* data);
+	static void spell_correct(void* data);
+	static void spell_show(void* data);
+	static void spell_add(void* data);
+
+    std::vector<S32> getMisspelledWordsPositions();
 	// view overrides
 	virtual void	draw();
+    void drawMisspelled(LLRect background);
 	virtual void	reshape(S32 width,S32 height,BOOL called_from_parent=TRUE);
 	virtual void	onFocusReceived();
 	virtual void	onFocusLost();
@@ -143,6 +159,8 @@ public:
 	virtual void	onCommit();
 	virtual BOOL	isDirty() const { return mText.getString() != mPrevText; }	// Returns TRUE if user changed value at all
 	virtual void	resetDirty() { mPrevText = mText.getString(); }		// Clear dirty state
+    virtual BOOL	isSpellDirty() const { return mText.getString() != mPrevSpelledText; }	// Returns TRUE if user changed value at all
+    virtual void	resetSpellDirty() { mPrevSpelledText = mText.getString(); }		// Clear dirty state
 
 	// assumes UTF8 text
 	virtual void	setValue(const LLSD& value ) { setText(value.asString()); }
@@ -178,6 +196,7 @@ public:
 	void setWriteableBgColor( const LLColor4& c )	{ mWriteableBgColor = c; }
 	void setReadOnlyBgColor( const LLColor4& c )	{ mReadOnlyBgColor = c; }
 	void setFocusBgColor(const LLColor4& c)			{ mFocusBgColor = c; }
+	void setSpellCheckable(BOOL b)					{ mSpellCheckable = b; }
 
 	const LLColor4& getFgColor() const			{ return mFgColor; }
 	const LLColor4& getReadOnlyFgColor() const	{ return mReadOnlyFgColor; }
@@ -194,6 +213,7 @@ public:
 	// get the cursor position of the beginning/end of the prev/next word in the text
 	S32				prevWordPos(S32 cursorPos) const;
 	S32				nextWordPos(S32 cursorPos) const;
+	BOOL			getWordBoundriesAt(const S32 at, S32* word_begin, S32* word_length) const;
 
 	BOOL			hasSelection() const { return (mSelectionStart != mSelectionEnd); }
 	void			startSelection();
@@ -268,6 +288,14 @@ protected:
 	LLUIString		mText;					// The string being edited.
 	std::string		mPrevText;				// Saved string for 'ESC' revert
 	LLUIString		mLabel;					// text label that is visible when no user text provided
+    std::string		 mPrevSpelledText;		// saved string so we know whether to respell or not
+    std::vector<S32> misspellLocations;     // where all the misspelled words are
+    S32				 mStartSpellHere;		// the position of the first char on the screen, stored so we know when to update
+    S32				 mEndSpellHere;			// the location of the last char on the screen
+	BOOL			mSpellCheckable;		// set in xui as "spell_check". Default value for a field
+    LLFrameTimer     mSpellTimer;
+    std::vector<SpellMenuBind* > suggestionMenuItems;
+	S32 mLastContextMenuX;
 
 	// line history support:
 	BOOL		mHaveHistory;				// flag for enabled line history

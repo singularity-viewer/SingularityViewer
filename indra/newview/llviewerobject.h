@@ -66,7 +66,7 @@ class LLMessageSystem;
 class LLPrimitive;
 class LLPipeline;
 class LLTextureEntry;
-class LLViewerImage;
+class LLViewerTexture;
 class LLViewerInventoryItem;
 class LLViewerObject;
 class LLViewerPartSourceScript;
@@ -312,9 +312,9 @@ public:
 	/*virtual*/	S32		setTEMediaFlags(const U8 te, const U8 media_flags );
 	/*virtual*/ S32     setTEGlow(const U8 te, const F32 glow);
 	/*virtual*/	BOOL	setMaterial(const U8 material);
-	virtual		void	setTEImage(const U8 te, LLViewerImage *imagep); // Not derived from LLPrimitive
-	void                changeTEImage(S32 index, LLViewerImage* new_image)  ;
-	LLViewerImage		*getTEImage(const U8 te) const;
+	virtual		void	setTEImage(const U8 te, LLViewerTexture *imagep); // Not derived from LLPrimitive
+	void                changeTEImage(S32 index, LLViewerTexture* new_image)  ;
+	LLViewerTexture		*getTEImage(const U8 te) const;
 	
 	void fitFaceTexture(const U8 face);
 	void sendTEUpdate() const;			// Sends packed representation of all texture entry information
@@ -361,7 +361,7 @@ public:
 	// <edit>
 	std::string getDebugText();
 	// </edit>
-	void setIcon(LLViewerImage* icon_image);
+	void setIcon(LLViewerTexture* icon_image);
 	void clearIcon();
 
 	void markForUpdate(BOOL priority);
@@ -535,7 +535,7 @@ public:
 	// Last total CRC received from sim, used for caching
 	U32				mTotalCRC;
 
-	LLPointer<LLViewerImage> *mTEImages;
+	LLPointer<LLViewerTexture> *mTEImages;
 
 	// Selection, picking and rendering variables
 	U32				mGLName;			// GL "name" used by selection code

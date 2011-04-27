@@ -70,7 +70,7 @@
 #include "llrendersphere.h"
 #include "lltooldraganddrop.h"
 #include "llviewercamera.h"
-#include "llviewerimagelist.h"
+#include "llviewertexturelist.h"
 #include "llviewerinventory.h"
 #include "llviewerobjectlist.h"
 #include "llviewerparceloverlay.h"
@@ -2986,14 +2986,14 @@ void LLViewerObject::boostTexturePriority(BOOL boost_children /* = TRUE */)
 	S32 tex_count = getNumTEs();
 	for (i = 0; i < tex_count; i++)
 	{
- 		getTEImage(i)->setBoostLevel(LLViewerImageBoostLevel::BOOST_SELECTED);
+ 		getTEImage(i)->setBoostLevel(LLViewerTexture::BOOST_SELECTED);
 	}
 
 	if (isSculpted())
 	{
 		LLSculptParams *sculpt_params = (LLSculptParams *)getParameterEntry(LLNetworkData::PARAMS_SCULPT);
 		LLUUID sculpt_id = sculpt_params->getSculptTexture();
-		gImageList.getImage(sculpt_id)->setBoostLevel(LLViewerImageBoostLevel::BOOST_SELECTED);
+		LLViewerTextureManager::getFetchedTexture(sculpt_id, TRUE, LLViewerTexture::BOOST_NONE, LLViewerTexture::LOD_TEXTURE)->setBoostLevel(LLViewerTexture::BOOST_SELECTED);
 	}
 	
 	if (boost_children)
@@ -3621,8 +3621,8 @@ void LLViewerObject::setNumTEs(const U8 num_tes)
 	{
 		if (num_tes)
 		{
-			LLPointer<LLViewerImage> *new_images;
-			new_images = new LLPointer<LLViewerImage>[num_tes];
+			LLPointer<LLViewerTexture> *new_images;
+			new_images = new LLPointer<LLViewerTexture>[num_tes];
 			for (i = 0; i < num_tes; i++)
 			{
 				if (i < getNumTEs())
@@ -3756,11 +3756,11 @@ void LLViewerObject::setTE(const U8 te, const LLTextureEntry &texture_entry)
 //	if (mDrawable.notNull() && mDrawable->isVisible())
 //	{
 		const LLUUID& image_id = getTE(te)->getID();
-		mTEImages[te] = gImageList.getImage(image_id);
+		mTEImages[te] = LLViewerTextureManager::getFetchedTexture(image_id, TRUE, LLViewerTexture::BOOST_NONE, LLViewerTexture::LOD_TEXTURE);
 //	}
 }
 
-void LLViewerObject::setTEImage(const U8 te, LLViewerImage *imagep)
+void LLViewerObject::setTEImage(const U8 te, LLViewerTexture *imagep)
 {
 	if (mTEImages[te] != imagep)
 	{
@@ -3782,7 +3782,7 @@ S32 LLViewerObject::setTETextureCore(const U8 te, const LLUUID& uuid, LLHost hos
 		uuid == LLUUID::null)
 	{
 		retval = LLPrimitive::setTETexture(te, uuid);
-		mTEImages[te] = gImageList.getImageFromHost(uuid, host);
+		mTEImages[te] = LLViewerTextureManager::getFetchedTexture(uuid, TRUE, LLViewerTexture::BOOST_NONE, LLViewerTexture::LOD_TEXTURE, 0, 0, host);
 		setChanged(TEXTURE);
 		if (mDrawable.notNull())
 		{
@@ -3793,7 +3793,7 @@ S32 LLViewerObject::setTETextureCore(const U8 te, const LLUUID& uuid, LLHost hos
 }
 
 
-void LLViewerObject::changeTEImage(S32 index, LLViewerImage* new_image) 
+void LLViewerObject::changeTEImage(S32 index, LLViewerTexture* new_image) 
 {
 	if(index < 0 || index >= getNumTEs())
 	{
@@ -4046,20 +4046,20 @@ S32 LLViewerObject::setTERotation(const U8 te, const F32 r)
 }
 
 
-LLViewerImage *LLViewerObject::getTEImage(const U8 face) const
+LLViewerTexture *LLViewerObject::getTEImage(const U8 face) const
 {
 //	llassert(mTEImages);
 
 	if (face < getNumTEs())
 	{
-		LLViewerImage* image = mTEImages[face];
+		LLViewerTexture* image = mTEImages[face];
 		if (image)
 		{
 			return image;
 		}
 		else
 		{
-			return (LLViewerImage*)((LLImageGL*)LLViewerImage::sDefaultImagep);
+			return (LLViewerTexture*)(LLViewerFetchedTexture::sDefaultImagep);
 		}
 	}
 
@@ -4194,7 +4194,7 @@ std::string LLViewerObject::getDebugText()
 }
 // </edit>
 
-void LLViewerObject::setIcon(LLViewerImage* icon_image)
+void LLViewerObject::setIcon(LLViewerTexture* icon_image)
 {
 	if (!mIcon)
 	{
@@ -4284,14 +4284,14 @@ void LLViewerObject::setParticleSource(const LLPartSysData& particle_parameters,
 
 		if (mPartSourcep->getImage()->getID() != mPartSourcep->mPartSysData.mPartImageID)
 		{
-			LLViewerImage* image;
+			LLViewerTexture* image;
 			if (mPartSourcep->mPartSysData.mPartImageID == LLUUID::null)
 			{
-				image = gImageList.getImageFromFile("pixiesmall.tga");
+				image = LLViewerTextureManager::getFetchedTextureFromFile("pixiesmall.tga");
 			}
 			else
 			{
-				image = gImageList.getImage(mPartSourcep->mPartSysData.mPartImageID);
+				image = LLViewerTextureManager::getFetchedTexture(mPartSourcep->mPartSysData.mPartImageID);
 			}
 			mPartSourcep->setImage(image);
 		}
@@ -4333,14 +4333,14 @@ void LLViewerObject::unpackParticleSource(const S32 block_num, const LLUUID& own
 	{
 		if (mPartSourcep->getImage()->getID() != mPartSourcep->mPartSysData.mPartImageID)
 		{
-			LLViewerImage* image;
+			LLViewerTexture* image;
 			if (mPartSourcep->mPartSysData.mPartImageID == LLUUID::null)
 			{
-				image = gImageList.getImageFromFile("pixiesmall.j2c");
+				image = LLViewerTextureManager::getFetchedTextureFromFile("pixiesmall.j2c");
 			}
 			else
 			{
-				image = gImageList.getImage(mPartSourcep->mPartSysData.mPartImageID);
+				image = LLViewerTextureManager::getFetchedTexture(mPartSourcep->mPartSysData.mPartImageID);
 			}
 			mPartSourcep->setImage(image);
 		}
@@ -4380,14 +4380,14 @@ void LLViewerObject::unpackParticleSource(LLDataPacker &dp, const LLUUID& owner_
 	{
 		if (mPartSourcep->getImage()->getID() != mPartSourcep->mPartSysData.mPartImageID)
 		{
-			LLViewerImage* image;
+			LLViewerTexture* image;
 			if (mPartSourcep->mPartSysData.mPartImageID == LLUUID::null)
 			{
-				image = gImageList.getImageFromFile("pixiesmall.j2c");
+				image = LLViewerTextureManager::getFetchedTextureFromFile("pixiesmall.j2c");
 			}
 			else
 			{
-				image = gImageList.getImage(mPartSourcep->mPartSysData.mPartImageID);
+				image = LLViewerTextureManager::getFetchedTexture(mPartSourcep->mPartSysData.mPartImageID);
 			}
 			mPartSourcep->setImage(image);
 		}

@@ -44,7 +44,7 @@
 #include "llworldmipmap.h"
 #include "lluuid.h"
 #include "llmemory.h"
-#include "llviewerimage.h"
+#include "llviewertexture.h"
 #include "lleventinfo.h"
 #include "v3color.h"
 
@@ -97,8 +97,8 @@ public:
 	LLUUID mMapImageID[MAP_SIM_IMAGE_TYPES];
 
 	// Hold a reference to the currently displayed image.
-	LLPointer<LLViewerImage> mCurrentImage;
-	LLPointer<LLViewerImage> mOverlayImage;
+	LLPointer<LLViewerFetchedTexture> mCurrentImage;
+	LLPointer<LLViewerFetchedTexture> mOverlayImage;
 };
 
 #define MAP_BLOCK_RES 256
@@ -106,7 +106,7 @@ public:
 struct LLWorldMapLayer
 {
 	BOOL LayerDefined;
-	LLPointer<LLViewerImage> LayerImage;
+	LLPointer<LLViewerTexture> LayerImage;
 	LLUUID LayerImageID;
 	LLRect LayerExtents;
 
@@ -172,7 +172,7 @@ public:
 
 	static void gotMapServerURL(bool flag) { sGotMapURL = flag; }
 	static bool useWebMapTiles();
-	static LLPointer<LLViewerImage> loadObjectsTile(U32 grid_x, U32 grid_y);
+	static LLPointer<LLViewerFetchedTexture> loadObjectsTile(U32 grid_x, U32 grid_y);
 
 	void dump();
 
@@ -190,9 +190,10 @@ public:
 	
 	// World Mipmap delegation: currently used when drawing the mipmap
 	void	equalizeBoostLevels();
-	LLPointer<LLViewerImage> getObjectsTile(U32 grid_x, U32 grid_y, S32 level, bool load = true) {
-		return mWorldMipmap.getObjectsTile(grid_x, grid_y, level, load);
-	}
+	LLPointer<LLViewerFetchedTexture> getObjectsTile(U32 grid_x, U32 grid_y, S32 level, bool load = true) { return mWorldMipmap.getObjectsTile(grid_x, grid_y, level, load); }
+
+private:
+	bool clearItems(bool force = false);	// Clears the item lists
 	
 public:
 	// Map from region-handle to simulator info

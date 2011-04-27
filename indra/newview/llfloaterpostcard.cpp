@@ -82,7 +82,7 @@ LLFloaterPostcard::instance_list_t LLFloaterPostcard::sInstances;
 /// Class LLFloaterPostcard
 ///----------------------------------------------------------------------------
 
-LLFloaterPostcard::LLFloaterPostcard(LLImageJPEG* jpeg, LLImageGL *img, const LLVector2& img_scale, const LLVector3d& pos_taken_global)
+LLFloaterPostcard::LLFloaterPostcard(LLImageJPEG* jpeg, LLViewerTexture *img, const LLVector2& img_scale, const LLVector3d& pos_taken_global)
 :	LLFloater(std::string("Postcard Floater")),
 	mJPEGImage(jpeg),
 	mViewerImage(img),
@@ -144,7 +144,7 @@ BOOL LLFloaterPostcard::postBuild()
 
 
 // static
-LLFloaterPostcard* LLFloaterPostcard::showFromSnapshot(LLImageJPEG *jpeg, LLImageGL *img, const LLVector2 &image_scale, const LLVector3d& pos_taken_global)
+LLFloaterPostcard* LLFloaterPostcard::showFromSnapshot(LLImageJPEG *jpeg, LLViewerTexture *img, const LLVector2 &image_scale, const LLVector3d& pos_taken_global)
 {
 	// Take the images from the caller
 	// It's now our job to clean them up

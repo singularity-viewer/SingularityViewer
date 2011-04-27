@@ -74,7 +74,7 @@ and you can&apos;t send a folder.
 		<line_editor bevel_style="in" border_style="line"
 		     border_thickness="1" bottom_delta="0" font="SansSerifSmall" height="16"
 		     is_unicode="false" left_delta="58" max_length="63" mouse_opaque="true"
-		     name="create_subject" prevalidate="printable_not_pipe" width="264" />
+		     name="create_subject" prevalidate="printable_not_pipe" width="264" spell_check="true" />
 		<text bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
 		     bottom_delta="-18" drop_shadow_visible="true" font="SansSerifSmall"
 		     h_pad="0" halign="right" height="16" left="7" mouse_opaque="true"
@@ -84,7 +84,7 @@ and you can&apos;t send a folder.
 		<text_editor bottom_delta="-106" embedded_items="false"
 		     font="SansSerifSmall" height="120" hide_scrollbar="true" is_unicode="false"
 		     left_delta="58" max_length="511" mouse_opaque="true" name="create_message"
-		     width="346" word_wrap="true" />
+		     width="346" word_wrap="true" spell_check="true" />
 		<text bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
 		     bottom_delta="-19" drop_shadow_visible="true" font="SansSerifSmall"
 		     h_pad="0" halign="right" height="16" left="7" mouse_opaque="true"

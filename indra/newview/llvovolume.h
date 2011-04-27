@@ -34,7 +34,7 @@
 #define LL_LLVOVOLUME_H
 
 #include "llviewerobject.h"
-#include "llviewerimage.h"
+#include "llviewertexture.h"
 #include "llframetimer.h"
 #include "llapr.h"
 #include <map>
@@ -154,7 +154,7 @@ public:
 
 	/*virtual*/ void	setScale(const LLVector3 &scale, BOOL damped);
 
-	/*virtual*/ void	setTEImage(const U8 te, LLViewerImage *imagep);
+	/*virtual*/ void	setTEImage(const U8 te, LLViewerTexture *imagep);
 	/*virtual*/ S32		setTETexture(const U8 te, const LLUUID &uuid);
 	/*virtual*/ S32		setTEColor(const U8 te, const LLColor3 &color);
 	/*virtual*/ S32		setTEColor(const U8 te, const LLColor4 &color);
@@ -242,7 +242,7 @@ private:
 	BOOL		mVolumeChanged;
 	F32			mVObjRadius;
 	LLVolumeInterface *mVolumeImpl;
-	LLPointer<LLViewerImage> mSculptTexture;
+	LLPointer<LLViewerFetchedTexture> mSculptTexture;
 	S32 mIndexInTex;
 	
 	// statics

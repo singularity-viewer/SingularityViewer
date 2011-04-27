@@ -36,7 +36,7 @@
 #include "lluictrl.h"
 #include "v4color.h"
 #include "llfloater.h"
-#include "llviewerimage.h"
+#include "llviewertexture.h"
 
 //
 // Classes
@@ -44,7 +44,6 @@
 class LLColor4;
 class LLTextBox;
 class LLFloaterColorPicker;
-class LLViewerImage;
 
 class LLColorSwatchCtrl
 : public LLUICtrl

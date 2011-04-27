@@ -131,12 +131,12 @@ public:
 	LLFloaterSnapshot::ESnapshotFormat getSnapshotFormat() const { return mSnapshotFormat; }
 	BOOL getSnapshotUpToDate() const { return mSnapshotUpToDate; }
 	BOOL isSnapshotActive() { return mSnapshotActive; }
-	LLImageGL* getThumbnailImage() const { return mThumbnailImage ; }
+	LLViewerTexture* getThumbnailImage() const { return mThumbnailImage ; }
 	S32  getThumbnailWidth() const { return mThumbnailWidth ; }
 	S32  getThumbnailHeight() const { return mThumbnailHeight ; }
 	BOOL getThumbnailLock() const { return mThumbnailUpdateLock ; }
 	BOOL getThumbnailUpToDate() const { return mThumbnailUpToDate ;}
-	LLImageGL* getCurrentImage();
+	LLViewerTexture* getCurrentImage();
 	F32 getImageAspect();
 	F32 getAspect() ;
 	LLRect getImageRect();
@@ -161,7 +161,7 @@ public:
 
 private:
 	LLColor4					mColor;
-	LLPointer<LLImageGL>		mViewerImage[2]; //used to represent the scene when the frame is frozen.
+	LLPointer<LLViewerTexture>	mViewerImage[2]; //used to represent the scene when the frame is frozen.
 	LLRect						mImageRect[2];
 	S32							mWidth[2];
 	S32							mHeight[2];
@@ -169,7 +169,7 @@ private:
 	S32                         mMaxImageSize ;
 	
 	//thumbnail image
-	LLPointer<LLImageGL>		mThumbnailImage ;
+	LLPointer<LLViewerTexture>	mThumbnailImage ;
 	S32                         mThumbnailWidth ;
 	S32                         mThumbnailHeight ;
 	LLRect                      mPreviewRect ;
@@ -269,7 +269,7 @@ void LLSnapshotLivePreview::setMaxImageSize(S32 size)
 	}
 }
 
-LLImageGL* LLSnapshotLivePreview::getCurrentImage()
+LLViewerTexture* LLSnapshotLivePreview::getCurrentImage()
 {
 	return mViewerImage[mCurImageIndex];
 }
@@ -718,7 +718,7 @@ void LLSnapshotLivePreview::generateThumbnailImage(BOOL force_update)
 
 	if(raw)
 	{
-		mThumbnailImage = new LLImageGL(raw, FALSE); 		
+		mThumbnailImage = LLViewerTextureManager::getLocalTexture(raw.get(), FALSE); 		
 		mThumbnailUpToDate = TRUE ;
 	}
 
@@ -867,8 +867,8 @@ BOOL LLSnapshotLivePreview::onIdle( void* snapshot_preview )
 				scaled->expandToPowerOfTwo(1024, FALSE);
 			}
 
-			previewp->mViewerImage[previewp->mCurImageIndex] = new LLImageGL(scaled, FALSE);
-			LLPointer<LLImageGL> curr_preview_image = previewp->mViewerImage[previewp->mCurImageIndex];
+			previewp->mViewerImage[previewp->mCurImageIndex] = LLViewerTextureManager::getLocalTexture(scaled.get(), FALSE);
+			LLPointer<LLViewerTexture> curr_preview_image = previewp->mViewerImage[previewp->mCurImageIndex];
 			gGL.getTexUnit(0)->bind(curr_preview_image);
 			if (previewp->getSnapshotType() != SNAPSHOT_TEXTURE)
 			{
@@ -888,7 +888,7 @@ BOOL LLSnapshotLivePreview::onIdle( void* snapshot_preview )
 				S32 w = get_lower_power_two(scaled->getWidth(), 512) * 2 ;
 				S32 h = get_lower_power_two(scaled->getHeight(), 512) * 2 ;
 				scaled->scale(w,h);
-				previewp->mThumbnailImage = new LLImageGL(scaled, FALSE);
+				previewp->mThumbnailImage =  LLViewerTextureManager::getLocalTexture(scaled.get(), FALSE);
 				previewp->mThumbnailUpdateLock = FALSE ;
 				previewp->setThumbnailImageSize();
 			}

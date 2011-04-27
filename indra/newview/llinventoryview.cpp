@@ -71,7 +71,7 @@
 #include "llscrollbar.h"
 #include "llimview.h"
 #include "lltooldraganddrop.h"
-#include "llviewerimagelist.h"
+#include "llviewertexturelist.h"
 #include "llviewerinventory.h"
 #include "llviewerobjectlist.h"
 #include "llviewerwindow.h"
