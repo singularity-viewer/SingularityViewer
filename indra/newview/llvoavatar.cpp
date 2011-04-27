@@ -4045,7 +4045,7 @@ void LLVOAvatar::idleUpdateNameTag(const LLVector3& root_pos_last)
 					line += "\n";
 					line += "(Editing Appearance)";
 				}
-				if(!mIdleString.length())
+				if(mIdleString.length())
 				{
 					line += "\n";
 					line += mIdleString;
