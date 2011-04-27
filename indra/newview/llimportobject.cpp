@@ -561,7 +561,7 @@ void LLXmlImport::rez_supply()
 		//group
 		LLUUID group_id = gAgent.getGroupID();
 		LLParcel *parcel = LLViewerParcelMgr::getInstance()->getAgentParcel();
-		if (gSavedSettings.getBOOL("RezWithLandGroup"))
+		if (gSavedSettings.getBOOL("AscentAlwaysRezInGroup"))
 		{
 			if (gAgent.isInGroup(parcel->getGroupID()))
 			{
