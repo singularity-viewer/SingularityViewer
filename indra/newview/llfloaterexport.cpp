@@ -17,7 +17,7 @@
 #include "llviewerobjectlist.h"
 #include "llviewerregion.h"
 #include "llwindow.h"
-#include "llviewerimagelist.h"
+#include "llviewertexturelist.h"
 #include "lltexturecache.h"
 #include "llimage.h"
 #include "llappviewer.h"
@@ -242,7 +242,7 @@ LLSD LLExportable::asLLSD()
 		{
 			if( LLVOAvatar::getTEWearableType( (LLVOAvatarDefines::ETextureIndex)te ) == mWearableType )
 			{
-				LLViewerImage* te_image = mAvatar->getTEImage( te );
+				LLViewerTexture* te_image = mAvatar->getTEImage( te );
 				if( te_image )
 				{
 					textures_map[llformat("%d", te)] = te_image->getID();
@@ -429,7 +429,7 @@ void LLFloaterExport::addAvatarStuff(LLVOAvatar* avatarp)
 			{
 				if( (S32)LLVOAvatar::getTEWearableType( (LLVOAvatarDefines::ETextureIndex)te ) == type )
 				{
-					LLViewerImage* te_image = avatarp->getTEImage( te );
+					LLViewerTexture* te_image = avatarp->getTEImage( te );
 					if( te_image->getID() != IMG_DEFAULT_AVATAR)
 					{
 						exists = true;
@@ -795,8 +795,8 @@ void LLFloaterExport::onClickSaveAs(void* user_data)
 				while(!textures.empty())
 				{
 					llinfos << "Requesting texture " << textures.front().asString() << llendl;
-					LLViewerImage* img = gImageList.getImage(textures.front(), MIPMAP_TRUE, FALSE);
-		            img->setBoostLevel(LLViewerImageBoostLevel::BOOST_MAX_LEVEL);
+					LLViewerTexture* img = gTextureList.findImage(textures.front());
+		            img->setBoostLevel(LLViewerTexture::BOOST_MAX_LEVEL);
 
 		            CacheReadResponder* responder = new CacheReadResponder(textures.front(), std::string(path + textures.front().asString() + ".j2c"));
 					LLAppViewer::getTextureCache()->readFromCache(textures.front(),LLWorkerThread::PRIORITY_HIGH,0,999999,responder);
