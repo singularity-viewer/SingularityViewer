@@ -418,14 +418,18 @@ class LLFileImportXML : public view_listener_t
 {
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
 	{
-		LLFilePicker& picker = LLFilePicker::instance();
-		if (!picker.getOpenFile(LLFilePicker::FFLOAD_XML))
-		{
-			return true;
-		}
-		std::string file_name = picker.getFirstFile();
-		new LLFloaterXmlImportOptions(new LLXmlImportOptions(file_name));
+		AIFilePicker* filepicker = AIFilePicker::create();
+		filepicker->open(FFLOAD_XML, "", "openfile");
+		filepicker->run(boost::bind(&LLFileImportXML::callback, filepicker));		
 		return true;
+	}
+	static void callback(AIFilePicker* filepicker)
+	{
+		if(filepicker->hasFilename() && !LLXmlImport::sImportInProgress) //stop multiple imports
+		{
+			std::string file_name = filepicker->getFilename();
+			new LLFloaterXmlImportOptions(new LLXmlImportOptions(file_name));
+		}
 	}
 };
 

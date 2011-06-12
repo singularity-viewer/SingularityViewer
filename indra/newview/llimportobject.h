@@ -9,6 +9,7 @@
 #include "llviewerobject.h"
 #include "llfloater.h"
 #include "llvoavatardefines.h"
+#include <lleventtimer.h>
 
 typedef enum e_import_object_state
 	{

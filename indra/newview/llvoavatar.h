@@ -1005,13 +1005,7 @@ private:
 	// Global table of sound ids per material, and the ground
 	const static LLUUID	sStepSounds[LL_MCODE_END];
 	const static LLUUID	sStepSoundOnLand;
-protected:
-	static LLSD sClientResolutionList;
-	friend class LLPrefsAscentVanImpl;
 
-	bool isUnknownClient();
-	static void resolveClient(LLColor4& avatar_name_color, std::string& client, LLVOAvatar* avatar);
-	friend class LLFloaterAvatarList;
 	//--------------------------------------------------------------------
 	// Foot step state (for generating sounds)
 	//--------------------------------------------------------------------
@@ -1199,6 +1193,7 @@ private:
 	static S32 sScratchTexBytes;
 	
 	static LLSD sClientResolutionList;
+	friend class LLPrefsAscentVan;
 
 	bool isUnknownClient();
 	static void resolveClient(LLColor4& avatar_name_color, std::string& client, LLVOAvatar* avatar);

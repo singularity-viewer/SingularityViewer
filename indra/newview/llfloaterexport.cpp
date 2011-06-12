@@ -9,7 +9,7 @@
 #include "llscrolllistctrl.h"
 #include "llchat.h"
 #include "llfloaterchat.h"
-#include "llfilepicker.h"
+#include "statemachine/aifilepicker.h"
 #include "llagent.h"
 #include "llvoavatar.h"
 #include "llvoavatardefines.h"
@@ -662,7 +662,93 @@ LLSD LLFloaterExport::getLLSD()
 	}
 	return sd;
 }
+static void onClickSaveAs_Callback(LLFloaterExport* floater, AIFilePicker* filepicker)
+{
+	std::string file_name = filepicker->getFilename();
+	std::string path = file_name.substr(0,file_name.find_last_of(".")) + "_assets";
+	BOOL download_texture = floater->childGetValue("download_textures");
+	if(download_texture)
+	{
+		if(!LLFile::isdir(path))
+		{
+			LLFile::mkdir(path);
+		}else
+		{
+			U32 response = OSMessageBox("Directory "+path+" already exists, would you like to continue and override files?", "Directory Already Exists", OSMB_YESNO);
+			if(response)
+			{
+				return;
+			}
+		}
+		path.append(gDirUtilp->getDirDelimiter()); //lets add the Delimiter now
+	}
+	// set correct names within llsd and download textures
+	LLSD::map_iterator map_iter = sd.beginMap();
+	LLSD::map_iterator map_end = sd.endMap();
+	std::list<LLUUID> textures;
 
+	for( ; map_iter != map_end; ++map_iter)
+	{
+		std::istringstream keystr((*map_iter).first);
+		U32 key;
+		keystr >> key;
+		LLSD item = (*map_iter).second;
+		if(item["type"].asString() == "prim")
+		{
+			std::string name = floater->mPrimNameMap[key].first;
+			item["name"] = name;
+			item["description"] = floater->mPrimNameMap[key].second;
+			// I don't understand C++ :(
+			sd[(*map_iter).first] = item;
+
+			if(download_texture)
+			{
+				//textures
+				LLSD::array_iterator tex_iter = item["textures"].beginArray();
+				for( ; tex_iter != item["textures"].endArray(); ++tex_iter)
+				{
+					textures.push_back((*tex_iter)["imageid"].asUUID());
+				}
+				if(item.has("sculpt"))
+				{
+					textures.push_back(item["sculpt"]["texture"].asUUID());
+				}
+			}
+		}
+		else if(download_texture && item["type"].asString() == "wearable")
+		{
+			LLSD::map_iterator tex_iter = item["textures"].beginMap();
+			for( ; tex_iter != item["textures"].endMap(); ++tex_iter)
+			{
+				textures.push_back((*tex_iter).second.asUUID());
+			}
+		}
+	}
+	if(download_texture)
+	{
+		textures.unique();
+		while(!textures.empty())
+		{
+			llinfos << "Requesting texture " << textures.front().asString() << llendl;
+			LLViewerTexture* img = gTextureList.findImage(textures.front());
+		    img->setBoostLevel(LLViewerTexture::BOOST_MAX_LEVEL);
+
+		    CacheReadResponder* responder = new CacheReadResponder(textures.front(), std::string(path + textures.front().asString() + ".j2c"));
+			LLAppViewer::getTextureCache()->readFromCache(textures.front(),LLWorkerThread::PRIORITY_HIGH,0,999999,responder);
+			textures.pop_front();
+		}
+	}
+
+	llofstream export_file(file_name);
+	LLSDSerialize::toPrettyXML(sd, export_file);
+	export_file.close();
+
+	std::string msg = "Saved ";
+	msg.append(file_name);
+	if(download_texture) msg.append(" (Content might take some time to download)");
+	LLChat chat(msg);
+	LLFloaterChat::addChat(chat);
+}
 //static
 void LLFloaterExport::onClickSaveAs(void* user_data)
 {
@@ -725,95 +811,9 @@ void LLFloaterExport::onClickSaveAs(void* user_data)
 				}
 			}
 		}
-
-		LLFilePicker& file_picker = LLFilePicker::instance();
-		if(file_picker.getSaveFile( LLFilePicker::FFSAVE_XML, LLDir::getScrubbedFileName(default_filename + ".xml")))
-		{
-			std::string file_name = file_picker.getFirstFile();
-			std::string path = file_name.substr(0,file_name.find_last_of(".")) + "_assets";
-			BOOL download_texture = floater->childGetValue("download_textures");
-			if(download_texture)
-			{
-				if(!LLFile::isdir(path))
-				{
-					LLFile::mkdir(path);
-				}else
-				{
-					U32 response = OSMessageBox("Directory "+path+" already exists, would you like to continue and override files?", "Directory Already Exists", OSMB_YESNO);
-					if(response)
-					{
-						return;
-					}
-				}
-				path.append(gDirUtilp->getDirDelimiter()); //lets add the Delimiter now
-			}
-			// set correct names within llsd and download textures
-			LLSD::map_iterator map_iter = sd.beginMap();
-			LLSD::map_iterator map_end = sd.endMap();
-			std::list<LLUUID> textures;
-
-			for( ; map_iter != map_end; ++map_iter)
-			{
-				std::istringstream keystr((*map_iter).first);
-				U32 key;
-				keystr >> key;
-				LLSD item = (*map_iter).second;
-				if(item["type"].asString() == "prim")
-				{
-					std::string name = floater->mPrimNameMap[key].first;
-					item["name"] = name;
-					item["description"] = floater->mPrimNameMap[key].second;
-					// I don't understand C++ :(
-					sd[(*map_iter).first] = item;
-
-					if(download_texture)
-					{
-						//textures
-						LLSD::array_iterator tex_iter = item["textures"].beginArray();
-						for( ; tex_iter != item["textures"].endArray(); ++tex_iter)
-						{
-							textures.push_back((*tex_iter)["imageid"].asUUID());
-						}
-						if(item.has("sculpt"))
-						{
-							textures.push_back(item["sculpt"]["texture"].asUUID());
-						}
-					}
-				}
-				else if(download_texture && item["type"].asString() == "wearable")
-				{
-					LLSD::map_iterator tex_iter = item["textures"].beginMap();
-					for( ; tex_iter != item["textures"].endMap(); ++tex_iter)
-					{
-						textures.push_back((*tex_iter).second.asUUID());
-					}
-				}
-			}
-			if(download_texture)
-			{
-				textures.unique();
-				while(!textures.empty())
-				{
-					llinfos << "Requesting texture " << textures.front().asString() << llendl;
-					LLViewerTexture* img = gTextureList.findImage(textures.front());
-		            img->setBoostLevel(LLViewerTexture::BOOST_MAX_LEVEL);
-
-		            CacheReadResponder* responder = new CacheReadResponder(textures.front(), std::string(path + textures.front().asString() + ".j2c"));
-					LLAppViewer::getTextureCache()->readFromCache(textures.front(),LLWorkerThread::PRIORITY_HIGH,0,999999,responder);
-					textures.pop_front();
-				}
-			}
-
-			llofstream export_file(file_name);
-			LLSDSerialize::toPrettyXML(sd, export_file);
-			export_file.close();
-
-			std::string msg = "Saved ";
-			msg.append(file_name);
-			if(download_texture) msg.append(" (Content might take some time to download)");
-			LLChat chat(msg);
-			LLFloaterChat::addChat(chat);
-		}
+		AIFilePicker* filepicker = AIFilePicker::create();
+		filepicker->open(LLDir::getScrubbedFileName(default_filename + ".xml"), FFSAVE_XML);
+		filepicker->run(boost::bind(&onClickSaveAs_Callback, floater, filepicker));
 	}
 	else
 	{
