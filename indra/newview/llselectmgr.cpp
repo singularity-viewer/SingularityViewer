@@ -94,6 +94,8 @@
 #include "rlvhandler.h"
 // [/RLVa:KB]
 
+#include "llfloaterexport.h"
+
 LLViewerObject* getSelectedParentObject(LLViewerObject *object) ;
 //
 // Consts
