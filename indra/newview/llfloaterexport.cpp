@@ -667,6 +667,8 @@ static void onClickSaveAs_Callback(LLFloaterExport* floater, AIFilePicker* filep
 	std::string file_name = filepicker->getFilename();
 	std::string path = file_name.substr(0,file_name.find_last_of(".")) + "_assets";
 	BOOL download_texture = floater->childGetValue("download_textures");
+	LLSD sd = floater->getLLSD();
+
 	if(download_texture)
 	{
 		if(!LLFile::isdir(path))
