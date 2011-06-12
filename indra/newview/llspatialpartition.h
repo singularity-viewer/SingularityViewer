@@ -295,6 +295,13 @@ public:
 	virtual void handleChildAddition(const OctreeNode* parent, OctreeNode* child);
 	virtual void handleChildRemoval(const OctreeNode* parent, const OctreeNode* child);
 
+	LLVector3 mBounds[2];
+	LLVector3 mExtents[2];
+	
+	LLVector3 mObjectExtents[2];
+	LLVector3 mObjectBounds[2];		
+	LLVector3 mViewAngle;
+	LLVector3 mLastUpdateViewAngle;
 protected:
 	virtual ~LLSpatialGroup();
 
@@ -310,11 +317,6 @@ public:
 	F32 mBuilt;
 	OctreeNode* mOctreeNode;
 	LLSpatialPartition* mSpatialPartition;
-	LLVector3 mBounds[2];
-	LLVector3 mExtents[2];
-	
-	LLVector3 mObjectExtents[2];
-	LLVector3 mObjectBounds[2];
 
 	LLPointer<LLVertexBuffer> mVertexBuffer;
 	F32*					mOcclusionVerts;
@@ -328,9 +330,6 @@ public:
 	F32 mDepth;
 	F32 mLastUpdateDistance;
 	F32 mLastUpdateTime;
-			
-	LLVector3 mViewAngle;
-	LLVector3 mLastUpdateViewAngle;
 	
 	F32 mPixelArea;
 	F32 mRadius;
@@ -466,6 +465,7 @@ public:
 	sg_list_t::iterator beginAlphaGroups();
 	sg_list_t::iterator endAlphaGroups();
 
+	bool hasOcclusionGroups() { return mOcclusionGroupsSize > 0; }
 	sg_list_t::iterator beginOcclusionGroups();
 	sg_list_t::iterator endOcclusionGroups();
 

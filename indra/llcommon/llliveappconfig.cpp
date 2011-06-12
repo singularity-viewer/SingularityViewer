@@ -38,9 +38,12 @@
 #include "llsd.h"
 #include "llsdserialize.h"
 
-LLLiveAppConfig::LLLiveAppConfig(LLApp* app, const std::string& filename, F32 refresh_period)
-:	LLLiveFile(filename, refresh_period),
-	mApp(app)
+LLLiveAppConfig::LLLiveAppConfig(
+	const std::string& filename,
+	F32 refresh_period,
+	LLApp::OptionPriority priority) :
+	LLLiveFile(filename, refresh_period),
+	mPriority(priority)
 { }
 
 
@@ -77,7 +80,7 @@ bool LLLiveAppConfig::loadFile()
 	// to set the config to an empty config, and return that it
 	// changed.
 
-	mApp->setOptionData(
-		LLApp::PRIORITY_SPECIFIC_CONFIGURATION, config);
+	LLApp* app = LLApp::instance();
+	if(app) app->setOptionData(mPriority, config);
 	return true;
 }

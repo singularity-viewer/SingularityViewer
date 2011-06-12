@@ -33,34 +33,17 @@
 #ifndef LLVIEWERMEDIA_H
 #define LLVIEWERMEDIA_H
 
+#include "llviewermediaeventemitter.h"
+#include "llviewerpluginmanager.h"
 #include "llfocusmgr.h"
-
 #include "llpanel.h"
-#include "llpluginclassmediaowner.h"
-
-#include "llviewermediaobserver.h"
 
 class LLViewerMediaImpl;
 class LLUUID;
-//class LLViewerMediaTexture;
+class LLSD;
 class LLViewerTexture;
 
 typedef LLPointer<LLViewerMediaImpl> viewer_media_t;
-///////////////////////////////////////////////////////////////////////////////
-//
-class LLViewerMediaEventEmitter
-{
-public:
-	virtual ~LLViewerMediaEventEmitter();
-
-	bool addObserver( LLViewerMediaObserver* subject );
-	bool remObserver( LLViewerMediaObserver* subject );
-	void emitEvent(LLPluginClassMedia* self, LLPluginClassMediaOwner::EMediaEvent event);
-
-private:
-	typedef std::list< LLViewerMediaObserver* > observerListType;
-	observerListType mObservers;
-};
 
 class LLViewerMedia
 {
@@ -93,7 +76,7 @@ class LLViewerMedia
 
 // Implementation functions not exported into header file
 class LLViewerMediaImpl
-	:	public LLMouseHandler, public LLRefCount, public LLPluginClassMediaOwner, public LLViewerMediaEventEmitter, public LLEditMenuHandler
+	:	public LLViewerPluginManager, public LLMouseHandler, public LLPluginClassMediaOwner, public LLViewerMediaEventEmitter, public LLEditMenuHandler
 {
 	LOG_CLASS(LLViewerMediaImpl);
 public:
@@ -112,8 +95,11 @@ public:
 	void setMediaType(const std::string& media_type);
 	bool initializeMedia(const std::string& mime_type);
 	bool initializePlugin(const std::string& media_type);
-	LLPluginClassMedia* getMediaPlugin() { return mMediaSource; }
+	LLPluginClassMedia* getMediaPlugin() const { return (LLPluginClassMedia*)mPluginBase; }
 	void setSize(int width, int height);
+
+	// Inherited from LLViewerPluginManager.
+	/*virtual*/ void update();
 
 	void play();
 	void stop();
@@ -141,7 +127,6 @@ public:
 	void getTextureSize(S32 *texture_width, S32 *texture_height);
 	void scaleMouse(S32 *mouse_x, S32 *mouse_y);
 
-	void update();
 	void updateMovieImage(const LLUUID& image_id, BOOL active);
 	void updateImagesMediaStreams();
 	LLUUID getMediaTextureID();
@@ -201,7 +186,6 @@ public:
 	
 public:
 	// a single media url with some data and an impl.
-	LLPluginClassMedia* mMediaSource;
 	LLUUID mTextureId;
 	bool  mMovieImageHasMips;
 	std::string mMediaURL;
@@ -218,7 +202,6 @@ public:
 	S32 mTextureUsedHeight;
 	bool mSuspendUpdates;
 	bool mVisible;
-
 
 private:
 	/*LLViewerMediaTexture*/LLViewerTexture *updatePlaceholderImage();

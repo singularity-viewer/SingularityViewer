@@ -1388,24 +1388,15 @@ void send_agent_resume()
 
 static LLVector3d unpackLocalToGlobalPosition(U32 compact_local, const LLVector3d& region_origin)
 {
-	LLVector3d pos_global;
-	LLVector3 pos_local;
-	U8 bits;
+    LLVector3d pos_global(region_origin);
+    LLVector3d pos_local;
 
-	bits = compact_local & 0xFF;
-	pos_local.mV[VZ] = F32(bits) * 4.f;
-	compact_local >>= 8;
+    pos_local.mdV[VZ] = (compact_local & 0xFFU) * 4;
+    pos_local.mdV[VY] = (compact_local >> 8) & 0xFFU;
+    pos_local.mdV[VX] = (compact_local >> 16) & 0xFFU;
 
-	bits = compact_local & 0xFF;
-	pos_local.mV[VY] = (F32)bits;
-	compact_local >>= 8;
-
-	bits = compact_local & 0xFF;
-	pos_local.mV[VX] = (F32)bits;
-
-	pos_global.setVec( pos_local );
-	pos_global += region_origin;
-	return pos_global;
+    pos_global += pos_local;
+    return pos_global;
 }
 
 void LLWorld::getAvatars(std::vector<LLUUID>* avatar_ids, std::vector<LLVector3d>* positions, const LLVector3d& relative_to, F32 radius) const

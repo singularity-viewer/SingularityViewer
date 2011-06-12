@@ -53,6 +53,7 @@ public:
 	virtual ~LLPluginProcessParentOwner();
 	virtual void receivePluginMessage(const LLPluginMessage &message) = 0;
 	virtual bool receivePluginMessageEarly(const LLPluginMessage &message) {return false;};
+	virtual void receivedShutdown() = 0;
 	// This will only be called when the plugin has died unexpectedly 
 	virtual void pluginLaunchFailed() {};
 	virtual void pluginDied() {};
@@ -88,6 +89,9 @@ public:
 	// Go to the proper error state
 	void errorState(void);
 
+	// Go to exit state.
+	void exitState(void) { setState(STATE_EXITING); }
+
 	void setSleepTime(F64 sleep_time, bool force_send = false);
 	F64 getSleepTime(void) const { return mSleepTime; };
 
@@ -99,6 +103,7 @@ public:
 	/*virtual*/ void receiveMessageRaw(const std::string &message);
 	/*virtual*/ void receiveMessageEarly(const LLPluginMessage &message);
 	/*virtual*/ void setMessagePipe(LLPluginMessagePipe *message_pipe) ;
+	/*virtual*/ apr_status_t socketError(apr_status_t error);
 	
 	// This adds a memory segment shared with the client, generating a name for the segment.  The name generated is guaranteed to be unique on the host.
 	// The caller must call removeSharedMemory first (and wait until getSharedMemorySize returns 0 for the indicated name) before re-adding a segment with the same name.
@@ -140,8 +145,8 @@ private:
 		STATE_RUNNING,			// 
 		STATE_LAUNCH_FAILURE,	// Failure before plugin loaded
 		STATE_ERROR,			// generic bailout state
-		STATE_CLEANUP,			// clean everything up
 		STATE_EXITING,			// Tried to kill process, waiting for it to exit
+		STATE_CLEANUP,			// clean everything up
 		STATE_DONE				//
 
 	};
@@ -178,6 +183,7 @@ private:
 	bool mDebug;
 	bool mBlocked;
 	bool mPolledInput;
+	bool mReceivedShutdown;
 
 	LLProcessLauncher mDebugger;
 	
@@ -186,7 +192,9 @@ private:
 
 	static bool sUseReadThread;
 	apr_pollfd_t mPollFD;
+	AIAPRPool mPollFDPool;
 	static apr_pollset_t *sPollSet;
+    static AIAPRPool sPollSetPool;
 	static bool sPollsetNeedsRebuild;
 	static LLMutex *sInstancesMutex;
 	static std::list<LLPluginProcessParent*> sInstances;

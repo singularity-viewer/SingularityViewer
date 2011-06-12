@@ -1,7 +1,7 @@
 // <edit>
 #ifndef LL_LLDELAYEDUIDELETE_H
 #define LL_LLDELAYEDUIDELETE_H
-#include "lltimer.h"
+#include "lleventtimer.h"
 #include "llview.h"
 class LLDeleteJob
 {

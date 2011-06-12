@@ -32,7 +32,11 @@
  
 #include "linden_common.h"
 
+#include <cassert>
+#include <apr_file_io.h>
+#include <apr_thread_proc.h>
 #include "llprocesslauncher.h"
+#include "aiaprpool.h"
 
 #include <iostream>
 #if LL_DARWIN || LL_LINUX
@@ -62,6 +66,11 @@ void LLProcessLauncher::setExecutable(const std::string &executable)
 void LLProcessLauncher::setWorkingDirectory(const std::string &dir)
 {
 	mWorkingDir = dir;
+}
+
+const std::string& LLProcessLauncher::getExecutable() const
+{
+	return mExecutable;
 }
 
 void LLProcessLauncher::clearArguments()
@@ -142,6 +151,7 @@ bool LLProcessLauncher::isRunning(void)
 
 	return (mProcessHandle != 0);
 }
+
 bool LLProcessLauncher::kill(void)
 {
 	bool result = true;
@@ -201,6 +211,79 @@ static bool reap_pid(pid_t pid)
 	return result;
 }
 
+#if LL_DEBUG
+// Define this to create a temporary pipe(2) between parent and child process, so
+// that the child process can report error messages that it encounters when
+// trying to execve(2). Most notably failing to start due to missing libraries
+// or undefined symbols.
+#define DEBUG_PIPE_CHILD_ERROR_REPORTING 1
+#endif
+
+#ifdef DEBUG_PIPE_CHILD_ERROR_REPORTING
+
+// Called by child process.
+static void write_pipe(apr_file_t* out, char const* message)
+{
+	apr_size_t const bytes_to_write = strlen(message) + 1;	// +1 for the length byte.
+	assert(bytes_to_write < 256);
+	char buf[256];
+	strncpy(buf + 1, message, sizeof(buf) - 1);
+	*reinterpret_cast<unsigned char*>(buf) = bytes_to_write - 1;
+
+	apr_size_t bytes_written;
+	apr_status_t status = apr_file_write_full(out, buf, bytes_to_write, &bytes_written);
+	if (status != APR_SUCCESS)
+	{
+		std::cerr << "apr_file_write_full: " << apr_strerror(status, buf, sizeof(buf)) << std::endl;
+	}
+	else if (bytes_written != bytes_to_write)
+	{
+		std::cerr << "apr_file_write_full: bytes_written (" << bytes_written << ") != bytes_to_write (" << bytes_to_write << ")!" << std::endl;
+	}
+	status = apr_file_flush(out);
+	if (status != APR_SUCCESS)
+	{
+		std::cerr << "apr_file_flush: " << apr_strerror(status, buf, sizeof(buf)) << std::endl;
+	}
+
+#ifdef _DEBUG
+	std::cerr << "apr_file_write_full: Wrote " << bytes_written << " bytes to the pipe." << std::endl;
+#endif
+}
+
+// Called by parent process.
+static std::string read_pipe(apr_file_t* in, bool timeout_ok = false)
+{
+	char buf[256];
+	unsigned char bytes_to_read;
+	apr_size_t bytes_read;
+	apr_status_t status = apr_file_read_full(in, &bytes_to_read, 1, &bytes_read);
+	if (status != APR_SUCCESS)
+	{
+		if (APR_STATUS_IS_TIMEUP(status) && timeout_ok)
+		{
+			return "TIMEOUT";
+		}
+		llwarns << "apr_file_read_full: " << apr_strerror(status, buf, sizeof(buf)) << llendl;
+		assert(APR_STATUS_IS_EOF(status));
+		return "END OF FILE";
+	}
+	assert(bytes_read == 1);
+	status = apr_file_read_full(in, buf, bytes_to_read, &bytes_read);
+	if (status != APR_SUCCESS)
+	{
+		llwarns << "apr_file_read_full: " << apr_strerror(status, buf, sizeof(buf)) << llendl;
+		assert(status == APR_SUCCESS);	// Fail
+	}
+	assert(bytes_read == bytes_to_read);
+
+	std::string received(buf, bytes_read);
+	llinfos << "Received: \"" << received << "\" (bytes read: " << bytes_read << ")" << llendl;
+	return received;
+}
+
+#endif // DEBUG_PIPE_CHILD_ERROR_REPORTING
+
 int LLProcessLauncher::launch(void)
 {
 	// If there was already a process associated with this object, kill it.
@@ -237,23 +320,96 @@ int LLProcessLauncher::launch(void)
 		}
 	}
 		
- 	// flush all buffers before the child inherits them
- 	::fflush(NULL);
-
-	pid_t id = vfork();
-	if(id == 0)
+	pid_t id;
 	{
-		// child process
-		
-		::execv(mExecutable.c_str(), (char * const *)fake_argv);
-		
-		// If we reach this point, the exec failed.
-		// Use _exit() instead of exit() per the vfork man page.
-		_exit(0);
+#ifdef DEBUG_PIPE_CHILD_ERROR_REPORTING
+		// Set up a pipe to the child process for error reporting.
+		apr_file_t* in;
+		apr_file_t* out;
+		AIAPRPool pool;
+		pool.create();
+		apr_status_t status = apr_file_pipe_create_ex(&in, &out, APR_FULL_BLOCK, pool());
+		assert(status == APR_SUCCESS);
+		bool success = (status == APR_SUCCESS);
+		if (success)
+		{
+			apr_interval_time_t const timeout = 10000000;	// 10 seconds.
+			status = apr_file_pipe_timeout_set(in, timeout);
+			assert(status == APR_SUCCESS);
+			success = (status == APR_SUCCESS);
+		}
+#endif // DEBUG_PIPE_CHILD_ERROR_REPORTING
+
+		// flush all buffers before the child inherits them
+		::fflush(NULL);
+
+		id = vfork();
+		if (id == 0)
+		{
+			// child process
+
+#ifdef DEBUG_PIPE_CHILD_ERROR_REPORTING
+			// Tell parent process we're about to call execv.
+			write_pipe(out, "CALLING EXECV");
+#ifdef _DEBUG
+			char const* display = getenv("DISPLAY");
+			std::cerr << "Calling ::execv(\"" << mExecutable << '"';
+			for(int j = 0; j < i; ++j)
+              std::cerr << ", \"" << fake_argv[j] << '"';
+			std::cerr << ") with DISPLAY=\"" << (display ? display : "NULL") << '"' << std::endl;
+#endif
+#endif // DEBUG_PIPE_CHILD_ERROR_REPORTING
+
+			::execv(mExecutable.c_str(), (char * const *)fake_argv);
+
+#ifdef DEBUG_PIPE_CHILD_ERROR_REPORTING
+			status = APR_FROM_OS_ERROR(apr_get_os_error());
+			char message[256];
+			char errbuf[128];
+			apr_strerror(status, errbuf, sizeof(errbuf));
+			snprintf(message, sizeof(message), "Child process: execv: %s: %s", mExecutable.c_str(), errbuf);
+			write_pipe(out, message);
+#ifdef _DEBUG
+			std::cerr << "::execv() failed." << std::endl;
+#endif
+#endif // DEBUG_PIPE_CHILD_ERROR_REPORTING
+
+			// If we reach this point, the exec failed.
+			// Use _exit() instead of exit() per the vfork man page.
+			_exit(0);
+		}
+
+		// parent process
+
+#ifdef DEBUG_PIPE_CHILD_ERROR_REPORTING
+		// Close unused pipe end.
+		apr_file_close(out);
+
+		if (success)
+		{
+			// Attempt to do error reporting.
+			std::string message = read_pipe(in);
+			success = (message == "CALLING EXECV");
+			assert(success);
+			if (success)
+			{
+				status = apr_file_pipe_timeout_set(in, 2000000);	// Only wait 2 seconds.
+				message = read_pipe(in, true);
+				if (message != "TIMEOUT" && message != "END OF FILE")
+				{
+					// Most likely execv failed.
+					llwarns << message << llendl;
+					assert(false);	// Fail in debug mode.
+				}
+			}
+		}
+
+		// Clean up.
+		apr_file_close(in);
+#endif // DEBUG_PIPE_CHILD_ERROR_REPORTING
+
 	}
 
-	// parent process
-	
 	if(current_wd >= 0)
 	{
 		// restore the previous working directory

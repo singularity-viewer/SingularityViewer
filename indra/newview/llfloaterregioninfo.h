@@ -51,6 +51,7 @@ class LLNameListCtrl;
 class LLSliderCtrl;
 class LLSpinCtrl;
 class LLTextBox;
+class AIFilePicker;
 
 class LLPanelRegionGeneralInfo;
 class LLPanelRegionDebugInfo;
@@ -242,7 +243,9 @@ protected:
 	static void onChangeSunHour(LLUICtrl* ctrl, void*);
 
 	static void onClickDownloadRaw(void*);
+	void onClickDownloadRaw_continued(AIFilePicker* filepicker);
 	static void onClickUploadRaw(void*);
+	void onClickUploadRaw_continued(AIFilePicker* filepicker);
 	static void onClickBakeTerrain(void*);
 	bool callbackBakeTerrain(const LLSD& notification, const LLSD& response);
 };

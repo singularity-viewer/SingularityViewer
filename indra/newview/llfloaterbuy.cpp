@@ -199,7 +199,7 @@ void LLFloaterBuy::show(const LLSaleInfo& sale_info)
 }
 
 void LLFloaterBuy::inventoryChanged(LLViewerObject* obj,
-								 InventoryObjectList* inv,
+								 LLInventoryObject::object_list_t* inv,
 								 S32 serial_num,
 								 void* data)
 {
@@ -224,8 +224,8 @@ void LLFloaterBuy::inventoryChanged(LLViewerObject* obj,
 		return;
 	}
 
-	InventoryObjectList::const_iterator it = inv->begin();
-	InventoryObjectList::const_iterator end = inv->end();
+	LLInventoryObject::object_list_t::const_iterator it = inv->begin();
+	LLInventoryObject::object_list_t::const_iterator end = inv->end();
 	for ( ; it != end; ++it )
 	{
 		LLInventoryObject* obj = (LLInventoryObject*)(*it);
@@ -254,7 +254,7 @@ void LLFloaterBuy::inventoryChanged(LLViewerObject* obj,
 
 		// Compute icon for this item
 		BOOL item_is_multi = FALSE;
-		if ( inv_item->getFlags() & LLInventoryItem::II_FLAGS_LANDMARK_VISITED )
+		if ( inv_item->getFlags() & LLInventoryItemFlags::II_FLAGS_LANDMARK_VISITED )
 		{
 			item_is_multi = TRUE;
 		}

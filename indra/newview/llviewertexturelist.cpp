@@ -142,13 +142,13 @@ void LLViewerTextureList::doPreloadImages()
 		image->setAddressMode(LLTexUnit::TAM_WRAP);
 		mImagePreloads.insert(image);
 	}
-	image = LLViewerTextureManager::getFetchedTextureFromFile("world/NoEntryLines.png", MIPMAP_YES, LLViewerFetchedTexture::BOOST_UI);
+	image = LLViewerTextureManager::getFetchedTextureFromFile("noentrylines.j2c"/*"world/NoEntryLines.png"*/, MIPMAP_YES, LLViewerFetchedTexture::BOOST_UI);
 	if (image) 
 	{
 		image->setAddressMode(LLTexUnit::TAM_WRAP);	
 		mImagePreloads.insert(image);
 	}
-	image = LLViewerTextureManager::getFetchedTextureFromFile("world/NoEntryPassLines.png", MIPMAP_YES, LLViewerFetchedTexture::BOOST_UI);
+	image = LLViewerTextureManager::getFetchedTextureFromFile("noentrypasslines.j2c"/*"world/NoEntryPassLines.png"*/, MIPMAP_YES, LLViewerFetchedTexture::BOOST_UI);
 	if (image) 
 	{
 		image->setAddressMode(LLTexUnit::TAM_WRAP);
@@ -160,7 +160,7 @@ void LLViewerTextureList::doPreloadImages()
 		image->setAddressMode(LLTexUnit::TAM_WRAP);	
 		mImagePreloads.insert(image);
 	}
-	image = LLViewerTextureManager::getFetchedTextureFromFile("transparent.j2c", MIPMAP_YES, LLViewerFetchedTexture::BOOST_UI, LLViewerTexture::FETCHED_TEXTURE,
+	image = LLViewerTextureManager::getFetchedTextureFromFile("8dcd4a48-2d37-4909-9f78-f7a9eb4ef903.j2c"/*"transparent.j2c"*/, MIPMAP_YES, LLViewerFetchedTexture::BOOST_UI, LLViewerTexture::FETCHED_TEXTURE,
 		0,0,LLUUID("8dcd4a48-2d37-4909-9f78-f7a9eb4ef903"));
 	if (image) 
 	{
@@ -265,8 +265,8 @@ void LLViewerTextureList::shutdown()
 		if (++count >= max_count)
 			break;
 	}
-	
-	if (count > 0 && !gDirUtilp->getExpandedFilename(LL_PATH_PER_SL_ACCOUNT, "").empty())
+
+	if (count > 0 && !gDirUtilp->getLindenUserDir(true).empty())
 	{
 		std::string filename = gDirUtilp->getExpandedFilename(LL_PATH_PER_SL_ACCOUNT, get_texture_list_name());
 		llofstream file;

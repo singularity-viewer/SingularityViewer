@@ -734,7 +734,7 @@ void LLNotificationChannelBase::connectChanged(const LLStandardSignal::slot_type
 	// only about new notifications
 	for (LLNotificationSet::iterator it = mItems.begin(); it != mItems.end(); ++it)
 	{
-		slot.get_slot_function()(LLSD().with("sigtype", "load").with("id", (*it)->id()));
+		slot(LLSD().with("sigtype", "load").with("id", (*it)->id()));
 	}
 	// and then connect the signal so that all future notifications will also be
 	// forwarded.
@@ -908,8 +908,7 @@ mParent(parent)
 	else
 	{
 		LLNotificationChannelPtr p = LLNotifications::instance().getChannel(parent);
-		LLStandardSignal::slot_type f = boost::bind(&LLNotificationChannelBase::updateItem, this, _1);
-		p->connectChanged(f);
+		p->connectChanged(boost::bind(&LLNotificationChannelBase::updateItem, this, _1));
 	}
 }
 
@@ -1010,16 +1009,18 @@ bool LLNotifications::uniqueFilter(LLNotificationPtr pNotif)
 
 bool LLNotifications::uniqueHandler(const LLSD& payload)
 {
+	std::string cmd = payload["sigtype"];
+
 	LLNotificationPtr pNotif = LLNotifications::instance().find(payload["id"].asUUID());
 	if (pNotif && pNotif->hasUniquenessConstraints()) 
 	{
-		if (payload["sigtype"].asString() == "add")
+		if (cmd == "add")
 		{
 			// not a duplicate according to uniqueness criteria, so we keep it
 			// and store it for future uniqueness checks
 			mUniqueNotifications.insert(std::make_pair(pNotif->getName(), pNotif));
 		}
-		else if (payload["sigtype"].asString() == "delete")
+		else if (cmd == "delete")
 		{
 			mUniqueNotifications.erase(pNotif->getName());
 		}
@@ -1194,13 +1195,13 @@ void replaceSubstitutionStrings(LLXMLNodePtr node, StringMap& replacements)
 			if (found != replacements.end())
 			{
 				replacement = found->second;
-				//llwarns << "replaceSubstituionStrings: value: " << value << " repl: " << replacement << llendl;
+				//llinfos << "replaceSubstitutionStrings: value: \"" << value << "\" repl: \"" << replacement << "\"." << llendl;
 
 				it->second->setValue(replacement);
 			}
 			else
 			{
-				llwarns << "replaceSubstituionStrings FAILURE: value: " << value << " repl: " << replacement << llendl;
+				llwarns << "replaceSubstitutionStrings FAILURE: could not find replacement \"" << value << "\"." << llendl;
 			}
 		}
 	}
@@ -1425,6 +1426,8 @@ LLNotificationPtr LLNotifications::add(const LLNotification::Params& p)
 
 void LLNotifications::add(const LLNotificationPtr pNotif)
 {
+	if (pNotif == NULL) return;
+
 	// first see if we already have it -- if so, that's a problem
 	LLNotificationSet::iterator it=mItems.find(pNotif);
 	if (it != mItems.end())
@@ -1437,6 +1440,8 @@ void LLNotifications::add(const LLNotificationPtr pNotif)
 
 void LLNotifications::cancel(LLNotificationPtr pNotif)
 {
+	if (pNotif == NULL || pNotif->isCancelled()) return;
+
 	LLNotificationSet::iterator it=mItems.find(pNotif);
 	if (it == mItems.end())
 	{

@@ -2579,14 +2579,14 @@ Please choose the male or female avatar. You can change your mind later.
    icon="alertmodal.tga"
    name="GrantedModifyRights"
    type="alertmodal">
-You have been granted the privilege to modify [FIRST_NAME] [LAST_NAME]&apos;s objects.
+You have been granted the privilege to modify [NAME]&apos;s objects.
   </notification>
 
   <notification
    icon="alertmodal.tga"
    name="RevokedModifyRights"
    type="alertmodal">
-Your privilege to modify [FIRST_NAME] [LAST_NAME]&apos;s objects has been revoked
+Your privilege to modify [NAME]&apos;s objects has been revoked
   </notification>
 
   <notification
@@ -6821,6 +6821,14 @@ The URL you clicked cannot be opened from this web browser.
     You do not appear to have the proper hardware requirements for [VIEWER_NAME]. The viewer requires an OpenGL graphics card that has multitexture support. If this is the case, you may want to make sure that you have the latest drivers for your graphics card, and service packs and patches for your operating system.
   </global>
 
+  <global name="UnsupportedCPUSSE2">
+    You do not appear to have the proper hardware requirements for [VIEWER_NAME]. The viewer requires a CPU that supports SSE2
+  </global>
+  
+  <global name="UnsupportedCPUSSE">
+    You do not appear to have the proper hardware requirements for [VIEWER_NAME]. The viewer requires a CPU that supports SSE
+  </global>
+  
   <global name="UnsupportedCPUAmount">
 796
   </global>
@@ -6933,6 +6941,35 @@ No
     For instructions, make a new template in the AO. Use the toolbar to toggle the AO on/off.
   </notification>
 
+  <notification icon="notifytip.tga" name="BlockedCards" type="notifytip">Blocked calling cards from [FIRST] [LAST] ([SOURCE])</notification>
+  <notification icon="notifytip.tga" name="BlockedDialogs" type="notifytip">Blocking all dialogs from [FIRST] [LAST]'s objects. (Origin: [SOURCE])</notification>
+  <notification icon="notifytip.tga" name="BlockedGeneralAvatar" type="notifytip">Blocked spam from avatar [FULL_NAME] ([SOURCE])</notification>
+  <notification icon="notifytip.tga" name="BlockedGeneralObjects" type="notifytip">Blocked spam from objects owned by [OWNER] ([SOURCE])</notification>
+  <notification icon="notifytip.tga" name="BlockedChatterAvatar" type="notifytip">Blocked chat-spam from avatar [FULL_NAME] ([SOURCE])</notification>
+  <notification icon="notifytip.tga" name="BlockedChatterObjects" type="notifytip">Blocked chat-spam from objects owned by [OWNER] ([SOURCE])</notification>
+
+  <notification
+ icon="notify.tga"
+ name="FirstPhysicsWearable"
+ priority="high"
+ type="notify">
+By wearing a Physics Wearable certain server behavior will be enabled that many older viewers are incompatable with. On such viewers you may display incorrectly (often as 'Ruth').
+
+If you wish to keep compatability with old viewers then you must not wear a Physics Wearable during your session. If you have already worn one during this session remove it and reconnect.
+
+Click 'Wear' to attach the Physics Wearable, or click 'Cancel' if you wish to maintain compatability with legacy clients.
+    <unique/>
+    <form name="form">
+    <button
+     index="0"
+     name="Wear"
+     text="Wear"/>
+    <button
+     index="1"
+     name="Cancel"
+     text="Cancel"/>
+  </form>
+  </notification>
 
 </notifications>
 

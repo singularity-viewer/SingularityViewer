@@ -13,7 +13,7 @@
 	<!--256... but they don't use this-->
 	<RenderGlowResolutionPow value="8"/>
 	<!--Sun/Moon only-->
-	<RenderLightingDetail value="1"/>
+  <RenderLocalLights value="1"/>
 	<!--Low number-->
 	<RenderMaxPartCount value="2048"/>
 	<!--bump okay-->

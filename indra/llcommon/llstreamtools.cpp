@@ -436,7 +436,7 @@ void get_keyword_and_value(std::string& keyword,
 	while (line_index < line_size)
 	{
 		c = line[line_index];
-		if (!isspace(c))
+		if (!LLStringOps::isSpace(c))
 		{
 			break;
 		}
@@ -448,7 +448,7 @@ void get_keyword_and_value(std::string& keyword,
 	while (line_index < line_size)
 	{
 		c = line[line_index];
-		if (isspace(c) || '\r' == c || '\n' == c)
+		if (LLStringOps::isSpace(c) || '\r' == c || '\n' == c)
 		{
 			break;
 		}

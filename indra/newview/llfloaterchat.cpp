@@ -75,6 +75,7 @@
 #include "llfloaterhtml.h"
 #include "llweb.h"
 #include "llstylemap.h"
+#include "ascentkeyword.h"
 
 // linden library includes
 #include "llaudioengine.h"
@@ -114,6 +115,7 @@ LLFloaterChat::LLFloaterChat(const LLSD& seed)
 	childSetValue("translate chat", gSavedSettings.getBOOL("TranslateChat"));
 	childSetVisible("Chat History Editor with mute",FALSE);
 	childSetAction("toggle_active_speakers_btn", onClickToggleActiveSpeakers, this);
+	childSetAction("chat_history_open", onClickChatHistoryOpen, this);
 	setDefaultBtn("Chat");
 }
 
@@ -595,6 +597,20 @@ LLColor4 get_text_color(const LLChat& chat)
 		}
 	}
 
+	static const LLCachedControl<bool> mKeywordsChangeColor("KeywordsChangeColor", false, gSavedPerAccountSettings);
+	static const LLCachedControl<LLColor4> mKeywordsColor("KeywordsColor", LLColor4(1.f, 1.f, 1.f, 1.f), gSavedPerAccountSettings);
+
+    if (gAgent.getID() != chat.mFromID)
+	{
+		if (mKeywordsChangeColor)
+		{
+    		if (AscentKeyword::hasKeyword(chat.mText, 1))
+            {
+				text_color = mKeywordsColor;
+            }
+		}
+	}
+
 	return text_color;
 }
 
@@ -649,6 +665,16 @@ void LLFloaterChat::onClickToggleActiveSpeakers(void* userdata)
 		(!self->childIsVisible("active_speakers_panel")) && (!gRlvHandler.hasBehaviour(RLV_BHVR_SHOWNAMES)) );
 // [/RLVa:KB]
 	//self->childSetVisible("active_speakers_panel", !self->childIsVisible("active_speakers_panel"));
+}
+
+// static
+void LLFloaterChat::onClickChatHistoryOpen(void* userdata)
+{
+	char command[256];
+	sprintf(command, "\"%s\\%s\"", gDirUtilp->getPerAccountChatLogsDir().c_str(), "chat.txt");
+	gViewerWindow->getWindow()->ShellEx(command);
+
+	llinfos << command << llendl;
 }
 
 //static 

@@ -4,6 +4,8 @@
  * Copyright (c) 2005-$CurrentYear$, Linden Research, Inc.
  * $License$
  */
+ 
+#version 120
 
 vec3 atmosTransport(vec3 light)
 {

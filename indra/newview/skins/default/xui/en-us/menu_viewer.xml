@@ -194,7 +194,12 @@
 				<on_click function="Edit.TakeOff" userdata="skirt" />
 				<on_enable function="Edit.EnableTakeOff" userdata="skirt" />
 			</menu_item_call>
-			<menu_item_call bottom="-200" enabled="true" height="19" label="All Clothes" left="0"
+      <menu_item_call bottom="-200" enabled="false" height="19" label="Physics" left="0"
+			     mouse_opaque="true" name="Physics" width="118">
+        <on_click function="Edit.TakeOff" userdata="physics" />
+        <on_enable function="Edit.EnableTakeOff" userdata="physics" />
+      </menu_item_call>
+			<menu_item_call bottom="-119" enabled="true" height="19" label="All Clothes" left="0"
 			     mouse_opaque="true" name="All Clothes" width="118">
 				<on_click function="Edit.TakeOff" userdata="all" />
 			</menu_item_call>
@@ -401,100 +406,11 @@
 			<on_click function="View.HighlightTransparent" userdata="" />
 			<on_check function="View.CheckHighlightTransparent" />
 		</menu_item_check>
-    <menu create_jump_keys="true" drop_shadow="true" enabled="true"
-		label="Beacons" mouse_opaque="false" name="Beacons"
-		opaque="true" tear_off="true">
-			<menu_item_check enabled="true" height="18"
-			label="Beacons Always On" mouse_opaque="true"
-			name="Beacons Always On" shortcut="control|n">
-				<on_click function="ToggleControl"
-				userdata="BeaconAlwaysOn" />
-				<on_check control="BeaconAlwaysOn" />
-			</menu_item_check>
-			<menu_item_separator enabled="true" height="8"
-			label="-----------" mouse_opaque="true" name="separator" />
-			<menu_item_check enabled="true" height="18"
-			label="Scripted Objects with Touch Only" left="0" color="1 0 0 1"
-			mouse_opaque="true" name="Scripted Objects With Touch Only">
-				<on_click function="View.ToggleBeacon"
-				userdata="scripttouchbeacon" />
-				<on_check function="View.CheckBeaconEnabled"
-				userdata="scripttouchbeacon" />
-			</menu_item_check>
-			<menu_item_check enabled="true" height="18"
-			label="Scripted Objects" mouse_opaque="true" color="1 0 0 1"
-			name="Scripted Objects">
-				<on_click function="View.ToggleBeacon"
-				userdata="scriptsbeacon" />
-				<on_check function="View.CheckBeaconEnabled"
-				userdata="scriptsbeacon" />
-			</menu_item_check>
-			<menu_item_check enabled="true" height="18"
-			label="Physical Objects" mouse_opaque="true" color="0 1 0 1"
-			name="Physical Objects">
-				<on_click function="View.ToggleBeacon"
-				userdata="physicalbeacon" />
-				<on_check function="View.CheckBeaconEnabled"
-				userdata="physicalbeacon" />
-			</menu_item_check>
-			<menu_item_check enabled="true" height="18"
-			label="Sound Sources" mouse_opaque="true" color="1 1 0 1"
-			name="Sound Sources">
-				<on_click function="View.ToggleBeacon"
-				userdata="soundsbeacon" />
-				<on_check function="View.CheckBeaconEnabled"
-				userdata="soundsbeacon" />
-			</menu_item_check>
-			<menu_item_check enabled="true" height="18"
-			label="Particle Sources" mouse_opaque="true" color="0 0 1 1"
-			name="Particle Sources">
-				<on_click function="View.ToggleBeacon"
-				userdata="particlesbeacon" />
-				<on_check function="View.CheckBeaconEnabled"
-				userdata="particlesbeacon" />
-			</menu_item_check>
-			<menu_item_separator enabled="true" height="8"
-			label="-----------" mouse_opaque="true" name="separator" />
-			<menu_item_check enabled="true" height="18"
-			label="Render Highlights" mouse_opaque="true"
-			name="Render Highlights">
-				<on_click function="View.ToggleBeacon"
-				userdata="renderhighlights" />
-				<on_check function="View.CheckBeaconEnabled"
-				userdata="renderhighlights" />
-			</menu_item_check>
-			<menu_item_check enabled="true" height="18"
-			label="Render Beacons" mouse_opaque="true"
-			name="Render Beacons">
-				<on_click function="View.ToggleBeacon"
-				userdata="renderbeacons" />
-				<on_check function="View.CheckBeaconEnabled"
-				userdata="renderbeacons" />
-			</menu_item_check>
-			<menu_item_separator enabled="true" height="8"
-			label="-----------" mouse_opaque="true" name="separator3" />
-			<menu create_jump_keys="true"
-			drop_shadow="true" enabled="true" height="117"
-			label="Beacon Width" mouse_opaque="false" name="Beacon Width"
-			opaque="true" tear_off="true">
-				<menu_item_call enabled="true" height="18" label="1"
-				mouse_opaque="true" name="Beacon Width 1">
-					<on_click function="View.BeaconWidth" userdata="1" />
-				</menu_item_call>
-				<menu_item_call enabled="true" height="18" label="4"
-				mouse_opaque="true" name="Beacon Width 4">
-					<on_click function="View.BeaconWidth" userdata="4" />
-				</menu_item_call>
-				<menu_item_call enabled="true" height="18" label="16"
-				mouse_opaque="true" name="Beacon Width 16">
-					<on_click function="View.BeaconWidth" userdata="16" />
-				</menu_item_call>
-				<menu_item_call enabled="true" height="18" label="32"
-				mouse_opaque="true" name="Beacon Width 32">
-					<on_click function="View.BeaconWidth" userdata="32" />
-				</menu_item_call>
-			</menu>
-		</menu>
+		<menu_item_check name="beacons" label="Beacons"
+		     shortcut="control|alt|shift|N">
+		    <on_click function="ShowFloater" userdata="beacons" />
+			<on_check function="FloaterVisible" userdata="beacons" />
+		</menu_item_check>
     <menu_item_check bottom="-384" enabled="true" height="19" label="Hide Particles" left="0"
           mouse_opaque="true" name="Hide Particles" width="129" shortcut="control|alt|shift|=">
         <on_click function="View.ToggleRenderType" userdata="hideparticles" />

@@ -45,12 +45,11 @@ public:
 
 	S32					getLength() { return mList.size(); }
 
-	void				getAsset( 
-							const LLAssetID& assetID,
-							const std::string& wearable_name,
-							LLAssetType::EType asset_type,
-							void(*asset_arrived_callback)(LLWearable*, void* userdata),
-							void* userdata );
+	void				getAsset(const LLAssetID& assetID,
+								 const std::string& wearable_name,
+								 LLAssetType::EType asset_type,
+								 void(*asset_arrived_callback)(LLWearable*, void* userdata),
+								 void* userdata);
 
 	LLWearable*			createWearableMatchedToInventoryItem( LLWearable* old_wearable, LLViewerInventoryItem* item );
 	LLWearable*			createCopyFromAvatar( LLWearable* old_wearable, const std::string& new_name = std::string() );
@@ -61,6 +60,8 @@ public:
 	static void	 	    processGetAssetReply(const char* filename, const LLAssetID& assetID, void* user_data, S32 status, LLExtStat ext_status);
 
 protected:
+	LLWearable* generateNewWearable(); // used for the create... functions
+private:
 	std::map< LLUUID, LLWearable* > mList;
 };
 

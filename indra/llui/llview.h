@@ -666,7 +666,7 @@ private:
 	typedef std::map<std::string, LLView*> dummy_widget_map_t;
 	mutable dummy_widget_map_t mDummyWidgets;
 
-	boost::signals::connection mControlConnection;
+	boost::signals2::connection mControlConnection;
 
 	ECursorType mHoverCursor;
 	

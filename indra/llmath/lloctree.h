@@ -74,6 +74,13 @@ public:
 };
 
 template <class T>
+class LLOctreeTravelerDepthFirst : public LLOctreeTraveler<T>
+{
+public:
+	virtual void traverse(const LLOctreeNode<T>* node);
+};
+
+template <class T>
 class LLOctreeNode : public LLTreeNode<T>
 {
 public:
@@ -124,11 +131,10 @@ public:
 	inline void setParent(BaseType* parent)			{ mParent = (oct_node*) parent; }
 	inline const LLVector3d& getCenter() const			{ return mCenter; }
 	inline const LLVector3d& getSize() const			{ return mSize; }
-	inline void setCenter(LLVector3d center)			{ mCenter = center; }
-	inline void setSize(LLVector3d size)				{ mSize = size; }
-    inline oct_node* getNodeAt(T* data)				{ return getNodeAt(data->getPositionGroup(), data->getBinRadius()); }
-	inline U8 getOctant() const						{ return mOctant; }
-	inline void setOctant(U8 octant)					{ mOctant = octant; }
+	inline void setCenter(const LLVector3d center)			{ mCenter = center; }
+	inline void setSize(const LLVector3d size)				{ mSize = size; }
+    inline oct_node* getNodeAt(T* data)					{ return getNodeAt(data->getPositionGroup(), data->getBinRadius()); }
+	inline U8 getOctant() const							{ return mOctant; }
 	inline const oct_node*	getOctParent() const		{ return (const oct_node*) getParent(); }
 	inline oct_node* getOctParent() 					{ return (oct_node*) getParent(); }
 	
@@ -197,17 +203,17 @@ public:
 		return contains(xform->getBinRadius());
 	}
 
-	bool contains(F64 radius)
+	bool contains(F32 radius)
 	{
 		if (mParent == NULL)
 		{	//root node contains nothing
 			return false;
 		}
 
-		F64 size = mSize.mdV[0];
-		F64 p_size = size * 2.0;
+		F32 size = mSize[0];
+		F32 p_size = size * 2.f;
 
-		return (radius <= 0.001 && size <= 0.001) ||
+		return (radius <= 0.001f && size <= 0.001f) ||
 				(radius <= p_size && radius > size);
 	}
 
@@ -243,7 +249,30 @@ public:
 	void accept(tree_traveler* visitor) const		{ visitor->visit(this); }
 	void accept(oct_traveler* visitor) const		{ visitor->visit(this); }
 	
-	oct_node* getNodeAt(const LLVector3d& pos, const F64& rad)
+	void validateChildMap()
+	{
+		for (U32 i = 0; i < 8; i++)
+		{
+			U8 idx = mChildMap[i];
+			if (idx != 255)
+			{
+				LLOctreeNode<T>* child = mChild[idx];
+
+				if (child->getOctant() != i)
+				{
+					llerrs << "Invalid child map, bad octant data." << llendl;
+				}
+
+				if (getOctant(child->getCenter()) != child->getOctant())
+				{
+					llerrs << "Invalid child octant compared to position data." << llendl;
+				}
+			}
+		}
+	}
+
+
+	oct_node* getNodeAt(const LLVector3d& pos, const F32& rad)
 	{ 
 		LLOctreeNode<T>* node = this;
 
@@ -251,24 +280,18 @@ public:
 		{		
 			//do a quick search by octant
 			U8 octant = node->getOctant(pos.mdV);
-			BOOL keep_going = TRUE;
-
+			
 			//traverse the tree until we find a node that has no node
 			//at the appropriate octant or is smaller than the object.  
 			//by definition, that node is the smallest node that contains 
 			// the data
-			while (keep_going && node->getSize().mdV[0] >= rad)
+			U8 next_node = node->mChildMap[octant];
+			
+			while (next_node != 255 && node->getSize()[0] >= rad)
 			{	
-				keep_going = FALSE;
-				for (U32 i = 0; i < node->getChildCount() && !keep_going; i++)
-				{
-					if (node->getChild(i)->getOctant() == octant)
-					{
-						node = node->getChild(i);
-						octant = node->getOctant(pos.mdV);
-						keep_going = TRUE;
-					}
-				}
+				node = node->getChild(next_node);
+				octant = node->getOctant(pos.mdV);
+				next_node = node->mChildMap[octant];
 			}
 		}
 		else if (!node->contains(rad) && node->getParent())
@@ -444,6 +467,9 @@ public:
 	void clearChildren()
 	{
 		mChild.clear();
+
+		U32* foo = (U32*) mChildMap;
+		foo[0] = foo[1] = 0xFFFFFFFF;
 	}
 
 	void validate()
@@ -477,6 +503,12 @@ public:
 	void addChild(oct_node* child, BOOL silent = FALSE) 
 	{
 #if LL_OCTREE_PARANOIA_CHECK
+
+		if (child->getSize() == getSize())
+		{
+			OCT_ERRS << "Child size is same as parent size!" << llendl;
+		}
+
 		for (U32 i = 0; i < getChildCount(); i++)
 		{
 			if(mChild[i]->getSize() != child->getSize()) 
@@ -495,6 +527,8 @@ public:
 		}
 #endif
 
+		mChildMap[child->getOctant()] = (U8) mChild.size();
+
 		mChild.push_back(child);
 		child->setParent(this);
 
@@ -508,7 +542,7 @@ public:
 		}
 	}
 
-	void removeChild(U8 index, BOOL destroy = FALSE)
+	void removeChild(S32 index, BOOL destroy = FALSE)
 	{
 		for (U32 i = 0; i < this->getListenerCount(); i++)
 		{
@@ -516,12 +550,23 @@ public:
 			listener->handleChildRemoval(this, getChild(index));
 		}
 
+		
+
 		if (destroy)
 		{
 			mChild[index]->destroy();
 			delete mChild[index];
 		}
 		mChild.erase(mChild.begin() + index);
+
+		//rebuild child map
+		U32* foo = (U32*) mChildMap;
+		foo[0] = foo[1] = 0xFFFFFFFF;
+
+		for (U32 i = 0; i < mChild.size(); ++i)
+		{
+			mChildMap[mChild[i]->getOctant()] = i;
+		}
 
 		checkAlive();
 	}
@@ -553,14 +598,27 @@ public:
 	}
 
 protected:	
-	child_list mChild;
-	element_list mData;
-	oct_node* mParent;
+	typedef enum
+	{
+		CENTER = 0,
+		SIZE = 1,
+		MAX = 2,
+		MIN = 3
+	} eDName;
+
 	LLVector3d mCenter;
 	LLVector3d mSize;
 	LLVector3d mMax;
 	LLVector3d mMin;
+
+	oct_node* mParent;
 	U8 mOctant;
+
+	child_list mChild;
+	U8 mChildMap[8];
+
+	element_list mData;
+		
 };
 
 //just like a regular node, except it might expand on insert and compress on balance
@@ -571,8 +629,8 @@ public:
 	typedef LLOctreeNode<T>	BaseType;
 	typedef LLOctreeNode<T>		oct_node;
 
-	LLOctreeRoot(	LLVector3d center, 
-					LLVector3d size, 
+	LLOctreeRoot(	const LLVector3d &center, 
+					const LLVector3d &size, 
 					BaseType* parent)
 	:	BaseType(center, size, parent)
 	{
@@ -604,6 +662,8 @@ public:
 			//destroy child
 			child->clearChildren();
 			delete child;
+
+			return false;
 		}
 		
 		return true;
@@ -700,7 +760,6 @@ public:
 	}
 };
 
-
 //========================
 //		LLOctreeTraveler
 //========================
@@ -712,6 +771,16 @@ void LLOctreeTraveler<T>::traverse(const LLOctreeNode<T>* node)
 	{
 		traverse(node->getChild(i));
 	}
+}
+
+template <class T>
+void LLOctreeTravelerDepthFirst<T>::traverse(const LLOctreeNode<T>* node)
+{
+	for (U32 i = 0; i < node->getChildCount(); i++)
+	{
+		traverse(node->getChild(i));
+	}
+	node->accept(this);
 }
 
 #endif

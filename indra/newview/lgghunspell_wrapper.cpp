@@ -21,6 +21,7 @@
 #include "llweb.h"
 #include "llviewercontrol.h"
 #include "llviewerwindow.h"
+#include "lldiriterator.h"
 #include "llfile.h"
 #include "llhttpclient.h"
 #include "lggdicdownload.h"
@@ -768,28 +769,18 @@ std::vector <std::string> lggHunSpell_Wrapper::getDicts()
 {
 	std::vector<std::string> names;	
 	std::string path_name(gDirUtilp->getExpandedFilename(LL_PATH_APP_SETTINGS, "dictionaries", ""));
-	bool found = true;			
-	while (found) 
+	std::string name;
+	LLDirIterator app_iter(path_name, "*.aff");
+	while (app_iter.next(name))
 	{
-		std::string name;
-		found = gDirUtilp->getNextFileInDir(path_name, "*.aff", name, false);
-		if (found)
-		{
-			names.push_back(dictName2FullName(name));
-		}
+		names.push_back(dictName2FullName(name));
 	}
 	path_name = gDirUtilp->getExpandedFilename(LL_PATH_USER_SETTINGS, "dictionaries", "");
-	found = true;
-	while (found) 
+	LLDirIterator user_iter(path_name, "*.aff");
+	while (user_iter.next(name))
 	{
-		std::string name;
-		found = gDirUtilp->getNextFileInDir(path_name, "*.aff", name, false);
-		if (found)
-		{
-			names.push_back(dictName2FullName(name));
-		}
+		names.push_back(dictName2FullName(name));
 	}
-
 	return names;
 }
 
@@ -797,26 +788,17 @@ std::vector <std::string> lggHunSpell_Wrapper::getExtraDicts()
 {
 	std::vector<std::string> names;	
 	std::string path_name(gDirUtilp->getExpandedFilename(LL_PATH_APP_SETTINGS, "dictionaries", ""));
-	bool found = true;			
-	while (found) 
+	std::string name;
+	LLDirIterator app_iter(path_name, "*.dic");
+	while (app_iter.next(name))
 	{
-		std::string name;
-		found = gDirUtilp->getNextFileInDir(path_name, "*.dic", name, false);
-		if (found)
-		{
-			names.push_back(dictName2FullName(name));
-		}
+		names.push_back(dictName2FullName(name));
 	}
 	path_name = gDirUtilp->getExpandedFilename(LL_PATH_USER_SETTINGS, "dictionaries", "");
-	found = true;
-	while (found) 
+	LLDirIterator user_iter(path_name, "*.dic");
+	while (user_iter.next(name))
 	{
-		std::string name;
-		found = gDirUtilp->getNextFileInDir(path_name, "*.dic", name, false);
-		if (found)
-		{
-			names.push_back(dictName2FullName(name));
-		}
+		names.push_back(dictName2FullName(name));
 	}
 	return names;
 }

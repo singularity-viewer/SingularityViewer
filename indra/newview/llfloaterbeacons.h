@@ -44,7 +44,6 @@ public:
 	/*virtual*/ BOOL postBuild();
 	
 	// Needed to make the floater visibility toggle the beacons.
-	// Too bad we can't just add control_name="BeaconAlwaysOn" to the XML.
 	/*virtual*/ void open();
 	/*virtual*/ void close(bool app_quitting);
 

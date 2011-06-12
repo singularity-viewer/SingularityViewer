@@ -673,9 +673,6 @@
 			<key>FetchInventoryDescendents</key>
 			<boolean>false</boolean>
 		
-			<key>WebFetchInventoryDescendents</key>
-			<boolean>true</boolean>
-		
 			<key>FetchInventory</key>
 			<boolean>true</boolean>
 		

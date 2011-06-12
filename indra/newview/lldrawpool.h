@@ -169,10 +169,10 @@ public:
 	LLFacePool(const U32 type);
 	virtual ~LLFacePool();
 	
-	virtual void renderForSelect() = 0;
+	virtual void renderForSelect() {}; //Override if neded.
 	BOOL isDead() { return mReferences.empty(); }
 	virtual void renderFaceSelected(LLFace *facep, LLViewerTexture *image, const LLColor4 &color,
-									const S32 index_offset = 0, const S32 index_count = 0);
+									const S32 index_offset = 0, const S32 index_count = 0) {}; //Override if neded.
 
 	virtual LLViewerTexture *getTexture();
 	virtual void dirtyTextures(const std::set<LLViewerFetchedTexture*>& textures);

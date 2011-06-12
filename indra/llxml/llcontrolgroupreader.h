@@ -46,7 +46,7 @@ public:
 	LLControlGroupReader() {}
 	virtual ~LLControlGroupReader() {}
 
-	virtual std::string 	getString(const std::string& name) = 0;
+	virtual std::string 	getString(const std::string& name) const = 0;
 	//virtual LLWString	getWString(const std::string& name) = 0;
 	virtual std::string	getText(const std::string& name) = 0;
 	//virtual LLVector3	getVector3(const std::string& name) = 0;

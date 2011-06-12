@@ -107,7 +107,8 @@ public:
 	{
 		PARAMS_FLEXIBLE = 0x10,
 		PARAMS_LIGHT    = 0x20,
-		PARAMS_SCULPT   = 0x30
+		PARAMS_SCULPT   = 0x30,
+		PARAMS_LIGHT_IMAGE = 0x40,
 	};
 	
 public:
@@ -267,6 +268,29 @@ public:
 	U8 getSculptType() const                { return mSculptType; }
 };
 
+class LLLightImageParams : public LLNetworkData
+{
+protected:
+	LLUUID mLightTexture;
+	LLVector3 mParams;
+	
+public:
+	LLLightImageParams();
+	/*virtual*/ BOOL pack(LLDataPacker &dp) const;
+	/*virtual*/ BOOL unpack(LLDataPacker &dp);
+	/*virtual*/ bool operator==(const LLNetworkData& data) const;
+	/*virtual*/ void copy(const LLNetworkData& data);
+	LLSD asLLSD() const;
+	operator LLSD() const { return asLLSD(); }
+	bool fromLLSD(LLSD& sd);
+
+	void setLightTexture(const LLUUID& id) { mLightTexture = id; }
+	LLUUID getLightTexture() const         { return mLightTexture; }
+	bool isLightSpotlight() const         { return mLightTexture.notNull(); }
+	void setParams(const LLVector3& params) { mParams = params; }
+	LLVector3 getParams() const			   { return mParams; }
+	
+};
 
 
 class LLPrimitive : public LLXform
@@ -340,8 +364,8 @@ public:
 	S32 unpackTEField(U8 *cur_ptr, U8 *buffer_end, U8 *data_ptr, U8 data_size, U8 face_count, EMsgVariableType type);
 	BOOL packTEMessage(LLMessageSystem *mesgsys, bool shield = false, std::string client_str = "") const;
 	BOOL packTEMessage(LLDataPacker &dp) const;
-	S32 unpackTEMessage(LLMessageSystem *mesgsys, char *block_name);
-	S32 unpackTEMessage(LLMessageSystem *mesgsys, char *block_name, const S32 block_num); // Variable num of blocks
+	S32 unpackTEMessage(LLMessageSystem* mesgsys, char const* block_name);
+	S32 unpackTEMessage(LLMessageSystem* mesgsys, char const* block_name, const S32 block_num); // Variable num of blocks
 	BOOL unpackTEMessage(LLDataPacker &dp);
 	
 #ifdef CHECK_FOR_FINITE

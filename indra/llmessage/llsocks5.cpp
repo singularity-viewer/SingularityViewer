@@ -30,13 +30,12 @@
  * $/LicenseInfo$
  */
 
-#include <string>
-
 #include "linden_common.h"
 #include "net.h"
 #include "llhost.h"
 #include "message.h"
 #include "llsocks5.h"
+#include <string>
 
 // Static class variable instances
 

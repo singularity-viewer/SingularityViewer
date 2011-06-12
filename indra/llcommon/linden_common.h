@@ -33,6 +33,8 @@
 #ifndef LL_LINDEN_COMMON_H
 #define LL_LINDEN_COMMON_H
 
+#include "cwdebug.h"
+
 #if defined(LL_WINDOWS) && defined(_DEBUG)
 # if _MSC_VER >= 1400 // Visual C++ 2005 or later
 #  define _CRTDBG_MAP_ALLOC

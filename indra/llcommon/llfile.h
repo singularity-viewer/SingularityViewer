@@ -233,7 +233,7 @@ public:
  * and should only be used for config files and the like -- not in a
  * loop.
  */
-std::streamsize llifstream_size(llifstream& fstr);
-std::streamsize llofstream_size(llofstream& fstr);
+std::streamsize LL_COMMON_API llifstream_size(llifstream& fstr);
+std::streamsize LL_COMMON_API llofstream_size(llofstream& fstr);
 
 #endif // not LL_LLFILE_H

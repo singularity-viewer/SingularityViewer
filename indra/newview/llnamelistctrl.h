@@ -58,7 +58,7 @@ public:
 	// Add a user to the list by name.  It will be added, the name 
 	// requested from the cache, and updated as necessary.
 	BOOL addNameItem(const LLUUID& agent_id, EAddPosition pos = ADD_BOTTOM,
-					 BOOL enabled = TRUE, std::string& suffix = LLStringUtil::null);
+					 BOOL enabled = TRUE, std::string const& suffix = LLStringUtil::null);
 	BOOL addNameItem(LLScrollListItem* item, EAddPosition pos = ADD_BOTTOM);
 
 	virtual LLScrollListItem* addElement(const LLSD& value, EAddPosition pos = ADD_BOTTOM, void* userdata = NULL);

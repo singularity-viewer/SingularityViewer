@@ -117,7 +117,6 @@ void LLEventNotifier::load(const LLUserAuth::options_t& event_options)
 	}
 }
 
-
 BOOL LLEventNotifier::hasNotification(const U32 event_id)
 {
 	if (mEventNotifications.find(event_id) != mEventNotifications.end())
@@ -126,7 +125,6 @@ BOOL LLEventNotifier::hasNotification(const U32 event_id)
 	}
 	return FALSE;
 }
-
 
 void LLEventNotifier::add(LLEventInfo &event_info)
 {

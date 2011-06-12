@@ -835,7 +835,7 @@ bool RlvHandler::redirectChatOrEmote(const std::string& strUTF8Text) const
 				case LLAssetType::AT_CLOTHING:
 					{
 						// NOTE: without its asset we don't know what type the wearable is so we need to look at the item's flags instead
-						EWearableType wtType = (EWearableType)(pItem->getFlags() & LLInventoryItem::II_FLAGS_WEARABLES_MASK);
+						EWearableType wtType = (EWearableType)(pItem->getFlags() & LLInventoryItemFlags::II_FLAGS_WEARABLES_MASK);
 						LLViewerInventoryCategory* pFolder;
 						if ( (!isWearable(wtType)) ||
 							 ( (gAgent.getWearable(wtType)) && (!isRemovable(wtType)) ) || 
@@ -1430,7 +1430,7 @@ ERlvCmdRet RlvHandler::processForceCommand(const RlvCommand& rlvCmd) const
 			{
 				VERIFY_OPTION(rlvCmd.getOption().empty());
 				LLVOAvatar* pAvatar = gAgent.getAvatarObject();
-				if ( (pAvatar) && (pAvatar->mIsSitting) && (!hasBehaviourExcept(RLV_BHVR_UNSIT, rlvCmd.getObjectID())) )
+				if ( (pAvatar) && (pAvatar->isSitting()) && (!hasBehaviourExcept(RLV_BHVR_UNSIT, rlvCmd.getObjectID())) )
 				{
 					gAgent.setControlFlags(AGENT_CONTROL_STAND_UP);
 					send_agent_update(TRUE, TRUE);	// See behaviour notes on why we have to force an agent update here
@@ -1577,7 +1577,7 @@ ERlvCmdRet RlvHandler::onForceSit(const RlvCommand& rlvCmd) const
 		return RLV_RET_FAILED_LOCK;
 	else if ( (hasBehaviour(RLV_BHVR_STANDTP)) && (gAgent.getAvatarObject()) )
 	{
-		if (gAgent.getAvatarObject()->mIsSitting)
+		if (gAgent.getAvatarObject()->isSitting())
 			return RLV_RET_FAILED_LOCK;
 		m_posSitSource = gAgent.getPositionGlobal();
 	}
@@ -1692,7 +1692,7 @@ ERlvCmdRet RlvHandler::processReplyCommand(const RlvCommand& rlvCmd) const
 			{
 				// NOTE: RLV 1.16.1 returns a NULL UUID if we're not sitting
 				LLVOAvatar* pAvatar = gAgent.getAvatarObject(); LLUUID idSitObj;
-				if ( (pAvatar) && (pAvatar->mIsSitting) )
+				if ( (pAvatar) && (pAvatar->isSitting()) )
 				{
 					// LLVOAvatar inherits from 2 classes so make sure we get the right vfptr
 					LLViewerObject* pAvatarObj = dynamic_cast<LLViewerObject*>(pAvatar), *pParent;
@@ -1993,7 +1993,7 @@ ERlvCmdRet RlvHandler::onGetOutfit(const RlvCommand& rlvCmd, std::string& strRep
 	const EWearableType wtRlvTypes[] =
 		{ 
 			WT_GLOVES, WT_JACKET, WT_PANTS, WT_SHIRT, WT_SHOES, WT_SKIRT, WT_SOCKS, 
-			WT_UNDERPANTS, WT_UNDERSHIRT, WT_SKIN, WT_EYES, WT_HAIR, WT_SHAPE, WT_ALPHA, WT_TATTOO
+			WT_UNDERPANTS, WT_UNDERSHIRT, WT_SKIN, WT_EYES, WT_HAIR, WT_SHAPE, WT_ALPHA, WT_TATTOO, WT_PHYSICS
 		};
 
 	for (int idxType = 0, cntType = sizeof(wtRlvTypes) / sizeof(EWearableType); idxType < cntType; idxType++)

@@ -30,7 +30,7 @@
 	     label="Activate" name="Activate" width="80" />
 	<button bottom_delta="-25" follows="top|right" font="SansSerif" height="22"
 	     label="Leave" name="Leave" width="80" />
-	<button bottom_delta="-35" follows="top|right" font="SansSerif" height="22"
+	<button bottom_delta="-25" follows="top|right" font="SansSerif" height="22"
 	     label="Create..." name="Create" width="80" />
 	<button bottom_delta="-25" follows="top|right" font="SansSerif" height="22"
 	     label="Search..." name="Search..." width="80" />

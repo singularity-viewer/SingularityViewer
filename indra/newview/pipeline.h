@@ -185,7 +185,7 @@ public:
 	BOOL visibleObjectsInFrustum(LLCamera& camera);
 	BOOL getVisibleExtents(LLCamera& camera, LLVector3 &min, LLVector3& max);
 	BOOL getVisiblePointCloud(LLCamera& camera, LLVector3 &min, LLVector3& max, std::vector<LLVector3>& fp, LLVector3 light_dir = LLVector3(0,0,0));
-	void updateCull(LLCamera& camera, LLCullResult& result, S32 water_clip = 0);  //if water_clip is 0, ignore water plane, 1, cull to above plane, -1, cull to below plane
+	void updateCull(LLCamera& camera, LLCullResult& result, S32 water_clip = 0, LLPlane* plane = NULL);  //if water_clip is 0, ignore water plane, 1, cull to above plane, -1, cull to below plane
 	void createObjects(F32 max_dtime);
 	void createObject(LLViewerObject* vobj);
 	void updateGeom(F32 max_dtime);
@@ -207,17 +207,30 @@ public:
 	void renderGroups(LLRenderPass* pass, U32 type, U32 mask, BOOL texture);
 
 	void grabReferences(LLCullResult& result);
+	void clearReferences();
+
+	//check references will assert that there are no references in sCullResult to the provided data
+	void checkReferences(LLFace* face);
+	void checkReferences(LLDrawable* drawable);
+	void checkReferences(LLDrawInfo* draw_info);
+	void checkReferences(LLSpatialGroup* group);
 
 	void renderGeom(LLCamera& camera, BOOL forceVBOUpdate = FALSE);
 	void renderGeomDeferred(LLCamera& camera);
 	void renderGeomPostDeferred(LLCamera& camera);
 	void renderGeomShadow(LLCamera& camera);
-	void bindDeferredShader(LLGLSLShader& shader, U32 light_index = 0);
+	void bindDeferredShader(LLGLSLShader& shader, U32 light_index = 0, LLRenderTarget* gi_source = NULL, LLRenderTarget* last_gi_post = NULL, U32 noise_map = 0xFFFFFFFF);
+	void setupSpotLight(LLGLSLShader& shader, LLDrawable* drawablep);
+
 	void unbindDeferredShader(LLGLSLShader& shader);
 	void renderDeferredLighting();
 	
 	void generateWaterReflection(LLCamera& camera);
 	void generateSunShadow(LLCamera& camera);
+
+
+	void renderShadow(glh::matrix4f& view, glh::matrix4f& proj, LLCamera& camera, LLCullResult& result, BOOL use_shader = TRUE, BOOL use_occlusion = TRUE);
+	void generateGI(LLCamera& camera, LLVector3& lightDir, std::vector<LLVector3>& vpc);
 	void renderHighlights();
 	void renderDebug();
 
@@ -254,6 +267,9 @@ public:
 
 	BOOL hasRenderDebugFeatureMask(const U32 mask) const	{ return (mRenderDebugFeatureMask & mask) ? TRUE : FALSE; }
 	BOOL hasRenderDebugMask(const U32 mask) const			{ return (mRenderDebugMask & mask) ? TRUE : FALSE; }
+	
+
+
 	BOOL hasRenderType(const U32 type) const;
 	BOOL hasAnyRenderType(const U32 type, ...) const;
 
@@ -454,22 +470,47 @@ public:
 	static BOOL				sRenderAttachedLights;
 	static BOOL				sRenderAttachedParticles;
 	static BOOL				sRenderDeferred;
-	static BOOL             sAllowRebuildPriorityGroup;
 	static S32				sVisibleLightCount;
 	static F32				sMinRenderSize;
 
 	//screen texture
+
 	LLRenderTarget			mScreen;
 	LLRenderTarget			mDeferredScreen;
-	LLRenderTarget			mDeferredLight[2];
+	LLRenderTarget			mEdgeMap;
+	LLRenderTarget			mDeferredDepth;
+	LLRenderTarget			mDeferredLight[3];
 	LLMultisampleBuffer		mSampleBuffer;
+	LLRenderTarget			mGIMap;
+	LLRenderTarget			mGIMapPost[2];
+	LLRenderTarget			mLuminanceMap;
 
 	//sun shadow map
-	LLRenderTarget			mSunShadow[4];
+	LLRenderTarget			mShadow[6];
+	std::vector<LLVector3>	mShadowFrustPoints[4];
+	LLVector4				mShadowError;
+	LLVector4				mShadowFOV;
+	LLVector3				mShadowFrustOrigin[4];
 	LLCamera				mShadowCamera[8];
 	LLVector3				mShadowExtents[4][2];
-	glh::matrix4f			mSunShadowMatrix[4];
+	glh::matrix4f			mSunShadowMatrix[6];
+	glh::matrix4f			mShadowModelview[6];
+	glh::matrix4f			mShadowProjection[6];
+	glh::matrix4f			mGIMatrix;
+	glh::matrix4f			mGIMatrixProj;
+	glh::matrix4f			mGIModelview;
+	glh::matrix4f			mGIProjection;
+	glh::matrix4f			mGINormalMatrix;
+	glh::matrix4f			mGIInvProj;
+	LLVector2				mGIRange;
+	F32						mGILightRadius;
+	
+	LLPointer<LLDrawable>				mShadowSpotLight[2];
+	F32									mSpotLightFade[2];
+	LLPointer<LLDrawable>				mTargetShadowSpotLight[2];
+
 	LLVector4				mSunClipPlanes;
+	LLVector4				mSunOrthoClipPlanes;
 
 	LLVector2				mScreenScale;
 
@@ -484,6 +525,8 @@ public:
 
 	//noise map
 	U32					mNoiseMap;
+	U32					mTrueNoiseMap;
+	U32					mLightFunc;
 
 	LLColor4				mSunDiffuse;
 	LLVector3				mSunDir;
@@ -548,6 +591,9 @@ protected:
 	LLDrawable::drawable_list_t 	mBuildQ2; // non-priority
 	LLSpatialGroup::sg_vector_t		mGroupQ1; //priority
 	LLSpatialGroup::sg_vector_t		mGroupQ2; // non-priority
+	bool mGroupQ2Locked;
+	bool mGroupQ1Locked;
+
 	LLViewerObject::vobj_list_t		mCreateQ;
 		
 	LLDrawable::drawable_set_t		mRetexturedList;
@@ -618,6 +664,9 @@ protected:
 public:
 	static BOOL				sRenderBeacons;
 	static BOOL				sRenderHighlight;
+
+	//debug use
+	static U32              sCurRenderPoolType ;
 };
 
 void render_bbox(const LLVector3 &min, const LLVector3 &max);

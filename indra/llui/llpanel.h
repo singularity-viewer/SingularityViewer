@@ -56,7 +56,7 @@ const BOOL BORDER_NO = FALSE;
  * With or without border,
  * Can contain LLUICtrls.
  */
-class LLPanel : public LLUICtrl, public boost::signals::trackable
+class LLPanel : public LLUICtrl, public boost::signals2::trackable
 {
 public:
 

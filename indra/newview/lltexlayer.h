@@ -45,6 +45,7 @@
 #include "llwearable.h"
 #include "v4color.h"
 #include "llfloater.h"
+#include "llvoavatar.h"
 
 class LLTexLayerSetInfo;
 class LLTexLayerSet;
@@ -310,20 +311,6 @@ protected:
 };
 
 //-----------------------------------------------------------------------------
-// LLMaskedMorph
-//-----------------------------------------------------------------------------
-
-class LLMaskedMorph
-{
-public:
-	LLMaskedMorph( LLPolyMorphTarget *morph_target, BOOL invert );
-	
-public:
-	LLPolyMorphTarget	*mMorphTarget;
-	BOOL				mInvert;
-};
-
-//-----------------------------------------------------------------------------
 // LLTexLayer
 // A single texture layer
 //-----------------------------------------------------------------------------
@@ -374,7 +361,7 @@ protected:
 	alpha_list_t			mParamAlphaList;
 	
 	
-	typedef std::deque<LLMaskedMorph> morph_list_t;
+	typedef std::deque<LLVOAvatar::LLMaskedMorph> morph_list_t;
 	morph_list_t			mMaskedMorphs;
 	typedef std::map<U32, U8*> alpha_cache_t;
 	alpha_cache_t			mAlphaCache;

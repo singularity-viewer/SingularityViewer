@@ -38,8 +38,10 @@
 #include "llerrorcontrol.h"
 #include "llerrorthread.h"
 #include "llframetimer.h"
+#include "lllivefile.h"
 #include "llmemory.h"
-#include "lltimer.h"
+#include "llstl.h" // for DeletePointer()
+#include "lleventtimer.h"
 
 //
 // Signal handling
@@ -95,7 +97,6 @@ LLAppChildCallback LLApp::sDefaultChildCallback = NULL;
 LLApp::LLApp() : mThreadErrorp(NULL)
 {
 	commonCtor();
-	startErrorThread();
 }
 
 void LLApp::commonCtor()
@@ -123,13 +124,8 @@ void LLApp::commonCtor()
 		mOptions.append(sd);
 	}
 
-	// Make sure we clean up APR when we exit
-	// Don't need to do this if we're cleaning up APR in the destructor
-	//atexit(ll_cleanup_apr);
-
 	// Set the application to this instance.
 	sApplication = this;
-
 }
 
 LLApp::LLApp(LLErrorThread *error_thread) :
@@ -145,6 +141,11 @@ LLApp::~LLApp()
 	delete sSigChildCount;
 	sSigChildCount = NULL;
 #endif
+
+	// reclaim live file memory
+	std::for_each(mLiveFiles.begin(), mLiveFiles.end(), DeletePointer());
+	mLiveFiles.clear();
+
 	setStopped();
 	// HACK: wait for the error thread to clean itself
 	ms_sleep(20);
@@ -216,6 +217,15 @@ bool LLApp::parseCommandOptions(int argc, char** argv)
 	}
 	setOptionData(PRIORITY_COMMAND_LINE, commands);
 	return true;
+}
+
+
+void LLApp::manageLiveFile(LLLiveFile* livefile)
+{
+	if(!livefile) return;
+	livefile->checkAndReload();
+	livefile->addToEventTimer();
+	mLiveFiles.push_back(livefile);
 }
 
 bool LLApp::setOptionData(OptionPriority level, LLSD data)

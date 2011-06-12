@@ -156,6 +156,9 @@ ARGUMENTS=[
     dict(name='source',
          description='Source directory.',
          default=DEFAULT_SRCTREE),
+    dict(name='standalone',
+         description='Set to ON if this is a standalone build.',
+         default="OFF"),
     dict(name='artwork', description='Artwork directory.', default=DEFAULT_SRCTREE),
     dict(name='touch',
          description="""File to touch when action is finished. Touch file will
@@ -634,9 +637,9 @@ class LLManifest(object):
         is_glob = False
 
         # look under each prefix for matching paths
-        paths = [os.path.join(self.get_src_prefix(), src),
+        paths = set([os.path.join(self.get_src_prefix(), src),
                  os.path.join(self.get_artwork_prefix(), src),
-                 os.path.join(self.get_build_prefix(), src)]
+                 os.path.join(self.get_build_prefix(), src)])
         for path in paths:
             if self.wildcard_pattern.search(path):
                 is_glob = True

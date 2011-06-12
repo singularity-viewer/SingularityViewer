@@ -71,7 +71,7 @@ public:
 
 	void setPieSlice(S32 pie_slice) { mPieSlice = pie_slice; }	
 	void setVisibleInFirstPerson(BOOL visibility) { mVisibleInFirst = visibility; }
-	BOOL getVisibleInFirstPerson() { return mVisibleInFirst; }
+	BOOL getVisibleInFirstPerson() const { return mVisibleInFirst; }
 	void setGroup(S32 group) { mGroup = group; }
 	void setOriginalPosition(LLVector3 &position);
 	void setAttachmentVisibility(BOOL visible);
@@ -114,8 +114,8 @@ public:
 protected:
 	void calcLOD();
 	void setupDrawable(LLViewerObject *object);
-	
-protected:
+
+private:
 	BOOL			mVisibleInFirst;
 	LLVector3		mOriginalPos;
 	S32				mGroup;

@@ -204,7 +204,7 @@ BOOL LLToolPie::pickAndShowMenu(BOOL always_show)
 			// touch behavior down below...
 			break;
 		case CLICK_ACTION_SIT:
-			if ((gAgent.getAvatarObject() != NULL) && (!gAgent.getAvatarObject()->mIsSitting) 
+			if ((gAgent.getAvatarObject() != NULL) && (!gAgent.getAvatarObject()->isSitting()) 
 				&& (!gSavedSettings.getBOOL("DisableClickSit"))) // agent not already sitting
 			{
 				handle_sit_or_stand();
@@ -552,9 +552,9 @@ ECursorType cursor_from_object(LLViewerObject* object)
 	switch(click_action)
 	{
 	case CLICK_ACTION_SIT:
-//		if ((gAgent.getAvatarObject() != NULL) && (!gAgent.getAvatarObject()->mIsSitting)) // not already sitting?
+//		if ((gAgent.getAvatarObject() != NULL) && (!gAgent.getAvatarObject()->isSitting())) // not already sitting?
 // [RLVa:KB] - Checked: 2009-12-22 (RLVa-1.1.0k) | Added: RLVa-1.1.0j
-		if ( ((gAgent.getAvatarObject() != NULL) && (!gAgent.getAvatarObject()->mIsSitting)) && // not already sitting?
+		if ( ((gAgent.getAvatarObject() != NULL) && (!gAgent.getAvatarObject()->isSitting())) && // not already sitting?
 			 ((!rlv_handler_t::isEnabled()) || (gRlvHandler.canSit(object, gViewerWindow->getHoverPick().mObjectOffset))) )
 // [/RLVa:KB]
 		{

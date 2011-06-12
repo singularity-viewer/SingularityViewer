@@ -9,6 +9,34 @@
 		<string>settings_rlv.xml</string>
 	</array>
 
+  <key>FloaterAvatarTextRect</key>
+  <map>
+    <key>Comment</key>
+    <string>Avatar texture floater position</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>Rect</string>
+    <key>Value</key>
+    <array>
+      <integer>0</integer>
+      <integer>0</integer>
+      <integer>0</integer>
+      <integer>0</integer>
+    </array>
+  </map>
+
+	<key>SianaLegacyJ2CSize</key>
+	<map>
+		<key>Comment</key>
+		<string>Use older JPEG2000 size estimation method</string>
+		<key>Persist</key>
+		<integer>1</integer>
+		<key>Type</key>
+		<string>Boolean</string>
+		<key>Value</key>
+		<integer>1</integer>
+	</map>
 
     <key>SpellDownloadURL</key>
     <map>
@@ -55,6 +83,17 @@
 		<string>English (United States of America)</string>
 	</map>
 
+  <key>ScriptsCanShowUI</key>
+    <map>
+      <key>Comment</key>
+      <string>Allow LSL calls (such as LLMapDestination) to spawn viewer UI</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+  </map>
     <key>FloaterObjectBackuptRect</key>
     <map>
       <key>Comment</key>
@@ -1774,6 +1813,17 @@
       <key>Value</key>
       <integer>2</integer>
     </map>
+    <key>AvatarPhysics</key>
+    <map>
+      <key>Comment</key>
+      <string>Enable avatar wearable physics.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
     <key>AvatarSex</key>
     <map>
       <key>Comment</key>
@@ -1844,12 +1894,34 @@
         <integer>0</integer>
       </array>
     </map>
-    <key>BeaconAlwaysOn</key>
+    <key>ShowBeaconsFloater</key>
     <map>
       <key>Comment</key>
-      <string>Beacons / highlighting always on</string>
+      <string>Show beacons floater</string>
       <key>Persist</key>
       <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>0</integer>
+    </map>
+    <key>BeaconsKeepVisible</key>
+    <map>
+      <key>Comment</key>
+      <string>Don't turn off BeaconsVisible when beacons floater is closed</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>0</integer>
+    </map>
+    <key>BeaconsVisible</key>
+    <map>
+      <key>Comment</key>
+      <string>Show beacons / highlighting</string>
+      <key>Persist</key>
+      <integer>0</integer>
       <key>Type</key>
       <string>Boolean</string>
       <key>Value</key>
@@ -1902,7 +1974,7 @@
     <key>PluginAttachDebuggerToPlugins</key>
     <map>
       <key>Comment</key>
-      <string>TODO: understand what this actually does -.-sg</string>
+      <string>Opens a terminal window with a debugger and attach it, every time a new SLPlugin process is started.</string>
       <key>Persist</key>
       <integer>1</integer>
       <key>Type</key>
@@ -2604,6 +2676,65 @@
       <key>Value</key>
       <real>1.0</real>
     </map>
+  <key>CameraFocusTransitionTime</key>
+  <map>
+    <key>Comment</key>
+    <string>How many seconds it takes the camera to transition between focal distances</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>0.5</real>
+  </map>
+
+  <key>CameraFNumber</key>
+  <map>
+    <key>Comment</key>
+    <string>Camera f-number value for DoF effect</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>9.0</real>
+  </map>
+
+  <key>CameraFocalLength</key>
+  <map>
+    <key>Comment</key>
+    <string>Camera focal length for DoF effect (in millimeters)</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>50</real>
+  </map>
+
+  <key>CameraFieldOfView</key>
+  <map>
+    <key>Comment</key>
+    <string>Vertical camera field of view for DoF effect (in degrees)</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>60.0</real>
+  </map>
+
+  <key>CameraAspectRatio</key>
+  <map>
+    <key>Comment</key>
+    <string>Camera aspect ratio for DoF effect</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>1.5</real>
+  </map>
     <key>ChatBarStealsFocus</key>
     <map>
       <key>Comment</key>
@@ -4491,6 +4622,17 @@
       <string>S32</string>
       <key>Value</key>
       <integer>4</integer>
+    </map>
+    <key>DumpVFSCaches</key>
+    <map>
+      <key>Comment</key>
+      <string>Dump VFS caches on startup.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>0</integer>
     </map>
     <key>DynamicCameraStrength</key>
     <map>
@@ -8875,7 +9017,18 @@
       <key>Type</key>
       <string>S32</string>
       <key>Value</key>
-      <integer>35</integer>
+      <integer>12</integer>
+    </map>
+    <key>RenderAvatarPhysicsLODFactor</key>
+    <map>
+      <key>Comment</key>
+      <string>Controls level of detail of avatar physics (such as breast physics).</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>F32</string>
+      <key>Value</key>
+      <integer>1.0</integer>
     </map>
     <key>RenderAvatarInvisible</key>
     <map>
@@ -8899,24 +9052,22 @@
       <key>Value</key>
       <integer>1</integer>
     </map>
-    <key>RenderShadowGaussian</key>
-    <map>
-      <key>Comment</key>
-      <string>Gaussian coefficients for the two shadow/SSAO blurring passes (z component unused).</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>Vector3</string>
-      <key>Value</key>
-      <array>
-        <real>2.0</real>
-        <real>2.0</real>
-        <real>0.0</real>
-      </array>
-    </map>
-    <key>RenderShadowNearDist</key>
-    <map>
-      <key>Comment</key>
+   
+  <key>RenderLocalLights</key>
+  <map>
+    <key>Comment</key>
+    <string>Whether or not to render local lights.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>Boolean</string>
+    <key>Value</key>
+    <integer>1</integer>
+  </map>
+
+  <key>RenderShadowNearDist</key>
+  <map>
+    <key>Comment</key>
       <string>Near clip plane of shadow camera (affects precision of depth shadows).</string>
       <key>Persist</key>
       <integer>1</integer>
@@ -8939,11 +9090,74 @@
       <string>Vector3</string>
       <key>Value</key>
       <array>
-        <real>4.0</real>
-        <real>8.0</real>
-        <real>24.0</real>
+      	<real>1.0</real>
+      	<real>12.0</real>
+      	<real>32.0</real>
       </array>
-    </map>
+  </map>
+  <key>RenderShadowSplitExponent</key>
+  <map>
+    <key>Comment</key>
+    <string>Near clip plane split distances for shadow map frusta (x=perspective, y=ortho, z=transition rate).</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>Vector3</string>
+    <key>Value</key>
+    <array>
+      <real>3.0</real>
+      <real>3.0</real>
+      <real>2.0</real>
+    </array>
+  </map>
+  <key>RenderShadowOrthoClipPlanes</key>
+  <map>
+    <key>Comment</key>
+    <string>Near clip plane split distances for orthographic shadow map frusta.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>Vector3</string>
+    <key>Value</key>
+    <array>
+      <real>4.0</real>
+      <real>8.0</real>
+      <real>24.0</real>
+    </array>
+  </map>
+  <key>RenderShadowProjOffset</key>
+  <map>
+    <key>Comment</key>
+    <string>Amount to scale distance to virtual origin of shadow perspective projection.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>2.0</real>
+  </map>
+  <key>RenderShadowSlopeThreshold</key>
+  <map>
+    <key>Comment</key>
+    <string>Cutoff slope value for points to affect perspective shadow generation</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>0.0</real>
+  </map>
+  <key>RenderShadowProjExponent</key>
+  <map>
+    <key>Comment</key>
+    <string>Exponent applied to transition between ortho and perspective shadow projections based on viewing angle and light vector.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>0.5</real>
+  </map>
     <key>RenderSSAOScale</key>
     <map>
       <key>Comment</key>
@@ -8964,7 +9178,7 @@
       <key>Type</key>
       <string>U32</string>
       <key>Value</key>
-      <integer>60</integer>
+      <integer>200</integer>
     </map>
     <key>RenderSSAOFactor</key>
     <map>
@@ -8987,7 +9201,7 @@
       <string>Vector3</string>
       <key>Value</key>
       <array>
-        <real>0.40</real>
+        <real>0.80</real>
         <real>1.00</real>
         <real>0.00</real>
       </array>
@@ -9012,7 +9226,7 @@
       <key>Type</key>
       <string>F32</string>
       <key>Value</key>
-      <real>128</real>
+      <real>64</real>
     </map>
     <key>RenderCubeMap</key>
     <map>
@@ -9102,7 +9316,175 @@
       <key>Value</key>
       <integer>0</integer>
     </map>
-    <key>RenderDeferredAlphaSoften</key>
+
+  <key>RenderGIRange</key>
+  <map>
+    <key>Comment</key>
+    <string>Distance to cut off GI effect.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>96</real>
+  </map>
+
+  <key>RenderGILuminance</key>
+  <map>
+    <key>Comment</key>
+    <string>Luminance factor of global illumination contribution.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>0.075</real>
+  </map>
+  
+  <key>RenderGIBrightness</key>
+  <map>
+    <key>Comment</key>
+    <string>Brightness factor of global illumination contribution.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>0.3</real>
+  </map>
+
+  <key>RenderGINoise</key>
+  <map>
+    <key>Comment</key>
+    <string>Noise of position sampling for GI photon mapping.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>0.7</real>
+  </map>
+
+  <key>RenderGIAttenuation</key>
+  <map>
+    <key>Comment</key>
+    <string>Distance attenuation factor for indirect lighting.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>0.1</real>
+  </map>
+
+  <key>RenderGIBlurBrightness</key>
+  <map>
+    <key>Comment</key>
+    <string>Brightness factor of global illumination blur effect.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>1.025</real>
+  </map>
+
+  <key>RenderGIBlurEdgeWeight</key>
+  <map>
+    <key>Comment</key>
+    <string>Edge weight for GI soften filter (sharpness).</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>0.8</real>
+  </map>
+
+  <key>RenderGIBlurIncrement</key>
+  <map>
+    <key>Comment</key>
+    <string>Increment of scale for each pass of global illumination blur effect.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>0.8</real>
+  </map>
+
+  <key>RenderLuminanceScale</key>
+  <map>
+    <key>Comment</key>
+    <string>Luminance value scalar for darkening effect.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>1.0</real>
+  </map>
+
+  <key>RenderSunLuminanceScale</key>
+  <map>
+    <key>Comment</key>
+    <string>Sun Luminance value scalar for darkening effect.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>1.0</real>
+  </map>
+
+  <key>RenderSunLuminanceOffset</key>
+  <map>
+    <key>Comment</key>
+    <string>Sun Luminance value offset for darkening effect.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>0</real>
+  </map>
+
+  <key>RenderLuminanceDetail</key>
+  <map>
+    <key>Comment</key>
+    <string>Mipmap level to use for luminance</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>16.0</real>
+   </map>
+
+  <key>RenderEdgeDepthCutoff</key>
+  <map>
+    <key>Comment</key>
+    <string>Cutoff for depth difference that amounts to an edge.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>0.01</real>
+  </map>
+  <key>RenderEdgeNormCutoff</key>
+  <map>
+    <key>Comment</key>
+    <string>Cutoff for normal difference that amounts to an edge.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>0.25</real>
+  </map>
+
+  <key>RenderDeferredAlphaSoften</key>
     <map>
       <key>Comment</key>
       <string>Scalar for softening alpha surfaces (for soft particles).</string>
@@ -9124,9 +9506,249 @@
       <key>Value</key>
       <real>4</real>
     </map>
-    <key>RenderDeferred</key>
-    <map>
-      <key>Comment</key>
+  <key>RenderDeferredSpotShadowBias</key>
+  <map>
+    <key>Comment</key>
+    <string>Bias value for spot shadows (prevent shadow acne).</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>-64.0</real>
+  </map>
+  <key>RenderDeferredSpotShadowOffset</key>
+  <map>
+    <key>Comment</key>
+    <string>Offset value for spot shadows (prevent shadow acne).</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>0.8</real>
+  </map>
+
+  <key>RenderShadowBias</key>
+  <map>
+    <key>Comment</key>
+    <string>Bias value for shadows (prevent shadow acne).</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>-0.008</real>
+  </map>
+  <key>RenderShadowOffset</key>
+  <map>
+    <key>Comment</key>
+    <string>Offset value for shadows (prevent shadow acne).</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>0.01</real>
+  </map>
+
+  <key>RenderShadowBiasError</key>
+  <map>
+    <key>Comment</key>
+    <string>Error scale for shadow bias (based on altitude).</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>0</real>
+  </map>
+  <key>RenderShadowOffsetError</key>
+  <map>
+    <key>Comment</key>
+    <string>Error scale for shadow offset (based on altitude).</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>0</real>
+  </map>
+  
+  <key>RenderSpotLightsInNondeferred</key>
+  <map>
+    <key>Comment</key>
+    <string>Whether to support projectors as spotlights when Lighting and Shadows is disabled</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>Boolean</string>
+    <key>Value</key>
+    <integer>0</integer>
+  </map>
+
+  <key>RenderSpotShadowBias</key>
+  <map>
+    <key>Comment</key>
+    <string>Bias value for shadows (prevent shadow acne).</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>0.0</real>
+  </map>
+  <key>RenderSpotShadowOffset</key>
+  <map>
+    <key>Comment</key>
+    <string>Offset value for shadows (prevent shadow acne).</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>0.04</real>
+  </map>
+
+  <key>RenderShadowResolutionScale</key>
+  <map>
+    <key>Comment</key>
+    <string>Scale of shadow map resolution vs. screen resolution</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>1.0</real>
+  </map>
+
+  <key>RenderDeferredTreeShadowBias</key>
+  <map>
+    <key>Comment</key>
+    <string>Bias value for tree shadows (prevent shadow acne).</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>1.0</real>
+  </map>
+  <key>RenderDeferredTreeShadowOffset</key>
+  <map>
+    <key>Comment</key>
+    <string>Offset value for tree shadows (prevent shadow acne).</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>1.0</real>
+  </map>
+
+  <key>RenderHoverGlowEnable</key>
+  <map>
+    <key>Comment</key>
+    <string>Show glow effect when hovering on interactive objects.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>Boolean</string>
+    <key>Value</key>
+    <integer>0</integer>
+  </map>
+
+  <key>RenderHighlightFadeTime</key>
+  <map>
+    <key>Comment</key>
+    <string>Transition time for mouseover highlights.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>0.1</real>
+  </map>
+  
+  <key>RenderHighlightBrightness</key>
+  <map>
+    <key>Comment</key>
+    <string>Brightness of mouseover highlights.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>4.0</real>
+  </map>
+
+  <key>RenderHighlightThickness</key>
+  <map>
+    <key>Comment</key>
+    <string>Thickness of mouseover highlights.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>0.6</real>
+  </map>
+  
+  <key>RenderHighlightColor</key>
+  <map>
+    <key>Comment</key>
+    <string>Brightness of mouseover highlights.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>Color4</string>
+    <key>Value</key>
+    <array>
+      <real>0.4</real>
+      <real>0.98</real>
+      <real>0.93</real>
+      <real>1.0</real>
+    </array>
+  </map>
+
+  <key>RenderSpecularResX</key>
+  <map>
+    <key>Comment</key>
+    <string>Spec map resolution.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>U32</string>
+    <key>Value</key>
+    <real>128</real>
+  </map>
+
+  <key>RenderSpecularResY</key>
+  <map>
+    <key>Comment</key>
+    <string>Spec map resolution.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>U32</string>
+    <key>Value</key>
+    <real>128</real>
+  </map>
+
+  <key>RenderSpecularExponent</key>
+  <map>
+    <key>Comment</key>
+    <string>Specular exponent for generating spec map</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>8</real>
+  </map>
+
+  <key>RenderDeferred</key>
+  <map>
+    <key>Comment</key>
       <string>Use deferred rendering pipeline.</string>
       <key>Persist</key>
       <integer>1</integer>
@@ -9135,19 +9757,93 @@
       <key>Value</key>
       <integer>0</integer>
     </map>
-    <key>RenderDeferredSunShadow</key>
-    <map>
-      <key>Comment</key>
-      <string>Generate shadows from the sun.</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>Boolean</string>
-      <key>Value</key>
-      <integer>1</integer>
-    </map>
-    <key>RenderDeferredSunWash</key>
-    <map>
+
+  <key>RenderDeferredGI</key>
+  <map>
+    <key>Comment</key>
+    <string>Enable GI in deferred renderer.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>Boolean</string>
+    <key>Value</key>
+    <integer>0</integer>
+  </map>
+
+  <key>RenderDeferredSun</key>
+  <map>
+    <key>Comment</key>
+    <string>Execute sunlight shader in deferred renderer.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>Boolean</string>
+    <key>Value</key>
+    <integer>1</integer>
+  </map>
+
+  <key>RenderDeferredAtmospheric</key>
+  <map>
+    <key>Comment</key>
+    <string>Execute atmospheric shader in deferred renderer.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>Boolean</string>
+    <key>Value</key>
+    <integer>1</integer>
+  </map>
+
+  <key>RenderDeferredSSAO</key>
+  <map>
+    <key>Comment</key>
+    <string>Execute screen space ambient occlusion shader in deferred renderer.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>Boolean</string>
+    <key>Value</key>
+    <integer>1</integer>
+  </map>
+
+  <key>RenderDeferredBlurLight</key>
+  <map>
+    <key>Comment</key>
+    <string>Execute shadow softening shader in deferred renderer.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>Boolean</string>
+    <key>Value</key>
+    <integer>1</integer>
+  </map>
+
+  <key>RenderDeferredLocalLights</key>
+  <map>
+    <key>Comment</key>
+    <string>Execute local lighting shader in deferred renderer.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>Boolean</string>
+    <key>Value</key>
+    <integer>1</integer>
+  </map>
+
+  <key>RenderDeferredFullscreenLights</key>
+  <map>
+    <key>Comment</key>
+    <string>Execute local lighting shader in deferred renderer.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>Boolean</string>
+    <key>Value</key>
+    <integer>1</integer>
+  </map>
+
+  <key>RenderDeferredSunWash</key>
+  <map>
       <key>Comment</key>
       <string>Amount local lights are washed out by sun.</string>
       <key>Persist</key>
@@ -9167,20 +9863,59 @@
       <string>F32</string>
       <key>Value</key>
       <real>-0.0001</real>
-    </map>
-    <key>RenderShadowBlurSize</key>
-    <map>
-      <key>Comment</key>
-      <string>Scale of shadow softening kernel.</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>F32</string>
-      <key>Value</key>
-      <real>0.7</real>
-    </map>
-    <key>RenderShadowBlurSamples</key>
-    <map>
+  </map>
+  <key>RenderShadowErrorCutoff</key>
+  <map>
+    <key>Comment</key>
+    <string>Cutoff error value to use ortho instead of perspective projection.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>5.0</real>
+  </map>
+  <key>RenderShadowFOVCutoff</key>
+  <map>
+    <key>Comment</key>
+    <string>Cutoff FOV to use ortho instead of perspective projection.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>1.1</real>
+  </map>
+
+  <key>RenderShadowGaussian</key>
+  <map>
+    <key>Comment</key>
+    <string>Gaussian coefficients for the two shadow/SSAO blurring passes (z component unused).</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>Vector3</string>
+    <key>Value</key>
+    <array>
+      <real>3.0</real>
+      <real>2.0</real>
+      <real>0.0</real>
+    </array>
+  </map>
+
+  <key>RenderShadowBlurSize</key>
+  <map>
+    <key>Comment</key>
+    <string>Scale of shadow softening kernel.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>1.4</real>
+  </map>
+  <key>RenderShadowBlurSamples</key>
+  <map>
       <key>Comment</key>
       <string>Number of samples to take for each pass of shadow blur (value range 1-16).  Actual number of samples is value * 2 - 1.</string>
       <key>Persist</key>
@@ -9190,6 +9925,104 @@
       <key>Value</key>
       <real>5</real>
     </map>
+  <key>RenderShadowBlurDistFactor</key>
+  <map>
+    <key>Comment</key>
+    <string>Distance scaler for shadow blur.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>0.1</real>
+  </map>
+
+  <key>RenderGIAmbiance</key>
+  <map>
+    <key>Comment</key>
+    <string>Ambiance factor of global illumination contribution.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>0.5</real>
+  </map>
+
+  <key>RenderGIMinRenderSize</key>
+  <map>
+    <key>Comment</key>
+    <string>Minimum size of objects to put into GI source map.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>0.5</real>
+  </map>
+
+  <key>RenderGIBlurColorCurve</key>
+  <map>
+    <key>Comment</key>
+    <string>Color curve for GI softening kernel</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>Vector3</string>
+    <key>Value</key>
+    <array>
+      <real>1.0</real>
+      <real>0.6</real>
+      <real>0.02</real>
+    </array>
+  </map>
+
+  <key>RenderGIBlurPasses</key>
+  <map>
+    <key>Comment</key>
+    <string>Scale of GI softening kernel.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>U32</string>
+    <key>Value</key>
+    <real>4</real>
+  </map>
+
+  <key>RenderGIBlurSize</key>
+  <map>
+    <key>Comment</key>
+    <string>Scale of GI softening kernel.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>4.0</real>
+  </map>
+  <key>RenderGIBlurSamples</key>
+  <map>
+    <key>Comment</key>
+    <string>Number of samples to take for each pass of GI blur (value range 1-16).  Actual number of samples is value * 2 - 1.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>U32</string>
+    <key>Value</key>
+    <real>16</real>
+  </map>
+  <key>RenderGIBlurDistFactor</key>
+  <map>
+    <key>Comment</key>
+    <string>Distance scaler for GI blur.</string>
+    <key>Persist</key>
+    <integer>1</integer>
+    <key>Type</key>
+    <string>F32</string>
+    <key>Value</key>
+    <real>0.0</real>
+  </map>
+
     <key>RenderDynamicLOD</key>
     <map>
       <key>Comment</key>
@@ -9259,7 +10092,7 @@
     <key>RenderFastAlpha</key>
     <map>
       <key>Comment</key>
-      <string>Use lossy alpha rendering optimization (opaque/nonexistent small alpha faces).</string>
+      <string>Use alpha masks where appropriate.</string>
       <key>Persist</key>
       <integer>1</integer>
       <key>Type</key>
@@ -9539,17 +10372,6 @@
       <key>Value</key>
       <integer>0</integer>
     </map>
-    <key>RenderLightingDetail</key>
-    <map>
-      <key>Comment</key>
-      <string>Amount of detail for lighting objects/avatars/terrain (0=sun/moon only, 1=enable local lights)</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>S32</string>
-      <key>Value</key>
-      <integer>1</integer>
-    </map>
     <key>RenderMaxPartCount</key>
     <map>
       <key>Comment</key>
@@ -9726,6 +10548,18 @@
       <key>Value</key>
       <integer>2</integer>
     </map>
+    <key>RenderShadowDetail</key>
+    <map>
+      <key>Comment</key>
+      <string>Detail of shadows.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>S32</string>
+      <key>Value</key>
+      <integer>0</integer>
+    </map>
+
     <key>RenderReflectionRes</key>
     <map>
       <key>Comment</key>
@@ -9836,6 +10670,17 @@
       <key>Value</key>
       <real>1.0</real>
     </map>
+	<key>RenderTransparentWater</key>
+	<map>
+	  <key>Comment</key>
+	  <string>Render water as transparent.  Setting to false renders water as opaque with a simple texture applied.</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+	</map>
     <key>RenderTreeLODFactor</key>
     <map>
       <key>Comment</key>
@@ -9946,6 +10791,17 @@
       <key>Value</key>
       <integer>1</integer>
     </map>
+	<key>RenderPreferStreamDraw</key>
+	<map>
+		<key>Comment</key>
+		<string>Use GL_STREAM_DRAW in place of GL_DYNAMIC_DRAW</string>
+		<key>Persist</key>
+		<integer>1</integer>
+		<key>Type</key>
+		<string>Boolean</string>
+		<key>Value</key>
+		<integer>0</integer>
+	</map>
     <key>RenderVolumeLODFactor</key>
     <map>
       <key>Comment</key>
@@ -9989,28 +10845,6 @@
       <string>S32</string>
       <key>Value</key>
       <integer>512</integer>
-    </map>
-    <key>RenderWaterReflections</key>
-    <map>
-      <key>Comment</key>
-      <string>Reflect the environment in the water.</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>Boolean</string>
-      <key>Value</key>
-      <integer>0</integer>
-    </map>
-    <key>RenderWaterVoidCulling</key>
-    <map>
-      <key>Comment</key>
-      <string>Cull void water objects when off-screen.</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>Boolean</string>
-      <key>Value</key>
-      <integer>1</integer>
     </map>
     <key>RotateRight</key>
     <map>
@@ -11337,6 +12171,17 @@
       <string>Boolean</string>
       <key>Value</key>
       <integer>0</integer>
+    </map>
+    <key>StateMachineMaxTime</key>
+    <map>
+      <key>Comment</key>
+      <string>Maximum time per frame spent executing AIStateMachine objects, in miliseconds</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>U32</string>
+      <key>Value</key>
+      <integer>20</integer>
     </map>
     <key>StatsAutoRun</key>
     <map>
@@ -12912,7 +13757,7 @@
       <key>Type</key>
       <string>Boolean</string>
       <key>Value</key>
-      <integer>1</integer>
+      <integer>0</integer>
     </map>
     <key>UseOutfitFolders</key>
     <map>
@@ -13663,6 +14508,17 @@
       <key>Value</key>
       <integer>1</integer>
     </map>
+    <key>WarnFirstPhysicsWearable</key>
+    <map>
+      <key>Comment</key>
+      <string>Enables Physics Wearable warning dialog</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
     <key>WatchdogEnabled</key>
     <map>
       <key>Comment</key>
@@ -13953,6 +14809,17 @@
     <map>
       <key>Comment</key>
       <string>Beacon / Highlight sound generators</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>0</integer>
+    </map>
+    <key>keepbeacons</key>
+    <map>
+      <key>Comment</key>
+      <string>Keep beacons when closing floater</string>
       <key>Persist</key>
       <integer>1</integer>
       <key>Type</key>

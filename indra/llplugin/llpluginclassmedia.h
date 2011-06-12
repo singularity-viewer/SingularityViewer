@@ -36,29 +36,16 @@
 #ifndef LL_LLPLUGINCLASSMEDIA_H
 #define LL_LLPLUGINCLASSMEDIA_H
 
-#include "llgltypes.h"
-#include "llpluginprocessparent.h"
+#include "llpluginclassbasic.h"
 #include "llrect.h"
-#include "llpluginclassmediaowner.h"
-#include <queue>
 #include "v4color.h"
 
-class LLPluginClassMedia : public LLPluginProcessParentOwner
+class LLPluginClassMedia : public LLPluginClassBasic
 {
 	LOG_CLASS(LLPluginClassMedia);
+
 public:
 	LLPluginClassMedia(LLPluginClassMediaOwner *owner);
-	virtual ~LLPluginClassMedia();
-
-	// local initialization, called by the media manager when creating a source
-	virtual bool init(const std::string &launcher_filename, 
-					  const std::string &plugin_filename, 
-					  bool debug);
-
-	// undoes everything init() didm called by the media manager when destroying a source
-	virtual void reset();
-	
-	void idle(void);
 	
 	// All of these may return 0 or an actual valid value.
 	// Callers need to check the return for 0, and not use the values in that case.
@@ -101,22 +88,22 @@ public:
 	bool getDirty(LLRect *dirty_rect = NULL);
 	void resetDirty(void);
 	
-	typedef enum 
+	enum EMouseEventType
 	{
 		MOUSE_EVENT_DOWN,
 		MOUSE_EVENT_UP,
 		MOUSE_EVENT_MOVE,
 		MOUSE_EVENT_DOUBLE_CLICK
-	}EMouseEventType;
+	};
 	
 	void mouseEvent(EMouseEventType type, int button, int x, int y, MASK modifiers);
 
-	typedef enum 
+	enum EKeyEventType
 	{
 		KEY_EVENT_DOWN,
 		KEY_EVENT_UP,
 		KEY_EVENT_REPEAT
-	}EKeyEventType;
+	};
 	
 	bool keyEvent(EKeyEventType type, int key_code, MASK modifiers, LLSD native_key_data);
 
@@ -127,39 +114,13 @@ public:
 	
 	void loadURI(const std::string &uri);
 	
-	// "Loading" means uninitialized or any state prior to fully running (processing commands)
-	bool isPluginLoading(void) { return mPlugin?mPlugin->isLoading():false; };
-
-	// "Running" means the steady state -- i.e. processing messages
-	bool isPluginRunning(void) { return mPlugin?mPlugin->isRunning():false; };
-	
-	// "Exited" means any regular or error state after "Running" (plugin may have crashed or exited normally)
-	bool isPluginExited(void) { return mPlugin?mPlugin->isDone():false; };
-
-	std::string getPluginVersion() { return mPlugin?mPlugin->getPluginVersion():std::string(""); };
-
-	bool getDisableTimeout() { return mPlugin?mPlugin->getDisableTimeout():false; };
-	void setDisableTimeout(bool disable) { if(mPlugin) mPlugin->setDisableTimeout(disable); };
-	
 	// Inherited from LLPluginProcessParentOwner
 	/* virtual */ void receivePluginMessage(const LLPluginMessage &message);
 	/* virtual */ void pluginLaunchFailed();
 	/* virtual */ void pluginDied();
+	// Inherited from LLPluginClassBasic
+	/* virtual */ void priorityChanged(EPriority priority);
 	
-	
-	typedef enum 
-	{
-		PRIORITY_UNLOADED,	// media plugin isn't even loaded.
-		PRIORITY_STOPPED,	// media is not playing, shouldn't need to update at all.
-		PRIORITY_HIDDEN,	// media is not being displayed or is out of view, don't need to do graphic updates, but may still update audio, playhead, etc.
-		PRIORITY_SLIDESHOW,	// media is in the far distance, updates very infrequently
-		PRIORITY_LOW,		// media is in the distance, may be rendered at reduced size
-		PRIORITY_NORMAL,	// normal (default) priority
-		PRIORITY_HIGH		// media has user focus and/or is taking up most of the screen
-	}EPriority;
-
-	static const char* priorityToString(EPriority priority);
-	void setPriority(EPriority priority);
 	void setLowPrioritySizeLimit(int size);
 	
 	F64 getCPUUsage();
@@ -256,22 +217,23 @@ public:
 	void initializeUrlHistory(const LLSD& url_history);
 
 protected:
-
-	LLPluginClassMediaOwner *mOwner;
+	virtual bool init_impl(void);
+	virtual void reset_impl(void);
+	virtual void idle_impl(void);
 
 	// Notify this object's owner that an event has occurred.
 	void mediaEvent(LLPluginClassMediaOwner::EMediaEvent event);
 		
-	void sendMessage(const LLPluginMessage &message);  // Send message internally, either queueing or sending directly.
-	std::queue<LLPluginMessage> mSendQueue;		// Used to queue messages while the plugin initializes.
-	
 	void setSizeInternal(void);
+
+protected:
+	LLPluginClassMediaOwner *mOwner;
 
 	bool		mTextureParamsReceived;		// the mRequestedTexture* fields are only valid when this is true
 	S32 		mRequestedTextureDepth;
-	LLGLenum	mRequestedTextureInternalFormat;
-	LLGLenum	mRequestedTextureFormat;
-	LLGLenum	mRequestedTextureType;
+	U32			mRequestedTextureInternalFormat;
+	U32			mRequestedTextureFormat;
+	U32			mRequestedTextureType;
 	bool		mRequestedTextureSwapBytes;
 	bool		mRequestedTextureCoordsOpenGL;
 	
@@ -313,15 +275,10 @@ protected:
 	
 	float		mRequestedVolume;
 	
-	// Priority of this media stream
-	EPriority	mPriority;
 	int			mLowPrioritySizeLimit;
 	
 	bool		mAllowDownsample;
 	int			mPadding;
-	
-	
-	LLPluginProcessParent *mPlugin;
 	
 	LLRect mDirtyRect;
 	
@@ -332,8 +289,6 @@ protected:
 	int			mLastMouseY;
 
 	LLPluginClassMediaOwner::EMediaStatus mStatus;
-	
-	F64				mSleepTime;
 
 	bool			mCanCut;
 	bool			mCanCopy;
@@ -363,15 +318,6 @@ protected:
 	F64				mDuration;
 	F64				mCurrentRate;
 	F64				mLoadedDuration;
-	
-//--------------------------------------
-	//debug use only
-	//
-private:
-	bool  mDeleteOK ;
-public:
-	void setDeleteOK(bool flag) { mDeleteOK = flag ;}
-//--------------------------------------
 };
 
 #endif // LL_LLPLUGINCLASSMEDIA_H

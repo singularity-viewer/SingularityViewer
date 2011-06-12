@@ -2,19 +2,18 @@
  * @file diffuseV.glsl
  *
  * Copyright (c) 2007-$CurrentYear$, Linden Research, Inc.
- * $License$
+ * $/LicenseInfo$
  */
+ 
+#version 120
 
 varying vec3 vary_normal;
-varying vec4 vary_position;
 
 void main()
 {
 	//transform vertex
-	gl_Position = ftransform(); 
+	gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex; 
 	gl_TexCoord[0] = gl_TextureMatrix[0] * gl_MultiTexCoord0;
-	
-	vary_position = gl_ModelViewMatrix * gl_Vertex;
 	
 	vary_normal = normalize(gl_NormalMatrix * gl_Normal);
 

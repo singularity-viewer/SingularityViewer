@@ -77,6 +77,7 @@ void LLFloaterHardwareSettings::refresh()
 	LLPanel::refresh();
 
 	mUseVBO = gSavedSettings.getBOOL("RenderVBOEnable");
+	mUseFBO = gSavedSettings.getBOOL("RenderUseFBO");
 	mUseAniso = gSavedSettings.getBOOL("RenderAnisotropic");
 	mFSAASamples = gSavedSettings.getU32("RenderFSAASamples");
 	mGamma = gSavedSettings.getF32("RenderGamma");
@@ -106,7 +107,8 @@ void LLFloaterHardwareSettings::refreshEnabledState()
 	{
 		childSetEnabled("vbo_stream", LLVertexBuffer::sEnableVBOs);
 	}
-		
+
+	childSetEnabled("fbo",gGLManager.mHasFramebufferObject && !LLPipeline::sRenderDeferred);
 
 	// if no windlight shaders, turn off nighttime brightness, gamma, and fog distance
 	childSetEnabled("gamma", !gPipeline.canUseWindLightShaders());
@@ -192,6 +194,7 @@ void LLFloaterHardwareSettings::apply()
 void LLFloaterHardwareSettings::cancel()
 {
 	gSavedSettings.setBOOL("RenderVBOEnable", mUseVBO);
+	gSavedSettings.setBOOL("RenderUseFBO", mUseFBO);
 	gSavedSettings.setBOOL("RenderAnisotropic", mUseAniso);
 	gSavedSettings.setU32("RenderFSAASamples", mFSAASamples);
 	gSavedSettings.setF32("RenderGamma", mGamma);

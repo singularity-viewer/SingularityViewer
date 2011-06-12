@@ -81,7 +81,12 @@
 			<check_box bottom_delta="-15" enabled="true" follows="left|top" font="SansSerifSmall"
 			     height="20" initial_value="false" label="Translate Chat (powered by Google)" left_delta="0"
 			     name="translate chat" radio_style="false" width="100" />
-			<button bottom_delta="7" follows="right|top" height="20" label="&lt; &lt;"
+
+      <button bottom_delta="8" left_delta="250" follows="left|top" font="SansSerifSmall"
+           height="20" width="100" label="Open History" name="chat_history_open"
+           tool_top="Click here to open chat history in external editor." />
+
+      <button bottom_delta="7" follows="right|top" height="20" label="&lt; &lt;"
 			     label_selected="&gt; &gt;" left="272" name="toggle_active_speakers_btn"
 			     right="305"
 			     tool_tip="Click here to show list of active participants in this IM session."

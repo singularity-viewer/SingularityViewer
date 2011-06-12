@@ -35,7 +35,6 @@
 
 #include "llcharacter.h"
 #include "lleditmenuhandler.h"
-#include "llstring.h"
 #include "llundo.h"
 #include "lluuid.h"
 #include "llmemory.h"
@@ -47,14 +46,15 @@
 #include "llframetimer.h"
 #include "llbbox.h"
 #include "llpermissions.h"
-#include "llviewerobject.h"
+#include "llcontrol.h"
+#include "llviewerobject.h"	// LLObjectSelection::getSelectedTEValue template
 
 #include <deque>
-#include "boost/iterator/filter_iterator.hpp"
+#include <boost/iterator/filter_iterator.hpp>
+#include <boost/signals2.hpp>
 
 class LLMessageSystem;
 class LLViewerTexture;
-class LLViewerObject;
 class LLColor4;
 class LLVector3;
 class LLSelectNode;
@@ -146,7 +146,7 @@ public:
 	void setObject(LLViewerObject* object);
 	// *NOTE: invalidate stored textures and colors when # faces change
 	void saveColors();
-	void saveTextures(const std::vector<LLUUID>& textures);
+	void saveTextures(const uuid_vec_t& textures);
 	void saveTextureScaleRatios();
 
 	BOOL allowOperationOnNode(PermissionBit op, U64 group_proxy_power) const;
@@ -182,7 +182,7 @@ public:
 	std::string		mSitName;
 	U64				mCreationDate;
 	std::vector<LLColor4>	mSavedColors;
-	std::vector<LLUUID>		mSavedTextures;
+	uuid_vec_t		mSavedTextures;
 	std::vector<LLVector3>  mTextureScaleRatios;
 	std::vector<LLVector3>	mSilhouetteVertices;	// array of vertices to render silhouette of object
 	std::vector<LLVector3>	mSilhouetteNormals;	// array of normals to render silhouette of object
@@ -202,13 +202,9 @@ class LLObjectSelection : public LLRefCount
 protected:
 	~LLObjectSelection();
 
-	// List
 public:
 	typedef std::list<LLSelectNode*> list_t;
-private:
-	list_t mList;
 
-public:
 	// Iterators
 	struct is_non_null
 	{
@@ -234,11 +230,7 @@ public:
 
 	struct is_root
 	{
-		bool operator()(LLSelectNode* node)
-		{
-			LLViewerObject* object = node->getObject();
-			return (object != NULL) && !node->mIndividualSelection && (object->isRootEdit() || object->isJointChild());
-		}
+		bool operator()(LLSelectNode* node);
 	};
 	typedef boost::filter_iterator<is_root, list_t::iterator > root_iterator;
 	root_iterator root_begin() { return root_iterator(mList.begin(), mList.end()); }
@@ -246,23 +238,15 @@ public:
 	
 	struct is_valid_root
 	{
-		bool operator()(LLSelectNode* node)
-		{
-			LLViewerObject* object = node->getObject();
-			return (object != NULL) && node->mValid && !node->mIndividualSelection && (object->isRootEdit() || object->isJointChild());
-		}
+		bool operator()(LLSelectNode* node);
 	};
-	typedef boost::filter_iterator<is_root, list_t::iterator > valid_root_iterator;
+	typedef boost::filter_iterator<is_valid_root, list_t::iterator > valid_root_iterator;
 	valid_root_iterator valid_root_begin() { return valid_root_iterator(mList.begin(), mList.end()); }
 	valid_root_iterator valid_root_end() { return valid_root_iterator(mList.end(), mList.end()); }
 	
 	struct is_root_object
 	{
-		bool operator()(LLSelectNode* node)
-		{
-			LLViewerObject* object = node->getObject();
-			return (object != NULL) && (object->isRootEdit() || object->isJointChild());
-		}
+		bool operator()(LLSelectNode* node);
 	};
 	typedef boost::filter_iterator<is_root_object, list_t::iterator > root_object_iterator;
 	root_object_iterator root_object_begin() { return root_object_iterator(mList.begin(), mList.end()); }
@@ -272,11 +256,8 @@ public:
 	LLObjectSelection();
 
 	void updateEffects();
-	void cleanupNodes();
 
 	BOOL isEmpty() const;
-
-	S32 getOwnershipCost(S32 &cost);
 
 	LLSelectNode*	getFirstNode(LLSelectedNodeFunctor* func = NULL);
 	LLSelectNode*	getFirstRootNode(LLSelectedNodeFunctor* func = NULL, BOOL non_root_ok = FALSE);
@@ -294,12 +275,8 @@ public:
 
 	// iterate through texture entries
 	template <typename T> bool getSelectedTEValue(LLSelectedTEGetFunctor<T>* func, T& res);
-		
-	void addNode(LLSelectNode *nodep);
-	void addNodeAtEnd(LLSelectNode *nodep);
-	void moveNodeToFront(LLSelectNode *nodep);
-	void removeNode(LLSelectNode *nodep);
-	void deleteAllNodes();			// Delete all nodes
+	template <typename T> bool isMultipleTEValue(LLSelectedTEGetFunctor<T>* func, const T& ignore_value);
+	
 	S32 getNumNodes();
 	LLSelectNode* findNode(LLViewerObject* objectp);
 
@@ -308,6 +285,7 @@ public:
 	S32 getTECount();
 	S32 getRootObjectCount();
 
+	BOOL isMultipleTESelected();
 	BOOL contains(LLViewerObject* object);
 	BOOL contains(LLViewerObject* object, S32 te);
 
@@ -326,6 +304,16 @@ public:
 	ESelectType getSelectType() const { return mSelectType; }
 
 private:
+	void addNode(LLSelectNode *nodep);
+	void addNodeAtEnd(LLSelectNode *nodep);
+	void moveNodeToFront(LLSelectNode *nodep);
+	void removeNode(LLSelectNode *nodep);
+	void deleteAllNodes();
+	void cleanupNodes();
+
+
+private:
+	list_t mList;
 	const LLObjectSelection &operator=(const LLObjectSelection &);
 
 	LLPointer<LLViewerObject> mPrimaryObject;
@@ -335,11 +323,15 @@ private:
 
 typedef LLSafeHandle<LLObjectSelection> LLObjectSelectionHandle;
 
+// Build time optimization, generate this once in .cpp file
+#ifndef LLSELECTMGR_CPP
+extern template class LLSelectMgr* LLSingleton<class LLSelectMgr>::getInstance();
+#endif
+
 class LLSelectMgr : public LLEditMenuHandler, public LLSingleton<LLSelectMgr>
 {
 public:
 	static BOOL					sRectSelectInclusive;	// do we need to surround an object to pick it?
-	static BOOL					sRenderSelectionHighlights;	// do we show selection silhouettes?
 	static BOOL					sRenderHiddenSelections;	// do we show selection silhouettes that are occluded?
 	static BOOL					sRenderLightRadius;	// do we show the radius of selected lights?
 	static F32					sHighlightThickness;
@@ -355,6 +347,11 @@ public:
 	static LLColor4				sHighlightChildColor;
 	static LLColor4				sHighlightInspectColor;
 	static LLColor4				sContextSilhouetteColor;
+
+	LLCachedControl<bool>					mHideSelectedObjects;
+	LLCachedControl<bool>					mRenderHighlightSelections;
+	LLCachedControl<bool>					mAllowSelectAvatar;
+	LLCachedControl<bool>					mDebugSelectMgr;
 
 public:
 	LLSelectMgr();
@@ -394,12 +391,15 @@ public:
 	// Add
 	////////////////////////////////////////////////////////////////
 
+	// This method is meant to select an object, and then select all
+	// of the ancestors and descendants. This should be the normal behavior.
+	//
+	// *NOTE: You must hold on to the object selection handle, otherwise
+	// the objects will be automatically deselected in 1 frame.
+	LLObjectSelectionHandle selectObjectAndFamily(LLViewerObject* object, BOOL add_to_end = FALSE);
+
 	// For when you want just a child object.
 	LLObjectSelectionHandle selectObjectOnly(LLViewerObject* object, S32 face = SELECT_ALL_TES);
-
-	// This method is meant to select an object, and then select all
-	// of the ancestors and descendents. This should be the normal behavior.
-	LLObjectSelectionHandle selectObjectAndFamily(LLViewerObject* object, BOOL add_to_end = FALSE);
 
 	// Same as above, but takes a list of objects.  Used by rectangle select.
 	LLObjectSelectionHandle selectObjectAndFamily(const std::vector<LLViewerObject*>& object_list, BOOL send_to_sim = TRUE);
@@ -408,6 +408,8 @@ public:
 	LLObjectSelectionHandle selectHighlightedObjects();
 
 	LLObjectSelectionHandle setHoverObject(LLViewerObject *objectp, S32 face = -1);
+	LLSelectNode *getHoverNode();
+	LLSelectNode *getPrimaryHoverNode();
 
 	void highlightObjectOnly(LLViewerObject *objectp);
 	void highlightObjectAndFamily(LLViewerObject *objectp);
@@ -440,15 +442,24 @@ public:
 	BOOL removeObjectFromSelections(const LLUUID &id);
 
 	////////////////////////////////////////////////////////////////
+	// Selection editing
+	////////////////////////////////////////////////////////////////
+	bool linkObjects();
+
+	bool unlinkObjects();
+
+	bool enableLinkObjects();
+
+	bool enableUnlinkObjects();
+
+	////////////////////////////////////////////////////////////////
 	// Selection accessors
 	////////////////////////////////////////////////////////////////
-	LLObjectSelectionHandle	getHoverObjects() { return mHoverObjects; }
 	LLObjectSelectionHandle	getSelection() { return mSelectedObjects; }
 	// right now this just renders the selection with root/child colors instead of a single color
 	LLObjectSelectionHandle	getEditSelection() { convertTransient(); return mSelectedObjects; }
 	LLObjectSelectionHandle	getHighlightedObjects() { return mHighlightedObjects; }
-
-	LLSelectNode *getHoverNode();
+	LLObjectSelectionHandle getHoverObjects() { return mHoverObjects; }
 
 	////////////////////////////////////////////////////////////////
 	// Grid manipulation
@@ -503,7 +514,7 @@ public:
 	void selectionSetTexGen( U8 texgen );
 	void selectionSetShiny( U8 shiny );
 	void selectionSetFullbright( U8 fullbright );
-	void selectionSetMediaTypeAndURL( U8 media_type, const std::string& media_url );
+	void selectionSetMediaTypeAndURL(U8 media_type, const std::string& media_url);
 	void selectionSetClickAction(U8 action);
 	void selectionSetIncludeInSearch(bool include_in_search);
 	void selectionSetGlow(const F32 glow);
@@ -535,6 +546,7 @@ public:
 	// Returns TRUE if the viewer has information on all selected objects
 	BOOL selectGetAllRootsValid();
 	BOOL selectGetAllValid();
+	BOOL selectGetAllValidAndObjectsFound();
 
 	// returns TRUE if you can modify all selected objects. 
 	BOOL selectGetRootsModify();
@@ -554,7 +566,6 @@ public:
 	// the value found if available.
 	BOOL selectGetGroup(LLUUID& id); 
 	BOOL selectGetPerm(	U8 which_perm, U32* mask_on, U32* mask_off);	// TRUE if all have data, returns two masks, each indicating which bits are all on and all off
-	BOOL selectGetOwnershipCost(S32* cost);								// sum of all ownership costs
 
 	BOOL selectIsGroupOwned();											// TRUE if all root objects have valid data and are group owned.
 
@@ -610,7 +621,7 @@ public:
 	// verification only, if it doesn't match region info then sale is
 	// canceled
 	void sendBuy(const LLUUID& buyer_id, const LLUUID& category_id, const LLSaleInfo sale_info);
-	void sendAttach(U8 attachment_point);
+	void sendAttach(U8 attachment_point, bool replace=true);
 	void sendDetach();
 	void sendDropAttachment();
 	void sendLink();
@@ -689,7 +700,13 @@ private:
 	static void packPermissionsHead(void* user_data);
 	static void packGodlikeHead(void* user_data);
 	static bool confirmDelete(const LLSD& notification, const LLSD& response, LLObjectSelectionHandle handle);
-	
+
+public:
+	// Observer/callback support for when object selection changes or
+	// properties are received/updated
+	typedef boost::signals2::signal< void ()> update_signal_t;
+	update_signal_t mUpdateSignal;
+
 private:
 	LLPointer<LLViewerTexture>				mSilhouetteImagep;
 	LLObjectSelectionHandle					mSelectedObjects;
@@ -719,12 +736,12 @@ private:
 	BOOL					mForceSelection;
 
 	LLAnimPauseRequest		mPauseRequest;
-
-	static std::set<LLUUID> sObjectPropertiesFamilyRequests;
 };
 
-// Utilities
-void dialog_refresh_all();		// Update subscribers to the selection list
+// *DEPRECATED: For callbacks or observers, use
+// LLSelectMgr::getInstance()->mUpdateSignal.connect( callback )
+// Update subscribers to the selection list
+void dialog_refresh_all();		
 
 // Templates
 //-----------------------------------------------------------------------------

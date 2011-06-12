@@ -48,13 +48,13 @@ public:
 	LLPlane() {}; // no default constructor
 	LLPlane(const LLVector3 &p0, F32 d) { setVec(p0, d); }
 	LLPlane(const LLVector3 &p0, const LLVector3 &n) { setVec(p0, n); }
-	void setVec(const LLVector3 &p0, F32 d) { LLVector4::setVec(p0[0], p0[1], p0[2], d); }
-	void setVec(const LLVector3 &p0, const LLVector3 &n)
+	inline void setVec(const LLVector3 &p0, F32 d) { LLVector4::setVec(p0[0], p0[1], p0[2], d); }
+	inline void setVec(const LLVector3 &p0, const LLVector3 &n)
 	{
 		F32 d = -(p0 * n);
 		setVec(n, d);
 	}
-	void setVec(const LLVector3 &p0, const LLVector3 &p1, const LLVector3 &p2)
+	inline void setVec(const LLVector3 &p0, const LLVector3 &p1, const LLVector3 &p2)
 	{
 		LLVector3 u, v, w;
 		u = p1 - p0;
@@ -64,8 +64,39 @@ public:
 		F32 d = -(w * p0);
 		setVec(w, d);
 	}
-	LLPlane& operator=(const LLVector4& v2) {  LLVector4::setVec(v2[0],v2[1],v2[2],v2[3]); return *this;}
+
+	inline LLPlane& operator=(const LLVector4& v2) {  LLVector4::setVec(v2[0],v2[1],v2[2],v2[3]); return *this;}
+
+	inline void set(const LLPlane& p2) { LLVector4::setVec(p2); }
+	
+	// 
 	F32 dist(const LLVector3 &v2) const { return mV[0]*v2[0] + mV[1]*v2[1] + mV[2]*v2[2] + mV[3]; }
+	
+	// reset the vector to 0, 0, 0, 1
+	inline void clear() { LLVector4::setVec(0, 0, 0, 1); }
+	
+	inline void getVector3(LLVector3& vec) const { vec.set(mV[0], mV[1], mV[2]); }
+
+	// Retrieve the mask indicating which of the x, y, or z axis are greater or equal to zero.
+	inline U8 calcPlaneMask() const
+	{
+		U8 mask = 0;
+	
+		if (mV[0] >= 0)
+		{
+			mask |= 1;
+		}
+		if (mV[1] >= 0)
+		{
+			mask |= 2;
+		}
+		if (mV[2] >= 0)
+		{
+			mask |= 4;
+		}
+
+		return mask;
+	}
 };
 
 

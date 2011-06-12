@@ -37,15 +37,9 @@
 class LLSD;
 class LLFrameTimer;
 
-#if LL_WINDOWS	//For windows platform.
-
-#include <windows.h>
-
-#else	//Everyone Else
-
+#if !LL_WINDOWS	//For non-windows platforms.
 #include <signal.h>
-
-#endif //Everyone else.
+#endif
 
 namespace LLPidLock
 {

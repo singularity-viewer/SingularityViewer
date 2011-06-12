@@ -64,6 +64,17 @@ class LLFace
 {
 public:
 
+	LLFace(const LLFace& rhs)
+	{
+		*this = rhs;
+	}
+
+	const LLFace& operator=(const LLFace& rhs)
+	{
+		llerrs << "Illegal operation!" << llendl;
+		return *this;
+	}
+
 	enum EMasks
 	{
 		LIGHT			= 0x0001,
@@ -124,13 +135,13 @@ public:
 	LLDrawable*		getDrawable()		const	{ return mDrawablep; }
 	LLViewerObject*	getViewerObject()	const	{ return mVObjp; }
 	S32				getLOD()			const	{ return mVObjp.notNull() ? mVObjp->getLOD() : 0; }
-	LLVertexBuffer* getVertexBuffer()	const	{ return mVertexBuffer; }
 	void			setPoolType(U32 type)		{ mPoolType = type; }
 	S32				getTEOffset()				{ return mTEOffset; }
 	LLViewerTexture*	getTexture() const;
-	
+
 	void			setViewerObject(LLViewerObject* object);
 	void			setPool(LLFacePool *pool, LLViewerTexture *texturep);
+	void			setPool(LLFacePool* pool);
 	
 	void			setDrawable(LLDrawable *drawable);
 	void			setTEOffset(const S32 te_offset);
@@ -167,7 +178,7 @@ public:
 	S32 getColors(LLStrider<LLColor4U> &colors);
 	S32 getIndices(LLStrider<U16> &indices);
 
-	void		setSize(const S32 numVertices, const S32 num_indices = 0);
+	void		setSize(S32 numVertices, const S32 num_indices = 0, bool align = false);
 	
 	BOOL		genVolumeBBoxes(const LLVolume &volume, S32 f,
 								   const LLMatrix4& mat, const LLMatrix3& inv_trans_mat, BOOL global_volume = FALSE);
@@ -196,6 +207,10 @@ public:
 
 	F32         getTextureVirtualSize() ;
 	F32         getImportanceToCamera()const {return mImportanceToCamera ;}
+	//vertex buffer tracking
+	void setVertexBuffer(LLVertexBuffer* buffer);
+	void clearVertexBuffer(); //sets mVertexBuffer and mLastVertexBuffer to NULL
+	LLVertexBuffer* getVertexBuffer()	const	{ return mVertexBuffer; }
 
 private:	
 	F32         adjustPartialOverlapPixelArea(F32 cos_angle_to_view_dir, F32 radius );
@@ -211,8 +226,6 @@ public:
 	LLVector3		mExtents[2];
 	LLVector2		mTexExtents[2];
 	F32				mDistance;
-	LLPointer<LLVertexBuffer> mVertexBuffer;
-	LLPointer<LLVertexBuffer> mLastVertexBuffer;
 	F32			mLastUpdateTime;
 	F32			mLastMoveTime;
 	LLMatrix4*	mTextureMatrix;
@@ -222,6 +235,9 @@ private:
 	friend class LLGeometryManager;
 	friend class LLVolumeGeometryManager;
 
+	LLPointer<LLVertexBuffer> mVertexBuffer;
+	LLPointer<LLVertexBuffer> mLastVertexBuffer;
+	
 	U32			mState;
 	LLFacePool*	mDrawPoolp;
 	U32			mPoolType;

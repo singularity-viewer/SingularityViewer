@@ -32,6 +32,7 @@
  */
 
 // Precompiled header: almost always required for newview cpp files
+#include "../llcommon/linden_common.h"
 #include <list>
 #include <map>
 #include <algorithm>

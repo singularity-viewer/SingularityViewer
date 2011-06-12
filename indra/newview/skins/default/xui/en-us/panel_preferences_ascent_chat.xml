@@ -1,0 +1,303 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<panel top="20" left="10" height="400" width="517" follows="left|top|right|bottom"
+  border="true" label="SG Chat" name="ascsys" enabled="true" mouse_opaque="true">
+  <tab_container label="SG Chat" bottom="0" height="440" width="497" left="0"
+    name="Ascent Chat" tab_min_width="70" tab_position="top">
+
+    <panel border="true" left="1" bottom="-408" height="408" width="500" mouse_opaque="true"
+      follows="left|top|right|bottom" label="Chat/IM" name="Chat/IM">
+      <text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+          bottom="-15" drop_shadow_visible="true" enabled="true" follows="left|top"
+          font="SansSerifSmall" h_pad="0" halign="left" height="10" hidden="false"
+          left="15" mouse_opaque="true" name="objects_link_text_box" v_pad="0"
+          width="300">
+IMs:
+      </text>
+      <check_box bottom_delta="-25" control_name="WoLfVerticalIMTabs" enabled="true"
+        follows="left|top" font="SansSerifSmall" height="16" initial_value="false"
+        label="Use Vertical IMs (Requires a restart)" left="10"
+        mouse_opaque="true" name="use_vertical_ims_check" radio_style="false"
+        width="400" />
+      <check_box bottom_delta="-20" enabled="true" follows="left|top" font="SansSerifSmall" height="16"
+        initial_value="false" label="Announce incoming instant messages" left="10" mouse_opaque="true"
+        control_name="AscentInstantMessageAnnounceIncoming" radio_style="false" width="270"
+        name="quickstart_im_check"
+        tool_tip="Opens an IM window when someone starts typing an IM to you. This gives you a heads up that someone is IMing you before they hit enter. "/>
+      <check_box bottom_delta="-20" control_name="AscentHideTypingNotification" enabled="true"
+        follows="left|top" font="SansSerifSmall" height="16" initial_value="false"
+        label="Don't send '[name] is typing...' in IMs" left="10"
+        tool_tip="IM partners will not see '______ is typing...' when you're responding."
+        mouse_opaque="true" name="hide_typing_check" radio_style="false"
+        width="400" />
+      <check_box bottom_delta="-20" control_name="OptionShowGroupNameInChatIM" enabled="true"
+        follows="left|top" font="SansSerifSmall" height="16" initial_value="false"
+        label="Show group name in chat" left="10"
+        tool_tip="The name of the group will also be displayed if the IM is from group chat."
+        mouse_opaque="true" name="append_group_name_check" radio_style="false"
+        width="400" />
+      <!-- Left/Right Column split -->
+      <view_border bevel_style="none" border_thickness="1" bottom_delta="0" follows="top|left" height="75"
+        left="235" name="CmdDivisor" width="0"/>
+      <text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+        bottom="-15" drop_shadow_visible="true" enabled="true" follows="left|top"
+        font="SansSerifSmall" h_pad="0" halign="left" height="10" hidden="false"
+        left="250" mouse_opaque="true" name="objects_link_text_box" v_pad="0"
+        width="300">
+Chat:
+      </text>
+      <check_box bottom_delta="-25" control_name="PlayTypingSound" enabled="true"
+        follows="left|top" font="SansSerifSmall" height="16" initial_value="true"
+        label="Play the typing sound for local chat" left_delta="-5"
+        tool_tip="Silences the chatting type sound, making it quieter for things like performances."
+        mouse_opaque="true" name="play_typing_sound_check" radio_style="false"
+        width="400" />
+      <check_box bottom_delta="-20" control_name="HideNotificationsInChat" enabled="true"
+        follows="left|top" font="SansSerifSmall" height="16" initial_value="false"
+        label="Do not echo/log notifications in chat" left_delta="00"
+        mouse_opaque="true" name="hide_notifications_in_chat_check" radio_style="false"
+        width="400" />
+      <check_box bottom="-120" control_name="AscentAllowMUpose" enabled="true"
+        follows="left|top" font="SansSerifSmall" height="16" initial_value="false"
+        label="Allow MU pose method." left="10"
+        tool_tip="Allows the use of both /me and : to perform emotes."
+        mouse_opaque="true" name="allow_mu_pose_check" radio_style="false"
+        width="400" />
+      <check_box bottom_delta="-20" control_name="AscentAutoCloseOOC" enabled="true"
+        follows="left|top" font="SansSerifSmall" height="16" initial_value="false"
+        label="Auto-close OOC comments." left="10"
+        tool_tip="Will automatically append '))' to any message starting with '((', or visa versa."
+        mouse_opaque="true" name="close_ooc_check" radio_style="false"
+        width="400" />
+      <text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+        bottom_delta="-15" drop_shadow_visible="true" enabled="true" follows="left|top"
+        font="SansSerifSmall" h_pad="0" halign="left" height="10" hidden="false"
+        left_delta="0" mouse_opaque="true" name="objects_link_text_box" v_pad="0"
+        width="300">
+Show links on chatting object names in chat history for:
+      </text>
+      <radio_group bottom_delta="-26" control_name="LinksForChattingObjects" draw_border="true" enabled="true"
+        tool_tip="Enables a link to show you the owner of the speaking object."
+        follows="left|top" height="20" left="20" mouse_opaque="true" name="objects_link" width="350">
+        <radio_item type="string" length="1" bottom_delta="0" enabled="true" height="18"
+          left_delta="5" mouse_opaque="true" name="no_object" width="48">
+No object
+        </radio_item>
+        <radio_item type="string" length="1" bottom_delta="0" enabled="true" height="18"
+          left_delta="45" mouse_opaque="true" name="others_objects" width="48">
+Others' objects
+        </radio_item>
+        <radio_item type="string" length="1" bottom_delta="0" enabled="true" height="18"
+          left_delta="60" mouse_opaque="true" name="anyones_objects" width="48">
+Anyone's objects
+        </radio_item>
+      </radio_group>
+      <text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+        bottom_delta="-18" drop_shadow_visible="true" enabled="true" follows="left|top"
+        font="SansSerifSmall" h_pad="0" halign="left" height="10" hidden="false"
+        left="10" mouse_opaque="true" name="time_format_text_box" v_pad="0"
+        width="80">
+Time format:
+      </text>
+      <combo_box allow_text_entry="false" bottom_delta="-5" enabled="true" follows="left|top"
+        height="18" hidden="false" left="90" max_chars="20" mouse_opaque="true"
+        tool_tip="Show hours in either 12-23 or 12PM-11PM format."
+        name="time_format_combobox" width="130">
+        <combo_item type="string" length="1" enabled="true" name="24hours" value="default">
+24-hour clock
+        </combo_item>
+        <combo_item type="string" length="1" enabled="true" name="12hours" value="default">
+12-hour clock
+        </combo_item>
+      </combo_box>
+      <check_box bottom_delta="0" control_name="SecondsInChatAndIMs" enabled="true"
+        follows="left|top" font="SansSerifSmall" height="16" initial_value="false"
+        label="Seconds in chat/IMs timestamps" left="240"
+        mouse_opaque="true" name="seconds_in_chat_and_ims_check" radio_style="false"
+        width="260" />
+      <text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+        bottom_delta="-18" drop_shadow_visible="true" enabled="true" follows="left|top"
+        font="SansSerifSmall" h_pad="0" halign="left" height="10" hidden="false"
+        left="10" mouse_opaque="true" name="date_format_text_box" v_pad="0"
+        width="80">
+Date format:
+      </text>
+      <combo_box allow_text_entry="false" bottom_delta="-5" enabled="true" follows="left|top"
+        height="18" hidden="false" left="90" max_chars="20" mouse_opaque="true"
+        name="date_format_combobox" width="130">
+        <combo_item type="string" length="1" enabled="true" name="year_first" value="default">
+YYYY-MM-DD
+        </combo_item>
+        <combo_item type="string" length="1" enabled="true" name="day_first" value="default">
+DD/MM/YYYY
+        </combo_item>
+        <combo_item type="string" length="1" enabled="true" name="month_first" value="default">
+MM/DD/YYYY
+        </combo_item>
+      </combo_box>
+      <!-- Auto-responder -->
+      <view_border bevel_style="none" border_thickness="1" bottom="-420" follows="top|left"
+        height="190" left="5" name="GraphicsBorder" width="485" />
+      <check_box bottom_delta="168" enabled="true" follows="left|top" font="SansSerifSmall" height="16"
+        initial_value="false" label="Enable Autoresponse" left="10" mouse_opaque="true"
+        name="AscentInstantMessageResponseAnyone" radio_style="false" width="270"
+        tool_tip="Sends a pre made message of your choosing, when people start IMing you. (Enter your message in the Response Text. Text area), located below."/>
+      <check_box bottom_delta="-20" enabled="true" follows="left|top" font="SansSerifSmall" height="16"
+        initial_value="false" label="Autorespond to non-friends" left_delta="0" mouse_opaque="true"
+        name="AscentInstantMessageResponseFriends" radio_style="false" width="270"
+        tool_tip="Sends a pre made message of your choosing, when people start IMing you. (Enter your message in the Response Text. Text area), located below."/>
+      <check_box bottom_delta="-20" enabled="true" follows="left|top" font="SansSerifSmall" height="16"
+        initial_value="false" label="Autorespond to people you have muted" left_delta="0"
+        mouse_opaque="true" name="AscentInstantMessageResponseMuted" radio_style="false"
+        width="270" tool_tip="Sends a pre made message of your choosing, when people start IMing you. (Enter your message in the Response Text. Text area), located below."/>
+      <check_box bottom_delta="-20" enabled="true" follows="left|top" font="SansSerifSmall" height="16"
+        initial_value="false" label="Send as soon as they start typing" left_delta="0" mouse_opaque="true"
+        name="AscentInstantMessageShowOnTyping" radio_style="false" width="270"/>
+      <check_box bottom_delta="-20" enabled="true" follows="left|top" font="SansSerifSmall" height="26"
+        initial_value="false" label="Don't show IMs you auto-responsed to" left_delta="0"
+        mouse_opaque="true" name="AscentInstantMessageShowResponded" radio_style="false"
+        width="170"/>
+      <check_box bottom_delta="-20" enabled="true" follows="left|top" font="SansSerifSmall" height="16"
+        initial_value="false" label="Autorespond to every message" left_delta="0" mouse_opaque="true"
+        name="AscentInstantMessageResponseRepeat" radio_style="false" width="270"/>
+      <check_box bottom_delta="-20" enabled="false" follows="left|top" font="SansSerifSmall" height="16"
+        initial_value="false" label="Send an item along with the response" left_delta="0"
+        mouse_opaque="true" name="AscentInstantMessageResponseItem" radio_style="false"
+        width="270" tool_tip="You can include an inventory item to send along with your auto response by dragging it from your inventory to the location below"/>
+      <text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+        bottom_delta="120" drop_shadow_visible="true" enabled="true" follows="left|top" font="SansSerifSmall"
+        h_pad="0" halign="left" height="18" left_delta="245" mouse_opaque="false"
+        name="text_box1" v_pad="0" width="430">
+Response Text:
+      </text>
+      <text_editor type="string" length="1" bottom_delta="-110" embedded_items="false" enabled="true"
+        follows="left|top" font="SansSerifSmall" height="110" left_delta="0" max_length="1100"
+        mouse_opaque="true" name="im_response" width="230" word_wrap="true" spell_check="true"/>
+      <text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+        bottom_delta="-25" drop_shadow_visible="true" enabled="true" follows="left|top" font="SansSerifSmall"
+        h_pad="0" halign="left" height="18" left_delta="0" mouse_opaque="false"
+        name="text_box1" v_pad="0" width="430">
+Use #f for user's first name, #l for last name,
+#t for timestamp, #r for SLURL to you,
+#i for your idle time. (e.g. "5 mins")
+      </text>
+    </panel>
+
+    <panel border="true" left="1" bottom="-408" height="408" width="500" mouse_opaque="true"
+      follows="left|top|right|bottom" label="Spam" name="Spam">
+      <check_box left="10" bottom_delta="-25" enabled="true" follows="left|top" font="SansSerifSmall"
+        label="Enable chat spam blocking" tool_tip="Enable automatic chat spam blocking"
+        height="18" width="100" radio_style="false" mouse_opaque="true"
+        name="AscChatSpamBlock" control_name="SGBlockChatSpam"/>
+      <spinner left_delta="20" height="18" width="120" enabled="true" follows="left|top"
+        decimal_digits="0" increment="1" initial_val="10" min_val="2" max_val="100"
+        label="Chat count" label_width="70" name="AscChatSpamCount" control_name="SGChatSpamCount"
+        tool_tip="Number of items spammed per time set. (Default: 10)"/>
+      <spinner left_delta="0" height="18" width="120" enabled="true" follows="left|top"
+        decimal_digits="1" increment="1" initial_val="1.0" min_val="1" max_val="60"
+        label="Chat time" label_width="70" name="AscChatSpamTime" control_name="SGChatSpamTime"
+        tool_tip="Time of evalulating spam in seconds. (Default: 1.0)"/>
+      <text type="string" length="1" bottom_delta="0" left_delta="130" bg_visible="false"
+        border_visible="false" border_drop_shadow_visible="false"
+        drop_shadow_visible="true" enabled="true" follows="left|top"
+        font="SansSerifSmall" h_pad="0" halign="left" height="16"
+        mouse_opaque="true" name="" v_pad="0" width="100">
+seconds
+      </text>
+      <check_box left_delta="-150" enabled="true" follows="left|top" font="SansSerifSmall"
+        label="Enable dialog spam blocking" tool_tip="Enable automatic dialog spam blocking"
+        height="16" width="100" radio_style="false" mouse_opaque="true"
+        name="AscDialogSpamBlock" control_name="SGBlockDialogSpam"/>
+      <check_box left_delta="0" enabled="true" follows="left|top" font="SansSerifSmall"
+        label="Enable calling card spam blocking" tool_tip="Enable automatic calling card spam blocking"
+        height="16" width="100" radio_style="false" mouse_opaque="true"
+        name="AscCardSpamBlock" control_name="SGBlockCardSpam"/>
+      <spinner left_delta="20" height="18" width="120" enabled="true" follows="left|top"
+        decimal_digits="0" increment="1" initial_val="4" min_val="2" max_val="100"
+        label="Spam count" label_width="70" name="AscSpamCount" control_name="SGSpamCount"
+        tool_tip="This setting applies to both Dialog and Card spam (Default: 4)"/>
+      <spinner left_delta="0" height="18" width="120" enabled="true" follows="left|top"
+        decimal_digits="1" increment="1" initial_val="1.0" min_val="1" max_val="60"
+        label="Spam time" label_width="70" name="AscSpamTime" control_name="SGSpamTime"
+        tool_tip="This setting applies to both Dialog and Card spam (Default: 1.0)"/>
+      <text type="string" length="1" bottom_delta="0" left_delta="130" bg_visible="false"
+        border_visible="false" border_drop_shadow_visible="false"
+        drop_shadow_visible="true" enabled="true" follows="left|top"
+        font="SansSerifSmall" h_pad="0" halign="left" height="16"
+        mouse_opaque="true" name="" v_pad="0" width="100">
+seconds
+      </text>
+    </panel>
+
+    <panel border="true" bottom="-580" follows="left|top|right|bottom" height="525" label="Text Options"
+      left="1" mouse_opaque="true" name="TextOptions" width="418">
+      <check_box bottom="-25" enabled="true" follows="left|top" font="SansSerifSmall" height="16"
+        label="Show misspelled words in red" left="12" mouse_opaque="true" name="SpellDisplay"
+        control_name="SpellDisplay" width="126"/>
+      <text bottom_delta="-24" follows="left|top" font="SansSerifSmall" height="16" left="12"
+        name="EmSpell_txt1" width="512">
+Current language (dictionary):
+      </text>
+      <combo_box allow_text_entry="false" bottom_delta="-20" left_delta="0" follows="left|top" height="20"
+        max_chars="200" mouse_opaque="true" name="SpellBase" width="250"
+        control_name="SpellBase" tool_tip=""/>
+      <text bottom_delta="-24" follows="left|top" font="SansSerifSmall" height="20" left="12"
+        name="EmSpell_txt3" width="512">
+Downloaded languages (dictionaries):
+      </text>
+      <combo_box allow_text_entry="false" bottom_delta="-20" left_delta="0" follows="left|top" height="20"
+        max_chars="200" mouse_opaque="true" name="EmSpell_Avail" width="250"
+        control_name="EmSpell_Avail" tool_tip=""/>
+      <button bottom_delta="0" follows="left|top" font="SansSerifSmall" height="20" label="Install"
+        name="EmSpell_Add" tool_tip="" left_delta="255" width="80"/>
+      <button bottom_delta="-22" follows="left|top" font="SansSerifSmall" height="20" label="Download More..."
+        name="EmSpell_GetMore" tool_tip="Get more dictionaries availabe online" left="12" width="250"/>
+      <text bottom_delta="-24" follows="left|top" font="SansSerifSmall" height="20" left="12"
+        name="EmSpell_txt2" width="512">
+Additional custom languages (dictionaries):
+      </text>
+      <combo_box allow_text_entry="false" bottom_delta="-20" left_delta="0" follows="left|top" height="20"
+        max_chars="200" mouse_opaque="true" name="EmSpell_Installed" width="250"
+        control_name="EmSpell_Installed" tool_tip=""/>
+      <button bottom_delta="0" follows="left|top" font="SansSerifSmall" height="20" label="Remove"
+        name="EmSpell_Remove" tool_tip="" left_delta="255" width="80"/>
+      <button bottom_delta="-20" follows="left|top" font="SansSerifSmall" height="20" label="Edit Custom dictionary"
+        name="EmSpell_EditCustom" tool_tip="" left="12" width="250"/>
+      <text bottom_delta="-24" follows="left|top" font="SansSerifSmall" height="20" left="12"
+        name="EmSpell_txt4" width="512">
+To use spellcheck, right-click a misspelled word
+(red or otherwise) and select its replacement
+      </text>
+
+      <view_border bevel_style="none" border_thickness="1" bottom_delta="-16" follows="top|left" height="0"
+        left="5" name="CmdDivisor" width="356"/>
+
+      <check_box bottom_delta="-24" enabled="true" follows="left|top" font="SansSerifSmall" height="16"
+        label="Highlight messages if any of they contain the terms" left="5" mouse_opaque="true"
+        name="KeywordsOn" radio_style="false" width="270"/>
+      <text bottom_delta="-20" follows="left|top" font="SansSerifSmall" height="20" left="12"
+        name="keyword_txt1" width="512">
+(separated by commas)
+      </text>
+      <line_editor bevel_style="in" border_style="line" border_thickness="1" bottom_delta="-20" follows="left|top"
+        font="SansSerifSmall" height="20" left_delta="5" max_length="500" mouse_opaque="true" name="KeywordsList" width="300" />
+      <text bottom_delta="-24" follows="left|top" font="SansSerifSmall" height="20" left_delta="15" name="EmKeyw"
+        width="100">Is found within:</text>
+      <check_box bottom_delta="3" enabled="true" follows="left|top" font="SansSerifSmall" height="16"
+        label="Local Chat Floater" left_delta="100" mouse_opaque="true" name="KeywordsInChat" radio_style="false" width="270"/>
+      <check_box bottom_delta="-15" enabled="true" follows="left|top" font="SansSerifSmall" height="16"
+        label="Instant Message Floater" left_delta="0" mouse_opaque="true" name="KeywordsInIM" radio_style="false" width="270"/>
+      <check_box bottom_delta="-24" enabled="true" follows="left|top" font="SansSerifSmall" height="16"
+        label="Highlight the message in this color:" left_delta="-110" mouse_opaque="true" name="KeywordsChangeColor"
+        radio_style="false" width="270"/>
+      <color_swatch border_color="0.45098, 0.517647, 0.607843, 1" bottom_delta="-16" can_apply_immediately="true"
+        color="1, 1, 1, 1" follows="left|top" height="35" label="" left_delta="210" mouse_opaque="true"
+        name="KeywordsColor" tool_tip="Click to open Color Picker" width="50"/>
+      <check_box bottom_delta="-10" enabled="true" follows="left|top" font="SansSerifSmall" height="16"
+        label="Play this sound alert: (UUID)" left_delta="-210" mouse_opaque="true" name="KeywordsPlaySound"
+        radio_style="false" width="270"/>
+      <line_editor bevel_style="in" border_style="line" border_thickness="1" bottom_delta="-20" follows="left|top"
+        font="SansSerifSmall" height="20" left_delta="-5" max_length="36" mouse_opaque="true" name="KeywordsSound" width="300" />
+    </panel>
+
+  </tab_container>
+</panel>

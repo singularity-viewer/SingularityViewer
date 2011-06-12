@@ -45,7 +45,6 @@
 #include "llfontgl.h"
 #include "llglheaders.h"
 #include "llhudrender.h"
-#include "llimagegl.h"
 #include "llui.h"
 #include "llviewercamera.h"
 #include "llviewertexturelist.h"

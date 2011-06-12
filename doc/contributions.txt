@@ -4,6 +4,10 @@ along with the issue identifier corresponding to the patches we've
 received from them.  To see more about these contributions, visit the
 browsable version: http://wiki.secondlife.com/wiki/Source_contributions
 
+Entries are related to URLs as follows:
+IMP-xxx: http://redmine.kokuaviewer.org/issues/xxx
+Everything else ([VWR|SNOW|CT|SVC|WEB]-xxx): https://jira.secondlife.com/browse/KEY-xxx
+
 Able Whitman
 	VWR-650
 	VWR-1460
@@ -58,12 +62,20 @@ Aimee Trescothick
 Alejandro Rosenthal
 	VWR-1184
 Aleric Inglewood
+	VWR-10579 (IMP-552)
 	VWR-10759
 	VWR-10837
 	VWR-12984
+	VWR-13040 (IMP-575)
 	VWR-13996
 	VWR-14426
 	VWR-14914
+	VWR-24247
+	VWR-24312
+	VWR-24315
+	VWR-24320
+	VWR-24333
+	VWR-24334
 	SNOW-47
 	SNOW-84
 	SNOW-86
@@ -72,18 +84,39 @@ Aleric Inglewood
 	SNOW-129
 	SNOW-196
 	SNOW-203
+	SNOW-240
 	SNOW-408
-	SNOW-415
+	SNOW-415 (IMP-576)
+	SNOW-477 (IMP-577)
 	SNOW-479
 	SNOW-626
-	SNOW-713
-	SNOW-744
-	SNOW-751
+	SNOW-713 (IMP-692)
+	SNOW-744 (IMP-578)
 	SNOW-752
 	SNOW-753
+	SNOW-766 (IMP-553)
 	SNOW-772
 	SNOW-793
+	SNOW-796 (IMP-581)
+	SNOW-800 (IMP-556)
 	SNOW-806
+	IMP-429
+	IMP-561
+	IMP-565
+	IMP-566
+	IMP-567
+	IMP-573
+	IMP-590
+	IMP-660
+	IMP-661
+	IMP-662
+	IMP-663
+	IMP-664
+	IMP-670
+	IMP-701
+	IMP-702
+	IMP-734
+	IMP-735
 Alissa Sabre
 	VWR-81
 	VWR-83
@@ -105,7 +138,7 @@ Alissa Sabre
 	VWR-1351
 	VWR-1353
 	VWR-1410
-        VWR-1843
+	VWR-1843
 	VWR-2116
 	VWR-2826
 	VWR-3290
@@ -113,17 +146,17 @@ Alissa Sabre
 	VWR-3857
 	VWR-4010
 	VWR-5575
-        VWR-5929
-        VWR-6384
-        VWR-6385
+	VWR-5929
+	VWR-6384
+	VWR-6385
 	VWR-6386
-        VWR-6430
+	VWR-6430
 	VWR-6858
-        VWR-6668
-        VWR-7086
-        VWR-7087
-        VWR-7153
-        VWR-7168
+	VWR-6668
+	VWR-7086
+	VWR-7087
+	VWR-7153
+	VWR-7168
 	VWR-9190
 	VWR-10728
 	VWR-12620
@@ -181,6 +214,7 @@ Boroondas Gupte
 	SNOW-201
 	SNOW-396
 	SNOW-589
+	SNOW-623 (IMP-554)
 	SNOW-624
 	VWR-233
 	WEB-262
@@ -549,7 +583,7 @@ Pf Shan
 	CT-321
 princess niven
 	VWR-5733
-        CT-85
+	CT-85
 	CT-320
 	CT-352
 Renault Clio
@@ -590,6 +624,7 @@ Robin Cornelius
 	VWR-11128
 	VWR-12758
 	VWR-12686
+	VWR-12838
 Ryozu Kojima
 	VWR-53
 	VWR-287
@@ -788,4 +823,3 @@ Zi Ree
 Zipherius Turas
 	VWR-76
 	VWR-77
-

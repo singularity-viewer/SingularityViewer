@@ -160,39 +160,41 @@ public:
 	};
 
 	// machine transation between type and strings
-	static EType lookup(const char* name); // safe conversion to std::string, *TODO: deprecate
-	static EType lookup(const std::string& name);
-	static const char* lookup(EType type);
+	static EType 				lookup(const char* name); // safe conversion to std::string, *TODO: deprecate
+	static EType 				lookup(const std::string& type_name);
+	static const char*			lookup(EType asset_type);
 
 	// translation from a type to a human readable form.
-	static EType lookupHumanReadable( const char* name ); // safe conversion to std::string, *TODO: deprecate
-	static EType lookupHumanReadable( const std::string& name );
-	static const char* lookupHumanReadable(EType type);
+	static EType 				lookupHumanReadable(const char* desc_name); // safe conversion to std::string, *TODO: deprecate
+	static EType 				lookupHumanReadable(const std::string& readable_name);
+	static const char*			lookupHumanReadable(EType asset_type);
 
-	static EDragAndDropType lookupDragAndDropType( EType );
+	static EDragAndDropType 	lookupDragAndDropType( EType );
 
 	// Generate a good default description. You may want to add a verb
 	// or agent name after this depending on your application.
 	static void generateDescriptionFor(LLAssetType::EType type,
 									   std::string& desc);
 
-	static EType getType(const std::string& sin);
-	static std::string getDesc(EType type);
-	
+	static EType 				getType(const std::string& desc_name);
+	static const std::string&	getDesc(EType asset_type);
+
 	static bool 				lookupCanLink(EType asset_type);
 	static bool 				lookupIsLinkType(EType asset_type);
 
 	static bool 				lookupIsAssetFetchByIDAllowed(EType asset_type); // the asset allows direct download
 	static bool 				lookupIsAssetIDKnowable(EType asset_type); // asset data can be known by the viewer
 	
-private:
-	// don't instantiate or derive one of these objects
-	LLAssetType( void ) {}
-	~LLAssetType( void ) {}
+	static const std::string&	badLookup(); // error string when a lookup fails
 
-private:
-	static const char* mAssetTypeNames[];
-	static const char* mAssetTypeHumanNames[];
+protected:
+	LLAssetType() {}
+	~LLAssetType() {}
 };
+
+#ifdef CWDEBUG
+#include <iosfwd>
+inline std::ostream& operator<<(std::ostream& os, LLAssetType::EType type) { return os << LLAssetType::getDesc(type); }
+#endif
 
 #endif // LL_LLASSETTYPE

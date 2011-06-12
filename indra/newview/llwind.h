@@ -42,8 +42,6 @@ class LLVector3;
 class LLBitPack;
 class LLGroupHeader;
 
-extern bool gLLWindEnabled;
-
 
 class LLWind  
 {

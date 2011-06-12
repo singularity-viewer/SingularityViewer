@@ -2,8 +2,19 @@
 <llsd>
 	<map>
 		<!-- Ascent-Specific Settings -->
-		
-		<key>SianaRenderOmitBlankVBO</key>
+
+    <key>SingularityBoldGroupModerator</key>
+    <map>
+      <key>Comment</key>
+      <string>Should group moderator chat be displayed in bold</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>SianaRenderOmitBlankVBO</key>
 		<map>
 			<key>Comment</key>
 			<string>Optimization: omit prefilling VBOs with zeroes. Default: OFF</string>
@@ -130,7 +141,7 @@
 			<key>Comment</key>
 			<string>Keep those jerks guessing by hiding your "____ is typing..." message.</string>
 			<key>Persist</key>
-			<integer>0</integer>
+			<integer>1</integer>
 			<key>Type</key>
 			<string>Boolean</string>
 			<key>Value</key>
@@ -620,76 +631,10 @@
 			<key>Value</key>
 			<string>tp2</string>
 		</map>
-    <key>AscentInstantMessageAnnounceIncoming</key>
+    <key>SpecifyMAC</key>
     <map>
       <key>Comment</key>
-      <string>Start IM window as soon as the person starts typing</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>Boolean</string>
-      <key>Value</key>
-      <integer>1</integer>
-    </map>
-    <key>AscentShowLookAt</key>
-    <map>
-      <key>Comment</key>
-      <string>Show Others' Lookat points</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>Boolean</string>
-      <key>Value</key>
-      <real>0</real>
-    </map>
-    <key>AscentUseStatusColors</key>
-    <map>
-      <key>Comment</key>
-      <string>Show special colors for statuses like Friend, Linden, so on</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>Boolean</string>
-      <key>Value</key>
-      <real>0</real>
-    </map>
-    <key>AscentAvatarXModifier</key>
-    <map>
-      <key>Comment</key>
-      <string>Avatar position modifier (X)</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>F32</string>
-      <key>Value</key>
-      <real>0.0</real>
-    </map>
-    <key>AscentAvatarYModifier</key>
-    <map>
-      <key>Comment</key>
-      <string>Avatar position modifier (Y)</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>F32</string>
-      <key>Value</key>
-      <real>0.0</real>
-    </map>
-    <key>AscentAvatarZModifier</key>
-    <map>
-      <key>Comment</key>
-      <string>Avatar position modifier (Z)</string>
-      <key>Persist</key>
-      <integer>1</integer>
-      <key>Type</key>
-      <string>F32</string>
-      <key>Value</key>
-      <real>0.0</real>
-    </map>
-    <key>AscentUseSystemFolder</key>
-    <map>
-      <key>Comment</key>
-      <string>Enables the System folder for setting and non-permanent asset storage.</string>
+      <string>Send specified mac instead of real mac</string>
       <key>Persist</key>
       <integer>1</integer>
       <key>Type</key>
@@ -697,10 +642,10 @@
       <key>Value</key>
       <integer>0</integer>
     </map>
-    <key>AscentSystemTemporary</key>
+    <key>SpecifyID0</key>
     <map>
       <key>Comment</key>
-      <string>When enabled, temporary uploads are put in the System Asset folder (if System Folder exists).</string>
+      <string>Send specified hdd serial instead of real hdd serial</string>
       <key>Persist</key>
       <integer>1</integer>
       <key>Type</key>
@@ -708,161 +653,82 @@
       <key>Value</key>
       <integer>0</integer>
     </map>
-    <key>AscentShowFriendsTag</key>
+    <key>SpecifiedChannel</key>
     <map>
       <key>Comment</key>
-      <string>Show friends client tags as (Friend), and colorize them specially.</string>
+      <string>What the viewer identifies itself as</string>
       <key>Persist</key>
       <integer>1</integer>
       <key>Type</key>
-      <string>Boolean</string>
+      <string>String</string>
       <key>Value</key>
-      <integer>1</integer>
+      <string>CommunityDeveloper</string>
     </map>
-    <key>AscentUseTag</key>
+    <key>SpecifiedVersionMaj</key>
     <map>
       <key>Comment</key>
-      <string>Broadcast client tag</string>
+      <string>Client's Major Version</string>
       <key>Persist</key>
       <integer>1</integer>
       <key>Type</key>
-      <string>Boolean</string>
+      <string>U32</string>
       <key>Value</key>
       <integer>1</integer>
     </map>
-    <key>AscentShowIdleTime</key>
+    <key>SpecifiedVersionMin</key>
     <map>
       <key>Comment</key>
-      <string>Show client tags for others.</string>
+      <string>Client's Minor Version</string>
       <key>Persist</key>
       <integer>1</integer>
       <key>Type</key>
-      <string>Boolean</string>
+      <string>U32</string>
       <key>Value</key>
-      <integer>1</integer>
+      <integer>4</integer>
     </map>
-    <key>AscentShowOthersTag</key>
+    <key>SpecifiedVersionPatch</key>
     <map>
       <key>Comment</key>
-      <string>Show client tags for others.</string>
+      <string>Client's Patch Version</string>
       <key>Persist</key>
       <integer>1</integer>
       <key>Type</key>
-      <string>Boolean</string>
+      <string>U32</string>
       <key>Value</key>
-      <integer>1</integer>
+      <integer>0</integer>
     </map>
-    <key>AscentShowOthersTagColor</key>
+    <key>SpecifiedVersionBuild</key>
     <map>
       <key>Comment</key>
-      <string>Show avatar names in the color of their client.</string>
+      <string>Client's Build Version</string>
       <key>Persist</key>
       <integer>1</integer>
       <key>Type</key>
-      <string>Boolean</string>
+      <string>U32</string>
       <key>Value</key>
-      <integer>1</integer>
-	</map>
-
-		<key>SpecifyMAC</key>
-		<map>
-			<key>Comment</key>
-			<string>Send specified mac instead of real mac</string>
-			<key>Persist</key>
-			<integer>1</integer>
-			<key>Type</key>
-			<string>Boolean</string>
-			<key>Value</key>
-			<integer>0</integer>
-		</map>
-		<key>SpecifyID0</key>
-		<map>
-			<key>Comment</key>
-			<string>Send specified hdd serial instead of real hdd serial</string>
-			<key>Persist</key>
-			<integer>1</integer>
-			<key>Type</key>
-			<string>Boolean</string>
-			<key>Value</key>
-			<integer>0</integer>
-		</map>
-		<key>SpecifiedChannel</key>
-		<map>
-			<key>Comment</key>
-			<string>What the viewer identifies itself as</string>
-			<key>Persist</key>
-			<integer>1</integer>
-			<key>Type</key>
-			<string>String</string>
-			<key>Value</key>
-			<string>CommunityDeveloper</string>
-		</map>
-		<key>SpecifiedVersionMaj</key>
-		<map>
-			<key>Comment</key>
-			<string>Client's Major Version</string>
-			<key>Persist</key>
-			<integer>1</integer>
-			<key>Type</key>
-			<string>U32</string>
-			<key>Value</key>
-			<integer>1</integer>
-		</map>
-		<key>SpecifiedVersionMin</key>
-		<map>
-			<key>Comment</key>
-			<string>Client's Minor Version</string>
-			<key>Persist</key>
-			<integer>1</integer>
-			<key>Type</key>
-			<string>U32</string>
-			<key>Value</key>
-			<integer>4</integer>
-		</map>
-		<key>SpecifiedVersionPatch</key>
-		<map>
-			<key>Comment</key>
-			<string>Client's Patch Version</string>
-			<key>Persist</key>
-			<integer>1</integer>
-			<key>Type</key>
-			<string>U32</string>
-			<key>Value</key>
-			<integer>0</integer>
-		</map>
-		<key>SpecifiedVersionBuild</key>
-		<map>
-			<key>Comment</key>
-			<string>Client's Build Version</string>
-			<key>Persist</key>
-			<integer>1</integer>
-			<key>Type</key>
-			<string>U32</string>
-			<key>Value</key>
-			<integer>100000</integer>
-		</map>
-		<key>SpecifiedMAC</key>
-		<map>
-			<key>Comment</key>
-			<string>Custom MAC</string>
-			<key>Persist</key>
-			<integer>1</integer>
-			<key>Type</key>
-			<string>String</string>
-			<key>Value</key>
-			<string>00000000000000000000000000000000</string>
-		</map>
-		<key>SpecifiedID0</key>
-		<map>
-			<key>Comment</key>
-			<string>Custom ID0</string>
-			<key>Persist</key>
-			<integer>1</integer>
-			<key>Type</key>
-			<string>String</string>
-			<key>Value</key>
-			<string>00000000000000000000000000000000</string>
-		</map>
-		
+      <integer>100000</integer>
     </map>
+    <key>SpecifiedMAC</key>
+    <map>
+      <key>Comment</key>
+      <string>Custom MAC</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>String</string>
+      <key>Value</key>
+      <string>00000000000000000000000000000000</string>
+    </map>
+    <key>SpecifiedID0</key>
+    <map>
+      <key>Comment</key>
+      <string>Custom ID0</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>String</string>
+      <key>Value</key>
+      <string>00000000000000000000000000000000</string>
+    </map>
+  </map>
 </llsd>

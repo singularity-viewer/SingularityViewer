@@ -32,9 +32,9 @@
 #ifndef LLCRASHLOGGER_H
 #define LLCRASHLOGGER_H
 
-#include <vector>
-
 #include "linden_common.h"
+
+#include <vector>
 
 #include "llapp.h"
 #include "llsd.h"

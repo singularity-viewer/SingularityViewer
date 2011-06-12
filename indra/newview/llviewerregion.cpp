@@ -1452,9 +1452,13 @@ void LLViewerRegion::setSeedCapability(const std::string& url)
 	capabilityNames.append("DispatchRegionInfo");
 	capabilityNames.append("EstateChangeInfo");
 	capabilityNames.append("EventQueueGet");
-	capabilityNames.append("FetchInventory");
-	capabilityNames.append("FetchLib");
-	capabilityNames.append("FetchLibDescendents");
+	if (false)//gSavedSettings.getBOOL("UseHTTPInventory")) //Caps suffixed with 2 by LL. Don't update until rest of fetch system is updated first.
+	{
+		capabilityNames.append("FetchLib");
+		capabilityNames.append("FetchLibDescendents");
+		capabilityNames.append("FetchInventory");
+		capabilityNames.append("FetchInventoryDescendents");
+	}
 	capabilityNames.append("GetTexture");
 	capabilityNames.append("GroupProposalBallot");
 	capabilityNames.append("GetDisplayNames");
@@ -1491,10 +1495,6 @@ void LLViewerRegion::setSeedCapability(const std::string& url)
 	capabilityNames.append("UploadBakedTexture");
 	capabilityNames.append("ViewerStartAuction");
 	capabilityNames.append("ViewerStats");
-	capabilityNames.append("WebFetchInventoryDescendents"); // OGPX : since this is asking the region
-															// leave the old naming in place, on agent domain
-															// it is now called agent/inventory. Both
-															// caps have the same LLSD returned.
 	// Please add new capabilities alphabetically to reduce
 	// merge conflicts.
 

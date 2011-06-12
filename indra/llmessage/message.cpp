@@ -108,8 +108,10 @@ std::string get_shared_secret();
 class LLMessagePollInfo
 {
 public:
+	LLMessagePollInfo(void) : mPool(LLThread::tldata().mRootPool) { }
 	apr_socket_t *mAPRSocketp;
 	apr_pollfd_t mPollFD;
+	AIAPRPool mPool;
 };
 
 namespace
@@ -298,20 +300,13 @@ LLMessageSystem::LLMessageSystem(const std::string& filename, U32 port,
 	}
 //	LL_DEBUGS("Messaging") <<  << "*** port: " << mPort << llendl;
 
-	//
-	// Create the data structure that we can poll on
-	//
-	if (!gAPRPoolp)
-	{
-		LL_ERRS("Messaging") << "No APR pool before message system initialization!" << llendl;
-		ll_init_apr();
-	}
-	apr_socket_t *aprSocketp = NULL;
-	apr_os_sock_put(&aprSocketp, (apr_os_sock_t*)&mSocket, gAPRPoolp);
-
 	mPollInfop = new LLMessagePollInfo;
+
+	apr_socket_t *aprSocketp = NULL;
+	apr_os_sock_put(&aprSocketp, (apr_os_sock_t*)&mSocket, mPollInfop->mPool());
+
 	mPollInfop->mAPRSocketp = aprSocketp;
-	mPollInfop->mPollFD.p = gAPRPoolp;
+	mPollInfop->mPollFD.p = mPollInfop->mPool();
 	mPollInfop->mPollFD.desc_type = APR_POLL_SOCKET;
 	mPollInfop->mPollFD.reqevents = APR_POLLIN;
 	mPollInfop->mPollFD.rtnevents = 0;
@@ -2481,12 +2476,12 @@ void dump_prehash_files()
 			" * Generated from message template version number %.3f\n"
 			" */\n",
 			gMessageSystem->mMessageFileVersionNumber);
-		fprintf(fp, "\n\nextern F32 gPrehashVersionNumber;\n\n");
+		fprintf(fp, "\n\nextern F32 const gPrehashVersionNumber;\n\n");
 		for (i = 0; i < MESSAGE_NUMBER_OF_HASH_BUCKETS; i++)
 		{
 			if (!LLMessageStringTable::getInstance()->mEmpty[i] && LLMessageStringTable::getInstance()->mString[i][0] != '.')
 			{
-				fprintf(fp, "extern char * _PREHASH_%s;\n", LLMessageStringTable::getInstance()->mString[i]);
+				fprintf(fp, "extern char const* const _PREHASH_%s;\n", LLMessageStringTable::getInstance()->mString[i]);
 			}
 		}
 		fprintf(fp, "\n\n#endif\n");
@@ -2511,12 +2506,12 @@ void dump_prehash_files()
 			gMessageSystem->mMessageFileVersionNumber);
 		fprintf(fp, "#include \"linden_common.h\"\n");
 		fprintf(fp, "#include \"message.h\"\n\n");
-		fprintf(fp, "\n\nF32 gPrehashVersionNumber = %.3ff;\n\n", gMessageSystem->mMessageFileVersionNumber);
+		fprintf(fp, "\n\nF32 const gPrehashVersionNumber = %.3ff;\n\n", gMessageSystem->mMessageFileVersionNumber);
 		for (i = 0; i < MESSAGE_NUMBER_OF_HASH_BUCKETS; i++)
 		{
 			if (!LLMessageStringTable::getInstance()->mEmpty[i] && LLMessageStringTable::getInstance()->mString[i][0] != '.')
 			{
-				fprintf(fp, "char * _PREHASH_%s = LLMessageStringTable::getInstance()->getString(\"%s\");\n", LLMessageStringTable::getInstance()->mString[i], LLMessageStringTable::getInstance()->mString[i]);
+				fprintf(fp, "char const* const _PREHASH_%s = LLMessageStringTable::getInstance()->getString(\"%s\");\n", LLMessageStringTable::getInstance()->mString[i], LLMessageStringTable::getInstance()->mString[i]);
 			}
 		}
 		fclose(fp);

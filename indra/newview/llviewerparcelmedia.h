@@ -34,6 +34,7 @@
 #define LLVIEWERPARCELMEDIA_H
 
 #include "llviewermedia.h"
+#include "llviewermediaobserver.h"
 
 // For use by other patches so they know that media filtering is implemented.
 #define MEDIA_FILTERING 1
@@ -41,7 +42,6 @@
 class LLMessageSystem;
 class LLParcel;
 class LLViewerParcelMediaNavigationObserver;
-
 
 // This class understands land parcels, network traffic, LSL media
 // transport commands, and talks to the LLViewerMedia class to actually

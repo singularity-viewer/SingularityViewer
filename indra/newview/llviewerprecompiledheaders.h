@@ -164,7 +164,7 @@
 #include "llinstantmessage.h"
 #include "llinvite.h"
 //#include "llloginflags.h"
-#include "llmail.h"
+//#include "llmail.h"
 #include "llmessagethrottle.h"
 #include "llnamevalue.h"
 #include "llpacketack.h"

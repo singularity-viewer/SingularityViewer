@@ -43,7 +43,7 @@ class LLControlGroupReader_Test : public LLControlGroupReader
 public:
 	LLControlGroupReader_Test() : test_preferred_maturity(SIM_ACCESS_PG) {}
 	
-	virtual std::string getString(const std::string& name)
+	virtual std::string getString(const std::string& name) const
 	{
 		return "";
 	}

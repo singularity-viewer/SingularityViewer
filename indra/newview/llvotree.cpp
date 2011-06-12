@@ -357,8 +357,9 @@ BOOL LLVOTree::idleUpdate(LLAgent &agent, LLWorld &world, const F64 &time)
 	}
 	
 	//it's cheaper to check if wind is enabled first
+	static const LLCachedControl<bool> enable_wind("WindEnabled",false); 
 	static const LLCachedControl<bool> render_animate_trees("RenderAnimateTrees",false); 
-	if (gLLWindEnabled && render_animate_trees)
+	if (enable_wind && render_animate_trees)
 	{
 		F32 mass_inv; 
 
@@ -388,12 +389,11 @@ BOOL LLVOTree::idleUpdate(LLAgent &agent, LLWorld &world, const F64 &time)
 		}
 	}
 
-	S32 trunk_LOD = 0;
+	S32 trunk_LOD = sMAX_NUM_TREE_LOD_LEVELS ;
 	F32 app_angle = getAppAngle()*LLVOTree::sTreeFactor;
 
-	for (S32 j = 0; j < 4; j++)
+	for (S32 j = 0; j < sMAX_NUM_TREE_LOD_LEVELS; j++)
 	{
-
 		if (app_angle > LLVOTree::sLODAngles[j])
 		{
 			trunk_LOD = j;
@@ -401,7 +401,7 @@ BOOL LLVOTree::idleUpdate(LLAgent &agent, LLWorld &world, const F64 &time)
 		}
 	} 
 
-	if (!gLLWindEnabled || !render_animate_trees)
+	if (!enable_wind || !render_animate_trees)
 	{
 		if (mReferenceBuffer.isNull())
 		{
@@ -531,7 +531,14 @@ BOOL LLVOTree::updateGeometry(LLDrawable *drawable)
 {
 	LLFastTimer ftm(LLFastTimer::FTM_UPDATE_TREE);
 
-	if (mReferenceBuffer.isNull() || mDrawable->getFace(0)->mVertexBuffer.isNull())
+	if(mTrunkLOD >= sMAX_NUM_TREE_LOD_LEVELS) //do not display the tree.
+	{
+		mReferenceBuffer = NULL ;
+		mDrawable->getFace(0)->setVertexBuffer(NULL);
+		return TRUE ;
+	}
+
+	if (mReferenceBuffer.isNull() || !mDrawable->getFace(0)->getVertexBuffer())
 	{
 		const F32 SRR3 = 0.577350269f; // sqrt(1/3)
 		const F32 SRR2 = 0.707106781f; // sqrt(1/2)
@@ -869,7 +876,7 @@ BOOL LLVOTree::updateGeometry(LLDrawable *drawable)
 	//Using an && here is incorrect, and will cause instability.
 	if (/*gLLWindEnabled || */render_animate_trees)
 	{
-		mDrawable->getFace(0)->mVertexBuffer = mReferenceBuffer;
+		mDrawable->getFace(0)->setVertexBuffer(mReferenceBuffer);
 	}
 	else
 	{
@@ -928,8 +935,9 @@ void LLVOTree::updateMesh()
 	calcNumVerts(vert_count, index_count, mTrunkLOD, stop_depth, mDepth, mTrunkDepth, mBranches);
 
 	LLFace* facep = mDrawable->getFace(0);
-	facep->mVertexBuffer = new LLVertexBuffer(LLDrawPoolTree::VERTEX_DATA_MASK, GL_STATIC_DRAW_ARB);
-	facep->mVertexBuffer->allocateBuffer(vert_count, index_count, TRUE);
+	LLVertexBuffer* buff = new LLVertexBuffer(LLDrawPoolTree::VERTEX_DATA_MASK, GL_STATIC_DRAW_ARB);
+	buff->allocateBuffer(vert_count, index_count, TRUE);
+	facep->setVertexBuffer(buff);
 	
 	LLStrider<LLVector3> vertices;
 	LLStrider<LLVector3> normals;
@@ -937,16 +945,15 @@ void LLVOTree::updateMesh()
 	LLStrider<U16> indices;
 	U16 idx_offset = 0;
 
-	facep->mVertexBuffer->getVertexStrider(vertices);
-	facep->mVertexBuffer->getNormalStrider(normals);
-	facep->mVertexBuffer->getTexCoord0Strider(tex_coords);
-	facep->mVertexBuffer->getIndexStrider(indices);
+	buff->getVertexStrider(vertices);
+	buff->getNormalStrider(normals);
+	buff->getTexCoord0Strider(tex_coords);
+	buff->getIndexStrider(indices);
 
 	genBranchPipeline(vertices, normals, tex_coords, indices, idx_offset, scale_mat, mTrunkLOD, stop_depth, mDepth, mTrunkDepth, 1.0, mTwist, droop, mBranches, alpha);
 	
 	mReferenceBuffer->setBuffer(0);
-	facep->mVertexBuffer->setBuffer(0);
-
+	buff->setBuffer(0);
 }
 
 void LLVOTree::appendMesh(LLStrider<LLVector3>& vertices, 
@@ -1330,7 +1337,7 @@ U32 LLVOTree::getPartitionType() const
 }
 
 LLTreePartition::LLTreePartition()
-: LLSpatialPartition(0, FALSE, 0)
+: LLSpatialPartition(0, FALSE, GL_DYNAMIC_DRAW_ARB)
 {
 	mDrawableType = LLPipeline::RENDER_TYPE_TREE;
 	mPartitionType = LLViewerRegion::PARTITION_TREE;

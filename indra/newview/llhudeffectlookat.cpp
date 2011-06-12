@@ -55,8 +55,6 @@
 // </edit>
 
 
-BOOL LLHUDEffectLookAt::sDebugLookAt = FALSE;
-
 // packet layout
 const S32 SOURCE_AVATAR = 0;
 const S32 TARGET_OBJECT = 16;
@@ -67,7 +65,7 @@ const S32 PKT_SIZE = 57;
 // throttle
 const F32 MAX_SENDS_PER_SEC = 4.f;
 
-const F32 MIN_DELTAPOS_FOR_UPDATE = 0.05f;
+const F32 MIN_DELTAPOS_FOR_UPDATE_SQUARED = 0.05f * 0.05f;
 const F32 MIN_TARGET_OFFSET_SQUARED = 0.0001f;
 
 
@@ -427,7 +425,7 @@ BOOL LLHUDEffectLookAt::setLookAt(ELookAtType target_type, LLViewerObject *objec
 	BOOL lookAtChanged = (target_type != mTargetType) || (object != mTargetObject);
 
 	// lookat position has moved a certain amount and we haven't just sent an update
-	lookAtChanged = lookAtChanged || ((dist_vec(position, mLastSentOffsetGlobal) > MIN_DELTAPOS_FOR_UPDATE) && 
+	lookAtChanged = lookAtChanged || ((dist_vec_squared(position, mLastSentOffsetGlobal) > MIN_DELTAPOS_FOR_UPDATE_SQUARED) && 
 		((current_time - mLastSendTime) > (1.f / MAX_SENDS_PER_SEC)));
 
 	if (lookAtChanged)
@@ -505,10 +503,15 @@ void LLHUDEffectLookAt::setSourceObject(LLViewerObject* objectp)
 void LLHUDEffectLookAt::render()
 {
 	static const LLCachedControl<bool> private_look_at("PrivateLookAt",false);
-    if (private_look_at &&
-        (gAgent.getAvatarObject() == ((LLVOAvatar*)(LLViewerObject*)mSourceObject))) return;
-	if (sDebugLookAt && mSourceObject.notNull())
+	static const LLCachedControl<bool> show_look_at("AscentShowLookAt", false);
+
+    if (private_look_at && (gAgent.getAvatarObject() == ((LLVOAvatar*)(LLViewerObject*)mSourceObject)))
+        return;
+
+	if (show_look_at && mSourceObject.notNull())
 	{
+		LLGLDepthTest gls_depth(GL_TRUE,GL_FALSE);
+
 		gGL.getTexUnit(0)->unbind(LLTexUnit::TT_TEXTURE);
 
 		LLVector3 target = mTargetPos + ((LLVOAvatar*)(LLViewerObject*)mSourceObject)->mHeadp->getWorldPosition();
@@ -566,7 +569,9 @@ void LLHUDEffectLookAt::render()
 //-----------------------------------------------------------------------------
 void LLHUDEffectLookAt::update()
 {
-	// If the target object is dead, set the target object to NULL
+	static const LLCachedControl<bool> show_look_at("AscentShowLookAt", false);
+
+    // If the target object is dead, set the target object to NULL
 	if (!mTargetObject.isNull() && mTargetObject->isDead())
 	{
 		clearLookAtTarget();
@@ -611,7 +616,7 @@ void LLHUDEffectLookAt::update()
 		}
 	}
 
-	if (sDebugLookAt)
+	if (show_look_at)
 	{
 		((LLVOAvatar*)(LLViewerObject*)mSourceObject)->addDebugText((*mAttentions)[mTargetType].mName);
 	}

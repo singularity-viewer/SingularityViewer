@@ -4,7 +4,7 @@
 #include "lluictrlfactory.h"
 #include "llscrolllistctrl.h"
 #include "llcheckboxctrl.h"
-#include "llfilepicker.h"
+#include "statemachine/aifilepicker.h"
 #include "lllocalinventory.h"
 #include "llviewerwindow.h"
 #include "llassetconverter.h"
@@ -229,25 +229,32 @@ void LLFloaterVFS::setEditEnabled(bool enabled)
 	childSetEnabled("reload_btn", enabled); // WORKS!
 	childSetEnabled("remove_btn", enabled);
 }
+
 // static
 void LLFloaterVFS::onClickAdd(void* user_data)
 {
-	LLFloaterVFS* floaterp = (LLFloaterVFS*)user_data;
-	if(!floaterp) return;
-	LLUUID asset_id;
-	LLAssetType::EType asset_type = LLAssetType::AT_NONE;
-	asset_id.generate();
-	LLFilePicker& file_picker = LLFilePicker::instance();
-	if(file_picker.getOpenFile(LLFilePicker::FFLOAD_ALL))
+	if(!user_data) return;
+	AIFilePicker* filepicker = AIFilePicker::create();
+	filepicker->open();
+	filepicker->run(boost::bind(&LLFloaterVFS::onClickAdd_continued, user_data, filepicker));
+}
+
+// static
+void LLFloaterVFS::onClickAdd_continued(void* user_data, AIFilePicker* filepicker)
+{
+	LLFloaterVFS* self = (LLFloaterVFS*)user_data;
+	if (filepicker->hasFilename())
 	{
-		std::string file_name = file_picker.getFirstFile();
+		std::string file_name = filepicker->getFilename();
 		std::string temp_filename = file_name + ".tmp";
-		asset_type = LLAssetConverter::convert(file_name, temp_filename);
+		LLAssetType::EType asset_type = LLAssetConverter::convert(file_name, temp_filename);
 		if(asset_type == LLAssetType::AT_NONE)
 		{
 			// todo: show a warning
 			return;
 		}
+		LLUUID asset_id;
+		asset_id.generate();
 		S32 file_size;
 		LLAPRFile fp;
 		fp.open(temp_filename, LL_APR_RB, LLAPRFile::global, &file_size);
@@ -302,8 +309,8 @@ void LLFloaterVFS::onClickAdd(void* user_data)
 		file.mID = asset_id;
 		file.mType = asset_type;
 		file.mName = gDirUtilp->getBaseFileName(file_name, true);
-		floaterp->add(file);
-		/*if(floaterp->getChild<LLCheckBoxCtrl>("create_pretend_item")->get())
+		self->add(file);
+		/*if(self->getChild<LLCheckBoxCtrl>("create_pretend_item")->get())
 		{
 			LLLocalInventory::addItem(file.mName, (int)file.mType, file.mID, true);
 		}*/

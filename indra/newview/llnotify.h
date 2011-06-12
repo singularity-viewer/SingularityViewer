@@ -35,7 +35,7 @@
 
 #include "llfontgl.h"
 #include "llpanel.h"
-#include "lltimer.h"
+#include "lleventtimer.h"
 #include "llnotifications.h"
 #include <vector>
 

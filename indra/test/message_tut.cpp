@@ -35,7 +35,6 @@
 #include "linden_common.h"
 #include "lltut.h"
 
-#include "llapr.h"
 #include "llmessageconfig.h"
 #include "llsdserialize.h"
 #include "llversionserver.h"
@@ -68,7 +67,6 @@ namespace tut
 			static bool init = false;
 			if(!init)
 			{
-				ll_init_apr();
 				//init_prehash_data();
 				init = true;
 			}

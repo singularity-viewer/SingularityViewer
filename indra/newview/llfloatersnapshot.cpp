@@ -149,7 +149,7 @@ public:
 	void updateSnapshot(BOOL new_snapshot, BOOL new_thumbnail = FALSE, F32 delay = 0.f);
 	LLFloaterPostcard* savePostcard();
 	void saveTexture();
-	BOOL saveLocal();
+	void saveLocal();
 
 	BOOL setThumbnailImageSize() ;
 	void generateThumbnailImage(BOOL force_update = FALSE) ;
@@ -1005,20 +1005,14 @@ void LLSnapshotLivePreview::saveTexture()
 	mDataSize = 0;
 }
 
-BOOL LLSnapshotLivePreview::saveLocal()
+void LLSnapshotLivePreview::saveLocal()
 {
-	BOOL success = gViewerWindow->saveImageNumbered(mFormattedImage);
+	gViewerWindow->saveImageNumbered(mFormattedImage);
 
 	// Relinquish image memory. Save button will be disabled as a side-effect.
 	mFormattedImage = NULL;
 	mDataSize = 0;
 	updateSnapshot(FALSE, FALSE);
-
-	if(success)
-	{
-		gViewerWindow->playSnapshotAnimAndSound();
-	}
-	return success;
 }
 
 ///----------------------------------------------------------------------------
@@ -1410,7 +1404,7 @@ void LLFloaterSnapshot::Impl::onClickDiscard(void* data)
 // static
 void LLFloaterSnapshot::Impl::onCommitSave(LLUICtrl* ctrl, void* data)
 {
-	if (ctrl->getValue().asString() == "save as")
+	if (ctrl->getValue().asString() == "saveas")
 	{
 		gViewerWindow->resetSnapshotLoc();
 	}

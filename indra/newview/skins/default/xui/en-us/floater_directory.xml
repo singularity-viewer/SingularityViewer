@@ -477,7 +477,7 @@ To buy direct, visit the land and click on the place name in the title bar.
 					Linden Location
 				</combo_item>
 				<combo_item name="Arts&amp;Culture" value="arts">
-					Arts &amp; Culture
+					Arts and Culture
 				</combo_item>
 				<combo_item name="Business" value="store">
 					Business
@@ -495,7 +495,7 @@ To buy direct, visit the land and click on the place name in the title bar.
 					Newcomer Friendly
 				</combo_item>
 				<combo_item name="Parks&amp;Nature" value="park">
-					Parks &amp; Nature
+					Parks and Nature
 				</combo_item>
 				<combo_item name="Residential" value="home">
 					Residential
@@ -506,6 +506,9 @@ To buy direct, visit the land and click on the place name in the title bar.
 				<combo_item name="Other" value="other">
 					Other
 				</combo_item>
+        <combo_item name="Rental" value="rental">
+          Rental
+        </combo_item>
 			</combo_box>
 			<!-- This is used only during the AO transition and can be deleted once the AO transition is
 			complete. It is identical to the combo box above except that it has the Adult category. 
@@ -522,7 +525,7 @@ To buy direct, visit the land and click on the place name in the title bar.
 					Adult
 				</combo_item>
 				<combo_item name="Arts&amp;Culture" value="arts">
-					Arts &amp; Culture
+					Arts and Culture
 				</combo_item>
 				<combo_item name="Business" value="store">
 					Business
@@ -540,7 +543,7 @@ To buy direct, visit the land and click on the place name in the title bar.
 					Newcomer Friendly
 				</combo_item>
 				<combo_item name="Parks&amp;Nature" value="park">
-					Parks &amp; Nature
+					Parks and Nature
 				</combo_item>
 				<combo_item name="Residential" value="home">
 					Residential
@@ -551,6 +554,9 @@ To buy direct, visit the land and click on the place name in the title bar.
 				<combo_item name="Other" value="other">
 					Other
 				</combo_item>
+        <combo_item name="Rental" value="rental">
+          Rental
+        </combo_item>
 			</combo_box>
 			<button bottom="-48" follows="right|top" font="SansSerif" halign="center" height="20"
 			     label="Search" label_selected="Search" left="121" mouse_opaque="true"

@@ -226,7 +226,14 @@ BOOL LLShaderMgr::attachShaderFeatures(LLGLSLShader * shader)
 	else if (features->isFullbright)
 	{
 	
-		if (features->hasWaterFog)
+		if (features->isShiny && features->hasWaterFog)
+		{
+			if (!shader->attachObject("lighting/lightFullbrightShinyWaterF.glsl"))
+			{
+				return FALSE;
+			}
+		}
+		else if (features->hasWaterFog)
 		{
 			if (!shader->attachObject("lighting/lightFullbrightWaterF.glsl"))
 			{
@@ -306,7 +313,7 @@ void LLShaderMgr::dumpObjectLog(GLhandleARB ret, BOOL warns)
 		}
 		else
 		{
-			LL_DEBUGS("ShaderLoading") << log << LL_ENDL;
+			LL_INFOS("ShaderLoading") << log << LL_ENDL;
 		}
 	}
 }

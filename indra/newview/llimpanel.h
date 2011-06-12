@@ -211,7 +211,7 @@ public:
 	BOOL inviteToSession(const LLDynamicArray<LLUUID>& agent_ids);
 
 	void addHistoryLine(const std::string &utf8msg, 
-						const LLColor4& color = LLColor4::white, 
+						LLColor4 incolor = LLColor4::white, 
 						bool log_to_file = true,
 						const LLUUID& source = LLUUID::null,
 						const std::string& name = LLStringUtil::null);

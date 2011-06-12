@@ -5,6 +5,7 @@
 
 #include "llfloater.h"
 #include "llaudioengine.h"
+#include "lleventtimer.h"
 
 class LLFloaterExploreSounds
 : public LLFloater, public LLEventTimer

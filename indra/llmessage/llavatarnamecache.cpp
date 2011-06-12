@@ -562,14 +562,13 @@ void LLAvatarNameCache::idle()
 bool LLAvatarNameCache::isRequestPending(const LLUUID& agent_id)
 {
 	const F64 PENDING_TIMEOUT_SECS = 5.0 * 60.0;
-	F64 now = LLFrameTimer::getTotalSeconds();
-	F64 expire_time = now - PENDING_TIMEOUT_SECS;
 
 	pending_queue_t::const_iterator it = sPendingQueue.find(agent_id);
 	if (it != sPendingQueue.end())
 	{
-		bool request_expired = (it->second < expire_time);
-		return !request_expired;
+		// in the list of requests in flight, retry if too old
+		F64 expire_time = LLFrameTimer::getTotalSeconds() - PENDING_TIMEOUT_SECS;
+		return it->second > expire_time;
 	}
 	return false;
 }
@@ -578,14 +577,16 @@ void LLAvatarNameCache::eraseExpired()
 {
 	F64 now = LLFrameTimer::getTotalSeconds();
 	cache_t::iterator it = sCache.begin();
-	while (it != sCache.end())
+	for (cache_t::iterator it = sCache.begin(); it != sCache.end();)
 	{
-		cache_t::iterator cur = it;
-		++it;
-		const LLAvatarName& av_name = cur->second;
+		const LLAvatarName& av_name = it->second;
 		if (av_name.mExpires < now)
 		{
-			sCache.erase(cur);
+			sCache.erase(it++);
+		}
+		else
+		{
+			++it;
 		}
 	}
 }
@@ -879,4 +880,3 @@ bool max_age_from_cache_control(const std::string& cache_control, S32 *max_age)
 	}
 	return false;
 }
-

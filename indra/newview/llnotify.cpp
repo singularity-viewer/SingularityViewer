@@ -99,7 +99,9 @@ bool LLNotifyBox::onNotification(const LLSD& notify)
 	if(notify["sigtype"].asString() == "add" || notify["sigtype"].asString() == "change")
 	{
 		//bring existing notification to top
-		LLNotifyBox* boxp = LLNotifyBox::getInstance(notification->getID());
+		//This getInstance is ugly, as LLNotifyBox is derived from both LLInstanceTracker and LLEventTimer, which also is derived from its own LLInstanceTracker
+		//Have to explicitly determine which getInstance function to use.
+		LLNotifyBox* boxp = LLNotifyBox::LLInstanceTracker<LLNotifyBox, LLUUID>::getInstance(notification->getID());
 		if (boxp && !boxp->isDead())
 		{
 			gNotifyBoxView->showOnly(boxp);
@@ -116,7 +118,7 @@ bool LLNotifyBox::onNotification(const LLSD& notify)
 	}
 	else if (notify["sigtype"].asString() == "delete")
 	{
-		LLNotifyBox* boxp = LLNotifyBox::getInstance(notification->getID());
+		LLNotifyBox* boxp = LLNotifyBox::LLInstanceTracker<LLNotifyBox, LLUUID>::getInstance(notification->getID());
 		if (boxp && !boxp->isDead())
 		{
 			boxp->close();

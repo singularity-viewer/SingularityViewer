@@ -46,6 +46,7 @@
 class LLTextEditor;
 class LLViewerTextEditor;
 class LLButton;
+class AIFilePicker;
 
 class LLPreviewNotecard : public LLPreview
 {
@@ -128,6 +129,7 @@ protected:
 	// <edit>
 	virtual BOOL canSaveAs() const;
 	virtual void saveAs();
+	void saveAs_continued(AIFilePicker* filepicker);
 	// </edit>
 };
 

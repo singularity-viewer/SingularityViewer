@@ -47,7 +47,7 @@ LLPluginProcessChild::LLPluginProcessChild()
 {
 	mState = STATE_UNINITIALIZED;
 	mInstance = NULL;
-	mSocket = LLSocket::create(gAPRPoolp, LLSocket::STREAM_TCP);
+	mSocket = LLSocket::create(LLSocket::STREAM_TCP);
 	mSleepTime = PLUGIN_IDLE_SECONDS;	// default: send idle messages at 100Hz
 	mCPUElapsed = 0.0f;
 	mBlockingRequest = false;
@@ -227,6 +227,7 @@ void LLPluginProcessChild::idle(void)
 			
 			case STATE_DONE:
 				// just sit here.
+				LL_WARNS("Plugin") << "Calling LLPluginProcessChild::idle while in STATE_DONE!" << LL_ENDL;
 			break;
 		}
 	
@@ -286,6 +287,11 @@ bool LLPluginProcessChild::isDone(void)
 	return result;
 }
 
+// This is the SLPlugin process.
+// This is not part of a DSO.
+//
+// This function is called by SLPlugin to send a message (originating from
+// SLPlugin itself) to the loaded DSO. It calls LLPluginInstance::sendMessage.
 void LLPluginProcessChild::sendMessageToPlugin(const LLPluginMessage &message)
 {
 	if (mInstance)
@@ -305,15 +311,26 @@ void LLPluginProcessChild::sendMessageToPlugin(const LLPluginMessage &message)
 	}
 }
 
+// This is the SLPlugin process (the child process).
+// This is not part of a DSO.
+//
+// This function is called by SLPlugin to send 'message' to the viewer (the parent process).
 void LLPluginProcessChild::sendMessageToParent(const LLPluginMessage &message)
 {
 	std::string buffer = message.generate();
 
 	LL_DEBUGS("Plugin") << "Sending to parent: " << buffer << LL_ENDL;
 
+	// Write the serialized message to the pipe.
 	writeMessageRaw(buffer);
 }
 
+// This is the SLPlugin process (the child process).
+// This is not part of a DSO.
+//
+// This function is called when the serialized message 'message' was received from the viewer.
+// It parses the message and handles LLPLUGIN_MESSAGE_CLASS_INTERNAL.
+// Other message classes are passed on to LLPluginInstance::sendMessage.
 void LLPluginProcessChild::receiveMessageRaw(const std::string &message)
 {
 	// Incoming message from the TCP Socket
@@ -449,7 +466,17 @@ void LLPluginProcessChild::receiveMessageRaw(const std::string &message)
 	}
 }
 
-/* virtual */ 
+// This is the SLPlugin process.
+// This is not part of a DSO.
+//
+// This function is called from LLPluginInstance::receiveMessage
+// for messages from a loaded DSO that have to be passed to the
+// viewer.
+//
+// It handles the base messages that are responses to messages sent by this
+// class, and passes the rest on to LLPluginMessagePipeOwner::writeMessageRaw
+// to be written to the pipe.
+/* virtual */
 void LLPluginProcessChild::receivePluginMessage(const std::string &message)
 {
 	LL_DEBUGS("Plugin") << "Received from plugin: " << message << LL_ENDL;
@@ -525,6 +552,26 @@ void LLPluginProcessChild::receivePluginMessage(const std::string &message)
 				{
 					LL_WARNS("Plugin") << "shm_remove_response for unknown memory segment!" << LL_ENDL;
 				}
+			}
+		}
+		else if (message_class == LLPLUGIN_MESSAGE_CLASS_INTERNAL)
+		{
+			bool flush = false;
+			std::string message_name = parsed.getName();
+			if(message_name == "shutdown")
+			{
+				// The plugin is finished.
+				setState(STATE_UNLOADING);
+				flush = true;
+			}
+			else if (message_name == "flush")
+			{
+				flush = true;
+				passMessage = false;
+			}
+			if (flush)
+			{
+				flushMessages();
 			}
 		}
 	}

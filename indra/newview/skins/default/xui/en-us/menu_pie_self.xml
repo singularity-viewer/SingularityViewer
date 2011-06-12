@@ -59,6 +59,11 @@
 					<on_click function="Edit.TakeOff" userdata="underpants" />
 					<on_enable function="Edit.EnableTakeOff" userdata="underpants" />
 				</menu_item_call>
+        <menu_item_call bottom="-162" enabled="false" height="19" label="Physics" left="0"
+				     mouse_opaque="true" name="Self Physics" width="118">
+          <on_click function="Edit.TakeOff" userdata="physics" />
+          <on_enable function="Edit.EnableTakeOff" userdata="physics" />
+        </menu_item_call>
 			</pie_menu>
 			<menu_item_call bottom="-181" enabled="false" height="19" label="Skirt" left="0"
 			     mouse_opaque="true" name="Skirt" width="118">

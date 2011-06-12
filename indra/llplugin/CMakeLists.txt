@@ -24,6 +24,7 @@ include_directories(
     )
 
 set(llplugin_SOURCE_FILES
+    llpluginclassbasic.cpp
     llpluginclassmedia.cpp
     llplugincookiestore.cpp
     llplugininstance.cpp
@@ -37,6 +38,7 @@ set(llplugin_SOURCE_FILES
 set(llplugin_HEADER_FILES
     CMakeLists.txt
 
+    llpluginclassbasic.h
     llpluginclassmedia.h
     llpluginclassmediaowner.h
     llplugincookiestore.h
@@ -52,17 +54,19 @@ set(llplugin_HEADER_FILES
 set_source_files_properties(${llplugin_HEADER_FILES}
                             PROPERTIES HEADER_FILE_ONLY TRUE)
 
-if(NOT CMAKE_SIZEOF_VOID_P MATCHES 4)
+if(NOT WORD_SIZE EQUAL 32)
 	if(WINDOWS)
 		add_definitions(/FIXED:NO)
 	else(WINDOWS) # not windows therefore gcc LINUX and DARWIN
 		add_definitions(-fPIC)
 	endif(WINDOWS)
-endif (NOT CMAKE_SIZEOF_VOID_P MATCHES 4)
+endif (NOT WORD_SIZE EQUAL 32)
 
 list(APPEND llplugin_SOURCE_FILES ${llplugin_HEADER_FILES})
 
 add_library (llplugin ${llplugin_SOURCE_FILES})
+
+add_dependencies(llplugin prepare)
 
 add_subdirectory(slplugin)
 

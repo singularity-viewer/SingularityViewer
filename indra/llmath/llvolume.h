@@ -984,6 +984,7 @@ LLVector3 calc_binormal_from_triangle(
 		const LLVector3& pos2,
 		const LLVector2& tex2);
 
+BOOL LLLineSegmentBoxIntersect(const F32* start, const F32* end, const F32* center, const F32* size);
 BOOL LLLineSegmentBoxIntersect(const LLVector3& start, const LLVector3& end, const LLVector3& center, const LLVector3& size);
 BOOL LLTriangleRayIntersect(const LLVector3& vert0, const LLVector3& vert1, const LLVector3& vert2, const LLVector3& orig, const LLVector3& dir,
 							F32* intersection_a, F32* intersection_b, F32* intersection_t, BOOL two_sided);

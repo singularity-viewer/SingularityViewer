@@ -207,7 +207,7 @@ BOOL LLFeatureManager::maskFeatures(const std::string& name)
  		LL_DEBUGS("RenderInit") << "Unknown feature mask " << name << LL_ENDL;
 		return FALSE;
 	}
-	LL_DEBUGS("RenderInit") << "Applying Feature Mask: " << name << LL_ENDL;
+	LL_INFOS("RenderInit") << "Applying GPU Feature list: " << name << LL_ENDL;
 	return maskList(*maskp);
 }
 
@@ -221,22 +221,33 @@ BOOL LLFeatureManager::loadFeatureTables()
 	mSkippedFeatures.insert("RenderVBOEnable");
 	mSkippedFeatures.insert("RenderFogRatio");
 
-	std::string data_path = gDirUtilp->getAppRODataDir();
+	// first table is install with app
+	std::string app_path = gDirUtilp->getAppRODataDir();
+	app_path += gDirUtilp->getDirDelimiter();
 
-	data_path += gDirUtilp->getDirDelimiter();
+	std::string filename = FEATURE_TABLE_FILENAME;
 
-	data_path += FEATURE_TABLE_FILENAME;
-	lldebugs << "Looking for feature table in " << data_path << llendl;
+
+	app_path += filename;
+
+	
+	return parseFeatureTable(app_path);
+}
+
+
+BOOL LLFeatureManager::parseFeatureTable(std::string filename)
+{
+	llinfos << "Looking for feature table in " << filename << llendl;
 
 	llifstream file;
 	std::string name;
 	U32		version;
 	
-	file.open(data_path); 	 /*Flawfinder: ignore*/
+	file.open(filename); 	 /*Flawfinder: ignore*/
 
 	if (!file)
 	{
-		LL_WARNS("RenderInit") << "Unable to open feature table!" << LL_ENDL;
+		LL_WARNS("RenderInit") << "Unable to open feature table " << filename << LL_ENDL;
 		return FALSE;
 	}
 
@@ -245,29 +256,20 @@ BOOL LLFeatureManager::loadFeatureTables()
 	file >> version;
 	if (name != "version")
 	{
-		LL_WARNS("RenderInit") << data_path << " does not appear to be a valid feature table!" << LL_ENDL;
+		LL_WARNS("RenderInit") << filename << " does not appear to be a valid feature table!" << LL_ENDL;
 		return FALSE;
 	}
 
 	mTableVersion = version;
 
 	LLFeatureList *flp = NULL;
-	while (!file.eof() && file.good())
+	while (file >> name)
 	{
 		char buffer[MAX_STRING];		 /*Flawfinder: ignore*/
 
-		file >> name;
-		
 		if (name.substr(0,2) == "//")
 		{
 			// This is a comment.
-			file.getline(buffer, MAX_STRING);
-			continue;
-		}
-
-		if (name.empty())
-		{
-			// This is a blank line
 			file.getline(buffer, MAX_STRING);
 			continue;
 		}
@@ -293,6 +295,7 @@ BOOL LLFeatureManager::loadFeatureTables()
 			if (!flp)
 			{
 				LL_ERRS("RenderInit") << "Specified parameter before <list> keyword!" << LL_ENDL;
+				return FALSE;
 			}
 			S32 available;
 			F32 recommended;
@@ -307,34 +310,41 @@ BOOL LLFeatureManager::loadFeatureTables()
 
 void LLFeatureManager::loadGPUClass()
 {
-	std::string data_path = gDirUtilp->getAppRODataDir();
-
-	data_path += gDirUtilp->getDirDelimiter();
-
-	data_path += GPU_TABLE_FILENAME;
-
 	// defaults
 	mGPUClass = GPU_CLASS_UNKNOWN;
 	mGPUString = gGLManager.getRawGLString();
 	mGPUSupported = FALSE;
 
+	// first table is in the app dir
+	std::string app_path = gDirUtilp->getAppRODataDir();
+	app_path += gDirUtilp->getDirDelimiter();
+	app_path += GPU_TABLE_FILENAME;
+	parseGPUTable(app_path);
+}
+
+	
+void LLFeatureManager::parseGPUTable(std::string filename)
+{
 	llifstream file;
 		
-	file.open(data_path); 		 /*Flawfinder: ignore*/
+	file.open(filename);
 
 	if (!file)
 	{
-		LL_WARNS("RenderInit") << "Unable to open GPU table: " << data_path << "!" << LL_ENDL;
+		LL_WARNS("RenderInit") << "Unable to open GPU table: " << filename << "!" << LL_ENDL;
 		return;
 	}
 
-	std::string renderer = gGLManager.getRawGLString();
+	std::string rawRenderer = gGLManager.getRawGLString();
+	std::string renderer = rawRenderer;
 	for (std::string::iterator i = renderer.begin(); i != renderer.end(); ++i)
 	{
 		*i = tolower(*i);
 	}
-	
-	while (!file.eof())
+
+	bool gpuFound;
+	U32 lineNumber;
+	for (gpuFound = false, lineNumber = 0; !gpuFound && !file.eof(); lineNumber++)
 	{
 		char buffer[MAX_STRING];		 /*Flawfinder: ignore*/
 		buffer[0] = 0;
@@ -381,6 +391,7 @@ void LLFeatureManager::loadGPUClass()
 
 		if (label.empty() || expr.empty() || cls.empty() || supported.empty())
 		{
+			LL_WARNS("RenderInit") << "invald gpu_table.txt:" << lineNumber << ": '" << buffer << "'" << LL_ENDL;
 			continue;
 		}
 	
@@ -394,18 +405,26 @@ void LLFeatureManager::loadGPUClass()
 		if(boost::regex_search(renderer, re))
 		{
 			// if we found it, stop!
-			file.close();
-			LL_INFOS("RenderInit") << "GPU is " << label << llendl;
+			gpuFound = true;
 			mGPUString = label;
 			mGPUClass = (EGPUClass) strtol(cls.c_str(), NULL, 10);
 			mGPUSupported = (BOOL) strtol(supported.c_str(), NULL, 10);
-			file.close();
-			return;
 		}
 	}
 	file.close();
 
-	LL_WARNS("RenderInit") << "Couldn't match GPU to a class: " << gGLManager.getRawGLString() << LL_ENDL;
+	if ( gpuFound )
+	{
+		LL_INFOS("RenderInit") << "GPU '" << rawRenderer << "' recognized as '" << mGPUString << "'" << LL_ENDL;
+		if (!mGPUSupported)
+		{
+			LL_INFOS("RenderInit") << "GPU '" << mGPUString << "' is not supported." << LL_ENDL;
+		}
+	}
+	else
+	{
+		LL_WARNS("RenderInit") << "GPU '" << rawRenderer << "' not recognized" << LL_ENDL;
+	}
 }
 
 void LLFeatureManager::cleanupFeatureTables()
@@ -588,6 +607,10 @@ void LLFeatureManager::applyBaseMasks()
 	{
 		maskFeatures("ATI");
 	}
+	if (gGLManager.mHasATIMemInfo && gGLManager.mVRAM < 256)
+	{
+		maskFeatures("ATIVramLT256");
+	}
 	if (gGLManager.mATIOldDriver)
 	{
 		maskFeatures("ATIOldDriver");
@@ -603,6 +626,14 @@ void LLFeatureManager::applyBaseMasks()
 	if (gGLManager.mGLVersion < 1.5f)
 	{
 		maskFeatures("OpenGLPre15");
+	}
+	if (gGLManager.mGLVersion < 3.f)
+	{
+		maskFeatures("OpenGLPre30");
+	}
+	if (gGLManager.mNumTextureImageUnits <= 8)
+	{
+		maskFeatures("TexUnit8orLess");
 	}
 
 	// now mask by gpu string

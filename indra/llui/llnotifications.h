@@ -91,11 +91,12 @@
 
 #include <boost/utility.hpp>
 #include <boost/shared_ptr.hpp>
-#include <boost/signal.hpp>
 #include <boost/type_traits.hpp>
+#include <boost/enable_shared_from_this.hpp>
 
 // we want to minimize external dependencies, but this one is important
 #include "llsd.h"
+#include "llinstancetracker.h"
 
 // and we need this to manage the notification callbacks
 #include "llfunctorregistry.h"
@@ -111,7 +112,7 @@ typedef boost::shared_ptr<LLNotification> LLNotificationPtr;
 *****************************************************************************/
 
 /**
- * A boost::signals Combiner that stops the first time a handler returns true
+ * A boost::signals2 Combiner that stops the first time a handler returns true
  * We need this because we want to have our handlers return bool, so that
  * we have the option to cause a handler to stop further processing. The
  * default handler fails when the signal returns a value but has no slots.
@@ -163,7 +164,7 @@ typedef boost::function<void (const LLSD&, const LLSD&)> LLNotificationResponder
 typedef LLFunctorRegistry<LLNotificationResponder> LLNotificationFunctorRegistry;
 typedef LLFunctorRegistration<LLNotificationResponder> LLNotificationFunctorRegistration;
 
-typedef boost::signal<bool(const LLSD&), LLStopWhenHandled>  LLStandardSignal;
+typedef boost::signals2::signal<bool(const LLSD&), LLStopWhenHandled>  LLStandardSignal;
 
 // context data that can be looked up via a notification's payload by the display logic
 // derive from this class to implement specific contexts
@@ -699,7 +700,7 @@ typedef std::multimap<std::string, LLNotificationPtr> LLNotificationMap;
 // all of the built-in tests should attach to the "Visible" channel
 //
 class LLNotificationChannelBase :
-	public boost::signals::trackable
+	public boost::signals2::trackable
 {
 	LOG_CLASS(LLNotificationChannelBase);
 public:

@@ -305,7 +305,7 @@ void LLPanelGroupNotices::setItem(LLPointer<LLInventoryItem> inv_item)
 	mInventoryItem = inv_item;
 
 	BOOL item_is_multi = FALSE;
-	if ( inv_item->getFlags() & LLInventoryItem::II_FLAGS_OBJECT_HAS_MULTIPLE_ITEMS )
+	if ( inv_item->getFlags() & LLInventoryItemFlags::II_FLAGS_OBJECT_HAS_MULTIPLE_ITEMS )
 	{
 		item_is_multi = TRUE;
 	};

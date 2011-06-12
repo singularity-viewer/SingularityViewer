@@ -394,7 +394,8 @@ void LLNetMap::draw()
 				avColor = muted_color;
 			}
 
-			LLUUID estate_owner = LLWorld::getInstance()->getRegionFromPosGlobal(positions[i])->getOwner();
+			LLViewerRegion* avatar_region = LLWorld::getInstance()->getRegionFromPosGlobal(positions[i]);
+			LLUUID estate_owner = avatar_region? avatar_region->getOwner() : LLUUID::null;
 
 			//Lindens are always more Linden than your friend, make that take precedence
 			if(LLMuteList::getInstance()->isLinden(avName))

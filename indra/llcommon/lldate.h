@@ -84,7 +84,9 @@ public:
 	std::string asString() const;
 	std::string asRFC1123() const;
 	void toStream(std::ostream&) const;
-	void toHTTPDateStream(std::ostream&) const;
+	bool split(S32 *year, S32 *month = NULL, S32 *day = NULL, S32 *hour = NULL, S32 *min = NULL, S32 *sec = NULL) const;
+	std::string toHTTPDateString (std::string fmt) const;
+	static std::string toHTTPDateString (tm * gmt, std::string fmt);
 	/** 
 	 * @brief Set the date from an ISO-8601 string.
 	 *
@@ -99,6 +101,7 @@ public:
 	 */
 	bool fromString(const std::string& iso8601_date);
 	bool fromStream(std::istream&);
+	bool fromYMDHMS(S32 year, S32 month = 1, S32 day = 0, S32 hour = 0, S32 min = 0, S32 sec = 0);
 
 	/** 
 	 * @brief Return the date in seconds since epoch.

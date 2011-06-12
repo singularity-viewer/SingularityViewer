@@ -72,6 +72,7 @@ const std::string LLWearable::sTypeName[ WT_COUNT+1 ] =
 	"skirt",
 	"alpha",
 	"tattoo",
+	"physics",
 	"invalid"
 };
 
@@ -93,6 +94,7 @@ const std::string LLWearable::sTypeLabel[ WT_COUNT+1 ] =
 	"Skirt",
 	"Alpha",
 	"Tattoo",
+	"Physics",
 	"invalid"
 };
 
@@ -118,6 +120,7 @@ LLAssetType::EType LLWearable::typeToAssetType(EWearableType wearable_type)
 	case WT_SKIRT:
 	case WT_ALPHA:
 	case WT_TATTOO:
+	case WT_PHYSICS:		
 		return LLAssetType::AT_CLOTHING;
 	default:
 		return LLAssetType::AT_NONE;

@@ -327,7 +327,7 @@ void LLFloaterInspect::refresh()
 }
 // <edit>
 void LLFloaterInspect::inventoryChanged(LLViewerObject* viewer_object,
-											 InventoryObjectList* inv,
+											 LLInventoryObject::object_list_t* inv,
 											 S32,
 											 void* q_id)
 {
@@ -335,8 +335,8 @@ void LLFloaterInspect::inventoryChanged(LLViewerObject* viewer_object,
 	std::vector<LLUUID>::iterator iter = std::find(mQueue.begin(),mQueue.end(),viewer_object->getID());
 	if (viewer_object && inv && iter != mQueue.end() )
 	{
-		InventoryObjectList::const_iterator it = inv->begin();
-		InventoryObjectList::const_iterator end = inv->end();
+		LLInventoryObject::object_list_t::const_iterator it = inv->begin();
+		LLInventoryObject::object_list_t::const_iterator end = inv->end();
 		for ( ; it != end; ++it)
 		{
 			if((*it)->getType() == LLAssetType::AT_LSL_TEXT)

@@ -33,8 +33,8 @@
 #ifndef LL_LLINDRACONFIGFILE_H
 #define LL_LLINDRACONFIGFILE_H
 
-#include <string>
 #include "linden_common.h"
+#include <string>
 
 #include "lllivefile.h"
 #include "llsd.h"

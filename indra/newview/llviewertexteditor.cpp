@@ -416,8 +416,9 @@ void LLEmbeddedItems::bindEmbeddedChars( const LLFontGL* font ) const
 
 			break;
 		  case LLAssetType::AT_SOUND:			img_name = "inv_item_sound.tga";	break;
+		  case LLAssetType::AT_CALLINGCARD:		img_name = "inv_item_callingcard_online.tga";   break;
 		  case LLAssetType::AT_LANDMARK:		
-			if (item->getFlags() & LLInventoryItem::II_FLAGS_LANDMARK_VISITED)
+			if (item->getFlags() & LLInventoryItemFlags::II_FLAGS_LANDMARK_VISITED)
 			{
 				img_name = "inv_item_landmark_visited.tga";	
 			}
@@ -428,7 +429,7 @@ void LLEmbeddedItems::bindEmbeddedChars( const LLFontGL* font ) const
 			break;
 		  case LLAssetType::AT_CLOTHING:		img_name = "inv_item_clothing.tga";	break;
 		  case LLAssetType::AT_OBJECT:			
-			if (item->getFlags() & LLInventoryItem::II_FLAGS_OBJECT_HAS_MULTIPLE_ITEMS)
+			if (item->getFlags() & LLInventoryItemFlags::II_FLAGS_OBJECT_HAS_MULTIPLE_ITEMS)
 			{
 				img_name = "inv_item_object_multi.tga";	
 			}

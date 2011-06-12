@@ -52,13 +52,13 @@
 #	include <sys/sysctl.h>
 #	include <sys/utsname.h>
 #	include <stdint.h>
+//#	include <Carbon/Carbon.h>  May be needed?
 #elif LL_LINUX
 #	include <errno.h>
 #	include <sys/utsname.h>
 #	include <unistd.h>
 #	include <sys/sysinfo.h>
 const char MEMINFO_FILE[] = "/proc/meminfo";
-const char CPUINFO_FILE[] = "/proc/cpuinfo";
 #elif LL_SOLARIS
 #	include <stdio.h>
 #	include <unistd.h>
@@ -325,7 +325,58 @@ LLOSInfo::LLOSInfo() :
 	}
 	mOSString += compatibility_mode;
 
+#elif LL_DARWIN
+	
+	// Initialize mOSStringSimple to something like:
+	// "Mac OS X 10.6.7"
+	{
+		const char * DARWIN_PRODUCT_NAME = "Mac OS X";
+		
+		SInt32 major_version, minor_version, bugfix_version;
+		OSErr r1 = Gestalt(gestaltSystemVersionMajor, &major_version);
+		OSErr r2 = Gestalt(gestaltSystemVersionMinor, &minor_version);
+		OSErr r3 = Gestalt(gestaltSystemVersionBugFix, &bugfix_version);
+
+		if((r1 == noErr) && (r2 == noErr) && (r3 == noErr))
+		{
+			mMajorVer = major_version;
+			mMinorVer = minor_version;
+			mBuild = bugfix_version;
+
+			std::stringstream os_version_string;
+			os_version_string << DARWIN_PRODUCT_NAME << " " << mMajorVer << "." << mMinorVer << "." << mBuild;
+			
+			// Put it in the OS string we are compiling
+			mOSStringSimple.append(os_version_string.str());
+		}
+		else
+		{
+			mOSStringSimple.append("Unable to collect OS info");
+		}
+	}
+	
+	// Initialize mOSString to something like:
+	// "Mac OS X 10.6.7 Darwin Kernel Version 10.7.0: Sat Jan 29 15:17:16 PST 2011; root:xnu-1504.9.37~1/RELEASE_I386 i386"
+	struct utsname un;
+	if(uname(&un) != -1)
+	{		
+		mOSString = mOSStringSimple;
+		mOSString.append(" ");
+		mOSString.append(un.sysname);
+		mOSString.append(" ");
+		mOSString.append(un.release);
+		mOSString.append(" ");
+		mOSString.append(un.version);
+		mOSString.append(" ");
+		mOSString.append(un.machine);
+	}
+	else
+	{
+		mOSString = mOSStringSimple;
+	}
+	
 #else
+	
 	struct utsname un;
 	if(uname(&un) != -1)
 	{
@@ -341,15 +392,7 @@ LLOSInfo::LLOSInfo() :
 
 		// Simplify 'Simple'
 		std::string ostype = mOSStringSimple.substr(0, mOSStringSimple.find_first_of(" ", 0));
-		if (ostype == "Darwin")
-		{
-			// Only care about major Darwin versions, truncate at first '.'
-			S32 idx1 = mOSStringSimple.find_first_of(".", 0);
-			std::string simple = mOSStringSimple.substr(0, idx1);
-			if (simple.length() > 0)
-				mOSStringSimple = simple;
-		}
-		else if (ostype == "Linux")
+		if (ostype == "Linux")
 		{
 			// Only care about major and minor Linux versions, truncate at second '.'
 			std::string::size_type idx1 = mOSStringSimple.find_first_of(".", 0);
@@ -513,71 +556,21 @@ U32 LLOSInfo::getProcessResidentSizeKB()
 LLCPUInfo::LLCPUInfo()
 {
 	std::ostringstream out;
-	CProcessor proc;
-	const ProcessorInfo* info = proc.GetCPUInfo();
+	LLProcessorInfo proc;
 	// proc.WriteInfoTextFile("procInfo.txt");
-	mHasSSE = info->_Ext.SSE_StreamingSIMD_Extensions;
-	mHasSSE2 = info->_Ext.SSE2_StreamingSIMD2_Extensions;
-	mHasAltivec = info->_Ext.Altivec_Extensions;
-	mCPUMHz = (F64)(proc.GetCPUFrequency(50)/1000000.0);
-	mFamily.assign( info->strFamily );
+	mHasSSE = proc.hasSSE();
+	mHasSSE2 = proc.hasSSE2();
+	mHasAltivec = proc.hasAltivec();
+	mCPUMHz = (F64)proc.getCPUFrequency();
+	mFamily = proc.getCPUFamilyName();
 	mCPUString = "Unknown";
 
-#if LL_WINDOWS || LL_DARWIN || LL_SOLARIS
-	out << proc.strCPUName;
+	out << proc.getCPUBrandName();
 	if (200 < mCPUMHz && mCPUMHz < 10000)           // *NOTE: cpu speed is often way wrong, do a sanity check
 	{
 		out << " (" << mCPUMHz << " MHz)";
 	}
 	mCPUString = out.str();
-	
-#elif LL_LINUX
-	std::map< std::string, std::string > cpuinfo;
-	LLFILE* cpuinfo_fp = LLFile::fopen(CPUINFO_FILE, "rb");
-	if(cpuinfo_fp)
-	{
-		char line[MAX_STRING];
-		memset(line, 0, MAX_STRING);
-		while(fgets(line, MAX_STRING, cpuinfo_fp))
-		{
-			// /proc/cpuinfo on Linux looks like:
-			// name\t*: value\n
-			char* tabspot = strchr( line, '\t' );
-			if (tabspot == NULL)
-				continue;
-			char* colspot = strchr( tabspot, ':' );
-			if (colspot == NULL)
-				continue;
-			char* spacespot = strchr( colspot, ' ' );
-			if (spacespot == NULL)
-				continue;
-			char* nlspot = strchr( line, '\n' );
-			if (nlspot == NULL)
-				nlspot = line + strlen( line ); // Fallback to terminating NUL
-			std::string linename( line, tabspot );
-			std::string llinename(linename);
-			LLStringUtil::toLower(llinename);
-			std::string lineval( spacespot + 1, nlspot );
-			cpuinfo[ llinename ] = lineval;
-		}
-		fclose(cpuinfo_fp);
-	}
-# if LL_X86
-	std::string flags = " " + cpuinfo["flags"] + " ";
-	LLStringUtil::toLower(flags);
-	mHasSSE = ( flags.find( " sse " ) != std::string::npos );
-	mHasSSE2 = ( flags.find( " sse2 " ) != std::string::npos );
-	
-	F64 mhz;
-	if (LLStringUtil::convertToF64(cpuinfo["cpu mhz"], mhz)
-	    && 200.0 < mhz && mhz < 10000.0)
-	{
-		mCPUMHz = (F64)llrint(mhz);
-	}
-	if (!cpuinfo["model name"].empty())
-		mCPUString = cpuinfo["model name"];
-# endif // LL_X86
-#endif // LL_LINUX
 }
 
 bool LLCPUInfo::hasAltivec() const
@@ -607,38 +600,9 @@ std::string LLCPUInfo::getCPUString() const
 
 void LLCPUInfo::stream(std::ostream& s) const
 {
-#if LL_WINDOWS || LL_DARWIN || LL_SOLARIS
 	// gather machine information.
-	char proc_buf[CPUINFO_BUFFER_SIZE];		/* Flawfinder: ignore */
-	CProcessor proc;
-	if(proc.CPUInfoToText(proc_buf, CPUINFO_BUFFER_SIZE))
-	{
-		s << proc_buf;
-	}
-	else
-	{
-		s << "Unable to collect processor information" << std::endl;
-	}
-#else
-	// *NOTE: This works on linux. What will it do on other systems?
-	LLFILE* cpuinfo = LLFile::fopen(CPUINFO_FILE, "rb");
-	if(cpuinfo)
-	{
-		char line[MAX_STRING];
-		memset(line, 0, MAX_STRING);
-		while(fgets(line, MAX_STRING, cpuinfo))
-		{
-			line[strlen(line)-1] = ' ';
-			s << line;
-		}
-		fclose(cpuinfo);
-		s << std::endl;
-	}
-	else
-	{
-		s << "Unable to collect processor information" << std::endl;
-	}
-#endif
+	s << LLProcessorInfo().getCPUFeatureDescription();
+
 	// These are interesting as they reflect our internal view of the
 	// CPU's attributes regardless of platform
 	s << "->mHasSSE:     " << (U32)mHasSSE << std::endl;

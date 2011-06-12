@@ -16,14 +16,14 @@
 	     label="L$20" label_selected="L$20" left="203" mouse_opaque="true"
 	     name="fastpay 20" scale_image="true" width="80" />
 	<button bottom="-162" enabled="false" font="SansSerif" halign="center" height="20"
-	     label="Pay" label_selected="Pay" left="120" mouse_opaque="true"
-	     name="pay btn" scale_image="true" width="80" />
+	     label="Pay" label_selected="Pay" left="140" mouse_opaque="true"
+	     name="pay btn" scale_image="true" width="70" />
 	<button bottom="-162" enabled="true" font="SansSerif" halign="center" height="20"
-	     label="Cancel" label_selected="Cancel" left="203" mouse_opaque="true"
-	     name="cancel btn" scale_image="true" width="80" />
+	     label="Cancel" label_selected="Cancel" left="213" mouse_opaque="true"
+	     name="cancel btn" scale_image="true" width="70" />
 	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
 	     bottom="-25" drop_shadow_visible="true" enabled="true" follows="left|top"
-	     font="SansSerif" h_pad="0" halign="left" height="18" left="12"
+	     font="SansSerif" h_pad="0" halign="left" height="18" left="8"
 	     mouse_opaque="true" name="payee_label" v_pad="0" width="75">
 		Pay resident:
 	</text>
@@ -56,7 +56,7 @@
 	</text>
 	<line_editor bevel_style="in" border_style="line" border_thickness="1" bottom="-160"
 	     enabled="true" follows="left|top|right" font="SansSerif"
-	     handle_edit_keys_directly="false" height="18" left="60" max_length="9"
+	     handle_edit_keys_directly="false" height="18" left="81" max_length="9"
 	     mouse_opaque="true" name="amount" select_all_on_focus_received="false"
-	     select_on_focus="false" width="57" />
+	     select_on_focus="false" width="54" />
 </floater>

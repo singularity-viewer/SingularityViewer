@@ -89,7 +89,7 @@
 #include "llmaniptranslate.h"
 #include "llface.h"
 #include "llfeaturemanager.h"
-#include "llfilepicker.h"
+#include "statemachine/aifilepicker.h"
 #include "llfloater.h"
 #include "llfloateractivespeakers.h"
 #include "llfloaterbuildoptions.h"
@@ -522,8 +522,8 @@ public:
 			ypos += y_inc;
 		}
 		// only display these messages if we are actually rendering beacons at this moment
-		static const LLCachedControl<bool> beacon_always_on("BeaconAlwaysOn",false);
-		if (LLPipeline::getRenderBeacons(NULL) && beacon_always_on)
+		static const LLCachedControl<bool> beacons_visible("BeaconsVisible",false);
+		if (LLPipeline::getRenderBeacons(NULL) && beacons_visible)
 		{
 			if (LLPipeline::getRenderParticleBeacons(NULL))
 			{
@@ -553,7 +553,7 @@ public:
 				}
 			if (LLPipeline::getRenderSoundBeacons(NULL))
 			{
-				addText(xpos, ypos, "Viewing sound beacons (yellow)");
+				addText(xpos, ypos, "Viewing sound beacons (blue/cyan/green/yellow/red)");
 				ypos += y_inc;
 			}
 		}
@@ -1912,7 +1912,8 @@ void LLViewerWindow::initWorldUI()
 	S32 width = mRootView->getRect().getWidth();
 	LLRect full_window(0, height, width, 0);
 
-	if ( gBottomPanel == NULL )			// Don't re-enter if objects are alreay created
+	// Don't re-enter if objects are alreay created
+	if (gBottomPanel == NULL)
 	{
 		// panel containing chatbar, toolbar, and overlay, over floaters
 		gBottomPanel = new LLBottomPanel(mRootView->getRect());
@@ -1924,6 +1925,57 @@ void LLViewerWindow::initWorldUI()
 		mRootView->addChild(gHoverView);
 		
 		gIMMgr = LLIMMgr::getInstance();
+
+		//
+		// Tools for building
+		//
+
+		init_menus();
+
+		// Toolbox floater
+		gFloaterTools = new LLFloaterTools();
+		gFloaterTools->setVisible(FALSE);
+	}
+	
+	if ( gHUDView == NULL )
+	{
+		LLRect hud_rect = full_window;
+		hud_rect.mBottom += 50;
+		if (gMenuBarView)
+		{
+			hud_rect.mTop -= gMenuBarView->getRect().getHeight();
+		}
+		gHUDView = new LLHUDView(hud_rect);
+		// put behind everything else in the UI
+		mRootView->addChildAtEnd(gHUDView);
+	}
+}
+
+// initWorldUI that wasn't before logging in. Some of this may require the access the 'LindenUserDir'.
+void LLViewerWindow::initWorldUI_postLogin()
+{
+	S32 height = mRootView->getRect().getHeight();
+	S32 width = mRootView->getRect().getWidth();
+	LLRect full_window(0, height, width, 0);
+
+	// Don't re-enter if objects are alreay created.
+	if (!gStatusBar)
+	{
+		// Status bar
+		S32 menu_bar_height = gMenuBarView->getRect().getHeight();
+		LLRect root_rect = getRootView()->getRect();
+		LLRect status_rect(0, root_rect.getHeight(), root_rect.getWidth(), root_rect.getHeight() - menu_bar_height);
+		gStatusBar = new LLStatusBar(std::string("status"), status_rect);
+		gStatusBar->setFollows(FOLLOWS_LEFT | FOLLOWS_RIGHT | FOLLOWS_TOP);
+
+		gStatusBar->reshape(root_rect.getWidth(), gStatusBar->getRect().getHeight(), TRUE);
+		gStatusBar->translate(0, root_rect.getHeight() - gStatusBar->getRect().getHeight());
+		// sync bg color with menu bar
+		gStatusBar->setBackgroundColor( gMenuBarView->getBackgroundColor() );
+		getRootView()->addChild(gStatusBar);
+
+		// Menu holder appears on top to get first pass at all mouse events
+		getRootView()->sendChildToFront(gMenuHolder);
 
 		if ( gSavedPerAccountSettings.getBOOL("LogShowHistory") )
 		{
@@ -1950,47 +2002,7 @@ void LLViewerWindow::initWorldUI()
 		gFloaterTeleportHistory = new LLFloaterTeleportHistory();
 		gFloaterTeleportHistory->setVisible(FALSE);
 
-		//
-		// Tools for building
-		//
-
-		// Toolbox floater
-		init_menus();
-
-		gFloaterTools = new LLFloaterTools();
-		gFloaterTools->setVisible(FALSE);
-
-		// Status bar
-		S32 menu_bar_height = gMenuBarView->getRect().getHeight();
-		LLRect root_rect = getRootView()->getRect();
-		LLRect status_rect(0, root_rect.getHeight(), root_rect.getWidth(), root_rect.getHeight() - menu_bar_height);
-		gStatusBar = new LLStatusBar(std::string("status"), status_rect);
-		gStatusBar->setFollows(FOLLOWS_LEFT | FOLLOWS_RIGHT | FOLLOWS_TOP);
-
-		gStatusBar->reshape(root_rect.getWidth(), gStatusBar->getRect().getHeight(), TRUE);
-		gStatusBar->translate(0, root_rect.getHeight() - gStatusBar->getRect().getHeight());
-		// sync bg color with menu bar
-		gStatusBar->setBackgroundColor( gMenuBarView->getBackgroundColor() );
-
 		LLFloaterChatterBox::createInstance(LLSD());
-
-		getRootView()->addChild(gStatusBar);
-
-		// menu holder appears on top to get first pass at all mouse events
-		getRootView()->sendChildToFront(gMenuHolder);
-	}
-	
-	if ( gHUDView == NULL )
-	{
-		LLRect hud_rect = full_window;
-		hud_rect.mBottom += 50;
-		if (gMenuBarView)
-		{
-			hud_rect.mTop -= gMenuBarView->getRect().getHeight();
-		}
-		gHUDView = new LLHUDView(hud_rect);
-		// put behind everything else in the UI
-		mRootView->addChildAtEnd(gHUDView);
 	}
 }
 
@@ -3373,7 +3385,7 @@ void LLViewerWindow::renderSelections( BOOL for_gl_pick, BOOL pick_parcel_walls,
 								 ((gRlvHandler.hasBehaviour(RLV_BHVR_UNSIT)) || (gRlvHandler.hasBehaviour(RLV_BHVR_SITTP))) )
 							{
 								LLVOAvatar* pAvatar = gAgent.getAvatarObject();
-								if ( (pAvatar) && (pAvatar->mIsSitting) && (pAvatar->getRoot() == object->getRootEdit()) )
+								if ( (pAvatar) && (pAvatar->isSitting()) && (pAvatar->getRoot() == object->getRootEdit()) )
 									moveable_object_selected = this_object_movable = FALSE;
 							}
 // [/RLVa:KB]
@@ -3976,50 +3988,62 @@ BOOL LLViewerWindow::mousePointOnLandGlobal(const S32 x, const S32 y, LLVector3d
 }
 
 // Saves an image to the harddrive as "SnapshotX" where X >= 1.
-BOOL LLViewerWindow::saveImageNumbered(LLImageFormatted *image)
+void LLViewerWindow::saveImageNumbered(LLPointer<LLImageFormatted> image)
 {
 	if (!image)
 	{
-		return FALSE;
+		return;
 	}
 
-	LLFilePicker::ESaveFilter pick_type;
+	ESaveFilter pick_type;
 	std::string extension("." + image->getExtension());
 	if (extension == ".j2c")
-		pick_type = LLFilePicker::FFSAVE_J2C;
+		pick_type = FFSAVE_J2C;
 	else if (extension == ".bmp")
-		pick_type = LLFilePicker::FFSAVE_BMP;
+		pick_type = FFSAVE_BMP;
 	else if (extension == ".jpg")
-		pick_type = LLFilePicker::FFSAVE_JPEG;
+		pick_type = FFSAVE_JPEG;
 	else if (extension == ".png")
-		pick_type = LLFilePicker::FFSAVE_PNG;
+		pick_type = FFSAVE_PNG;
 	else if (extension == ".tga")
-		pick_type = LLFilePicker::FFSAVE_TGA;
+		pick_type = FFSAVE_TGA;
 	else
-		pick_type = LLFilePicker::FFSAVE_ALL; // ???
+		pick_type = FFSAVE_ALL; // ???
 	
 	// Get a base file location if needed.
 	if ( ! isSnapshotLocSet())		
 	{
 		std::string proposed_name( sSnapshotBaseName );
 
-		// getSaveFile will append an appropriate extension to the proposed name, based on the ESaveFilter constant passed in.
+		// AIFilePicker will append an appropriate extension to the proposed name, based on the ESaveFilter constant passed in.
 
 		// pick a directory in which to save
-		LLFilePicker& picker = LLFilePicker::instance();
-		if (!picker.getSaveFile(pick_type, proposed_name))
-		{
-			// Clicked cancel
-			return FALSE;
-		}
+		AIFilePicker* filepicker = AIFilePicker::create();				// Deleted in LLViewerWindow::saveImageNumbered_continued1
+		filepicker->open(proposed_name, pick_type, "", "snapshot");
+		filepicker->run(boost::bind(&LLViewerWindow::saveImageNumbered_continued1, this, image, extension, filepicker));
+		return;
+	}
 
+	// LLViewerWindow::sSnapshotBaseName and LLViewerWindow::sSnapshotDir already known. Go straight to saveImageNumbered_continued2.
+	saveImageNumbered_continued2(image, extension);
+}
+
+void LLViewerWindow::saveImageNumbered_continued1(LLPointer<LLImageFormatted> image, std::string const& extension, AIFilePicker* filepicker)
+{
+	if (filepicker->hasFilename())
+	{
 		// Copy the directory + file name
-		std::string filepath = picker.getFirstFile();
+		std::string filepath = filepicker->getFilename();
 
 		LLViewerWindow::sSnapshotBaseName = gDirUtilp->getBaseFileName(filepath, true);
 		LLViewerWindow::sSnapshotDir = gDirUtilp->getDirName(filepath);
-	}
 
+		saveImageNumbered_continued2(image, extension);
+	}
+}
+
+void LLViewerWindow::saveImageNumbered_continued2(LLPointer<LLImageFormatted> image, std::string const& extension)
+{
 	// Look for an unused file name
 	std::string filepath;
 	S32 i = 1;
@@ -4039,7 +4063,10 @@ BOOL LLViewerWindow::saveImageNumbered(LLImageFormatted *image)
 	}
 	while( -1 != err );  // search until the file is not found (i.e., stat() gives an error).
 
-	return image->save(filepath);
+	if (image->save(filepath))
+	{
+		playSnapshotAnimAndSound();
+	}
 }
 
 void LLViewerWindow::resetSnapshotLoc()
@@ -4317,6 +4344,21 @@ BOOL LLViewerWindow::rawSnapshot(LLImageRaw *raw, S32 image_width, S32 image_hei
 	image_width *= internal_scale;
 #endif //shy_mod
 
+	//Hack until hud ui works in high-res shots again (nameplates and hud attachments are buggered).
+	if ((image_width > window_width || image_height > window_height))
+	{
+		if(LLPipeline::sShowHUDAttachments)
+		{
+			hide_hud=true;
+			LLPipeline::sShowHUDAttachments = FALSE;
+		}
+		if(show_ui)
+		{
+			show_ui=false;
+			LLPipeline::toggleRenderDebugFeature((void*)LLPipeline::RENDER_DEBUG_FEATURE_UI);
+		}
+	}
+	
 	if(!keep_window_aspect) //image cropping
 	{		
 		F32 ratio = llmin( (F32)window_width / image_width , (F32)window_height / image_height) ;
@@ -4508,7 +4550,7 @@ BOOL LLViewerWindow::rawSnapshot(LLImageRaw *raw, S32 image_width, S32 image_hei
 	gDepthDirty = TRUE;
 
 	// POST SNAPSHOT
-	if (!gPipeline.hasRenderDebugFeatureMask(LLPipeline::RENDER_DEBUG_FEATURE_UI))
+	if (prev_draw_ui != gPipeline.hasRenderDebugFeatureMask(LLPipeline::RENDER_DEBUG_FEATURE_UI))
 	{
 		LLPipeline::toggleRenderDebugFeature((void*)LLPipeline::RENDER_DEBUG_FEATURE_UI);
 	}

@@ -36,9 +36,8 @@
 #define LL_LLPLUGININSTANCE_H
 
 #include "llstring.h"
-#include "llapr.h"
 
-#include "apr_dso.h"
+struct apr_dso_handle_t; //Cannot include llapr, as it defines NOUSER for windows, which breaks including commdlg.h!
 
 /**
  * @brief LLPluginInstanceMessageListener receives messages sent from the plugin loader shell to the plugin.
@@ -50,6 +49,8 @@ public:
    /** Plugin receives message from plugin loader shell. */
 	virtual void receivePluginMessage(const std::string &message) = 0;
 };
+
+class BasicPluginBase;
 
 /**
  * @brief LLPluginInstance handles loading the dynamic library of a plugin and setting up its entry points for message passing.
@@ -79,26 +80,28 @@ public:
 	 * @param[in] message_string Null-terminated C string 
     * @param[in] user_data The opaque reference that the callee supplied during setup.
     */
-	typedef void (*sendMessageFunction) (const char *message_string, void **user_data);
+	typedef void (*receiveMessageFunction)(char const* message_string, BasicPluginBase** plugin_object);
+
+	typedef void (*sendMessageFunction)(char const* message_string, LLPluginInstance** plugin_instance);
 
 	/** The signature of the plugin init function. TODO:DOC check direction (pluging loader shell to plugin?)
     *
     * @param[in] host_user_data Data from plugin loader shell.
     * @param[in] plugin_send_function Function for sending from the plugin loader shell to plugin.
     */
-	typedef int (*pluginInitFunction) (sendMessageFunction host_send_func, void *host_user_data, sendMessageFunction *plugin_send_func, void **plugin_user_data);
+	typedef int (*pluginInitFunction)(sendMessageFunction send_message_function, LLPluginInstance* plugin_instance, receiveMessageFunction* receive_message_function, BasicPluginBase** plugin_object);
 	
    /** Name of plugin init function */
 	static const char *PLUGIN_INIT_FUNCTION_NAME;
 	
 private:
-	static void staticReceiveMessage(const char *message_string, void **user_data);
+	static void staticReceiveMessage(char const* message_string, LLPluginInstance** plugin_instance);
 	void receiveMessage(const char *message_string);
 
 	apr_dso_handle_t *mDSOHandle;
 	
-	void *mPluginUserData;
-	sendMessageFunction mPluginSendMessageFunction;
+	BasicPluginBase* mPluginObject;
+	receiveMessageFunction mReceiveMessageFunction;
 	
 	LLPluginInstanceMessageListener *mOwner;
 };

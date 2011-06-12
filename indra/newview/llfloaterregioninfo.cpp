@@ -53,7 +53,7 @@
 #include "llbutton.h" 
 #include "llcheckboxctrl.h"
 #include "llcombobox.h"
-#include "llfilepicker.h"
+#include "statemachine/aifilepicker.h"
 #include "llfloaterdaycycle.h"
 #include "llfloatergodtools.h"	// for send_sim_wide_deletes()
 #include "llfloatertopobjects.h" // added to fix SL-32336
@@ -1324,41 +1324,50 @@ void LLPanelRegionTerrainInfo::onChangeSunHour(LLUICtrl* ctrl, void*)
 // static
 void LLPanelRegionTerrainInfo::onClickDownloadRaw(void* data)
 {
-	LLFilePicker& picker = LLFilePicker::instance();
-	if (!picker.getSaveFile(LLFilePicker::FFSAVE_RAW, "terrain.raw"))
+	LLPanelRegionTerrainInfo* self = (LLPanelRegionTerrainInfo*)data;
+	AIFilePicker* filepicker = AIFilePicker::create();
+	filepicker->open("terrain.raw", FFSAVE_RAW);
+	filepicker->run(boost::bind(&LLPanelRegionTerrainInfo::onClickUploadRaw_continued, self, filepicker));
+}
+
+void LLPanelRegionTerrainInfo::onClickDownloadRaw_continued(AIFilePicker* filepicker)
+{
+	if (!filepicker->hasFilename())
 	{
-		llwarns << "No file" << llendl;
 		return;
 	}
-	std::string filepath = picker.getFirstFile();
+	std::string filepath = filepicker->getFilename();
 	gXferManager->expectFileForRequest(filepath);
 
-	LLPanelRegionTerrainInfo* self = (LLPanelRegionTerrainInfo*)data;
 	strings_t strings;
 	strings.push_back("download filename");
 	strings.push_back(filepath);
 	LLUUID invoice(LLFloaterRegionInfo::getLastInvoice());
-	self->sendEstateOwnerMessage(gMessageSystem, "terrain", invoice, strings);
+	sendEstateOwnerMessage(gMessageSystem, "terrain", invoice, strings);
 }
 
 // static
 void LLPanelRegionTerrainInfo::onClickUploadRaw(void* data)
 {
-	LLFilePicker& picker = LLFilePicker::instance();
-	if (!picker.getOpenFile(LLFilePicker::FFLOAD_RAW))
-	{
-		llwarns << "No file" << llendl;
+	LLPanelRegionTerrainInfo* self = (LLPanelRegionTerrainInfo*)data;
+	AIFilePicker* filepicker = AIFilePicker::create();
+	filepicker->open(FFLOAD_RAW);
+	filepicker->run(boost::bind(&LLPanelRegionTerrainInfo::onClickUploadRaw_continued, self, filepicker));
+}
+
+void LLPanelRegionTerrainInfo::onClickUploadRaw_continued(AIFilePicker* filepicker)
+{
+	if (!filepicker->hasFilename())
 		return;
-	}
-	std::string filepath = picker.getFirstFile();
+
+	std::string filepath = filepicker->getFilename();
 	gXferManager->expectFileForTransfer(filepath);
 
-	LLPanelRegionTerrainInfo* self = (LLPanelRegionTerrainInfo*)data;
 	strings_t strings;
 	strings.push_back("upload filename");
 	strings.push_back(filepath);
 	LLUUID invoice(LLFloaterRegionInfo::getLastInvoice());
-	self->sendEstateOwnerMessage(gMessageSystem, "terrain", invoice, strings);
+	sendEstateOwnerMessage(gMessageSystem, "terrain", invoice, strings);
 
 	LLNotifications::instance().add("RawUploadStarted");
 }

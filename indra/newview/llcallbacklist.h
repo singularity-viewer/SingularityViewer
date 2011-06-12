@@ -53,9 +53,11 @@ public:
 
 protected:
 	// Use a list so that the callbacks are ordered in case that matters
-	typedef std::pair<callback_t,void*> callback_pair_t;
+	typedef std::pair<callback_t,void*> callback_pair_t;		// callback_t is a (function) pointer. If it is NULL it means that the entry should be considered deleted.
 	typedef std::list<callback_pair_t > callback_list_t;
 	callback_list_t	mCallbackList;
+	bool mLoopingOverCallbackList;								// True while looping over mCallbackList and calling the callback_t functions (see callFunctions).
+	bool mNeedErase;											// True when deleteFunction was called while mLoopingOverCallbackList was true.
 };
 
 extern LLCallbackList gIdleCallbacks;

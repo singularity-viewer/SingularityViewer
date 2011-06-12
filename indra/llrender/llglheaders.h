@@ -473,17 +473,17 @@ extern PFNGLFRAMEBUFFERTEXTURE3DEXTPROC glFramebufferTexture3DEXT;
 extern PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC glFramebufferRenderbufferEXT;
 extern PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC glGetFramebufferAttachmentParameterivEXT;
 extern PFNGLGENERATEMIPMAPEXTPROC glGenerateMipmapEXT;
-
-// GL_EXT_framebuffer_multisample
-extern PFNGLRENDERBUFFERSTORAGEMULTISAMPLEEXTPROC glRenderbufferStorageMultisampleEXT;
-
-// GL_EXT_framebuffer_blit
 extern PFNGLBLITFRAMEBUFFEREXTPROC glBlitFramebufferEXT;
+extern PFNGLRENDERBUFFERSTORAGEMULTISAMPLEEXTPROC glRenderbufferStorageMultisampleEXT;
+extern PFNGLFRAMEBUFFERTEXTURELAYEREXTPROC glFramebufferTextureLayerEXT;
 
 //GL_ARB_draw_buffers
 extern PFNGLDRAWBUFFERSARBPROC glDrawBuffersARB;
 
+
 #elif LL_WINDOWS
+//----------------------------------------------------------------------------
+// LL_WINDOWS
 
 // windows gl headers depend on things like APIENTRY, so include windows.
 #define WIN32_LEAN_AND_MEAN
@@ -672,12 +672,9 @@ extern PFNGLFRAMEBUFFERTEXTURE3DEXTPROC glFramebufferTexture3DEXT;
 extern PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC glFramebufferRenderbufferEXT;
 extern PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC glGetFramebufferAttachmentParameterivEXT;
 extern PFNGLGENERATEMIPMAPEXTPROC glGenerateMipmapEXT;
-
-// GL_EXT_framebuffer_multisample
-extern PFNGLRENDERBUFFERSTORAGEMULTISAMPLEEXTPROC glRenderbufferStorageMultisampleEXT;
-
-// GL_EXT_framebuffer_blit
 extern PFNGLBLITFRAMEBUFFEREXTPROC glBlitFramebufferEXT;
+extern PFNGLRENDERBUFFERSTORAGEMULTISAMPLEEXTPROC glRenderbufferStorageMultisampleEXT;
+extern PFNGLFRAMEBUFFERTEXTURELAYEREXTPROC glFramebufferTextureLayerEXT;
 
 //GL_ARB_draw_buffers
 extern PFNGLDRAWBUFFERSARBPROC glDrawBuffersARB;
@@ -720,6 +717,9 @@ extern void glFramebufferRenderbufferEXT(GLenum target, GLenum attachment, GLenu
 extern void glGetFramebufferAttachmentParameterivEXT(GLenum target, GLenum attachment, GLenum pname, GLint *params) AVAILABLE_MAC_OS_X_VERSION_10_4_AND_LATER;
 extern void glGenerateMipmapEXT(GLenum target) AVAILABLE_MAC_OS_X_VERSION_10_4_AND_LATER;
 
+#ifndef GL_ARB_framebuffer_object
+#define glGenerateMipmap glGenerateMipmapEXT
+#endif
 // GL_ARB_draw_buffers
 extern void glDrawBuffersARB(GLsizei n, const GLenum* bufs) AVAILABLE_MAC_OS_X_VERSION_10_4_AND_LATER;
 
@@ -842,4 +842,21 @@ extern void glGetBufferPointervARB (GLenum, GLenum, GLvoid* *);
 #define GL_DEPTH_CLAMP 0x864F
 #endif
 
+//GL_NVX_gpu_memory_info constants
+#ifndef GL_NVX_gpu_memory_info
+#define GL_NVX_gpu_memory_info
+#define	GL_GPU_MEMORY_INFO_DEDICATED_VIDMEM_NVX          0x9047
+#define	GL_GPU_MEMORY_INFO_TOTAL_AVAILABLE_MEMORY_NVX    0x9048
+#define	GL_GPU_MEMORY_INFO_CURRENT_AVAILABLE_VIDMEM_NVX  0x9049
+#define	GL_GPU_MEMORY_INFO_EVICTION_COUNT_NVX            0x904A
+#define	GL_GPU_MEMORY_INFO_EVICTED_MEMORY_NVX            0x904B
+#endif
+
+//GL_ATI_meminfo constants
+#ifndef GL_ATI_meminfo
+#define GL_ATI_meminfo
+#define GL_VBO_FREE_MEMORY_ATI                     0x87FB
+#define GL_TEXTURE_FREE_MEMORY_ATI                 0x87FC
+#define GL_RENDERBUFFER_FREE_MEMORY_ATI            0x87FD
+#endif
 #endif // LL_LLGLHEADERS_H

@@ -4,6 +4,8 @@
  * Copyright (c) 2007-$CurrentYear$, Linden Research, Inc.
  * $License$
  */
+ 
+#version 120
 
 // this class1 shader is just a copy of terrainF
 

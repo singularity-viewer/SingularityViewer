@@ -74,7 +74,6 @@
 // tag: vaa emerald local_asset_browser [begin]
 #include "floaterlocalassetbrowse.h"
 #include "llscrolllistctrl.h"
-#include "llfilepicker.h"
 #define	LOCALLIST_COL_ID 1
 // tag: vaa emerald local_asset_browser [end]
 

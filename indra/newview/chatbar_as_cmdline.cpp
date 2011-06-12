@@ -41,6 +41,7 @@
 #include "llviewerregion.h"
 #include "llworld.h"
 #include "lluuid.h"
+#include "lleventtimer.h"
 #include "llviewercontrol.h"
 
 #include "material_codes.h"

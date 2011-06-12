@@ -75,7 +75,7 @@
 #include "llfirstuse.h"
 
 #include "lldrawpool.h"
-
+#include "hippolimits.h"
 
 
 
@@ -505,7 +505,7 @@ void LLPanelObject::getState( )
 	if ( (rlv_handler_t::isEnabled()) && ((gRlvHandler.hasBehaviour(RLV_BHVR_UNSIT)) || (gRlvHandler.hasBehaviour(RLV_BHVR_SITTP))) )
 	{
 		LLVOAvatar* pAvatar = gAgent.getAvatarObject();
-		if ( (pAvatar) && (pAvatar->mIsSitting) && (pAvatar->getRoot() == objectp->getRootEdit()) )
+		if ( (pAvatar) && (pAvatar->isSitting()) && (pAvatar->getRoot() == objectp->getRootEdit()) )
 			enable_move = enable_scale = enable_rotate = FALSE;
 	}
 // [/RLVa:KB]
@@ -1224,9 +1224,9 @@ void LLPanelObject::getState( )
 		mSpinScaleY->set( scale_y );
 		calcp->setVar(LLCalc::X_HOLE, scale_x);
 		calcp->setVar(LLCalc::Y_HOLE, scale_y);
-		mSpinScaleX->setMinValue(OBJECT_MIN_HOLE_SIZE);
+		mSpinScaleX->setMinValue(gHippoLimits->getMinHoleSize());
 		mSpinScaleX->setMaxValue(OBJECT_MAX_HOLE_SIZE_X);
-		mSpinScaleY->setMinValue(OBJECT_MIN_HOLE_SIZE);
+		mSpinScaleY->setMinValue(gHippoLimits->getMinHoleSize());
 		mSpinScaleY->setMaxValue(OBJECT_MAX_HOLE_SIZE_Y);
 		break;
 	default:
@@ -1270,7 +1270,7 @@ void LLPanelObject::getState( )
 	*/
 	{
 		mSpinHollow->setMinValue(0.f);
-		mSpinHollow->setMaxValue(95.f); //Not that nuts. -HgB
+		mSpinHollow->setMaxValue(gHippoLimits->getMaxHollow() * 100.0f);
 	}
 
 	// Update field enablement
@@ -1987,11 +1987,11 @@ void LLPanelObject::getVolumeParams(LLVolumeParams& volume_params)
 	{
 		scale_x = llclamp(
 			scale_x,
-			OBJECT_MIN_HOLE_SIZE,
+			gHippoLimits->getMinHoleSize(),
 			OBJECT_MAX_HOLE_SIZE_X);
 		scale_y = llclamp(
 			scale_y,
-			OBJECT_MIN_HOLE_SIZE,
+			gHippoLimits->getMinHoleSize(),
 			OBJECT_MAX_HOLE_SIZE_Y);
 
 		// Limit radius offset, based on taper and hole size y.

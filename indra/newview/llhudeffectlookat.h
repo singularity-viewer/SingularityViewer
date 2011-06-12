@@ -34,6 +34,7 @@
 #define LL_LLHUDEFFECTLOOKAT_H
 
 #include "llhudeffect.h"
+#include "llframetimer.h"
 
 class LLViewerObject;
 class LLVOAvatar;
@@ -85,7 +86,6 @@ protected:
 	void setTargetPosGlobal(const LLVector3d &target_pos_global);
 
 public:
-	static BOOL sDebugLookAt;
 
 private:
 	ELookAtType					mTargetType;

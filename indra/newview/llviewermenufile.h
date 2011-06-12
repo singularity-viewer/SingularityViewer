@@ -78,6 +78,4 @@ void upload_new_resource(const LLTransactionID &tid,
 			 S32 expected_upload_cost,
 			 void *userdata);
 
-const std::string upload_pick(void* data);
-
 #endif

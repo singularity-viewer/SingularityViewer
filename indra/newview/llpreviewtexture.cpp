@@ -37,7 +37,7 @@
 #include "llagent.h"
 #include "llbutton.h"
 #include "llcombobox.h"
-#include "llfilepicker.h"
+#include "statemachine/aifilepicker.h"
 #include "llimagetga.h"
 #include "llinventoryview.h"
 #include "llinventory.h"
@@ -380,15 +380,19 @@ void LLPreviewTexture::saveAs()
 	if( mLoadingFullImage )
 		return;
 
-	LLFilePicker& file_picker = LLFilePicker::instance();
 	const LLViewerInventoryItem* item = getItem() ;
-	if( !file_picker.getSaveFile( LLFilePicker::FFSAVE_TGA, item ? LLDir::getScrubbedFileName(item->getName()) : LLStringUtil::null) )
-	{
-		// User canceled or we failed to acquire save file.
+	AIFilePicker* filepicker = AIFilePicker::create();
+	filepicker->open(item ? LLDir::getScrubbedFileName(item->getName()) + ".tga" : LLStringUtil::null, FFSAVE_TGA, "", "image");
+	filepicker->run(boost::bind(&LLPreviewTexture::saveAs_continued, this, item, filepicker));
+}
+
+void LLPreviewTexture::saveAs_continued(LLViewerInventoryItem const* item, AIFilePicker* filepicker)
+{
+	if (!filepicker->hasFilename())
 		return;
-	}
+
 	// remember the user-approved/edited file name.
-	mSaveFileName = file_picker.getFirstFile();
+	mSaveFileName = filepicker->getFilename();
 	mLoadingFullImage = TRUE;
 	getWindow()->incBusyCount();
 	mImage->forceToSaveRawImage(0) ;//re-fetch the raw image if the old one is removed.

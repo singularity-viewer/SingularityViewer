@@ -38,7 +38,6 @@
 #include "llagent.h"
 #include "llcompilequeue.h"
 #include "llfloaterbuycurrency.h"
-#include "llfilepicker.h"
 #include "llnotify.h"
 #include "llinventorymodel.h"
 #include "llinventoryview.h"
@@ -129,7 +128,7 @@ void LLAssetUploadResponder::error(U32 statusNum, const std::string& reason)
 			break;
 	}
 	LLUploadDialog::modalUploadFinished();
-	LLFilePicker::instance().reset();  // unlock file picker when bulk upload fails
+	//AIFIXME? LLFilePicker::instance().reset();  // unlock file picker when bulk upload fails
 }
 
 //virtual 
@@ -279,7 +278,7 @@ void LLNewAgentInventoryResponder::uploadComplete(const LLSD& content)
 										mPostData["name"].asString(),
 										mPostData["description"].asString(),
 										LLSaleInfo::DEFAULT,
-										LLInventoryItem::II_FLAGS_NONE,
+										LLInventoryItemFlags::II_FLAGS_NONE,
 										creation_date_now);
 		gInventory.updateItem(item);
 		gInventory.notifyObservers();
@@ -293,7 +292,7 @@ void LLNewAgentInventoryResponder::uploadComplete(const LLSD& content)
 
 			view->getPanel()->setSelection(content["new_inventory_item"].asUUID(), TAKE_FOCUS_NO);
 			if((LLAssetType::AT_TEXTURE == asset_type || LLAssetType::AT_SOUND == asset_type)
-				&& LLFilePicker::instance().getFileCount() <= FILE_COUNT_DISPLAY_THRESHOLD)
+				/* AIFIXME: && LLFilePicker::instance().getFileCount() <= FILE_COUNT_DISPLAY_THRESHOLD */)
 			{
 				view->getPanel()->openSelected();
 			}
@@ -309,7 +308,8 @@ void LLNewAgentInventoryResponder::uploadComplete(const LLSD& content)
 
 	// remove the "Uploading..." message
 	LLUploadDialog::modalUploadFinished();
-	
+
+#if 0 // AIFIXME: This needs to be done in some other way.
 	// *FIX: This is a pretty big hack. What this does is check the
 	// file picker if there are any more pending uploads. If so,
 	// upload that file.
@@ -339,6 +339,7 @@ void LLNewAgentInventoryResponder::uploadComplete(const LLSD& content)
 				    everyone_perms, display_name,
 				    callback, expected_upload_cost, userdata);
 	}
+#endif
 }
 
 LLSendTexLayerResponder::LLSendTexLayerResponder(const LLSD& post_data,

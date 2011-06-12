@@ -425,7 +425,7 @@ class SGHostBlackList{
 
 	static void lock() {
 		if (!sMutex)
-			sMutex = new LLMutex(0);
+			sMutex = new LLMutex;
 		sMutex->lock();
 	}
 
@@ -767,7 +767,6 @@ LLTextureFetchWorker::LLTextureFetchWorker(LLTextureFetch* fetcher,
 	  mRetryAttempt(0),
 	  mActiveCount(0),
 	  mGetStatus(0),
-	  mWorkMutex(NULL),
 	  mFirstPacket(0),
 	  mLastPacket(-1),
 	  mTotalPackets(0),
@@ -1251,8 +1250,11 @@ bool LLTextureFetchWorker::doWork(S32 param)
 			//1, not openning too many file descriptors at the same time;
 			//2, control the traffic of http so udp gets bandwidth.
 			//
-			static const S32 MAX_NUM_OF_HTTP_REQUESTS_IN_QUEUE = 8 ;
-			if(mFetcher->getNumHTTPRequests() > MAX_NUM_OF_HTTP_REQUESTS_IN_QUEUE)
+			static const S32 MAX_NUM_OF_HTTP_REQUESTS_IN_QUEUE = 32;
+			static const S32 NUM_REQUESTS_TILL_THRESHOLDING = 2;
+			if((mFetcher->getNumHTTPRequests() > MAX_NUM_OF_HTTP_REQUESTS_IN_QUEUE) ||
+			   ((mFetcher->getTextureBandwidth() > mFetcher->mMaxBandwidth) &&
+				 mFetcher->getNumHTTPRequests() > NUM_REQUESTS_TILL_THRESHOLDING))
 			{
 				return false ; //wait.
 			}
@@ -1940,8 +1942,6 @@ LLTextureFetch::LLTextureFetch(LLTextureCache* cache, LLImageDecodeThread* image
 	  mDebugPause(FALSE),
 	  mPacketCount(0),
 	  mBadPacketCount(0),
-	  mQueueMutex(getAPRPool()),
-	  mNetworkQueueMutex(getAPRPool()),
 	  mTextureCache(cache),
 	  mImageDecodeThread(imagedecodethread),
 	  mTextureBandwidth(0),

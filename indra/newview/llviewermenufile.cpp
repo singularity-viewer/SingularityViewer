@@ -41,7 +41,7 @@
 #include "llimagepng.h"
 #include "llimagebmp.h"
 
-#include "llfilepicker.h"
+#include "statemachine/aifilepicker.h"
 #include "llfloateranimpreview.h"
 #include "llfloaterbuycurrency.h"
 
@@ -126,26 +126,26 @@ static std::string SLOBJECT_EXTENSIONS = "slobject";
 #endif
 static std::string ALL_FILE_EXTENSIONS = "*.*";
 
-std::string build_extensions_string(LLFilePicker::ELoadFilter filter)
+std::string build_extensions_string(ELoadFilter filter)
 {
 	switch(filter)
 	{
 #if LL_WINDOWS
-	case LLFilePicker::FFLOAD_IMAGE:
+	case FFLOAD_IMAGE:
 		return IMAGE_EXTENSIONS;
-	case LLFilePicker::FFLOAD_WAV:
+	case FFLOAD_WAV:
 		return SOUND_EXTENSIONS;
-	case LLFilePicker::FFLOAD_ANIM:
+	case FFLOAD_ANIM:
 		return ANIM_EXTENSIONS;
-	case LLFilePicker::FFLOAD_SLOBJECT:
+	case FFLOAD_SLOBJECT:
 		return SLOBJECT_EXTENSIONS;
 #ifdef _CORY_TESTING
-	case LLFilePicker::FFLOAD_GEOMETRY:
+	case FFLOAD_GEOMETRY:
 		return GEOMETRY_EXTENSIONS;
 #endif
-	case LLFilePicker::FFLOAD_XML:
+	case FFLOAD_XML:
 	    return XML_EXTENSIONS;
-	case LLFilePicker::FFLOAD_ALL:
+	case FFLOAD_ALL:
 		return ALL_FILE_EXTENSIONS;
 #endif
     default:
@@ -153,48 +153,51 @@ std::string build_extensions_string(LLFilePicker::ELoadFilter filter)
 	}
 }
 
-/**
-   char* upload_pick(void* data)
+class AIFileUpload {
+  protected:
+	AIFilePicker* mPicker;
 
-   If applicable, brings up a file chooser in which the user selects a file
-   to upload for a particular task.  If the file is valid for the given action,
-   returns the string to the full path filename, else returns NULL.
-   Data is the load filter for the type of file as defined in LLFilePicker.
+  public:
+    AIFileUpload(void) : mPicker(NULL) { }
+	virtual ~AIFileUpload() { llassert(!mPicker); if (mPicker) { mPicker->abort(); mPicker = NULL; } }
 
-	Eventually I'd really like to have a built-in browser that gave you all 
-	valid filetypes, default permissions, "Temp when available", and a single 
-	upload button. Maybe let it show the contents of multiple folders. The main 
-	purpose of this features is to deal with the problem of SL just up and 
-	disconnecting if you take more than like 30 seconds to look for a file. -HgB
-**/
-const std::string upload_pick(void* data)
+  public:
+	bool is_valid(std::string const& filename, ELoadFilter type);
+	void filepicker_callback(ELoadFilter type);
+	void start_filepicker(ELoadFilter type, char const* context);
+
+  protected:
+	virtual void handle_event(std::string const& filename) = 0;
+};
+
+void AIFileUpload::start_filepicker(ELoadFilter filter, char const* context)
 {
- 	if( gAgent.cameraMouselook() )
+	if( gAgent.cameraMouselook() )
 	{
 		gAgent.changeCameraToDefault();
 		// This doesn't seem necessary. JC
 		// display();
 	}
 
-	LLFilePicker::ELoadFilter type;
-	if(data)
-	{
-		type = (LLFilePicker::ELoadFilter)((intptr_t)data);
-	}
-	else
-	{
-		type = LLFilePicker::FFLOAD_ALL;
-	}
+	llassert(!mPicker);
+	mPicker = AIFilePicker::create();
+	mPicker->open(filter, "", context);
+	mPicker->run(boost::bind(&AIFileUpload::filepicker_callback, this, filter));
+}
 
-	LLFilePicker& picker = LLFilePicker::instance();
-	if (!picker.getOpenFile(type))
+void AIFileUpload::filepicker_callback(ELoadFilter type)
+{
+	if (mPicker->hasFilename())
 	{
-		llinfos << "Couldn't import objects from file" << llendl;
-		return std::string();
+	  std::string filename = mPicker->getFilename();
+	  if (is_valid(filename, type))
+		handle_event(filename);
 	}
+	mPicker = NULL;
+}
 
-	
-	const std::string& filename = picker.getFirstFile();
+bool AIFileUpload::is_valid(std::string const& filename, ELoadFilter type)
+{
 	std::string ext = gDirUtilp->getExtension(filename);
 
 	//strincmp doesn't like NULL pointers
@@ -206,7 +209,7 @@ const std::string upload_pick(void* data)
 		LLSD args;
 		args["FILE"] = short_name;
 		LLNotifications::instance().add("NoFileExtension", args);
-		return std::string();
+		return false;
 	}
 	else
 	{
@@ -249,7 +252,7 @@ const std::string upload_pick(void* data)
 			args["EXTENSION"] = ext;
 			args["VALIDS"] = valid_extensions;
 			LLNotifications::instance().add("InvalidFileExtension", args);
-			return NULL;
+			return false;
 		}
 	}//end else (non-null extension)
 
@@ -258,7 +261,7 @@ const std::string upload_pick(void* data)
 	//now we check to see
 	//if the file is actually a valid image/sound/etc.
 	//Consider completely disabling this, see how SL handles it. Maybe we can get full song uploads again! -HgB
-	if (type == LLFilePicker::FFLOAD_WAV)
+	if (type == FFLOAD_WAV)
 	{
 		// pre-qualify wavs to make sure the format is acceptable
 		std::string error_msg;
@@ -268,103 +271,68 @@ const std::string upload_pick(void* data)
 			LLSD args;
 			args["FILE"] = filename;
 			LLNotifications::instance().add( error_msg, args );
-			return std::string();
+			return false;
 		}
 	}//end if a wave/sound file
 
-	return filename;
+	return true;
 }
 
-class LLFileUploadImage : public view_listener_t
+class LLFileUploadImage : public view_listener_t, public AIFileUpload
 {
+  public:
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
 	{
-		std::string filename = upload_pick((void *)LLFilePicker::FFLOAD_IMAGE);
-		if (!filename.empty())
-		{
-			LLFloaterImagePreview* floaterp = new LLFloaterImagePreview(filename);
-			LLUICtrlFactory::getInstance()->buildFloater(floaterp, "floater_image_preview.xml");
-		}
-		return TRUE;
+		start_filepicker(FFLOAD_IMAGE, "image");
+		return true;
+	}
+
+  protected:
+	// Inherited from AIFileUpload.
+	/*virtual*/ void handle_event(std::string const& filename)
+	{
+		LLFloaterImagePreview* floaterp = new LLFloaterImagePreview(filename);
+		LLUICtrlFactory::getInstance()->buildFloater(floaterp, "floater_image_preview.xml");
 	}
 };
 
-class LLFileUploadSound : public view_listener_t
+class LLFileUploadSound : public view_listener_t, public AIFileUpload
 {
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
 	{
-		std::string filename = upload_pick((void*)LLFilePicker::FFLOAD_WAV);
-		if (!filename.empty())
-		{
-			LLFloaterNameDesc* floaterp = new LLFloaterNameDesc(filename);
-			LLUICtrlFactory::getInstance()->buildFloater(floaterp, "floater_sound_preview.xml");
-			floaterp->childSetLabelArg("ok_btn", "[AMOUNT]", llformat("%d", LLGlobalEconomy::Singleton::getInstance()->getPriceUpload() ));
-		}
+		start_filepicker(FFLOAD_WAV, "sound");
 		return true;
+	}
+
+  protected:
+	// Inherited from AIFileUpload.
+	/*virtual*/ void handle_event(std::string const& filename)
+	{
+		LLFloaterNameDesc* floaterp = new LLFloaterNameDesc(filename);
+		LLUICtrlFactory::getInstance()->buildFloater(floaterp, "floater_sound_preview.xml");
+		floaterp->childSetLabelArg("ok_btn", "[AMOUNT]", llformat("%d", LLGlobalEconomy::Singleton::getInstance()->getPriceUpload() ));
 	}
 };
 
-class LLFileUploadAnim : public view_listener_t
+class LLFileUploadAnim : public view_listener_t, public AIFileUpload
 {
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
 	{
-		const std::string filename = upload_pick((void*)LLFilePicker::FFLOAD_ANIM);
-		if (!filename.empty())
-		{
-			LLFloaterAnimPreview* floaterp = new LLFloaterAnimPreview(filename);
-			LLUICtrlFactory::getInstance()->buildFloater(floaterp, "floater_animation_preview.xml");
-		}
+		start_filepicker(FFLOAD_ANIM, "animations");
 		return true;
+	}
+
+  protected:
+	// Inherited from AIFileUpload.
+	/*virtual*/ void handle_event(std::string const& filename)
+	{
+		LLFloaterAnimPreview* floaterp = new LLFloaterAnimPreview(filename);
+		LLUICtrlFactory::getInstance()->buildFloater(floaterp, "floater_animation_preview.xml");
 	}
 };
 
 class LLFileUploadBulk : public view_listener_t
 {
-	static bool onConfirmBulkUploadTemp(const LLSD& notification, const LLSD& response )
-	{
-		S32 option = LLNotification::getSelectedOption(notification, response);
-		BOOL enabled;
-		if(option == 0) // yes
-			enabled = TRUE;
-		else if(option == 1) //no
-			enabled = FALSE;
-		else //cancel
-			return false;
-
-		LLFilePicker& picker = LLFilePicker::instance();
-		if (picker.getMultipleOpenFiles())
-		{			
-			//const std::string& filename = picker.getFirstFile();
-			std::string filename;
-			while(!(filename = picker.getNextFile()).empty())
-			{
-			std::string name = gDirUtilp->getBaseFileName(filename, true);
-			
-			std::string asset_name = name;
-			LLStringUtil::replaceNonstandardASCII( asset_name, '?' );
-			LLStringUtil::replaceChar(asset_name, '|', '?');
-			LLStringUtil::stripNonprintable(asset_name);
-			LLStringUtil::trim(asset_name);
-			
-			std::string display_name = LLStringUtil::null;
-			LLAssetStorage::LLStoreAssetCallback callback = NULL;
-			S32 expected_upload_cost = LLGlobalEconomy::Singleton::getInstance()->getPriceUpload();
-			void *userdata = NULL;
-			gSavedSettings.setBOOL("TemporaryUpload",enabled);
-			upload_new_resource(filename, asset_name, asset_name, 0, LLAssetType::AT_NONE, LLInventoryType::IT_NONE,
-				LLFloaterPerms::getNextOwnerPerms(), LLFloaterPerms::getGroupPerms(), LLFloaterPerms::getEveryonePerms(),
-					    display_name,
-					    callback, expected_upload_cost, userdata);
-
-			}
-		}
-		else
-		{
-			llinfos << "Couldn't import objects from file" << llendl;
-			gSavedSettings.setBOOL("TemporaryUpload",FALSE);
-		}
-		return false;
-	}
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
 	{
 		if( gAgent.cameraMouselook() )
@@ -389,45 +357,59 @@ class LLFileUploadBulk : public view_listener_t
 			msg.append(llformat("\nWARNING: Each upload costs L$%d if it's not temporary.",expected_upload_cost));
 		args["MESSAGE"] = msg;
 		LLNotifications::instance().add("GenericAlertYesNoCancel", args, LLSD(), onConfirmBulkUploadTemp);
-		/* moved to the callback for the above
-		LLFilePicker& picker = LLFilePicker::instance();
-		if (picker.getMultipleOpenFiles())
-		{
-			// <edit>
-			
-			//const std::string& filename = picker.getFirstFile();
-			std::string filename;
-			while(!(filename = picker.getNextFile()).empty())
-			{
-			// </edit>
-			std::string name = gDirUtilp->getBaseFileName(filename, true);
-			
-			std::string asset_name = name;
-			LLStringUtil::replaceNonstandardASCII( asset_name, '?' );
-			LLStringUtil::replaceChar(asset_name, '|', '?');
-			LLStringUtil::stripNonprintable(asset_name);
-			LLStringUtil::trim(asset_name);
-			
-			std::string display_name = LLStringUtil::null;
-			LLAssetStorage::LLStoreAssetCallback callback = NULL;
-			S32 expected_upload_cost = LLGlobalEconomy::Singleton::getInstance()->getPriceUpload();
-			void *userdata = NULL;
-			upload_new_resource(filename, asset_name, asset_name, 0, LLAssetType::AT_NONE, LLInventoryType::IT_NONE,
-				LLFloaterPerms::getNextOwnerPerms(), LLFloaterPerms::getGroupPerms(), LLFloaterPerms::getEveryonePerms(),
-					    display_name,
-					    callback, expected_upload_cost, userdata);
+		return true;
+	}
 
-			// *NOTE: Ew, we don't iterate over the file list here,
-			// we handle the next files in upload_done_callback()
-			// </edit> not anymore!
+	static bool onConfirmBulkUploadTemp(const LLSD& notification, const LLSD& response )
+	{
+		S32 option = LLNotification::getSelectedOption(notification, response);
+		bool enabled;
+		if (option == 0)		// yes
+			enabled = true;
+		else if(option == 1)	// no
+			enabled = false;
+		else					// cancel
+			return false;
+
+		AIFilePicker* filepicker = AIFilePicker::create();
+		filepicker->open(FFLOAD_ALL, "", "openfile", true);
+		filepicker->run(boost::bind(&LLFileUploadBulk::onConfirmBulkUploadTemp_continued, enabled, filepicker));
+		return true;
+	}
+
+	static void onConfirmBulkUploadTemp_continued(bool enabled, AIFilePicker* filepicker)
+	{
+		if (filepicker->hasFilename())
+		{
+			std::vector<std::string> const& file_names(filepicker->getFilenames());
+			for (std::vector<std::string>::const_iterator iter = file_names.begin(); iter != file_names.end(); ++iter)
+			{
+				std::string const& filename(*iter);
+				if (filename.empty())
+					continue;
+				std::string name = gDirUtilp->getBaseFileName(filename, true);
+				
+				std::string asset_name = name;
+				LLStringUtil::replaceNonstandardASCII( asset_name, '?' );
+				LLStringUtil::replaceChar(asset_name, '|', '?');
+				LLStringUtil::stripNonprintable(asset_name);
+				LLStringUtil::trim(asset_name);
+				
+				std::string display_name = LLStringUtil::null;
+				LLAssetStorage::LLStoreAssetCallback callback = NULL;
+				S32 expected_upload_cost = LLGlobalEconomy::Singleton::getInstance()->getPriceUpload();
+				void *userdata = NULL;
+				gSavedSettings.setBOOL("TemporaryUpload", enabled);
+				upload_new_resource(filename, asset_name, asset_name, 0, LLAssetType::AT_NONE, LLInventoryType::IT_NONE,
+					LLFloaterPerms::getNextOwnerPerms(), LLFloaterPerms::getGroupPerms(), LLFloaterPerms::getEveryonePerms(),
+					display_name, callback, expected_upload_cost, userdata);
+
 			}
 		}
 		else
 		{
-			llinfos << "Couldn't import objects from file" << llendl;
+			gSavedSettings.setBOOL("TemporaryUpload", FALSE);
 		}
-		*/
-		return true;
 	}
 };
 
@@ -468,7 +450,7 @@ void upload_error(const std::string& error_message, const std::string& label, co
 	{
 		lldebugs << "unable to remove temp file" << llendl;
 	}
-	LLFilePicker::instance().reset();						
+	//AIFIXME? LLFilePicker::instance().reset();						
 }
 
 class LLFileEnableCloseWindow : public view_listener_t
@@ -582,8 +564,6 @@ class LLFileTakeSnapshotToDisk : public view_listener_t
 									   6144,
 									   supersample))
 		{
-			gViewerWindow->playSnapshotAnimAndSound();
-			
 			LLPointer<LLImageFormatted> formatted;
 			switch(LLFloaterSnapshot::ESnapshotFormat(gSavedSettings.getS32("SnapshotFormat")))
 			{
@@ -633,44 +613,39 @@ class LLFileQuit : public view_listener_t
 	}
 };
 
-void handle_upload(void* data)
-{
-	const std::string filename = upload_pick(data);
-	if (!filename.empty())
-	{
-		LLFloaterNameDesc* floaterp = new LLFloaterNameDesc(filename);
-		LLUICtrlFactory::getInstance()->buildFloater(floaterp, "floater_name_description.xml");
-		floaterp->childSetLabelArg("ok_btn", "[AMOUNT]", llformat("%d", LLGlobalEconomy::Singleton::getInstance()->getPriceUpload() ));
-	}
-}
-
+static void handle_compress_image_continued(AIFilePicker* filepicker);
 void handle_compress_image(void*)
 {
-	LLFilePicker& picker = LLFilePicker::instance();
-	if (picker.getMultipleOpenFiles(LLFilePicker::FFLOAD_IMAGE))
+	AIFilePicker* filepicker = AIFilePicker::create();
+	filepicker->open(FFLOAD_IMAGE, "", "openfile", true);
+	filepicker->run(boost::bind(&handle_compress_image_continued, filepicker));
+}
+
+static void handle_compress_image_continued(AIFilePicker* filepicker)
+{
+	if (!filepicker->hasFilename())
+		return;
+
+	std::vector<std::string> const& filenames(filepicker->getFilenames());
+	for(std::vector<std::string>::const_iterator filename = filenames.begin(); filename != filenames.end(); ++filename)
 	{
-		std::string infile = picker.getFirstFile();
-		while (!infile.empty())
+		std::string const& infile(*filename);
+		std::string outfile = infile + ".j2c";
+
+		llinfos << "Input:  " << infile << llendl;
+		llinfos << "Output: " << outfile << llendl;
+
+		BOOL success;
+
+		success = LLViewerTextureList::createUploadFile(infile, outfile, IMG_CODEC_TGA);
+
+		if (success)
 		{
-			std::string outfile = infile + ".j2c";
-
-			llinfos << "Input:  " << infile << llendl;
-			llinfos << "Output: " << outfile << llendl;
-
-			BOOL success;
-
-			success = LLViewerTextureList::createUploadFile(infile, outfile, IMG_CODEC_TGA);
-
-			if (success)
-			{
-				llinfos << "Compression complete" << llendl;
-			}
-			else
-			{
-				llinfos << "Compression failed: " << LLImage::getLastError() << llendl;
-			}
-
-			infile = picker.getNextFile();
+			llinfos << "Compression complete" << llendl;
+		}
+		else
+		{
+			llinfos << "Compression failed: " << LLImage::getLastError() << llendl;
 		}
 	}
 }
@@ -1020,7 +995,7 @@ void upload_new_resource(const std::string& src_filename, std::string name,
 		{
 			lldebugs << "unable to remove temp file" << llendl;
 		}
-		LLFilePicker::instance().reset();
+		//AIFIXME? LLFilePicker::instance().reset();
 	}
 }
 // <edit>
@@ -1169,32 +1144,6 @@ void upload_done_callback(const LLUUID& uuid, void* user_data, S32 result, LLExt
 
 	LLUploadDialog::modalUploadFinished();
 	delete data;
-
-	// *NOTE: This is a pretty big hack. What this does is check the
-	// file picker if there are any more pending uploads. If so,
-	// upload that file.
-	/* Agreed, let's not use it. -HgB
-	const std::string& next_file = LLFilePicker::instance().getNextFile();
-	if(is_balance_sufficient && !next_file.empty())
-	{
-		std::string asset_name = gDirUtilp->getBaseFileName(next_file, true);
-		LLStringUtil::replaceNonstandardASCII( asset_name, '?' );
-		LLStringUtil::replaceChar(asset_name, '|', '?');
-		LLStringUtil::stripNonprintable(asset_name);
-		LLStringUtil::trim(asset_name);
-
-		std::string display_name = LLStringUtil::null;
-		LLAssetStorage::LLStoreAssetCallback callback = NULL;
-		void *userdata = NULL;
-		upload_new_resource(next_file, asset_name, asset_name,	// file
-				    0, LLAssetType::AT_NONE, LLInventoryType::IT_NONE,
-				    PERM_NONE, PERM_NONE, PERM_NONE,
-				    display_name,
-				    callback,
-				    expected_upload_cost, // assuming next in a group of uploads is of roughly the same type, i.e. same upload cost
-				    userdata);
-	}
-	*/
 }
 
 void upload_new_resource(const LLTransactionID &tid, LLAssetType::EType asset_type,

@@ -40,6 +40,9 @@
 // *NOTE: buffer limited to 1024, (but vsnprintf prevents overrun)
 // should perhaps be replaced with boost::format.
 
-LL_COMMON_API std::string llformat(const char *fmt, ...);
+std::string LL_COMMON_API llformat(const char *fmt, ...);
 
+// the same version as above but ensures that returned string is in utf8 on windows
+// to enable correct converting utf8_to_wstring.
+std::string LL_COMMON_API llformat_to_utf8(const char *fmt, ...);
 #endif // LL_LLFORMAT_H

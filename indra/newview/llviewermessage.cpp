@@ -49,7 +49,6 @@
 #include "llchat.h"
 #include "lldbstrings.h"
 #include "lleconomy.h"
-#include "llfilepicker.h"
 #include "llfocusmgr.h"
 #include "llfollowcamparams.h"
 #include "llinstantmessage.h"
@@ -64,7 +63,7 @@
 #include "llxfermanager.h"
 #include "message.h"
 #include "sound_ids.h"
-#include "lltimer.h"
+#include "lleventtimer.h"
 #include "llmd5.h"
 
 #include "llagent.h"
@@ -231,6 +230,75 @@ const BOOL SCRIPT_QUESTION_IS_CAUTION[SCRIPT_PERMISSION_EOF] =
 	FALSE,	// TrackYourCamera,
 	FALSE	// ControlYourCamera
 };
+
+template <typename T>
+class SH_SpamHandler
+{
+public:
+	SH_SpamHandler(const char *pToggleCtrl, const char *pDurCtrl, const char *pFreqCtrl) :
+		mDuration(pDurCtrl, 1.f),
+		mFrequency(pFreqCtrl, 5),
+		mEnabled(false)
+	{
+		gSavedSettings.getControl(pToggleCtrl)->getSignal()->connect(boost::bind(&SH_SpamHandler::CtrlToggle, this, _1));
+		CtrlToggle(gSavedSettings.getBOOL(pToggleCtrl));
+	}
+	bool CtrlToggle(const LLSD& newvalue)
+	{
+		bool on = newvalue.asBoolean();
+		if(on == mEnabled)
+			return true;
+		mEnabled = on;
+		mTimer.stop();
+		mActiveList.clear();
+		mBlockedList.clear();
+		return true;
+	}
+	bool isBlocked(const T &owner, const LLUUID &source_id, const char *pNotification, LLSD args=LLSD())
+	{
+		if(!mEnabled || isAgent(owner))
+			return false;
+		if(mBlockedList.find(owner) != mBlockedList.end())
+			return true;
+		if(mTimer.getStarted() && mTimer.getElapsedTimeF32() < mDuration)
+		{
+			typename std::map<const T,U32>::iterator it = mActiveList.insert(std::pair<const T, U32>(owner,0)).first;
+			if(++(it->second)>=mFrequency)
+			{
+				mBlockedList.insert(owner);
+				if(pNotification)
+				{
+					args["OWNER"] = owner;
+					args["SOURCE"] = source_id;
+					LLNotifications::getInstance()->add(pNotification,args);
+				}
+				return true;
+			}
+		}
+		else
+		{
+			mActiveList.clear();
+			mTimer.start();
+		}
+		return false;
+	}
+private:
+	//Owner is either a key, or a name. Do not look up perms since object may be unknown.
+	static bool isAgent(const T &owner);
+	bool mEnabled;
+	LLFrameTimer mTimer;
+	const LLCachedControl<F32> mDuration;
+	const LLCachedControl<U32> mFrequency;
+	std::map<const T,U32> mActiveList;
+	std::set<T> mBlockedList;
+};
+template<> bool SH_SpamHandler<LLUUID>::isAgent(const LLUUID &owner) { return gAgent.getID() == owner; }
+template<> bool SH_SpamHandler<std::string>::isAgent(const std::string &owner)
+{
+	std::string str;
+	gAgent.getName(str);
+	return str == owner;
+}
 
 bool friendship_offer_callback(const LLSD& notification, const LLSD& response)
 {
@@ -1631,6 +1699,21 @@ void process_improved_im(LLMessageSystem *msg, void **user_data)
 	chat.mFromID = from_id;
 	chat.mFromName = name;
 	chat.mSourceType = (from_id.isNull() || (name == std::string(SYSTEM_FROM))) ? CHAT_SOURCE_SYSTEM : CHAT_SOURCE_AGENT;
+	
+	if(chat.mSourceType == CHAT_SOURCE_AGENT)
+	{
+		LLSD args;
+		args["FULL_NAME"] = name;
+		static SH_SpamHandler<LLUUID> avatar_spam_check("SGBlockGeneralSpam","SGSpamTime","SGSpamCount");
+		static SH_SpamHandler<LLUUID> object_spam_check("SGBlockGeneralSpam","SGSpamTime","SGSpamCount");
+		if(d==IM_FROM_TASK||d==IM_GOTO_URL||d==IM_FROM_TASK_AS_ALERT||d==IM_TASK_INVENTORY_OFFERED||d==IM_TASK_INVENTORY_ACCEPTED||d==IM_TASK_INVENTORY_DECLINED)
+		{
+			if(object_spam_check.isBlocked(from_id,session_id,"BlockedGeneralObjects",args))
+				return;
+		}
+		else if(avatar_spam_check.isBlocked(from_id,from_id,"BlockedGeneralAvatar",args))
+			return;
+	}
 
 	LLViewerObject *source = gObjectList.findObject(session_id); //Session ID is probably the wrong thing.
 	if (source)
@@ -1662,7 +1745,7 @@ void process_improved_im(LLMessageSystem *msg, void **user_data)
 	bool typing_init = false;
 	if( dialog == IM_TYPING_START && !is_muted )
 	{
-		if(!gIMMgr->hasSession(computed_session_id) && gSavedPerAccountSettings.getBOOL("AscentInstantMessageAnnounceIncoming"))
+		if(!gIMMgr->hasSession(computed_session_id) && gSavedSettings.getBOOL("AscentInstantMessageAnnounceIncoming"))
 		{
 			typing_init = true;
 			gIMMgr->addMessage(
@@ -1716,7 +1799,7 @@ void process_improved_im(LLMessageSystem *msg, void **user_data)
 // [/RLVa:KB]
 	{
 		if((dialog == IM_NOTHING_SPECIAL && !is_auto_response) ||
-			(dialog == IM_TYPING_START && gSavedPerAccountSettings.getBOOL("AscentInstantMessageAnnounceIncoming"))
+			(dialog == IM_TYPING_START && gSavedSettings.getBOOL("AscentInstantMessageAnnounceIncoming"))
 			)
 		{
 			BOOL has = gIMMgr->hasSession(computed_session_id);
@@ -2812,6 +2895,9 @@ void process_offer_callingcard(LLMessageSystem* msg, void**)
 		}
 		else
 		{
+			static SH_SpamHandler<LLUUID> spam_check("SGBlockCardSpam","SHSpamTime","SGSpamCount");
+			if(spam_check.isBlocked(source_id,source_id,"BlockedCards",args))
+				return;
 			LLNotifications::instance().add("OfferCallingCard", args, payload);
 		}
 	}
@@ -2937,6 +3023,10 @@ void process_chat_from_simulator(LLMessageSystem *msg, void **user_data)
 	LLViewerObject*	chatter;
 
 	msg->getString("ChatData", "FromName", from_name);
+    if (from_name.empty())
+    {
+        from_name = "(no name)";
+    }
 	chat.mFromName = from_name;
 	
 	msg->getUUID("ChatData", "SourceID", from_id);
@@ -2985,6 +3075,14 @@ void process_chat_from_simulator(LLMessageSystem *msg, void **user_data)
 	// </edit>
 	if (chatter)
 	{
+		LLSD args;
+		args["FULL_NAME"] = from_name;
+		static SH_SpamHandler<LLUUID> avatar_spam_check("SGBlockChatSpam","SGChatSpamTime","SGChatSpamCount");
+		static SH_SpamHandler<LLUUID> object_spam_check("SGBlockChatSpam","SGChatSpamTime","SGChatSpamCount");
+		if(	(chatter->isAvatar()	&&	avatar_spam_check.isBlocked(from_id,from_id,"BlockedChatterAvatar",args)) ||
+			(!chatter->isAvatar()	&&	object_spam_check.isBlocked(owner_id,from_id,"BlockedChatterObjects",args)) )
+			return;
+
 		chat.mPosAgent = chatter->getPositionAgent();
 		
 		// Make swirly things only for talking objects. (not script debug messages, though)
@@ -3608,19 +3706,6 @@ void process_teleport_finish(LLMessageSystem* msg, void**)
 	effectp->setColor(LLColor4U(gAgent.getEffectColor()));
 	LLHUDManager::getInstance()->sendEffects();
 
-	// OGPX : when using agent domain, we get tp finish with ip of 0.0.0.0 and port 0. 
-	//    try bailing out early if tp state is PLACE_AVATAR (so legacy should still execute rest of this path)
-	//    not really wild about this, but it's a way to test if we can get TP working w/o receiving TP finish
-	//    TODO: can be removed *when* agent domain no longer sends tp finish
-	//
-    // OGPX TODO: see if we can nuke TELEPORT_PLACE_AVATAR state once TeleportFinish is 
-	//    completely removed from all SL and OS region code
-
-	if (gAgent.getTeleportState() == LLAgent::TELEPORT_PLACE_AVATAR )
-	{
-		llinfos << "Got teleport location message when doing agentd TP" << llendl;
-		return;
-	}
 	U32 location_id;
 	U32 sim_ip;
 	U16 sim_port;
@@ -3793,10 +3878,8 @@ void process_agent_movement_complete(LLMessageSystem* msg, void**)
 	gCacheName->setUpstream(msg->getSender());
 	gViewerThrottle.sendToSim();
 	gViewerWindow->sendShapeToSim();
-	// if this is an AgentMovementComplete message that happened as the result of a teleport,
-	// then we need to do things like chat the URL and reset the camera.
-	bool is_teleport = (gAgent.getTeleportState() & (LLAgent::TELEPORT_MOVING | LLAgent::TELEPORT_PLACE_AVATAR)); //OGPX
-	llinfos << " is_teleport =" << is_teleport << llendl;
+
+	bool is_teleport = gAgent.getTeleportState() == LLAgent::TELEPORT_MOVING;
 
 	if( is_teleport )
 	{
@@ -3832,11 +3915,6 @@ void process_agent_movement_complete(LLMessageSystem* msg, void**)
 			avatarp->clearChat();
 			avatarp->slamPosition();
 		}
-		// OGPX TODO: remove all usage of TELEPORT_PLACE_AVATAR state once Teleport UDP sequence finalized
-		if ( gAgent.getTeleportState() == LLAgent::TELEPORT_PLACE_AVATAR ) // unset TP state, agent domain is done. OGPX
-		{
-			gAgent.setTeleportState( LLAgent::TELEPORT_NONE );
-		}
 
 		// add teleport destination to the list of visited places
 		gFloaterTeleportHistory->addPendingEntry(regionp->getName(), (S16)agent_pos.mV[VX], (S16)agent_pos.mV[VY], (S16)agent_pos.mV[VZ]);
@@ -3845,6 +3923,17 @@ void process_agent_movement_complete(LLMessageSystem* msg, void**)
 	{
 		// This is likely just the initial logging in phase.
 		gAgent.setTeleportState( LLAgent::TELEPORT_NONE );
+
+		if(LLStartUp::getStartupState() < STATE_STARTED)
+		{	// This is initial log-in, not a region crossing:
+			// Set the camera looking ahead of the AV so send_agent_update() below 
+			// will report the correct location to the server.
+			LLVector3 look_at_point = look_at;
+			look_at_point = agent_pos + look_at_point.rotVec(gAgent.getQuat());
+
+			static LLVector3 up_direction(0.0f, 0.0f, 1.0f);
+			LLViewerCamera::getInstance()->lookAt(agent_pos, look_at_point, up_direction);
+		}
 	}
 
 	if ( LLTracker::isTracking(NULL) )
@@ -4209,7 +4298,6 @@ void process_object_update(LLMessageSystem *mesgsys, void **user_data)
 
 	// Update the object...
 	gObjectList.processObjectUpdate(mesgsys, user_data, OUT_FULL);
-	stop_glerror();
 }
 
 void process_compressed_object_update(LLMessageSystem *mesgsys, void **user_data)
@@ -4227,7 +4315,6 @@ void process_compressed_object_update(LLMessageSystem *mesgsys, void **user_data
 
 	// Update the object...
 	gObjectList.processCompressedObjectUpdate(mesgsys, user_data, OUT_FULL_COMPRESSED);
-	stop_glerror();
 }
 
 void process_cached_object_update(LLMessageSystem *mesgsys, void **user_data)
@@ -4245,7 +4332,6 @@ void process_cached_object_update(LLMessageSystem *mesgsys, void **user_data)
 
 	// Update the object...
 	gObjectList.processCachedObjectUpdate(mesgsys, user_data, OUT_FULL_CACHED);
-	stop_glerror();
 }
 
 
@@ -4854,7 +4940,7 @@ void process_avatar_sit_response(LLMessageSystem *mesgsys, void **user_data)
 	if (object)
 	{
 		LLVector3 sit_spot = object->getPositionAgent() + (sitPosition * object->getRotation());
-		if (!use_autopilot || (avatar && avatar->mIsSitting && avatar->getRoot() == object->getRoot()))
+		if (!use_autopilot || (avatar && avatar->isSitting() && avatar->getRoot() == object->getRoot()))
 		{
 			//we're already sitting on this object, so don't autopilot
 		}
@@ -5164,6 +5250,10 @@ void process_money_balance_reply( LLMessageSystem* msg, void** )
 		LLSD args;
 		args["MESSAGE"] = desc;
 		LLNotifications::instance().add("SystemMessage", args);
+
+		// Also send notification to chat -- MC
+		LLChat chat(desc);
+		LLFloaterChat::addChat(desc);
 
 		// Once the 'recent' container gets large enough, chop some
 		// off the beginning.
@@ -5839,7 +5929,7 @@ void process_derez_container(LLMessageSystem *msg, void**)
 }
 
 void container_inventory_arrived(LLViewerObject* object,
-								 InventoryObjectList* inventory,
+								 LLInventoryObject::object_list_t* inventory,
 								 S32 serial_num,
 								 void* data)
 {
@@ -5859,8 +5949,8 @@ void container_inventory_arrived(LLViewerObject* object,
 											  LLAssetType::AT_NONE,
 											  std::string("Acquired Items")); //TODO: Translate
 
-		InventoryObjectList::const_iterator it = inventory->begin();
-		InventoryObjectList::const_iterator end = inventory->end();
+		LLInventoryObject::object_list_t::const_iterator it = inventory->begin();
+		LLInventoryObject::object_list_t::const_iterator end = inventory->end();
 		for ( ; it != end; ++it)
 		{
 			if ((*it)->getType() != LLAssetType::AT_CATEGORY &&
@@ -6370,17 +6460,22 @@ static LLNotificationFunctorRegistration callback_script_dialog_reg_2("ScriptDia
 void process_script_dialog(LLMessageSystem* msg, void**)
 {
 	S32 i;
-
 	LLSD payload;
+
+	LLUUID object_id;
+	msg->getUUID("Data", "ObjectID", object_id);
+
+	if (LLMuteList::getInstance()->isMuted(object_id))
+	{
+		return;
+	}
 
 	std::string message; 
 	std::string first_name;
 	std::string last_name;
 	std::string title;
 
-	LLUUID object_id;
 	S32 chat_channel;
-	msg->getUUID("Data", "ObjectID", object_id);
 	msg->getString("Data", "FirstName", first_name);
 	msg->getString("Data", "LastName", last_name);
 	msg->getString("Data", "ObjectName", title);
@@ -6440,6 +6535,10 @@ void process_script_dialog(LLMessageSystem* msg, void**)
 	{
 		args["FIRST"] = first_name;
 		args["LAST"] = last_name;
+
+		static SH_SpamHandler<std::string> spam_check("SGBlockDialogSpam","SGSpamTime","SGSpamCount");
+		if(spam_check.isBlocked(first_name + " " + last_name,object_id,"BlockedDialogs",args))
+			return;
 
 		if (is_text_box)
 		{
@@ -6605,6 +6704,8 @@ void process_initiate_download(LLMessageSystem* msg, void**)
 
 void process_script_teleport_request(LLMessageSystem* msg, void**)
 {
+	if (!gSavedSettings.getBOOL("ScriptsCanShowUI")) return;
+	
 	std::string object_name;
 	std::string sim_name;
 	LLVector3 pos;

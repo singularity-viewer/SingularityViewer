@@ -96,6 +96,10 @@
 		     mouse_opaque="true" name="New Alpha" width="128">
 			<on_click filter="" function="Inventory.DoCreate" userdata="alpha" />
 		</menu_item_call>
+    <menu_item_call bottom_delta="-18" height="18" label="New Physics" left="0"
+		     mouse_opaque="true" name="New Physics" width="128">
+      <on_click filter="" function="Inventory.DoCreate" userdata="physics" />
+    </menu_item_call>
 	</menu>
 	<menu bottom_delta="0" color="MenuDefaultBgColor" drop_shadow="true" height="175" left="0"
 	     mouse_opaque="false" name="New Body Parts" opaque="true" tear_off="false"

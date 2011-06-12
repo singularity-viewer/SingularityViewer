@@ -103,6 +103,13 @@ if (WINDOWS)
 	    set(MSVC_DIR 10.0)
 	    set(MSVC_SUFFIX 100)
     endif (MSVC71)
+
+  if (MSVC10)
+    SET(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /MANIFEST:NO")
+    SET(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} /MANIFEST:NO")
+    SET(CMAKE_MODULE_LINKER_FLAGS "${CMAKE_MODULE_LINKER_FLAGS} /MANIFEST:NO")
+  endif(MSVC10)
+
     
 endif (WINDOWS)
 
@@ -157,6 +164,11 @@ if (LINUX)
     add_definitions(-Wno-parentheses)
   endif (${CXX_VERSION} GREATER 429)
 
+  #gcc 4.6 has a new spammy warning
+  if(NOT ${CXX_VERSION} LESS 460)
+    add_definitions(-Wno-unused-but-set-variable)
+  endif (NOT ${CXX_VERSION} LESS 460)
+
   # End of hacks.
 
   add_definitions(
@@ -201,10 +213,18 @@ if (LINUX)
       # this stops us requiring a really recent glibc at runtime
       add_definitions(-fno-stack-protector)
     endif (NOT STANDALONE)
-    set(CMAKE_CXX_FLAGS_RELEASESSE2 "${CMAKE_CXX_FLAGS_RELEASESSE2} -march=pentium4 -mfpmath=sse -msse2 ${GCC_EXTRA_OPTIMIZATIONS}")
-    set(CMAKE_C_FLAGS_RELEASESSE2 "${CMAKE_C_FLAGS_RELEASESSE2} -march=pentium4 -mfpmath=sse -msse2 "${GCC_EXTRA_OPTIMIZATIONS})
-    set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 ${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -march=pentium4 -mfpmath=sse -msse2 ${GCC_EXTRA_OPTIMIZATIONS}")
-    set(CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 ${CMAKE_C_FLAGS_RELWITHDEBINFO} -march=pentium4 -mfpmath=sse -msse2 "${GCC_EXTRA_OPTIMIZATIONS})
+	if (${ARCH} STREQUAL "x86_64")
+	  add_definitions(-DLINUX64=1 -pipe)
+	  set(CMAKE_CXX_FLAGS_RELEASESSE2 "${CMAKE_CXX_FLAGS_RELEASESSE2} -fomit-frame-pointer -mmmx -msse -mfpmath=sse -msse2 -ffast-math -ftree-vectorize -fweb -fexpensive-optimizations -frename-registers")
+	  set(CMAKE_C_FLAGS_RELEASESSE2 "${CMAKE_C_FLAGS_RELEASESSE2} -fomit-frame-pointer -mmmx -msse -mfpmath=sse -msse2 -ffast-math -ftree-vectorize -fweb -fexpensive-optimizations -frename-registers")
+	  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -fomit-frame-pointer -mmmx -msse -mfpmath=sse -msse2 -ffast-math -ftree-vectorize -fweb -fexpensive-optimizations -frename-registers")
+	  set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} -fomit-frame-pointer -mmmx -msse -mfpmath=sse -msse2 -ffast-math -ftree-vectorize -fweb -fexpensive-optimizations -frename-registers")
+	else (${ARCH} STREQUAL "x86_64")
+	  set(CMAKE_CXX_FLAGS_RELEASESSE2 "${CMAKE_CXX_FLAGS_RELEASESSE2} -march=pentium4 -mfpmath=sse -msse2 ${GCC_EXTRA_OPTIMIZATIONS}")
+	  set(CMAKE_C_FLAGS_RELEASESSE2 "${CMAKE_C_FLAGS_RELEASESSE2} -march=pentium4 -mfpmath=sse -msse2 "${GCC_EXTRA_OPTIMIZATIONS})
+	  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -march=pentium4 -mfpmath=sse -msse2 ${GCC_EXTRA_OPTIMIZATIONS}")
+	  set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} -march=pentium4 -mfpmath=sse -msse2 "${GCC_EXTRA_OPTIMIZATIONS})
+	endif (${ARCH} STREQUAL "x86_64")
   endif (VIEWER)
 
   set(CMAKE_CXX_FLAGS_DEBUG "-fno-inline ${CMAKE_CXX_FLAGS_DEBUG}")
@@ -212,6 +232,8 @@ if (LINUX)
   set(CMAKE_C_FLAGS_RELEASE "-O3 ${CMAKE_C_FLAGS_RELEASE}")
   set(CMAKE_CXX_FLAGS_RELEASESSE2 "-O3 ${CMAKE_CXX_FLAGS_RELEASESSE2}")
   set(CMAKE_C_FLAGS_RELEASESSE2 "-O3 ${CMAKE_C_FLAGS_RELEASESSE2}")
+  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O3 ${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
+  set(CMAKE_C_FLAGS_RELWITHDEBINFO "-O3 ${CMAKE_C_FLAGS_RELWITHDEBINFO}")
 endif (LINUX)
 
 

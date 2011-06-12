@@ -32,6 +32,7 @@
        list_position="below" mouse_opaque="true" name="save_btn" tool_tip="Save image to a file"
        width="105">
     <flyout_button_item value="save" name="save_item">Save</flyout_button_item>
+    <flyout_button_item value="saveas" name="saveas_item">Save As...</flyout_button_item>
   </flyout_button>
 	<button bottom_delta="0" follows="left|top" height="20" label="Cancel" left="120"
 	     name="discard_btn" width="85" />

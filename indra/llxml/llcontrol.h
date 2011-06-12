@@ -55,7 +55,7 @@
 #endif
 
 #include <boost/bind.hpp>
-#include <boost/signal.hpp>
+#include <boost/signals2.hpp>
 
 #if LL_WINDOWS
 # if (_MSC_VER >= 1300 && _MSC_VER < 1400)
@@ -95,7 +95,7 @@ typedef enum e_control_type
 class LLControlVariable : public LLRefCount
 {
 	friend class LLControlGroup;
-	typedef boost::signal<void(const LLSD&)> signal_t;
+	typedef boost::signals2::signal<void(const LLSD&)> signal_t;
 
 private:
 	std::string		mName;
@@ -122,7 +122,7 @@ public:
 	const std::string& getComment() const { return mComment; }
 
 	eControlType type()		{ return mType; }
-	bool isType(eControlType tp) { return tp == mType; }
+	bool isType(eControlType tp) const { return tp == mType; }
 
 	void resetToDefault(bool fire_signal = false);
 
@@ -153,7 +153,8 @@ public:
 	bool isCOA()		const	{ return mIsCOA; }
 	bool isCOAParent()	const	{ return mIsCOAParent; }
 	LLControlVariable *getCOAConnection() const	{ return mCOAConnectedVar; }
-	LLControlVariable *getCOAActive();
+	LLControlVariable* getCOAActive();
+	LLControlVariable const* getCOAActive() const;
 	void setIsCOA(bool IsCOA)  { mIsCOA=IsCOA; }
 	void setCOAConnect(LLControlVariable *pConnect, bool IsParent) 
 	{
@@ -185,7 +186,8 @@ public:
 	~LLControlGroup();
 	void cleanup();
 	
-	LLPointer<LLControlVariable> getControl(const std::string& name);
+	LLControlVariable* getControl(std::string const& name);
+	LLControlVariable const* getControl(std::string const& name) const;
 
 	struct ApplyFunctor
 	{
@@ -210,7 +212,7 @@ public:
 	
 	std::string 	findString(const std::string& name);
 
-	std::string 	getString(const std::string& name);
+	std::string getString(const std::string& name) const;
 	LLWString	getWString(const std::string& name);
 	std::string	getText(const std::string& name);
 	LLVector3	getVector3(const std::string& name);
@@ -245,7 +247,7 @@ public:
 	void	setValue(const std::string& name, const LLSD& val);
 	
 	
-	BOOL    controlExists(const std::string& name);
+	BOOL    controlExists(const std::string& name) const;
 
 	// Returns number of controls loaded, 0 if failed
 	// If require_declaration is false, will auto-declare controls it finds
@@ -293,7 +295,7 @@ class LLCachedControl
 private:
     T mCachedValue;
     LLPointer<LLControlVariable> mControl;
-    boost::signals::connection mConnection;
+    boost::signals2::connection mConnection;
 	LLControlGroup *mControlGroup;
 
 public:

@@ -36,6 +36,7 @@
 #include "lltranslate.h"
 #include "llui.h"
 #include "llversionviewer.h"
+#include "llweb.h"
 
 // <edit>
 #include "llviewercontrol.h"
@@ -79,7 +80,7 @@ void LLTranslate::translateMessage(LLHTTPClient::ResponderPtr &result, const std
 //static
 void LLTranslate::getTranslateUrl(std::string &translateUrl, const std::string &fromLang, const std::string &toLang, const std::string &mesg)
 {
-	std::string escaped_mesg = curl_escape(mesg.c_str(), mesg.size());
+	std::string escaped_mesg = LLWeb::curlEscape(mesg);
 
 	translateUrl = m_GoogleURL
 		+ escaped_mesg + m_GoogleLangSpec

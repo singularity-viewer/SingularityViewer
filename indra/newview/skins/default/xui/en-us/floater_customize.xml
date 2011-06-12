@@ -1298,11 +1298,103 @@ scratch and wear it.
             <button name="Revert" label="Revert" label_selected="Revert"
              follows="right|bottom" width="82" height="20" left="305" bottom="-478"/>
 		</panel>
+    <panel border="true" bottom="-482" follows="left|top|right|bottom" height="481"
+		     label="Physics" left="102" mouse_opaque="true" name="Physics" width="389">
+      <icon bottom="-21" color="1 1 1 1" follows="top|right" height="16"
+			     image_name="icon_lock.tga" left="333" mouse_opaque="true" name="square"
+			     width="16" />
+      <icon bottom="-24" color="1 1 1 1" follows="left|top" height="16" left="8"
+			     mouse_opaque="true" name="icon" width="16" />
+      <button bottom="-81" follows="left|top" font="SansSerifSmall" halign="center"
+			     height="16" label="Belly Bounce" label_selected="Belly Bounce" left="8"
+			     mouse_opaque="true" name="Belly Bounce" scale_image="true" width="82" />
+      <button bottom="-113" follows="left|top" font="SansSerifSmall" halign="center"
+			     height="16" label="Breast Bounce" label_selected="Breast Bounce" left="8"
+			     mouse_opaque="true" name="Breast Bounce" scale_image="true" width="82" />
+      <button bottom="-145" follows="left|top" font="SansSerifSmall" halign="center"
+			     height="16" label="Breast Cleavage" label_selected="Breast Cleavage" left="8"
+			     mouse_opaque="true" name="Breast Cleavage" scale_image="true" width="82" />
+      <button bottom="-177" follows="left|top" font="SansSerifSmall" halign="center"
+			     height="16" label="Breast Sway" label_selected="Breast Sway" left="8"
+			     mouse_opaque="true" name="Breast Sway" scale_image="true" width="82" />
+      <button bottom="-209" follows="left|top" font="SansSerifSmall" halign="center"
+			     height="16" label="Butt Bounce" label_selected="Butt Bounce" left="8"
+			     mouse_opaque="true" name="Butt Bounce" scale_image="true" width="82" />
+      <button bottom="-241" follows="left|top" font="SansSerifSmall" halign="center"
+			     height="16" label="Butt Sway" label_selected="Butt Sway" left="8"
+			     mouse_opaque="true" name="Butt Sway" scale_image="true" width="82" />
+      <button bottom="-273" follows="left|top" font="SansSerifSmall" halign="center"
+			     height="16" label="Advanced Parameters" label_selected="Advanced Parameters" left="8"
+			     mouse_opaque="true" name="Advanced Parameters" scale_image="true" width="82" />
+      
+      <text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+			     bottom="-24" drop_shadow_visible="true" follows="left|top|right"
+			     font="SansSerif" h_pad="0" halign="left" height="16" left="26"
+			     mouse_opaque="true" name="title" v_pad="0" width="355">
+        [DESC]
+      </text>
+      <text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+			     bottom="-24" drop_shadow_visible="true" follows="left|top|right"
+			     font="SansSerif" h_pad="0" halign="left" height="16" left="26"
+			     mouse_opaque="true" name="title_no_modify" v_pad="0" width="355">
+        [DESC]: cannot modify
+      </text>
+      <text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+			     bottom="-24" drop_shadow_visible="true" follows="left|top|right"
+			     font="SansSerif" h_pad="0" halign="left" height="16" left="26"
+			     mouse_opaque="true" name="title_loading" v_pad="0" width="355">
+        [DESC]: loading...
+      </text>
+      <text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+			     bottom="-24" drop_shadow_visible="true" follows="left|top|right"
+			     font="SansSerif" h_pad="0" halign="left" height="16" left="26"
+			     mouse_opaque="true" name="title_not_worn" v_pad="0" width="355">
+        [DESC]: not worn
+      </text>
+      <text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+			     bottom="-38" drop_shadow_visible="true" follows="left|top|right"
+			     font="SansSerifSmall" h_pad="0" halign="left" height="14" left="8"
+			     mouse_opaque="true" name="path" v_pad="0" width="373">
+        Located in [PATH]
+      </text>
+      <text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+			     bottom="-74" drop_shadow_visible="true" follows="left|top|right"
+			     font="SansSerifSmall" h_pad="0" halign="left" height="28" left="8"
+			     mouse_opaque="true" name="not worn instructions" v_pad="0" width="373">
+        Put on a new physics wearable by dragging one from your inventory
+        to your avatar. Alternately, you create a new one from
+        scratch and wear it.
+      </text>
+      <text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+			     bottom="-74" drop_shadow_visible="true" follows="left|top|right"
+			     font="SansSerifSmall" h_pad="0" halign="left" height="28" left="8"
+			     mouse_opaque="true" name="no modify instructions" v_pad="0" width="373">
+        You do not have permission to modify this wearable.
+      </text>
+      <text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+           bottom="-486" drop_shadow_visible="true" follows="left|top|right"
+           font="SansSerif" h_pad="0" halign="right" height="28" right="117"
+           mouse_opaque="true" name="Item Action Label" v_pad="0" width="100">
+        Physics:
+      </text>
+      <button bottom="-128" follows="left|top" halign="center" height="24"
+			     label="Create New Physics" label_selected="Create New Physics" left="8"
+			     mouse_opaque="true" name="Create New" scale_image="true" width="170" />
+      <button bottom="-478" follows="right|bottom" font="SansSerif" halign="center"
+			     height="20" label="Save" label_selected="Save" left="123"
+			     mouse_opaque="true" name="Save" scale_image="true" width="82" />
+      <button bottom="-478" follows="right|bottom" font="SansSerif" halign="center"
+			     height="20" label="Save As..." label_selected="Save As..." left="209"
+			     mouse_opaque="true" name="Save As" scale_image="true" width="92" />
+      <button bottom="-478" follows="right|bottom" font="SansSerif" halign="center"
+			     height="20" label="Revert" label_selected="Revert" left="305"
+			     mouse_opaque="true" name="Revert" scale_image="true" width="82" />
+    </panel>
 	</tab_container>
 	<scroll_container bottom="-476" follows="left|top|right|bottom" height="382" left="197"
 	     mouse_opaque="false" name="panel_container" opaque="false" width="292" />
 	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
-	     bottom="-400" drop_shadow_visible="true" follows="left|top"
+	     bottom="-410" drop_shadow_visible="true" follows="left|top"
 	     font="SansSerif" h_pad="0" halign="left" height="16"
 	     left="8" mouse_opaque="true" name="AvatarHeightText" v_pad="0" width="140">
         Avatar Height:

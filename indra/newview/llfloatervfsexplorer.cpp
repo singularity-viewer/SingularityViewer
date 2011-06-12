@@ -5,7 +5,6 @@
 #include "lluictrlfactory.h"
 #include "llscrolllistctrl.h"
 #include "llcheckboxctrl.h"
-#include "llfilepicker.h"
 #include "llvfs.h"
 #include "lllocalinventory.h"
 #include "llviewerwindow.h"

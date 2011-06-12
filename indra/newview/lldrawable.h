@@ -44,9 +44,7 @@
 #include "llquaternion.h"
 #include "xform.h"
 #include "llmemtype.h"
-#include "llprimitive.h"
 #include "lldarray.h"
-#include "llstat.h"
 #include "llviewerobject.h"
 #include "llrect.h"
 #include "llappviewer.h" // for gFrameTimeSeconds
@@ -55,6 +53,7 @@ class LLCamera;
 class LLDrawPool;
 class LLDrawable;
 class LLFace;
+class LLFacePool;
 class LLSpatialGroup;
 class LLSpatialBridge;
 class LLSpatialPartition;
@@ -69,6 +68,17 @@ const U32 SILHOUETTE_HIGHLIGHT = 0;
 class LLDrawable : public LLRefCount
 {
 public:
+	LLDrawable(const LLDrawable& rhs)
+	{
+		*this = rhs;
+	}
+
+	const LLDrawable& operator=(const LLDrawable& rhs)
+	{
+		llerrs << "Illegal operation!" << llendl;
+		return *this;
+	}
+
 	static void initClass();
 
 	LLDrawable()				{ init(); }
@@ -104,7 +114,7 @@ public:
 	const LLQuaternion&   getRotation() const			{ return mXform.getRotation(); }
 	F32			          getIntensity() const			{ return llmin(mXform.getScale().mV[0], 4.f); }
 	S32					  getLOD() const				{ return mVObjp ? mVObjp->getLOD() : 1; }
-	F64					  getBinRadius() const			{ return mBinRadius; }
+	F32					  getBinRadius() const			{ return mBinRadius; }
 	void  getMinMax(LLVector3& min,LLVector3& max) const { mXform.getMinMax(min,max); }
 	LLXformMatrix*		getXform() { return &mXform; }
 
@@ -302,9 +312,9 @@ private:
 	F32				mRadius;
 	LLVector3		mExtents[2];
 	LLVector3d		mPositionGroup;
-	F64				mBinRadius;
+	F32				mBinRadius;
 	S32				mGeneration;
-
+	
 	LLVector3		mCurrentScale;
 	
 	static U32 sCurVisible; // Counter for what value of mVisible means currently visible

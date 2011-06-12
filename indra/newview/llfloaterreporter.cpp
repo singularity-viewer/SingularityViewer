@@ -76,7 +76,6 @@
 #include "llviewerwindow.h"
 #include "llviewertexturelist.h"
 #include "llworldmap.h"
-#include "llfilepicker.h"
 #include "llfloateravatarpicker.h"
 #include "lldir.h"
 #include "llselectmgr.h"

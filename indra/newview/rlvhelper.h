@@ -24,6 +24,7 @@
 #include "llviewerinventory.h"
 #include "llvoavatar.h"
 #include "llwlparamset.h"
+#include "lleventtimer.h"
 #include "rlvdefines.h"
 #include "rlvcommon.h"
 

@@ -5,6 +5,7 @@
 #include "llfloater.h"
 #include "llviewercontrol.h"
 #include "llagent.h"
+#include "lleventtimer.h"
 
 
 class AONoteCardDropTarget;

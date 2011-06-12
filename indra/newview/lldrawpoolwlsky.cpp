@@ -42,7 +42,6 @@
 #include "llwlparammanager.h"
 #include "llsky.h"
 #include "llvowlsky.h"
-#include "llagent.h"
 #include "llviewerregion.h"
 #include "llface.h"
 #include "llrender.h"
@@ -209,7 +208,7 @@ void LLDrawPoolWLSky::renderSkyClouds(F32 camHeightLocal) const
 				&gWLCloudProgram;
 
 		LLGLEnable blend(GL_BLEND);
-		LLGLSBlendFunc blendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		gGL.setSceneBlendType(LLRender::BT_ALPHA);
 		gGL.setAlphaRejectSettings(LLRender::CF_DEFAULT);
 
 		gGL.getTexUnit(0)->bind(sCloudNoiseTexture);

@@ -7,7 +7,7 @@
 #include "llsdserialize.h"
 #include "llscrolllistctrl.h"
 #include "llcheckboxctrl.h"
-#include "llfilepicker.h"
+#include "statemachine/aifilepicker.h"
 #include "llviewerwindow.h"
 #include "llviewercontrol.h"
 #include "lldate.h"
@@ -241,10 +241,17 @@ void LLFloaterBlacklist::saveToDisk()
 //static
 void LLFloaterBlacklist::onClickSave(void* user_data)
 {
-	LLFilePicker& file_picker = LLFilePicker::instance();
-	if(file_picker.getSaveFile( LLFilePicker::FFSAVE_BLACKLIST, LLDir::getScrubbedFileName("untitled.blacklist")))
+	AIFilePicker* filepicker = AIFilePicker::create();
+	filepicker->open("untitled.blacklist", FFSAVE_BLACKLIST);
+	filepicker->run(boost::bind(&LLFloaterBlacklist::onClickSave_continued, filepicker));
+}
+
+//static
+void LLFloaterBlacklist::onClickSave_continued(AIFilePicker* filepicker)
+{
+	if (filepicker->hasFilename())
 	{
-		std::string file_name = file_picker.getFirstFile();
+		std::string file_name = filepicker->getFilename();
 		llofstream export_file(file_name);
 		LLSD data;
 		for(std::map<LLUUID,LLSD>::iterator iter = blacklist_entries.begin(); iter != blacklist_entries.end(); ++iter)
@@ -259,10 +266,16 @@ void LLFloaterBlacklist::onClickSave(void* user_data)
 //static
 void LLFloaterBlacklist::onClickLoad(void* user_data)
 {
-	LLFilePicker& file_picker = LLFilePicker::instance();
-	if(file_picker.getOpenFile(LLFilePicker::FFLOAD_BLACKLIST))
+	AIFilePicker* filepicker = AIFilePicker::create();
+	filepicker->open(FFLOAD_BLACKLIST);
+	filepicker->run(boost::bind(&LLFloaterBlacklist::onClickLoad_continued, filepicker));
+}
+
+void LLFloaterBlacklist::onClickLoad_continued(AIFilePicker* filepicker)
+{
+	if (filepicker->hasFilename())
 	{
-		std::string file_name = file_picker.getFirstFile();
+		std::string file_name = filepicker->getFilename();
 		llifstream xml_file(file_name);
 		if(!xml_file.is_open()) return;
 		LLSD data;

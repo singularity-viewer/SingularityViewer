@@ -78,8 +78,6 @@ public:
 	
 public:
 	LLImageDecodeThread(bool threaded = true);
-	virtual ~LLImageDecodeThread();
-
 	handle_t decodeImage(LLImageFormatted* image,
 						 U32 priority, S32 discard, BOOL needs_aux,
 						 Responder* responder);
@@ -103,7 +101,7 @@ private:
 	};
 	typedef std::list<creation_info> creation_list_t;
 	creation_list_t mCreationList;
-	LLMutex* mCreationMutex;
+	LLMutex mCreationMutex;
 };
 
 #endif

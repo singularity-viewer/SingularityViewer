@@ -227,7 +227,6 @@ bool LLLFSThread::Request::processRequest()
 		}
 		mBytesRead = outfile.write(mBuffer, mBytes );
 		complete = true;
-
 // 		llinfos << "LLLFSThread::WRITE:" << mFileName << " Bytes: " << mBytesRead << "/" << mBytes << " Offset:" << mOffset << llendl;
 	}
 	else

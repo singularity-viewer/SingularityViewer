@@ -4,6 +4,8 @@
  * Copyright (c) 2007-$CurrentYear$, Linden Research, Inc.
  * $License$
  */
+ 
+#version 120
 
 vec3 scaleSoftClip(vec3 inColor);
 vec3 atmosTransport(vec3 inColor);

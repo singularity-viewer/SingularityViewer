@@ -264,7 +264,7 @@ LLMuteList::~LLMuteList()
 	// If we quit from the login screen we will not have an SL account
 	// name.  Don't try to save, otherwise we'll dump a file in
 	// C:\Program Files\SecondLife\  JC
-	std::string user_dir = gDirUtilp->getLindenUserDir();
+	std::string user_dir = gDirUtilp->getLindenUserDir(true);
 	if (!user_dir.empty())
 	{
 		std::string filename = gDirUtilp->getExpandedFilename(LL_PATH_PER_SL_ACCOUNT, "volume_settings.xml");

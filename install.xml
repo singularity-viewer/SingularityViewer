@@ -63,9 +63,9 @@
           <key>linux</key>
           <map>
             <key>md5sum</key>
-            <string>25f8a8fc4ea94169fe6222571b8d5e55</string>
+            <string>7952d45a61dc01faf1d9fd67023d96bd</string>
             <key>url</key>
-            <uri>http://s3.amazonaws.com/viewer-source-downloads/install_pkgs/SDL-1.2.12-linux-20081222c.tar.bz2</uri>
+            <uri>https://github.com/downloads/siana/SingularityViewer/SDL-1.2.12-linux-20081222d.tar.bz2</uri>
           </map>
           <key>windows</key>
           <map>
@@ -106,9 +106,9 @@
           <key>windows</key>
           <map>
             <key>md5sum</key>
-            <string>a02619c1e30a3db02d3883bf1ad7a1e6</string>
+            <string>ea394402d4d4af4c5238fe4e35c64389</string>
             <key>url</key>
-            <uri>http://s3.amazonaws.com/viewer-source-downloads/install_pkgs/apr_suite-1.3.8-windows-20090911.tar.bz2</uri>
+            <uri>https://github.com/downloads/siana/SingularityViewer/apr_suite-1.4.2-windows-20110504.tar.bz2</uri>
           </map>
         </map>
       </map>
@@ -146,9 +146,9 @@
           <key>windows</key>
           <map>
             <key>md5sum</key>
-            <string>b06f412608c8fccfc756935c262b03f0</string>
+            <string>e4ab04da7db20ba388f2109e84f0fcda</string>
             <key>url</key>
-            <uri>https://github.com/downloads/Shyotl/SingularityViewer/ares-1.7.1-windows-20100611a.tar.bz2</uri>
+            <uri>https://github.com/downloads/siana/SingularityViewer/ares-1.7.1-windows-20110504.tar.bz2</uri>
           </map>
         </map>
       </map>
@@ -162,26 +162,12 @@
         <string>artwork</string>
         <key>packages</key>
         <map>
-          <key>darwin</key>
+          <key>common</key>
           <map>
             <key>md5sum</key>
-            <string>5e047437d73d1017bf270a6c6e936f23</string>
+            <string>a2cde4f24bdcc260b661e139846b8acd</string>
             <key>url</key>
-            <uri>http://s3.amazonaws.com/viewer-source-downloads/install_pkgs/artwork-common-20090415.tar.bz2</uri>
-          </map>
-          <key>linux</key>
-          <map>
-            <key>md5sum</key>
-            <string>5e047437d73d1017bf270a6c6e936f23</string>
-            <key>url</key>
-            <uri>http://s3.amazonaws.com/viewer-source-downloads/install_pkgs/artwork-common-20090415.tar.bz2</uri>
-          </map>
-          <key>windows</key>
-          <map>
-            <key>md5sum</key>
-            <string>5e047437d73d1017bf270a6c6e936f23</string>
-            <key>url</key>
-            <uri>http://s3.amazonaws.com/viewer-source-downloads/install_pkgs/artwork-common-20090415.tar.bz2</uri>
+			<uri>http://imprudenceviewer.org/download/libs/imprudence-artwork-20101026.tar.bz2</uri>
           </map>
         </map>
       </map>
@@ -207,16 +193,16 @@
           <key>darwin</key>
           <map>
             <key>md5sum</key>
-            <string>bb8552f22769da81593f7d47a51d83d8</string>
+            <string>2cad51575b429be4fdadb5d63da1c739</string>
             <key>url</key>
-            <uri>http://s3.amazonaws.com/viewer-source-downloads/install_pkgs/boost-1.39.0-darwin-20100226.tar.bz2</uri>
+			<uri>https://github.com/downloads/siana/SingularityViewer/boost-1.45.0-darwin-20110604.tar.bz2</uri>
           </map>
            <key>linux</key>
           <map>
             <key>md5sum</key>
-            <string>4db3d74e40d149eeec06f4d97a609bb1</string>
+            <string>a2d2fff5cc5555ffd9865daedfcd0dd5</string>
             <key>url</key>
-            <uri>http://s3.amazonaws.com/viewer-source-downloads/install_pkgs/boost-1.39.0-linux-20100624.tar.bz2</uri>
+			<uri>https://github.com/downloads/siana/SingularityViewer/boost-1.45.0-linux-20110604.tar.bz2</uri>
           </map>
           <key>windows</key>
           <map>
@@ -261,9 +247,9 @@
 					<key>windows</key>
 					<map>
 						<key>md5sum</key>
-						<string>7f73eeff95087369ffebeac8356c7eaa</string>
+						<string>60ed73408c4050ff9c96f26771fd6b46</string>
 						<key>url</key>
-						<uri>https://github.com/downloads/Shyotl/SingularityViewer/curl-7.20.1-windows-20100611.tar.bz2</uri>
+						<uri>https://github.com/downloads/siana/SingularityViewer/curl-7.21.1-windows-20110504.tar.bz2</uri>
 					</map>
 				</map>
 			</map>
@@ -368,42 +354,9 @@
           <key>windows</key>
           <map>
             <key>md5sum</key>
-            <string>5dbbdb4a9b5bec86d180ef20a5f8ccfb</string>
+            <string>74494ba202b3d2cd74e4032716f4bf1b</string>
             <key>url</key>
-            <uri>http://s3.amazonaws.com/viewer-source-downloads/install_pkgs/expat-1.95.8-windows-20090917.tar.bz2</uri>
-          </map>
-        </map>
-      </map>
-      <key>fmod</key>
-      <map>
-        <key>copyright</key>
-        <string>FMOD Sound System, copyright (C) Firelight Technologies Pty, Ltd., 1994-2006.</string>
-        <key>description</key>
-        <string>Audio engine and mp3 stream decoder .</string>
-        <key>license</key>
-        <string>fmod</string>
-        <key>packages</key>
-        <map>
-          <key>darwin</key>
-          <map>
-            <key>md5sum</key>
-            <string>c7e317bec481b7efa2a0319e163dcc65</string>
-            <key>url</key>
-            <uri>scp:install-packages.lindenlab.com:/local/www/install-packages/doc/fmod-3.75-darwin-20080818.tar.bz2</uri>
-          </map>
-          <key>linux</key>
-          <map>
-            <key>md5sum</key>
-            <string>abd2b4ba4ac993f19d82804af387eb7c</string>
-            <key>url</key>
-            <uri>scp:install-packages.lindenlab.com:/local/www/install-packages/doc/fmod-3.75-linux-20080818.tar.bz2</uri>
-          </map>
-          <key>windows</key>
-          <map>
-            <key>md5sum</key>
-            <string>1a55dec2907821f5f785648a660126c3</string>
-            <key>url</key>
-            <uri>scp:install-packages.lindenlab.com:/local/www/install-packages/doc/fmod-3.75-windows-20080611.tar.bz2</uri>
+            <uri>https://github.com/downloads/siana/SingularityViewer/expat-2.0.1-windows-20110504.tar.bz2</uri>
           </map>
         </map>
       </map>
@@ -471,9 +424,9 @@
           <key>windows</key>
           <map>
             <key>md5sum</key>
-            <string>88980fd6d91ac541b62dea877ebe6ba6</string>
+            <string>c1fec2f5a4924b75ca6047edfcc91eba</string>
             <key>url</key>
-            <uri>http://s3.amazonaws.com/viewer-source-downloads/install_pkgs/freetype-2.3.9-windows-20090917.tar.bz2</uri>
+            <uri>https://github.com/downloads/siana/SingularityViewer/freetype-2.4.4-windows-20110504.tar.bz2</uri>
           </map>
         </map>
       </map>
@@ -593,9 +546,9 @@
           <key>windows</key>
           <map>
             <key>md5sum</key>
-            <string>38a70e2d892520ed3281b0f459e4f15f</string>
+            <string>571a398f5b3f65ba2c02f48df843cc97</string>
             <key>url</key>
-            <uri>https://github.com/downloads/siana/SingularityViewer/tcmalloc-1.6-min-20110317.tar.bz2</uri>
+            <uri>https://github.com/downloads/siana/SingularityViewer/tcmalloc-1.7-min-20110507.tar.bz2</uri>
           </map>
         </map>
       </map>
@@ -608,16 +561,16 @@
           <key>linux</key>
           <map>
             <key>md5sum</key>
-            <string>c829b638b6eef71ca63418cb9aea46a2</string>
+            <string>2cd3f6499f8444f1d119d097e4047252</string>
             <key>url</key>
-            <uri>http://s3.amazonaws.com/viewer-source-downloads/install_pkgs/gstreamer-linux-20080613.tar.bz2</uri>
+            <uri>http://imprudenceviewer.org/download/libs/gstreamer-0.10.24-linux-20091125.tar.bz2</uri>
           </map>
           <key>linux64</key>
           <map>
             <key>md5sum</key>
-            <string>befc7520fe01250f39458f65c29bc584</string>
+            <string>7e6fc4e185e8444a07b58ba7c0df255a</string>
             <key>url</key>
-            <uri>http://s3.amazonaws.com/viewer-source-downloads/install_pkgs/gstreamer-linux64-20080909.tar.bz2</uri>
+            <uri>http://imprudenceviewer.org/download/libs/gstreamer-0.10.24-linux64-20091230.tar.bz2</uri>
           </map>
         </map>
       </map>
@@ -785,9 +738,9 @@
           <key>windows</key>
           <map>
             <key>md5sum</key>
-            <string>6a6bb0143a2561e3276dab4bcfa425ef</string>
+            <string>e4dfbea847d92b46e3d2d1a2c25fe3b3</string>
             <key>url</key>
-            <uri>http://s3.amazonaws.com/viewer-source-downloads/install_pkgs/jpeglib-6b-windows-20090917a.tar.bz2</uri>
+            <uri>https://github.com/downloads/siana/SingularityViewer/jpeglib-8c-windows-20110504.tar.bz2</uri>
           </map>
         </map>
       </map>
@@ -906,9 +859,9 @@ anguage Infrstructure (CLI) international standard</string>
           <key>windows</key>
           <map>
             <key>md5sum</key>
-            <string>c781cd9846cf20afb90ac40ad1a0ce9d</string>
+            <string>acf1626a563b2827a7f62d48661352c8</string>
             <key>url</key>
-            <uri>http://s3.amazonaws.com/viewer-source-downloads/install_pkgs/libpng-1.2.35-windows-20090917.tar.bz2</uri>
+            <uri>https://github.com/downloads/siana/SingularityViewer/libpng-1.5.2-windows-20110512.tar.bz2</uri>
           </map>
         </map>
       </map>
@@ -1015,35 +968,6 @@ anguage Infrstructure (CLI) international standard</string>
           </map>
         </map>
       </map>
-      <key>mysql</key>
-      <map>
-        <key>license</key>
-        <string>gpl</string>
-        <key>packages</key>
-        <map>
-          <key>darwin</key>
-          <map>
-            <key>md5sum</key>
-            <string>df27f2db244ea2762759a06cd75ada4e</string>
-            <key>url</key>
-            <uri>scp:install-packages.lindenlab.com:/local/www/install-packages/doc/mysql-darwin-20080812.tar.bz2</uri>
-          </map>
-          <key>linux</key>
-          <map>
-            <key>md5sum</key>
-            <string>cc86b4cc858655e23704d1168325d7b9</string>
-            <key>url</key>
-            <uri>scp:install-packages.lindenlab.com:/local/www/install-packages/doc/mysqlclient-linux-20090320.tar.bz2</uri>
-          </map>
-          <key>windows</key>
-          <map>
-            <key>md5sum</key>
-            <string>98bac06680dca907e783d8dd4aa9edde</string>
-            <key>url</key>
-            <uri>scp:install-packages.lindenlab.com:/local/www/install-packages/doc/mysql-windows-20080804.tar.bz2</uri>
-          </map>
-        </map>
-      </map>
       <key>ndofdev</key>
       <map>
         <key>copyright</key>
@@ -1078,9 +1002,9 @@ anguage Infrstructure (CLI) international standard</string>
           <key>windows</key>
           <map>
             <key>md5sum</key>
-            <string>f0df8a1e60991095e3adca1450b8c9c0</string>
+            <string>383ce3f78ae3e6afa39ee9ced6d8e531</string>
             <key>url</key>
-            <uri>http://s3.amazonaws.com/viewer-source-downloads/install_pkgs/ndofdev-windows-20090917.tar.bz2</uri>
+            <uri>https://github.com/downloads/siana/SingularityViewer/libndofdev-windows-20110504.tar.bz2</uri>
           </map>
         </map>
       </map>
@@ -1097,16 +1021,16 @@ anguage Infrstructure (CLI) international standard</string>
           <key>darwin</key>
           <map>
             <key>md5sum</key>
-            <string>88eec3965fc2384436192faef1db2629</string>
+            <string>79bab0948f53add62d7a37be68704bf5</string>
             <key>url</key>
-            <uri>http://imprudenceviewer.org/download/libs/ogg-vorbis-darwin-20100620.tar.bz2</uri>
+            <uri>https://github.com/downloads/siana/SingularityViewer/ogg_vorbis-1.2.2-1.3.2-darwin-20110512.tar.bz2</uri>
           </map>
           <key>linux</key>
           <map>
             <key>md5sum</key>
-            <string>72bde567859934024c8a4a70b97b24f5</string>
+            <string>95c99fe37289500b60e2feee2c2f3991</string>
             <key>url</key>
-            <uri>http://imprudenceviewer.org/download/libs/ogg-vorbis-linux-20091115.tar.bz2</uri>
+            <uri>https://github.com/downloads/siana/SingularityViewer/ogg_vorbis-1.2.2-1.3.2-linux-20110512.tar.bz2</uri>
           </map>
           <key>linux64</key>
           <map>
@@ -1118,9 +1042,9 @@ anguage Infrstructure (CLI) international standard</string>
           <key>windows</key>
           <map>
             <key>md5sum</key>
-            <string>9bf1fea65e66b2cd3075e6ffd7eb57ad</string>
+            <string>30bb58af8c5f818fc8ea8d481bd2f478</string>
             <key>url</key>
-            <uri>http://s3.amazonaws.com/viewer-source-downloads/install_pkgs/ogg-vorbis-1.1.3-1.2.0-windows-20080723.tar.bz2</uri>
+            <uri>https://github.com/downloads/siana/SingularityViewer/ogg_vorbis-1.2.2-1.3.2-windows-20110512.tar.bz2</uri>
           </map>
         </map>
       </map>
@@ -1219,58 +1143,6 @@ anguage Infrstructure (CLI) international standard</string>
           </map>
         </map>
       </map>
-      <key>quicktime</key>
-      <map>
-        <key>copyright</key>
-        <string>Copyright (C) 1990-2007 by Apple Computer, Inc., all rights reserved.</string>
-        <key>description</key>
-        <string>Separate download. Used to play in-world video clips on a prim. </string>
-        <key>license</key>
-        <string>quicktime</string>
-        <key>packages</key>
-        <map>
-          <key>windows</key>
-          <map>
-            <key>md5sum</key>
-            <string>be45825cc14ede53790ac93c58307dcb</string>
-            <key>url</key>
-            <uri>scp:install-packages.lindenlab.com:/local/www/install-packages/doc/quicktime-sdk-windows-7.3-20091110.tar.bz2</uri>
-          </map>
-        </map>
-      </map>
-      <key>smartheap</key>
-      <map>
-        <key>copyright</key>
-        <string>Copyright (C) 1991-2000 Compuware Corporation. All Rights Reserved.</string>
-        <key>description</key>
-        <string>Memory Management Library</string>
-        <key>license</key>
-        <string>smartheap</string>
-        <key>packages</key>
-        <map>
-          <key>darwin</key>
-          <map>
-            <key>md5sum</key>
-            <string>f54131b5f228e805c64c2e4e6c96579a</string>
-            <key>url</key>
-            <uri>scp:install-packages.lindenlab.com:/local/www/install-packages/doc/smartheap-6.0.2-darwin-20080610.tar.bz2</uri>
-          </map>
-          <key>linux</key>
-          <map>
-            <key>md5sum</key>
-            <string>499208522bf7d7843e1d014d64214e06</string>
-            <key>url</key>
-            <uri>scp:install-packages.lindenlab.com:/local/www/install-packages/doc/smartheap-6.0.2-linux-20080610.tar.bz2</uri>
-          </map>
-          <key>windows</key>
-          <map>
-            <key>md5sum</key>
-            <string>78fd47017f21d11eae43bca3e38a3e1e</string>
-            <key>url</key>
-            <uri>scp:install-packages.lindenlab.com:/local/www/install-packages/doc/smartheap-6.0.2-windows-20080611.tar.bz2</uri>
-          </map>
-        </map>
-      </map>
       <key>tut</key>
       <map>
         <key>copyright</key>
@@ -1331,12 +1203,42 @@ anguage Infrstructure (CLI) international standard</string>
             <key>url</key>
             <uri>http://s3.amazonaws.com/viewer-source-downloads/install_pkgs/vivox-2.1.3010.6270-linux-20090309.tar.bz2</uri>
           </map>
+          <key>linux64</key>
+          <map>
+            <key>md5sum</key>
+            <string>01573510dce7f380f44e561ef2f3dd9f</string>
+            <key>url</key>
+            <uri>http://s3.amazonaws.com/viewer-source-downloads/install_pkgs/vivox-2.1.3010.6270-linux-20090309.tar.bz2</uri>
+          </map>
           <key>windows</key>
           <map>
             <key>md5sum</key>
             <string>752daa90e07c05202d1f76980cb955eb</string>
             <key>url</key>
             <uri>http://s3.amazonaws.com/viewer-source-downloads/install_pkgs/vivox-2.1.3010.6270-windows-20090309.tar.bz2</uri>
+          </map>
+        </map>
+      </map>
+      <key>32bitcompatibilitylibs</key>
+      <map>
+        <key>copyright</key>
+        <string>Copyrights: 	Libidn: Copyright (C) 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009 
+				Simon Josefsson. License GPL v3.0.
+				Freealut, libuuid, openal-soft: see copyright and license of the 
+				according main packages.
+        </string>
+        <key>description</key>
+        <string>32bit libraries needed for using voice</string>
+        <key>license</key>
+        <string>gpl</string>
+        <key>packages</key>
+        <map>
+          <key>linux64</key>
+          <map>
+            <key>md5sum</key>
+            <string>cbaafc55fb8b14283541791e82f13462</string>
+            <key>url</key>
+            <uri>http://imprudenceviewer.org/download/libs/linux64-32bitcompatibilitylibs-20100903.tar.bz2</uri>
           </map>
         </map>
       </map>
@@ -1374,9 +1276,9 @@ anguage Infrstructure (CLI) international standard</string>
           <key>windows</key>
           <map>
             <key>md5sum</key>
-            <string>262629bcaa39dcf7266caa50da01a599</string>
+            <string>2faea7fe8fa66872793e0ea917c33e2e</string>
             <key>url</key>
-            <uri>http://s3.amazonaws.com/viewer-source-downloads/install_pkgs/xmlrpc-epi-0.51-windows-20091016.tar.bz2</uri>
+            <uri>https://github.com/downloads/siana/SingularityViewer/xmlrpc_epi-0.54.1-windows-20110504.tar.bz2</uri>
           </map>
         </map>
       </map>
@@ -1414,9 +1316,9 @@ anguage Infrstructure (CLI) international standard</string>
           <key>windows</key>
           <map>
             <key>md5sum</key>
-            <string>73baf52a740d151fddbc2a008369c462</string>
+            <string>7fc3539a45054e91b7e225cc3888f838</string>
             <key>url</key>
-            <uri>http://s3.amazonaws.com/viewer-source-downloads/install_pkgs/zlib-1.2.3-windows-20090921.tar.bz2</uri>
+            <uri>https://github.com/downloads/siana/SingularityViewer/zlib-1.2.5-windows-20110504.tar.bz2</uri>
           </map>
         </map>
       </map>

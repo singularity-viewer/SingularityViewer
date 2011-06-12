@@ -37,6 +37,7 @@
 #include "pipeline.h"
 #include "llsky.h"
 
+#include "lldiriterator.h"
 #include "llsliderctrl.h"
 #include "llspinctrl.h"
 #include "llcheckboxctrl.h"
@@ -111,10 +112,11 @@ void LLWLParamManager::loadPresets(const std::string& file_name)
 	LL_INFOS2("AppInit", "Shaders") << "Loading Default WindLight settings from " << path_name << LL_ENDL;
 			
 	bool found = true;			
+	LLDirIterator app_settings_iter(path_name, "*.xml");
 	while(found) 
 	{
 		std::string name;
-		found = gDirUtilp->getNextFileInDir(path_name, "*.xml", name, false);
+		found = app_settings_iter.next(name);
 		if(found)
 		{
 
@@ -137,10 +139,11 @@ void LLWLParamManager::loadPresets(const std::string& file_name)
 	LL_INFOS2("AppInit", "Shaders") << "Loading User WindLight settings from " << path_name2 << LL_ENDL;
 			
 	found = true;			
+	LLDirIterator user_settings_iter(path_name2, "*.xml");
 	while(found) 
 	{
 		std::string name;
-		found = gDirUtilp->getNextFileInDir(path_name2, "*.xml", name, false);
+		found = user_settings_iter.next(name);
 		if(found)
 		{
 			name=name.erase(name.length()-4);
@@ -187,10 +190,7 @@ void LLWLParamManager::loadPreset(const std::string & name,bool propagate)
 {
 	
 	// bugfix for SL-46920: preventing filenames that break stuff.
-	char * curl_str = curl_escape(name.c_str(), name.size());
-	std::string escaped_filename(curl_str);
-	curl_free(curl_str);
-	curl_str = NULL;
+	std::string escaped_filename = LLWeb::curlEscape(name);
 
 	escaped_filename += ".xml";
 
@@ -244,10 +244,7 @@ void LLWLParamManager::loadPreset(const std::string & name,bool propagate)
 void LLWLParamManager::savePreset(const std::string & name)
 {
 	// bugfix for SL-46920: preventing filenames that break stuff.
-	char * curl_str = curl_escape(name.c_str(), name.size());
-	std::string escaped_filename(curl_str);
-	curl_free(curl_str);
-	curl_str = NULL;
+	std::string escaped_filename = LLWeb::curlEscape(name);
 
 	escaped_filename += ".xml";
 
@@ -531,10 +528,7 @@ bool LLWLParamManager::removeParamSet(const std::string& name, bool delete_from_
 		std::string path_name(gDirUtilp->getExpandedFilename( LL_PATH_USER_SETTINGS , "windlight/skies", ""));
 		
 		// use full curl escaped name
-		char * curl_str = curl_escape(name.c_str(), name.size());
-		std::string escaped_name(curl_str);
-		curl_free(curl_str);
-		curl_str = NULL;
+		std::string escaped_name = LLWeb::curlEscape(name);
 		
 		gDirUtilp->deleteFilesInDir(path_name, escaped_name + ".xml");
 	}

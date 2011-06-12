@@ -139,7 +139,7 @@ void LLViewerJointAttachment::setupDrawable(LLViewerObject *object)
 
 	LLViewerObject::const_child_list_t& child_list = object->getChildren();
 	for (LLViewerObject::child_list_t::const_iterator iter = child_list.begin();
-		 iter != child_list.end(); iter++)
+		 iter != child_list.end(); ++iter)
 	{
 		LLViewerObject* childp = *iter;
 		if (childp && childp->mDrawable.notNull())
@@ -197,7 +197,7 @@ BOOL LLViewerJointAttachment::addObject(LLViewerObject* object)
 		}
 		LLViewerObject::const_child_list_t& child_list = object->getChildren();
 		for (LLViewerObject::child_list_t::const_iterator iter = child_list.begin();
-			 iter != child_list.end(); iter++)
+			 iter != child_list.end(); ++iter)
 		{
 			LLViewerObject* childp = *iter;
 			if (childp && childp->mText.notNull())
@@ -266,7 +266,7 @@ void LLViewerJointAttachment::removeObject(LLViewerObject *object)
 
 	LLViewerObject::const_child_list_t& child_list = object->getChildren();
 	for (LLViewerObject::child_list_t::const_iterator iter = child_list.begin();
-		 iter != child_list.end(); iter++)
+		 iter != child_list.end(); ++iter)
 	{
 		LLViewerObject* childp = *iter;
 		if (childp && childp->mDrawable.notNull())
@@ -291,7 +291,7 @@ void LLViewerJointAttachment::removeObject(LLViewerObject *object)
 		}
 		LLViewerObject::const_child_list_t& child_list = object->getChildren();
 		for (LLViewerObject::child_list_t::const_iterator iter = child_list.begin();
-			 iter != child_list.end(); iter++)
+			 iter != child_list.end(); ++iter)
 		{
 			LLViewerObject* childp = *iter;
 			if (childp->mText.notNull())

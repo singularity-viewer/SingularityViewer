@@ -47,7 +47,7 @@ LLCallbackList gIdleCallbacks;
 // Member functions
 //
 
-LLCallbackList::LLCallbackList()
+LLCallbackList::LLCallbackList() : mLoopingOverCallbackList(false)
 {
 	// nothing
 }
@@ -96,7 +96,15 @@ BOOL LLCallbackList::deleteFunction( callback_t func, void *data)
 	callback_list_t::iterator iter = std::find(mCallbackList.begin(), mCallbackList.end(), t);
 	if (iter != mCallbackList.end())
 	{
-		mCallbackList.erase(iter);
+		if (mLoopingOverCallbackList)
+		{
+			iter->first = NULL;		// Mark for removal later (when we return to LLCallbackList::callFunctions).
+			mNeedErase = true;
+		}
+		else
+		{
+			mCallbackList.erase(iter);
+		}
 		return TRUE;
 	}
 	else
@@ -108,16 +116,38 @@ BOOL LLCallbackList::deleteFunction( callback_t func, void *data)
 
 void LLCallbackList::deleteAllFunctions()
 {
+	llassert(!mLoopingOverCallbackList);		// Only called from unit tests.
 	mCallbackList.clear();
 }
 
 
 void LLCallbackList::callFunctions()
 {
-	for (callback_list_t::iterator iter = mCallbackList.begin(); iter != mCallbackList.end();  )
+	llassert(!mLoopingOverCallbackList);
+	mLoopingOverCallbackList = true;
+	mNeedErase = false;
+	for (callback_list_t::iterator iter = mCallbackList.begin(); iter != mCallbackList.end(); ++iter)
 	{
-		callback_list_t::iterator curiter = iter++;
-		curiter->first(curiter->second);
+		if (iter->first)						// Not pending removal?
+		{
+			iter->first(iter->second);			// This can theorectically set any iter->first to NULL, which means the entry should be erased.
+		}
+	}
+	mLoopingOverCallbackList = false;
+	if (mNeedErase)
+	{
+		callback_list_t::iterator iter = mCallbackList.begin();
+		while (iter != mCallbackList.end())
+		{
+		  if (!iter->first)
+		  {
+			iter = mCallbackList.erase(iter);
+		  }
+		  else
+		  {
+			++iter;
+		  }
+		}
 	}
 }
 

@@ -144,7 +144,7 @@ public:
 	virtual void move(LLFolderViewEventListener* parent_listener);
 	virtual BOOL isItemCopyable() const;
 	virtual BOOL copyToClipboard() const;
-	virtual void cutToClipboard();
+	virtual BOOL cutToClipboard() const;
 	virtual BOOL isClipboardPasteable() const;
 	virtual void pasteFromClipboard();
 	virtual void pasteLinkFromClipboard();
@@ -353,7 +353,7 @@ time_t LLTaskInvFVBridge::getCreationDate() const
 LLUIImagePtr LLTaskInvFVBridge::getIcon() const
 {
 	BOOL item_is_multi = FALSE;
-	if ( mFlags & LLInventoryItem::II_FLAGS_OBJECT_HAS_MULTIPLE_ITEMS )
+	if ( mFlags & LLInventoryItemFlags::II_FLAGS_OBJECT_HAS_MULTIPLE_ITEMS )
 	{
 		item_is_multi = TRUE;
 	}
@@ -447,7 +447,7 @@ BOOL LLTaskInvFVBridge::isItemMovable()
 			else if ( (gRlvHandler.hasBehaviour(RLV_BHVR_UNSIT)) || (gRlvHandler.hasBehaviour(RLV_BHVR_SITTP)) )
 			{
 				LLVOAvatar* pAvatar = gAgent.getAvatarObject();
-				if ( (pAvatar) && (pAvatar->mIsSitting) && (pAvatar->getRoot() == pObj->getRootEdit()) )
+				if ( (pAvatar) && (pAvatar->isSitting()) && (pAvatar->getRoot() == pObj->getRootEdit()) )
 					return FALSE;
 			}
 		}
@@ -470,7 +470,7 @@ BOOL LLTaskInvFVBridge::isItemRemovable()
 		else if ( (gRlvHandler.hasBehaviour(RLV_BHVR_UNSIT)) || (gRlvHandler.hasBehaviour(RLV_BHVR_SITTP)) )
 		{
 			LLVOAvatar* pAvatar = gAgent.getAvatarObject();
-			if ( (pAvatar) && (pAvatar->mIsSitting) && (pAvatar->getRoot() == pObjRoot) )
+			if ( (pAvatar) && (pAvatar->isSitting()) && (pAvatar->getRoot() == pObjRoot) )
 				return FALSE;
 		}
 	}
@@ -596,8 +596,9 @@ BOOL LLTaskInvFVBridge::copyToClipboard() const
 	return FALSE;
 }
 
-void LLTaskInvFVBridge::cutToClipboard()
+BOOL LLTaskInvFVBridge::cutToClipboard() const
 {
+	return FALSE;
 }
 
 BOOL LLTaskInvFVBridge::isClipboardPasteable() const
@@ -1372,7 +1373,7 @@ LLTaskObjectBridge::LLTaskObjectBridge(
 LLUIImagePtr LLTaskObjectBridge::getIcon() const
 {
 	BOOL item_is_multi = FALSE;
-	if ( mFlags & LLInventoryItem::II_FLAGS_OBJECT_HAS_MULTIPLE_ITEMS )
+	if ( mFlags & LLInventoryItemFlags::II_FLAGS_OBJECT_HAS_MULTIPLE_ITEMS )
 	{
 		item_is_multi = TRUE;
 	}
@@ -1787,7 +1788,7 @@ void LLPanelInventory::reset()
 }
 
 void LLPanelInventory::inventoryChanged(LLViewerObject* object,
-										InventoryObjectList* inventory,
+										LLInventoryObject::object_list_t* inventory,
 										S32 serial_num,
 										void* data)
 {
@@ -1810,8 +1811,8 @@ void LLPanelInventory::inventoryChanged(LLViewerObject* object,
 		LLFloaterProperties* floater = NULL;
 		LLDynamicArray<LLFloaterProperties*> refresh;
 
-		InventoryObjectList::const_iterator it = inventory->begin();
-		InventoryObjectList::const_iterator end = inventory->end();
+		LLInventoryObject::object_list_t::const_iterator it = inventory->begin();
+		LLInventoryObject::object_list_t::const_iterator end = inventory->end();
 		for( ;	it != end;	++it)
 		{
 			floater = LLFloaterProperties::find((*it)->getUUID(),
@@ -1927,7 +1928,7 @@ void LLPanelInventory::createFolderViews(LLInventoryObject* inventory_root, Inve
 
 typedef std::pair<LLInventoryObject*, LLFolderViewFolder*> obj_folder_pair;
 
-void LLPanelInventory::createViewsForCategory(InventoryObjectList* inventory, 
+void LLPanelInventory::createViewsForCategory(LLInventoryObject::object_list_t* inventory, 
 											  LLInventoryObject* parent,
 											  LLFolderViewFolder* folder)
 {

@@ -88,6 +88,7 @@ protected:
 	LLSliderCtrl*	mCtrlVideoCardMem;
 
 	BOOL mUseVBO;
+	BOOL mUseFBO;
 	BOOL mUseAniso;
 	U32 mFSAASamples;
 	F32 mGamma;

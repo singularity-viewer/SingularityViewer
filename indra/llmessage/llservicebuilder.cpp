@@ -94,7 +94,7 @@ bool starts_with(const std::string& text, const char* prefix)
 
 // TODO: Build a real services.xml for windows development.
 //       and remove the base_url logic below.
-std::string LLServiceBuilder::buildServiceURI(const std::string& service_name)
+std::string LLServiceBuilder::buildServiceURI(const std::string& service_name) const
 {
 	std::ostringstream service_url;
 	// Find the service builder
@@ -132,7 +132,7 @@ std::string LLServiceBuilder::buildServiceURI(const std::string& service_name)
 
 std::string LLServiceBuilder::buildServiceURI(
 	const std::string& service_name,
-	const LLSD& option_map)
+	const LLSD& option_map) const
 {
 	return russ_format(buildServiceURI(service_name), option_map);
 }

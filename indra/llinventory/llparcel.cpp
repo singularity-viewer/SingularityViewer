@@ -79,23 +79,25 @@ static const std::string PARCEL_CATEGORY_STRING[LLParcel::C_COUNT] =
     "shopping",
     "stage",
     "other",
+	"rental"
 };
 static const std::string PARCEL_CATEGORY_UI_STRING[LLParcel::C_COUNT + 1] =
 {
     "None",
     "Linden Location",
     "Adult",
-    "Arts & Culture",
+    "Arts and Culture",
     "Business",
     "Educational",
     "Gaming",
     "Hangout",
     "Newcomer Friendly",
-    "Parks & Nature",
+    "Parks and Nature",
     "Residential",
     "Shopping",
     "Stage",
     "Other",
+	"Rental",
     "Any",	 // valid string for parcel searches
 };
 
@@ -603,13 +605,13 @@ BOOL LLParcel::importAccessEntry(std::istream& input_stream, LLAccessEntry* entr
         }
         else if ("time" == keyword)
         {
-            S32 when;
+            S32 when = -1;
             LLStringUtil::convertToS32(value, when);
             entry->mTime = when;
         }
         else if ("flags" == keyword)
         {
-            U32 setting;
+            U32 setting = 0xFFFFFFFF;
             LLStringUtil::convertToU32(value, setting);
             entry->mFlags = setting;
         }
@@ -690,8 +692,8 @@ void LLParcel::packMessage(LLSD& msg)
 	msg["auto_scale"] = getMediaAutoScale();
 	msg["media_loop"] = getMediaLoop();
 	msg["media_current_url"] = getMediaCurrentURL();
-	msg["obscure_media"] = FALSE; // OBSOLETE - no longer used
-	msg["obscure_music"] = FALSE; // OBSOLETE - no longer used
+	msg["obscure_media"] = false; // OBSOLETE - no longer used
+	msg["obscure_music"] = false; // OBSOLETE - no longer used
 	msg["media_id"] = getMediaID();
 	msg["media_allow_navigate"] = getMediaAllowNavigate();
 	msg["media_prevent_camera_zoom"] = getMediaPreventCameraZoom();

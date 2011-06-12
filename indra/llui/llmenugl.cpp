@@ -2324,6 +2324,8 @@ void LLMenuGL::arrange( void )
 				(*item_iter)->buildDrawLabel();
 			}
 		}
+
+		cleanupSpilloverBranch();
 	}
 	if (mKeepFixedSize)
 	{
@@ -2540,6 +2542,11 @@ BOOL LLMenuGL::append( LLMenuItemGL* item )
 // Its added as a fix to a viewer 1.23 bug that has already been address by skinning work.
 BOOL LLMenuGL::appendNoArrange( LLMenuItemGL* item )
 {
+        if (mSpilloverMenu)
+        {
+        	return mSpilloverMenu->append(item);
+        }
+
 	mItems.push_back( item );
 	addChild( item );
 	return TRUE;
@@ -4411,6 +4418,9 @@ BOOL LLMenuHolderGL::hideMenus()
 	{
 		return FALSE;
 	}
+
+	sItemActivationTimer.stop();
+
 	BOOL menu_visible = hasVisibleMenu();
 	if (menu_visible)
 	{

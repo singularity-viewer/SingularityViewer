@@ -357,7 +357,7 @@ void ScriptCounter::completechk()
 }
 
 void ScriptCounter::inventoryChanged(LLViewerObject* obj,
-								 InventoryObjectList* inv,
+								 LLInventoryObject::object_list_t* inv,
 								 S32 serial_num,
 								 void* user_data)
 {
@@ -371,8 +371,8 @@ void ScriptCounter::inventoryChanged(LLViewerObject* obj,
 	{
 		if(inv)
 		{
-			InventoryObjectList::const_iterator it = inv->begin();
-			InventoryObjectList::const_iterator end = inv->end();
+			LLInventoryObject::object_list_t::const_iterator it = inv->begin();
+			LLInventoryObject::object_list_t::const_iterator end = inv->end();
 			for( ;	it != end;	++it)
 			{
 				LLInventoryObject* asset = (*it);

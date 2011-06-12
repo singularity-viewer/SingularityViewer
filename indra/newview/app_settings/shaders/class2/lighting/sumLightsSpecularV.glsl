@@ -4,6 +4,8 @@
  * Copyright (c) 2005-$CurrentYear$, Linden Research, Inc.
  * $License$
  */
+ 
+#version 120
 
 float calcDirectionalLightSpecular(inout vec4 specular, vec3 view, vec3 n, vec3 l, vec3 lightCol, float da);
 vec3 calcPointLightSpecular(inout vec4 specular, vec3 view, vec3 v, vec3 n, vec3 l, float r, float pw, vec3 lightCol);

@@ -653,7 +653,7 @@ Only large parcels can be listed in search.
 					Adult
 				</combo_item>
 				<combo_item name="Arts&amp;Culture" value="arts">
-					Arts &amp; Culture
+					Arts and Culture
 				</combo_item>
 				<combo_item name="Business" value="store">
 					Business
@@ -671,7 +671,7 @@ Only large parcels can be listed in search.
 					Newcomer Friendly
 				</combo_item>
 				<combo_item name="Parks&amp;Nature" value="park">
-					Parks &amp; Nature
+					Parks and Nature
 				</combo_item>
 				<combo_item name="Residential" value="home">
 					Residential
@@ -682,6 +682,9 @@ Only large parcels can be listed in search.
 				<combo_item name="Other" value="other">
 					Other
 				</combo_item>
+        <combo_item name="Rental" value="rental">
+          Rental
+        </combo_item>
 			</combo_box>
 			<!-- The following combo box is identical to the previous one, except for the
 			fact that the Adult item is missing. This seems to be the only way to safely
@@ -697,7 +700,7 @@ Only large parcels can be listed in search.
 					Linden Location
 				</combo_item>
 				<combo_item name="Arts&amp;Culture" value="arts">
-					Arts &amp; Culture
+					Arts and Culture
 				</combo_item>
 				<combo_item name="Business" value="store">
 					Business
@@ -715,7 +718,7 @@ Only large parcels can be listed in search.
 					Newcomer Friendly
 				</combo_item>
 				<combo_item name="Parks&amp;Nature" value="park">
-					Parks &amp; Nature
+					Parks and Nature
 				</combo_item>
 				<combo_item name="Residential" value="home">
 					Residential
@@ -726,6 +729,9 @@ Only large parcels can be listed in search.
 				<combo_item name="Other" value="other">
 					Other
 				</combo_item>
+        <combo_item name="Rental" value="rental">
+          Rental
+        </combo_item>
 			</combo_box>
 			<button bottom="-140" enabled="true" follows="left|top" font="SansSerif"
 			     halign="center" height="18" label="?" label_selected="?" left="400"

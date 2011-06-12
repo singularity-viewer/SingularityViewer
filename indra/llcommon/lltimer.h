@@ -55,6 +55,8 @@ const U32	USEC_PER_HOUR	= USEC_PER_MIN * MIN_PER_HOUR;
 const U32	SEC_PER_HOUR	= SEC_PER_MIN * MIN_PER_HOUR;
 const F64 	SEC_PER_USEC 	= 1.0 / (F64) USEC_PER_SEC;
 
+LL_COMMON_API U64 totalTime();					// Returns current system time in microseconds
+
 class LL_COMMON_API LLTimer
 {
 public:
@@ -155,7 +157,7 @@ static inline time_t time_max()
 }
 
 // Correction factor used by time_corrected() above.
-LL_COMMON_API extern S32 gUTCOffset;
+extern LL_COMMON_API S32 gUTCOffset;
 
 // Is the current computer (in its current time zone)
 // observing daylight savings time?
@@ -172,28 +174,5 @@ LL_COMMON_API void microsecondsToTimecodeString(U64 current_time, std::string& t
 LL_COMMON_API void secondsToTimecodeString(F32 current_time, std::string& tcstring);
 LL_COMMON_API void timeToFormattedString(time_t time, std::string format, std::string &timestr);
 LL_COMMON_API void timeStructToFormattedString(struct tm * time, std::string format, std::string &timestr);
-
-// class for scheduling a function to be called at a given frequency (approximate, inprecise)
-class LL_COMMON_API LLEventTimer
-{
-public:
-	LLEventTimer(F32 period);	// period is the amount of time between each call to tick() in seconds
-	LLEventTimer(const LLDate& time);
-	virtual ~LLEventTimer();
-
-	//function to be called at the supplied frequency
-	// Normally return FALSE; TRUE will delete the timer after the function returns.
-	virtual BOOL tick() = 0;
-
-	static void updateClass();
-
-protected:
-	LLTimer mEventTimer;
-	F32 mPeriod;
-
-private:
-	//list of active timers
-	static std::list<LLEventTimer*> sActiveList; // TODO should this be a vector
-};
 
 #endif

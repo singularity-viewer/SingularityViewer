@@ -2068,7 +2068,7 @@ EAcceptance LLToolDragAndDrop::willObjectAcceptInventory(LLViewerObject* obj, LL
 		else if ( (gRlvHandler.hasBehaviour(RLV_BHVR_UNSIT)) || (gRlvHandler.hasBehaviour(RLV_BHVR_SITTP)) )
 		{
 			LLVOAvatar* pAvatar = gAgent.getAvatarObject();
-			if ( (pAvatar) && (pAvatar->mIsSitting) && (pAvatar->getRoot() == pObjRoot) )
+			if ( (pAvatar) && (pAvatar->isSitting()) && (pAvatar->getRoot() == pObjRoot) )
 				return ACCEPT_NO_LOCKED;	// ... or on a linkset the avie is sitting on under @unsit=n/@sittp=n
 		}
 	}

@@ -60,6 +60,7 @@ class LLTextBox;
 class LLImageRaw;
 class LLHUDIcon;
 class LLMouseHandler;
+class AIFilePicker;
 
 #define PICK_HALF_WIDTH 5
 #define PICK_DIAMETER (2 * PICK_HALF_WIDTH + 1)
@@ -144,6 +145,7 @@ public:
 	void			adjustRectanglesForFirstUse(const LLRect& window);
 	void            adjustControlRectanglesForFirstUse(const LLRect& window);
 	void			initWorldUI();
+	void			initWorldUI_postLogin();
 
 	//
 	// LLWindowCallback interface implementation
@@ -281,19 +283,21 @@ public:
 
 	// snapshot functionality.
 	// perhaps some of this should move to llfloatershapshot?  -MG
-	typedef enum e_snapshot_type
+	enum ESnapshotType
 	{
 		SNAPSHOT_TYPE_COLOR,
 		SNAPSHOT_TYPE_DEPTH,
 		SNAPSHOT_TYPE_OBJECT_ID
-	} ESnapshotType;
+	};
 	BOOL			saveSnapshot(const std::string&  filename, S32 image_width, S32 image_height, BOOL show_ui = TRUE, BOOL do_rebuild = FALSE, ESnapshotType type = SNAPSHOT_TYPE_COLOR);
 	BOOL			rawSnapshot(LLImageRaw *raw, S32 image_width, S32 image_height, BOOL keep_window_aspect = TRUE, BOOL is_texture = FALSE,
 								BOOL show_ui = TRUE, BOOL do_rebuild = FALSE, ESnapshotType type = SNAPSHOT_TYPE_COLOR, S32 max_size = MAX_SNAPSHOT_IMAGE_SIZE, F32 supersample = 1.f );
 	BOOL			thumbnailSnapshot(LLImageRaw *raw, S32 preview_width, S32 preview_height, BOOL show_ui, BOOL do_rebuild, ESnapshotType type) ;
 	BOOL			isSnapshotLocSet() const { return ! sSnapshotDir.empty(); }
 	void			resetSnapshotLoc() const { sSnapshotDir.clear(); }
-	BOOL		    saveImageNumbered(LLImageFormatted *image);
+	void saveImageNumbered(LLPointer<LLImageFormatted> image);
+	void saveImageNumbered_continued1(LLPointer<LLImageFormatted> image, std::string const& extension, AIFilePicker* filepicker);
+	void saveImageNumbered_continued2(LLPointer<LLImageFormatted> image, std::string const& extension);
 
 	// Reset the directory where snapshots are saved.
 	// Client will open directory picker on next snapshot save.

@@ -19,6 +19,7 @@ set(llinventory_SOURCE_FILES
     llcategory.cpp
     lleconomy.cpp
     llinventory.cpp
+    llinventorydefines.cpp
     llinventorytype.cpp
     lllandmark.cpp
     llnotecard.cpp
@@ -35,6 +36,7 @@ set(llinventory_HEADER_FILES
     llcategory.h
     lleconomy.h
     llinventory.h
+    llinventorydefines.h
     llinventorytype.h
     lllandmark.h
     llnotecard.h

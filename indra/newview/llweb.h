@@ -51,6 +51,9 @@ public:
 	// Loads unescaped url in external browser.
 	static void loadURLExternal(const std::string& url);
 
+	// Behaves like the old curl_escape.
+	static std::string curlEscape(const std::string& url);
+
 	// Returns escaped (eg, " " to "%20") url
 	static std::string escapeURL(const std::string& url);
 

@@ -54,49 +54,24 @@ static int nextPowerOf2( int value )
 	return next_power_of_2;
 }
 
-LLPluginClassMedia::LLPluginClassMedia(LLPluginClassMediaOwner *owner)
+LLPluginClassMedia::LLPluginClassMedia(LLPluginClassMediaOwner *owner): mOwner(owner)
 {
-	mOwner = owner;
-	mPlugin = NULL;
-	reset();
-
-	//debug use
-	mDeleteOK = true ;
+	// Most initialization is done with reset_impl(), which we call here
+	// in order to avoid code duplication.
+	LLPluginClassMedia::reset_impl();
 }
 
-
-LLPluginClassMedia::~LLPluginClassMedia()
+bool LLPluginClassMedia::init_impl(void)
 {
-	llassert_always(mDeleteOK) ;
-	reset();
-}
-
-bool LLPluginClassMedia::init(const std::string &launcher_filename, const std::string &plugin_filename, bool debug)
-{	
-	LL_DEBUGS("Plugin") << "launcher: " << launcher_filename << LL_ENDL;
-	LL_DEBUGS("Plugin") << "plugin: " << plugin_filename << LL_ENDL;
-	
-	mPlugin = new LLPluginProcessParent(this);
-	mPlugin->setSleepTime(mSleepTime);
-	
 	// Queue up the media init message -- it will be sent after all the currently queued messages.
 	LLPluginMessage message(LLPLUGIN_MESSAGE_CLASS_MEDIA, "init");
 	sendMessage(message);
-	
-	mPlugin->init(launcher_filename, plugin_filename, debug);
 
 	return true;
 }
 
-
-void LLPluginClassMedia::reset()
+void LLPluginClassMedia::reset_impl(void)
 {
-	if(mPlugin != NULL)
-	{
-		delete mPlugin;
-		mPlugin = NULL;
-	}
-
 	mTextureParamsReceived = false;
 	mRequestedTextureDepth = 0;
 	mRequestedTextureInternalFormat = 0;
@@ -125,14 +100,12 @@ void LLPluginClassMedia::reset()
 	mDirtyRect = LLRect::null;	
 	mAutoScaleMedia = false;
 	mRequestedVolume = 1.0f;
-	mPriority = PRIORITY_NORMAL;
 	mLowPrioritySizeLimit = LOW_PRIORITY_TEXTURE_SIZE_DEFAULT;
 	mAllowDownsample = false;
 	mPadding = 0;
 	mLastMouseX = 0;
 	mLastMouseY = 0;
 	mStatus = LLPluginClassMediaOwner::MEDIA_NONE;
-	mSleepTime = 1.0f / 100.0f;
 	mCanCut = false;
 	mCanCopy = false;
 	mCanPaste = false;
@@ -158,13 +131,8 @@ void LLPluginClassMedia::reset()
 	mLoadedDuration = 0.0f;
 }
 
-void LLPluginClassMedia::idle(void)
+void LLPluginClassMedia::idle_impl(void)
 {
-	if(mPlugin)
-	{
-		mPlugin->idle();
-	}
-	
 	if((mMediaWidth == -1) || (!mTextureParamsReceived) || (mPlugin == NULL) || (mPlugin->isBlocked()))
 	{
 		// Can't process a size change at this time
@@ -260,17 +228,6 @@ void LLPluginClassMedia::idle(void)
 			LL_DEBUGS("Plugin") << "Sending size_change" << LL_ENDL;
 		}
 	}
-	
-	if(mPlugin && mPlugin->isRunning())
-	{
-		// Send queued messages
-		while(!mSendQueue.empty())
-		{
-			LLPluginMessage message = mSendQueue.front();
-			mSendQueue.pop();
-			mPlugin->sendMessage(message);
-		}
-	}
 }
 
 int LLPluginClassMedia::getTextureWidth() const
@@ -295,18 +252,16 @@ unsigned char* LLPluginClassMedia::getBitsData()
 
 void LLPluginClassMedia::setSize(int width, int height)
 {
-	if((width > 0) && (height > 0))
+    if (width <= 0 || height <= 0)
+	{
+		width = height = -1;
+	}
+	if (mSetMediaWidth != width || mSetMediaHeight != height)
 	{
 		mSetMediaWidth = width;
 		mSetMediaHeight = height;
+		setSizeInternal();
 	}
-	else
-	{
-		mSetMediaWidth = -1;
-		mSetMediaHeight = -1;
-	}
-
-	setSizeInternal();
 }
 
 void LLPluginClassMedia::setSizeInternal(void)
@@ -335,7 +290,7 @@ void LLPluginClassMedia::setSizeInternal(void)
 	{
 		switch(mPriority)
 		{
-			case PRIORITY_SLIDESHOW:
+			case PRIORITY_SLEEP:
 			case PRIORITY_LOW:
 				// Reduce maximum texture dimension to (or below) mLowPrioritySizeLimit
 				while((mRequestedMediaWidth > mLowPrioritySizeLimit) || (mRequestedMediaHeight > mLowPrioritySizeLimit))
@@ -584,71 +539,10 @@ void LLPluginClassMedia::loadURI(const std::string &uri)
 	sendMessage(message);
 }
 
-const char* LLPluginClassMedia::priorityToString(EPriority priority)
+void LLPluginClassMedia::priorityChanged(EPriority priority)
 {
-	const char* result = "UNKNOWN";
-	switch(priority)
-	{
-		case PRIORITY_UNLOADED:		result = "unloaded";	break;
-		case PRIORITY_STOPPED:		result = "stopped";		break;
-		case PRIORITY_HIDDEN:		result = "hidden";		break;
-		case PRIORITY_SLIDESHOW:	result = "slideshow";	break;
-		case PRIORITY_LOW:			result = "low";			break;
-		case PRIORITY_NORMAL:		result = "normal";		break;
-		case PRIORITY_HIGH:			result = "high";		break;
-	}
-	
-	return result;
-}
-
-void LLPluginClassMedia::setPriority(EPriority priority)
-{
-	if(mPriority != priority)
-	{
-		mPriority = priority;
-
-		LLPluginMessage message(LLPLUGIN_MESSAGE_CLASS_MEDIA, "set_priority");
-		
-		std::string priority_string = priorityToString(priority);
-		switch(priority)
-		{
-			case PRIORITY_UNLOADED:	
-				mSleepTime = 1.0f;
-			break;
-			case PRIORITY_STOPPED:	
-				mSleepTime = 1.0f;
-			break;
-			case PRIORITY_HIDDEN:	
-				mSleepTime = 1.0f;
-			break;
-			case PRIORITY_SLIDESHOW:
-				mSleepTime = 1.0f;
-			break;
-			case PRIORITY_LOW:		
-				mSleepTime = 1.0f / 25.0f;
-			break;
-			case PRIORITY_NORMAL:	
-				mSleepTime = 1.0f / 50.0f;
-			break;
-			case PRIORITY_HIGH:		
-				mSleepTime = 1.0f / 100.0f;
-			break;
-		}
-		
-		message.setValue("priority", priority_string);
-
-		sendMessage(message);
-		
-		if(mPlugin)
-		{
-			mPlugin->setSleepTime(mSleepTime);
-		}
-		
-		LL_DEBUGS("PluginPriority") << this << ": setting priority to " << priority_string << LL_ENDL;
-		
-		// This may affect the calculated size, so recalculate it here.
-		setSizeInternal();
-	}
+	// This may affect the calculated size, so recalculate it here.
+	setSizeInternal();
 }
 
 void LLPluginClassMedia::setLowPrioritySizeLimit(int size)
@@ -657,7 +551,6 @@ void LLPluginClassMedia::setLowPrioritySizeLimit(int size)
 	if(mLowPrioritySizeLimit != power)
 	{
 		mLowPrioritySizeLimit = power;
-
 		// This may affect the calculated size, so recalculate it here.
 		setSizeInternal();
 	}
@@ -726,7 +619,11 @@ void LLPluginClassMedia::receivePluginMessage(const LLPluginMessage &message)
 {
 	std::string message_class = message.getClass();
 	
-	if(message_class == LLPLUGIN_MESSAGE_CLASS_MEDIA)
+	if (message_class == LLPLUGIN_MESSAGE_CLASS_BASIC)
+	{
+		LLPluginClassBasic::receivePluginMessage(message);
+	}
+	else if(message_class == LLPLUGIN_MESSAGE_CLASS_MEDIA)
 	{
 		std::string message_name = message.getName();
 		if(message_name == "texture_params")
@@ -777,7 +674,7 @@ void LLPluginClassMedia::receivePluginMessage(const LLPluginMessage &message)
 					mDirtyRect.unionWith(newDirtyRect);
 				}
 
-				LL_DEBUGS("Plugin") << "adjusted incoming rect is: (" 
+				LL_DEBUGS("PluginUpdated") << "adjusted incoming rect is: ("
 					<< newDirtyRect.mLeft << ", "
 					<< newDirtyRect.mTop << ", "
 					<< newDirtyRect.mRight << ", "
@@ -1003,10 +900,9 @@ void LLPluginClassMedia::receivePluginMessage(const LLPluginMessage &message)
 //		}
 //		else 
 		{
-			LL_WARNS("Plugin") << "Unknown " << message_name << " class message: " << message_name << LL_ENDL;
+			LL_WARNS("Plugin") << "Unknown " << message_class << " class message: " << message_name << LL_ENDL;
 		}
 	}
-
 }
 
 /* virtual */ 
@@ -1026,19 +922,6 @@ void LLPluginClassMedia::mediaEvent(LLPluginClassMediaOwner::EMediaEvent event)
 	if(mOwner)
 	{
 		mOwner->handleMediaEvent(this, event);
-	}
-}
-
-void LLPluginClassMedia::sendMessage(const LLPluginMessage &message)
-{
-	if(mPlugin && mPlugin->isRunning())
-	{
-		mPlugin->sendMessage(message);
-	}
-	else
-	{
-		// The plugin isn't set up yet -- queue this message to be sent after initialization.
-		mSendQueue.push(message);
 	}
 }
 

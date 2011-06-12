@@ -35,7 +35,9 @@
 #include "llstreamtools.h"
 
 LLNotecard::LLNotecard(S32 max_text)
-: mMaxText(max_text)
+	: mMaxText(max_text),
+	  mVersion(0),
+	  mEmbeddedVersion(0)
 {
 }
 
@@ -203,7 +205,7 @@ bool LLNotecard::importStream(std::istream& str)
 		return FALSE;
 	}
 
-	if(text_len < 0 || text_len > mMaxText)
+	if(text_len > mMaxText || text_len < 0)
 	{
 		llwarns << "Invalid Linden text length: " << text_len << llendl;
 		return FALSE;

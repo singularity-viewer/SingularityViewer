@@ -44,6 +44,7 @@ endif(NOT STANDALONE)
 add_custom_target(prepare DEPENDS ${prepare_depends})
 
 add_subdirectory(cmake)
+add_subdirectory(${LIBS_OPEN_PREFIX}cwdebug)
 add_subdirectory(${LIBS_OPEN_PREFIX}llaudio)
 add_subdirectory(${LIBS_OPEN_PREFIX}llcharacter)
 add_subdirectory(${LIBS_OPEN_PREFIX}llcommon)
@@ -75,8 +76,8 @@ if (VIEWER)
   add_subdirectory(${LIBS_OPEN_PREFIX}llplugin)
   add_subdirectory(${LIBS_OPEN_PREFIX}llui)
 
-  # viewer media plugins
-  add_subdirectory(${LIBS_OPEN_PREFIX}media_plugins)
+  # viewer plugins directory
+  add_subdirectory(${LIBS_OPEN_PREFIX}plugins)
 
   # llplugin testbed code (is this the right way to include it?)
   #if (NOT LINUX)
@@ -105,6 +106,7 @@ if (VIEWER)
     add_dependencies(viewer solaris-crash-logger)
   endif (LINUX)
 
+  add_subdirectory(${VIEWER_PREFIX}newview/statemachine)
   add_subdirectory(${VIEWER_PREFIX}newview)
   add_dependencies(viewer secondlife-bin)
 endif (VIEWER)
@@ -132,27 +134,25 @@ endif (SERVER)
 
 # Configure prebuilt binary download.  This must be done last so that
 # all subdirectories have a chance to list the packages they need.
-if(NOT STANDALONE)
-  # We need scp for proprietary downloads.
-  if(INSTALL_PROPRIETARY)
-    include(FindSCP)
-  endif(INSTALL_PROPRIETARY)
+# We need scp for proprietary downloads.
+if(INSTALL_PROPRIETARY)
+  include(FindSCP)
+endif(INSTALL_PROPRIETARY)
 
-  # The use_prebuilt_binary macro in cmake/Prebuilt.cmake records
-  # packages in the PREBUILT property of the 'prepare' target.
-  get_property(PREBUILT_PACKAGES TARGET prepare PROPERTY PREBUILT)
+# The use_prebuilt_binary macro in cmake/Prebuilt.cmake records
+# packages in the PREBUILT property of the 'prepare' target.
+get_property(PREBUILT_PACKAGES TARGET prepare PROPERTY PREBUILT)
 
-  # Create a script to download the needed binaries.
-  configure_file(${CMAKE_SOURCE_DIR}/cmake/DownloadPrebuilt.cmake.in
-                 ${CMAKE_BINARY_DIR}/DownloadPrebuilt.cmake @ONLY)
+# Create a script to download the needed binaries.
+configure_file(${CMAKE_SOURCE_DIR}/cmake/DownloadPrebuilt.cmake.in
+               ${CMAKE_BINARY_DIR}/DownloadPrebuilt.cmake @ONLY)
 
-  # Drive the download script at build time.  Depend on 'install.xml'
-  # to aqcuire new binaries when needed.
-  add_custom_command(
-    COMMENT "Obtaining prebuilt binaries..."
-    OUTPUT ${CMAKE_BINARY_DIR}/prepare/prebuilt
-    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/DownloadPrebuilt.cmake
-    DEPENDS ${CMAKE_SOURCE_DIR}/../install.xml
-            ${CMAKE_BINARY_DIR}/DownloadPrebuilt.cmake
-    )
-endif(NOT STANDALONE)
+# Drive the download script at build time.  Depend on 'install.xml'
+# to aqcuire new binaries when needed.
+add_custom_command(
+  COMMENT "Obtaining prebuilt binaries..."
+  OUTPUT ${CMAKE_BINARY_DIR}/prepare/prebuilt
+  COMMAND ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/DownloadPrebuilt.cmake
+  DEPENDS ${CMAKE_SOURCE_DIR}/../install.xml
+          ${CMAKE_BINARY_DIR}/DownloadPrebuilt.cmake
+  )

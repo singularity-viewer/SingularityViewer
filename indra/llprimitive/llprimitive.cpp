@@ -1245,12 +1245,12 @@ BOOL LLPrimitive::packTEMessage(LLDataPacker &dp) const
 	return FALSE;
 }
 
-S32 LLPrimitive::unpackTEMessage(LLMessageSystem *mesgsys, char *block_name)
+S32 LLPrimitive::unpackTEMessage(LLMessageSystem* mesgsys, char const* block_name)
 {
 	return(unpackTEMessage(mesgsys,block_name,-1));
 }
 
-S32 LLPrimitive::unpackTEMessage(LLMessageSystem *mesgsys, char *block_name, const S32 block_num)
+S32 LLPrimitive::unpackTEMessage(LLMessageSystem* mesgsys, char const* block_name, const S32 block_num)
 {
 	// use a negative block_num to indicate a single-block read (a non-variable block)
 	S32 retval = 0;
@@ -1524,6 +1524,8 @@ BOOL LLNetworkData::isValid(U16 param_type, U32 size)
 		return (size == 16);
 	case PARAMS_SCULPT:
 		return (size == 17);
+	case PARAMS_LIGHT_IMAGE:
+		return (size == 28);
 	}
 	
 	return FALSE;
@@ -1856,3 +1858,78 @@ bool LLSculptParams::fromLLSD(LLSD& sd)
 	return false;
 }
 
+//============================================================================
+
+LLLightImageParams::LLLightImageParams()
+{
+	mType = PARAMS_LIGHT_IMAGE;
+	mParams.setVec(F_PI*0.5f, 0.f, 0.f);
+}
+
+BOOL LLLightImageParams::pack(LLDataPacker &dp) const
+{
+	dp.packUUID(mLightTexture, "texture");
+	dp.packVector3(mParams, "params");
+
+	return TRUE;
+}
+
+BOOL LLLightImageParams::unpack(LLDataPacker &dp)
+{
+	dp.unpackUUID(mLightTexture, "texture");
+	dp.unpackVector3(mParams, "params");
+	
+	return TRUE;
+}
+
+bool LLLightImageParams::operator==(const LLNetworkData& data) const
+{
+	if (data.mType != PARAMS_LIGHT_IMAGE)
+	{
+		return false;
+	}
+	
+	const LLLightImageParams *param = (const LLLightImageParams*)&data;
+	if ( (param->mLightTexture != mLightTexture) )
+	{
+		return false;
+	}
+
+	if ( (param->mParams != mParams ) )
+	{
+		return false;
+	}
+	
+	return true;
+}
+
+void LLLightImageParams::copy(const LLNetworkData& data)
+{
+	const LLLightImageParams *param = (LLLightImageParams*)&data;
+	mLightTexture = param->mLightTexture;
+	mParams = param->mParams;
+}
+
+
+
+LLSD LLLightImageParams::asLLSD() const
+{
+	LLSD sd;
+	
+	sd["texture"] = mLightTexture;
+	sd["params"] = mParams.getValue();
+		
+	return sd;
+}
+
+bool LLLightImageParams::fromLLSD(LLSD& sd)
+{
+	if (sd.has("texture"))
+	{
+		setLightTexture( sd["texture"] );
+		setParams( LLVector3( sd["params"] ) );
+		return true;
+	} 
+	
+	return false;
+}

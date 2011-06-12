@@ -33,7 +33,8 @@
 #ifndef LL_LLAPPVIEWER_H
 #define LL_LLAPPVIEWER_H
 
-#include "llsys.h"	// LLOSInfo
+#include "llsys.h"				// LLOSInfo
+#include "llviewercontrol.h"	// settings_map_type
 
 class LLTextureCache;
 class LLImageDecodeThread;
@@ -63,6 +64,7 @@ public:
 	virtual bool mainLoop(); // Override for the application main loop.  Needs to at least gracefully notice the QUITTING state and exit.
 
 	// Application control
+	void flushVFSIO(); // waits for vfs transfers to complete
 	void forceQuit(); // Puts the viewer into 'shutting down without error' mode.
 	void requestQuit(); // Request a quit. A kinder, gentler quit.
 	void userQuit(); // The users asks to quit. Confirm, then requestQuit()
@@ -94,6 +96,7 @@ public:
 	static LLImageDecodeThread* getImageDecodeThread() { return sImageDecodeThread; }
 	static LLTextureFetch* getTextureFetch() { return sTextureFetch; }
 
+	static U32 getTextureCacheVersion();
 	const std::string& getSerialNumber() { return mSerialNumber; }
 	
 	bool getPurgeCache() const { return mPurgeCache; }
@@ -110,13 +113,6 @@ public:
     void loadNameCache();
     void saveNameCache();
 
-	// OGPX : rez_avatar/place cap is used on both initial login, and 
-	// ... then on teleports as well. The same cap should be good for the
-	// ... life of the connection to an agent domain. This cap is used by the viewer
-	// ... to request moving an agent between regions. 
-	void setPlaceAvatarCap(const std::string& uri);	// OGPX TODO: this should be refactored into own class that handles caps
-	const std::string& getPlaceAvatarCap() const;	// OGPX TODO: ...as above...
-
 	void removeMarkerFile(bool leave_logout_marker = false);
 	
     // LLAppViewer testing helpers.
@@ -124,7 +120,7 @@ public:
     virtual void forceErrorLLError();
     virtual void forceErrorBreakpoint();
     virtual void forceErrorBadMemoryAccess();
-    virtual void forceErrorInifiniteLoop();
+    virtual void forceErrorInfiniteLoop();
     virtual void forceErrorSoftwareException();
     virtual void forceErrorDriverCrash();
 
@@ -140,11 +136,12 @@ public:
 	// Load settings from the location specified by loction_key.
 	// Key availale and rules for loading, are specified in 
 	// 'app_settings/settings_files.xml'
-	bool loadSettingsFromDirectory(const std::string& location_key, 
-				       bool set_defaults = false);
+	bool loadSettingsFromDirectory(AIReadAccess<settings_map_type> const& settings_r,
+	                               std::string const& location_key,
+	                               bool set_defaults = false);
 
-	std::string getSettingsFilename(const std::string& location_key,
-					const std::string& file);
+	std::string getSettingsFilename(std::string const& location_key,
+	                                std::string const& file);
 
 	// For thread debugging. 
 	// llstartup needs to control init.
@@ -195,8 +192,9 @@ private:
     
     void idle(); 
     void idleShutdown();
+	// update avatar SLID and display name caches
+	void idleNameCache();
     void idleNetwork();
-    void idleNameCache();
 
     void sendLogoutRequest();
     void disconnectViewer();
@@ -241,6 +239,10 @@ private:
 	bool mAgentRegionLastAlive;
 	LLUUID mAgentRegionLastID;
 
+
+	U32 mAvailPhysicalMemInKB ;
+	U32 mAvailVirtualMemInKB ;
+	
 public:
 	//some information for updater
 	typedef struct

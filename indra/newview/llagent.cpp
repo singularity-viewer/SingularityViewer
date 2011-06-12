@@ -425,8 +425,6 @@ LLAgent::LLAgent() :
 	mAutoPilotRotationThreshold(0.f),
 	mAutoPilotFinishedCallback(NULL),
 	mAutoPilotCallbackData(NULL),
-	
-	mCapabilities(),
 
 	mEffectColor(0.f, 1.f, 1.f, 1.f),
 
@@ -864,7 +862,7 @@ void LLAgent::setFlying(BOOL fly)
 		}
 
 		// don't allow taking off while sitting
-		if (fly && mAvatarObject->mIsSitting)
+		if (fly && mAvatarObject->isSitting())
 		{
 			return;
 		}
@@ -1363,7 +1361,7 @@ F32 LLAgent::clampPitchToLimits(F32 angle)
 
 	F32 angle_from_skyward = acos( mFrameAgent.getAtAxis() * skyward );
 
-	if (isAgentAvatarValid() && mAvatarObject->mIsSitting)
+	if (isAgentAvatarValid() && mAvatarObject->isSitting())
 	{
 		look_down_limit = 130.f * DEG_TO_RAD;
 	}
@@ -2716,7 +2714,7 @@ void LLAgent::updateLookAt(const S32 mouse_x, const S32 mouse_y)
 		else
 		{
 			// *FIX: rotate mframeagent by sit object's rotation?
-			LLQuaternion look_rotation = mAvatarObject->mIsSitting ? mAvatarObject->getRenderRotation() : mFrameAgent.getQuaternion(); // use camera's current rotation
+			LLQuaternion look_rotation = mAvatarObject->isSitting() ? mAvatarObject->getRenderRotation() : mFrameAgent.getQuaternion(); // use camera's current rotation
 			LLVector3 look_offset = LLVector3(2.f, 0.f, 0.f) * look_rotation * av_inv_rot;
 			setLookAt(LOOKAT_TARGET_IDLE, mAvatarObject, look_offset);
 		}
@@ -3158,7 +3156,7 @@ void LLAgent::updateCamera()
 	validateFocusObject();
 
 	if (isAgentAvatarValid() && 
-		mAvatarObject->mIsSitting &&
+		mAvatarObject->isSitting() &&
 		camera_mode == CAMERA_MODE_MOUSELOOK)
 	{
 		//Ventrella
@@ -3279,7 +3277,7 @@ void LLAgent::updateCamera()
 			// (2) focus, and (3) upvector. They can then be queried elsewhere in llAgent.
 			//--------------------------------------------------------------------------------
 			// *TODO: use combined rotation of frameagent and sit object
-			LLQuaternion avatarRotationForFollowCam = mAvatarObject->mIsSitting ? mAvatarObject->getRenderRotation() : mFrameAgent.getQuaternion();
+			LLQuaternion avatarRotationForFollowCam = mAvatarObject->isSitting() ? mAvatarObject->getRenderRotation() : mFrameAgent.getQuaternion();
 
 			LLFollowCamParams* current_cam = LLFollowCamMgr::getActiveFollowCamParams();
 			if (current_cam)
@@ -3460,7 +3458,7 @@ void LLAgent::updateCamera()
 	}
 	mLastPositionGlobal = global_pos;
 	
-	if (LLVOAvatar::sVisibleInFirstPerson && mAvatarObject.notNull() && !mAvatarObject->mIsSitting && cameraMouselook())
+	if (LLVOAvatar::sVisibleInFirstPerson && mAvatarObject.notNull() && !mAvatarObject->isSitting() && cameraMouselook())
 	{
 		LLVector3 head_pos = mAvatarObject->mHeadp->getWorldPosition() + 
 			LLVector3(0.08f, 0.f, 0.05f) * mAvatarObject->mHeadp->getWorldRotation() + 
@@ -3650,7 +3648,7 @@ LLVector3d LLAgent::calcFocusPositionTargetGlobal()
 		}
 		return mFocusTargetGlobal;
 	}
-	else if (mSitCameraEnabled && mAvatarObject.notNull() && mAvatarObject->mIsSitting && mSitCameraReferenceObject.notNull())
+	else if (mSitCameraEnabled && mAvatarObject.notNull() && mAvatarObject->isSitting() && mSitCameraReferenceObject.notNull())
 	{
 		// sit camera
 		LLVector3 object_pos = mSitCameraReferenceObject->getRenderPosition();
@@ -3775,7 +3773,7 @@ LLVector3d LLAgent::calcCameraPositionTargetGlobal(BOOL *hit_limit)
 			return LLVector3d::zero;
 		}
 		head_offset.clearVec();
-		if (mAvatarObject->mIsSitting && mAvatarObject->getParent())
+		if (mAvatarObject->isSitting() && mAvatarObject->getParent())
 		{
 			mAvatarObject->updateHeadOffset();
 			head_offset.mdV[VX] = mAvatarObject->mHeadOffset.mV[VX];
@@ -3789,7 +3787,7 @@ LLVector3d LLAgent::calcCameraPositionTargetGlobal(BOOL *hit_limit)
 		else
 		{
 			head_offset.mdV[VZ] = mAvatarObject->mHeadOffset.mV[VZ];
-			if (mAvatarObject->mIsSitting)
+			if (mAvatarObject->isSitting())
 			{
 				head_offset.mdV[VZ] += 0.1;
 			}
@@ -3805,7 +3803,7 @@ LLVector3d LLAgent::calcCameraPositionTargetGlobal(BOOL *hit_limit)
 
 		if (mSitCameraEnabled 
 			&& isAgentAvatarValid() 
-			&& mAvatarObject->mIsSitting 
+			&& mAvatarObject->isSitting() 
 			&& mSitCameraReferenceObject.notNull())
 		{
 			// sit camera
@@ -3837,7 +3835,7 @@ LLVector3d LLAgent::calcCameraPositionTargetGlobal(BOOL *hit_limit)
 				local_camera_offset = mFrameAgent.rotateToAbsolute( local_camera_offset );
 			}
 
-			if (!mCameraCollidePlane.isExactlyZero() && (!isAgentAvatarValid() || !mAvatarObject->mIsSitting))
+			if (!mCameraCollidePlane.isExactlyZero() && (!isAgentAvatarValid() || !mAvatarObject->isSitting()))
 			{
 				LLVector3 plane_normal;
 				plane_normal.setVec(mCameraCollidePlane.mV);
@@ -4215,7 +4213,7 @@ void LLAgent::changeCameraToThirdPerson(BOOL animate)
 // [RLVa:KB] - Checked: 2009-07-10 (RLVa-1.0.0g) +SG
 	if ( (!gRlvHandler.hasBehaviour(RLV_BHVR_UNSIT)) 
 			&& (mAvatarObject.notNull()) 
-			&& (mAvatarObject->mIsSitting) 
+			&& (mAvatarObject->isSitting()) 
 			&& gSavedSettings.getBOOL("SianaUnsitOnCamReset"))
 	{
 		setControlFlags(AGENT_CONTROL_STAND_UP); // force stand up
@@ -4228,7 +4226,7 @@ void LLAgent::changeCameraToThirdPerson(BOOL animate)
 
 	if (isAgentAvatarValid())
 	{
-		if (!mAvatarObject->mIsSitting)
+		if (!mAvatarObject->isSitting())
 		{
 			mAvatarObject->mPelvisp->setPosition(LLVector3::zero);
 		}
@@ -6308,7 +6306,7 @@ void LLAgent::teleportViaLandmark(const LLUUID& landmark_asset_id)
 // [RLVa:KB] - Checked: 2009-07-07 (RLVa-1.0.0d)
 	if ( (rlv_handler_t::isEnabled()) &&
 		 ( (gRlvHandler.hasBehaviour(RLV_BHVR_TPLM)) || 
-		   ((gRlvHandler.hasBehaviour(RLV_BHVR_UNSIT)) && (mAvatarObject.notNull()) && (mAvatarObject->mIsSitting)) ))
+		   ((gRlvHandler.hasBehaviour(RLV_BHVR_UNSIT)) && (mAvatarObject.notNull()) && (mAvatarObject->isSitting())) ))
 	{
 		RlvNotifications::notifyBlockedTeleport();
 		return;
@@ -6384,7 +6382,7 @@ void LLAgent::teleportViaLocation(const LLVector3d& pos_global)
 	{
 		// If we're getting teleported due to @tpto we should disregard any @tploc=n or @unsit=n restrictions from the same object
 		if ( (gRlvHandler.hasBehaviourExcept(RLV_BHVR_TPLOC, gRlvHandler.getCurrentObject())) ||
-		     ( (mAvatarObject.notNull()) && (mAvatarObject->mIsSitting) && 
+		     ( (mAvatarObject.notNull()) && (mAvatarObject->isSitting()) && 
 			   (gRlvHandler.hasBehaviourExcept(RLV_BHVR_UNSIT, gRlvHandler.getCurrentObject()))) )
 		{
 			RlvNotifications::notifyBlockedTeleport();
@@ -7093,16 +7091,6 @@ void LLAgent::processAgentInitialWearablesUpdate( LLMessageSystem* mesgsys, void
 			// before we had wearables, or that the database has gotten messed up.
 			return;
 		}
-		//else
-		//{
-		//	 // OGPX HACK: OGP authentication does not pass back login-flags, 
-		//   // thus doesn't check for "gendered" flag
-		//	 // so this isn't an ideal place for this because the check in idle_startup in STATE_WEARABLES_WAIT
-		//	 // is happening *before* this call. That causes the welcomechoosesex dialog to be displayed
-		//	 // but I'm torn on removing this commented out code because I'm unsure how the initial wearables 
-		//   // code will work out. 
-		//	 gAgent.setGenderChosen(TRUE);
-		//}
 
 		//lldebugs << "processAgentInitialWearablesUpdate()" << llendl;
 		// Add wearables
@@ -7306,7 +7294,8 @@ void LLAgent::createStandardWearables(BOOL female)
 		TRUE,  //WT_UNDERPANTS
 		FALSE, //WT_SKIRT
 		FALSE, //WT_ALPHA
-		FALSE  //WT_TATTOO
+		FALSE, //WT_TATTOO
+		FALSE, //WT_PHYSICS
 	};
 
 	for( S32 i=0; i < WT_COUNT; i++ )
@@ -7732,6 +7721,8 @@ void LLAgent::sendAgentSetAppearance()
 	}
 
 
+	static bool send_physics_params = false;
+	send_physics_params |= !!getWearable(WT_PHYSICS);
 	S32 transmitted_params = 0;
 	for (LLViewerVisualParam* param = (LLViewerVisualParam*)mAvatarObject->getFirstVisualParam();
 		 param;
@@ -7739,11 +7730,16 @@ void LLAgent::sendAgentSetAppearance()
 	{
 		if (param->getGroup() == VISUAL_PARAM_GROUP_TWEAKABLE) // do not transmit params of group VISUAL_PARAM_GROUP_TWEAKABLE_NO_TRANSMIT
 		{
+			//A hack to prevent ruthing on older viewers when phys wearables aren't being worn.
+			if(!send_physics_params && param->getID() >= 10000)
+			{
+				break;
+			}
 			msg->nextBlockFast(_PREHASH_VisualParam );
-			
 			// We don't send the param ids.  Instead, we assume that the receiver has the same params in the same sequence.
 			const F32 param_value = param->getWeight();
 			const U8 new_weight = F32_to_U8(param_value, param->getMinWeight(), param->getMaxWeight());
+
 			msg->addU8Fast(_PREHASH_ParamValue, new_weight );
 			transmitted_params++;
 		}
@@ -7885,6 +7881,30 @@ struct LLSetWearableData
 	LLWearable*			mNewWearable;
 };
 
+static bool isFirstPhysicsWearable(EWearableType type, LLInventoryItem *new_item, LLWearable *new_wearable)
+{
+	if (type == WT_PHYSICS && gSavedSettings.getWarning("FirstPhysicsWearable"))
+	{
+		class WearableDelayedCallback
+		{
+		public:
+			static void setDelayedWearable( const LLSD& notification, const LLSD& response, LLUUID item_id, LLWearable *wearable )
+			{
+				if(LLNotification::getSelectedOption(notification, response) == 0) //User selected wear
+				{
+					gSavedSettings.setWarning("FirstPhysicsWearable",FALSE);
+					LLInventoryItem *item = gInventory.getItem(item_id);
+					if(item)
+						gAgent.setWearable(item,wearable); //re-enter.
+				}
+			}
+		};
+		LLNotifications::instance().add("FirstPhysicsWearable",LLSD(),LLSD(),boost::bind(WearableDelayedCallback::setDelayedWearable, _1, _2, new_item->getUUID(),new_wearable));
+		return true;
+	}
+	return false;
+}
+
 BOOL LLAgent::needsReplacement(EWearableType  wearableType, S32 remove)
 {
 	return TRUE;
@@ -7918,6 +7938,7 @@ void LLAgent::setWearableOutfit(
 	wearables_to_remove[WT_SKIRT]		= remove && gRlvWearableLocks.canRemove(WT_SKIRT);
 	wearables_to_remove[WT_ALPHA]		= remove && gRlvWearableLocks.canRemove(WT_ALPHA);
 	wearables_to_remove[WT_TATTOO]		= remove && gRlvWearableLocks.canRemove(WT_TATTOO);
+	wearables_to_remove[WT_PHYSICS]		= remove && gRlvWearableLocks.canRemove(WT_PHYSICS);
 // [/RLVa:KB]
 
 	S32 count = wearables.count();
@@ -7951,6 +7972,11 @@ void LLAgent::setWearableOutfit(
 				llassert(0);
 				continue;
 			}
+		}
+
+		if (isFirstPhysicsWearable(type, new_item, new_wearable))
+		{
+			return;
 		}
 
 		mWearableEntry[ type ].mItemID = new_item->getUUID();
@@ -8016,6 +8042,11 @@ void LLAgent::setWearable( LLInventoryItem* new_item, LLWearable* new_wearable )
 		return;
 	}
 // [/RLVa:KB]
+
+	if (isFirstPhysicsWearable(type, new_item, new_wearable))
+	{
+		return;
+	}
 
 	if( old_wearable )
 	{
@@ -8199,6 +8230,7 @@ void LLAgent::userRemoveAllClothesStep2( BOOL proceed, void* userdata )
 		gAgent.removeWearable( WT_SKIRT );
 		gAgent.removeWearable( WT_ALPHA );
 		gAgent.removeWearable( WT_TATTOO );
+		gAgent.removeWearable( WT_PHYSICS );
 	}
 }
 
@@ -8498,43 +8530,6 @@ void LLAgent::userAttachMultipleAttachments(LLInventoryModel::item_array_t& obj_
 			msg->sendReliable( gAgent.getRegion()->getHost() );
 		}
 	}
-}
-
-// OGPX - This code will change when capabilities get refactored.
-// Right now this is used for capabilities that we get from OGP agent domain
-void LLAgent::setCapability(const std::string& name, const std::string& url)
-{
-#if 0 // OGPX : I think (hope?) we don't need this
-	  //    but I'm leaving it here commented out because I'm not quite
-	  //    sure why the region capabilities code had it wedged in setCap call
-	  //    Maybe the agent domain capabilities will need something like this as well
-
-	if (name == "EventQueueGet")
-	{
-		delete mEventPoll;
-		mEventPoll = NULL;
-		mEventPoll = new LLEventPoll(url, getHost());
-	}
-	else if (name == "UntrustedSimulatorMessage")
-	{
-		LLHTTPSender::setSender(mHost, new LLCapHTTPSender(url));
-	}
-	else
-#endif
-	{
-		mCapabilities[name] = url;
-	}
-}
-
-//OGPX : Agent Domain capabilities...  this needs to be refactored
-std::string LLAgent::getCapability(const std::string& name) const
-{
-	CapabilityMap::const_iterator iter = mCapabilities.find(name);
-	if (iter == mCapabilities.end())
-	{
-		return "";
-	}
-	return iter->second;
 }
 
 void LLAgent::showLureDestination(const std::string fromname, const int global_x, const int global_y, const int x, const int y, const int z, const std::string maturity)

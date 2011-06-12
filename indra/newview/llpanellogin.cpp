@@ -1049,22 +1049,13 @@ void LLPanelLogin::loadLoginPage()
 	std::string version = llformat("%d.%d.%d (%d)",
 						gSavedSettings.getU32("SpecifiedVersionMaj"), gSavedSettings.getU32("SpecifiedVersionMin"), gSavedSettings.getU32("SpecifiedVersionPatch"), gSavedSettings.getU32("SpecifiedVersionBuild"));
 
-	//char* curl_channel = curl_escape(gSavedSettings.getString("VersionChannelName").c_str(), 0);
-	char* curl_channel = curl_escape(gSavedSettings.getString("SpecifiedChannel").c_str(), 0);
-	// </edit>
-
-	char* curl_version = curl_escape(version.c_str(), 0);
-
-	oStr << "&channel=" << curl_channel;
-	oStr << "&version=" << curl_version;
-
-	curl_free(curl_channel);
-	curl_free(curl_version);
+	if(login_page.find("secondlife.com") == -1) {
+		oStr << "&channel=" << LLWeb::curlEscape(gSavedSettings.getString("SpecifiedChannel"));
+		oStr << "&version=" << LLWeb::curlEscape(version);
+	}
 
 	// Grid
-	char* curl_grid = curl_escape(LLViewerLogin::getInstance()->getGridLabel().c_str(), 0);
-	oStr << "&grid=" << curl_grid;
-	curl_free(curl_grid);
+	oStr << "&grid=" << LLWeb::curlEscape(LLViewerLogin::getInstance()->getGridLabel());
 
 	if (gHippoGridManager->getConnectedGrid()->isSecondLife()) {
 		// find second life grid from login URI
@@ -1078,9 +1069,7 @@ void LLPanelLogin::loadLoginPage()
 				i = tmp.rfind('/');
 			if (i != std::string::npos) {
 				tmp = tmp.substr(i+1);
-				char* curl_grid = curl_escape(tmp.c_str(), 0);
-				oStr << "&grid=" << curl_grid;
-				curl_free(curl_grid);
+				oStr << "&grid=" << LLWeb::curlEscape(tmp);
 			}
 		}
 	}
@@ -1137,13 +1126,11 @@ void LLPanelLogin::loadLoginPage()
 		lastname = gSavedSettings.getString("LastName");
 	}
 	
-	char* curl_region = curl_escape(region.c_str(), 0);
+	std::string curl_region = LLWeb::curlEscape(region);
 
 	oStr <<"firstname=" << firstname <<
 		"&lastname=" << lastname << "&location=" << location <<	"&region=" << curl_region;
 	
-	curl_free(curl_region);
-
 	if (!password.empty())
 	{
 		oStr << "&password=" << password;

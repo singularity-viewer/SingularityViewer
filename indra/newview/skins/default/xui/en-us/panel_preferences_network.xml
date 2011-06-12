@@ -25,11 +25,11 @@
 	     follows="left|top" font="SansSerifSmall" h_pad="0" halign="left"
 	     height="10" left="12" mouse_opaque="false" name="cache_size_label_l"
 	     v_pad="0" width="200">
-		Disk Cache Size:
+		Disk Cache Size (MB):
 	</text>
 	<slider bottom_delta="-25" can_edit_text="true"
 	     decimal_digits="0" enabled="true" follows="left|top" height="15"
-	     increment="10" initial_val="50" left_delta="0" max_val="1000" min_val="10"
+	     increment="64" initial_val="1024" left_delta="0" max_val="9984" min_val="64"
 	     mouse_opaque="true" name="cache_size" show_text="true" width="180" />
 	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
 	     bottom_delta="4" drop_shadow_visible="true" enabled="true"

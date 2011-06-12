@@ -42,6 +42,7 @@ else (STANDALONE)
         gdk_pixbuf-2.0
         Xinerama
         glib-2.0
+        gio-2.0
         gmodule-2.0
         gobject-2.0
         gthread-2.0

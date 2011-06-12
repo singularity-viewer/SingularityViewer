@@ -167,9 +167,9 @@ namespace LLError
 		Utilities for use by the unit tests of LLError itself.
 	*/
 
-	class Settings;
-	LL_COMMON_API Settings* saveAndResetSettings();
-	LL_COMMON_API void restoreSettings(Settings *);
+	class ThreadSafeSettings;
+	LL_COMMON_API ThreadSafeSettings* saveAndResetSettings();
+	LL_COMMON_API void restoreSettings(ThreadSafeSettings *);
 		
 	LL_COMMON_API std::string abbreviateFile(const std::string& filePath);
 	LL_COMMON_API int shouldLogCallCount();

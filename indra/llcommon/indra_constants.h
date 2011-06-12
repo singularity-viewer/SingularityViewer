@@ -48,7 +48,7 @@ class LLUUID;
 #define PHYSICS_TIMESTEP (1.f / 45.f)
 
 const F32 COLLISION_TOLERANCE = 0.1f;
-const F32 HALF_COLLISION_TOLERANCE = COLLISION_TOLERANCE * 0.5f;
+const F32 HALF_COLLISION_TOLERANCE = 0.05f;
 
 // Time constants
 const U32 HOURS_PER_LINDEN_DAY		= 4;	
@@ -99,9 +99,9 @@ const 	F32 	MIN_AGENT_WIDTH 		= 0.40f;
 const 	F32 	DEFAULT_AGENT_WIDTH 	= 0.60f;
 const 	F32 	MAX_AGENT_WIDTH 		= 0.80f;
 
-const 	F32 	MIN_AGENT_HEIGHT		= 1.3f - 2.0f * COLLISION_TOLERANCE;
+const 	F32 	MIN_AGENT_HEIGHT		= 1.1f;
 const 	F32 	DEFAULT_AGENT_HEIGHT	= 1.9f;
-const 	F32 	MAX_AGENT_HEIGHT		= 2.65f - 2.0f * COLLISION_TOLERANCE;
+const 	F32 	MAX_AGENT_HEIGHT		= 2.45f;
 
 // For linked sets
 const S32 MAX_CHILDREN_PER_TASK = 255;
@@ -252,9 +252,6 @@ const U8 SIM_ACCESS_ADULT	= 42;		// Seriously Adult Only
 const U8 SIM_ACCESS_DOWN	= 254;
 const U8 SIM_ACCESS_MAX 	= SIM_ACCESS_ADULT;
 
-// group constants
-const S32 DEFAULT_MAX_AGENT_GROUPS = 25;
-
 // attachment constants
 const S32 MAX_AGENT_ATTACHMENTS = 38;
 const U8  ATTACHMENT_ADD = 0x80;
@@ -293,6 +290,7 @@ const U8 UPD_UNIFORM 		= 0x10;	// used with UPD_SCALE
 // Agent Update Flags (U8)
 const U8 AU_FLAGS_NONE      		= 0x00;
 const U8 AU_FLAGS_HIDETITLE      	= 0x01;
+const U8 AU_FLAGS_CLIENT_AUTOPILOT	= 0x02;
 
 // start location constants
 const U32 START_LOCATION_ID_LAST 		= 0;
@@ -305,6 +303,14 @@ const U32 START_LOCATION_ID_COUNT 		= 6;
 
 // group constants
 const U32 GROUP_MIN_SIZE = 2;
+
+// gMaxAgentGroups is now sent by login.cgi, which
+// looks it up from globals.xml.
+//
+// For now we need an old default value however,
+// so the viewer can be deployed ahead of login.cgi.
+//
+const S32 DEFAULT_MAX_AGENT_GROUPS = 25;
 
 // radius within which a chat message is fully audible
 const F32 CHAT_WHISPER_RADIUS = 10.f;

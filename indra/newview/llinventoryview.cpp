@@ -1474,7 +1474,7 @@ std::string get_item_icon_name(LLAssetType::EType asset_type,
 		{
 			idx = BODYPART_ICON_NAME;
 		}
-		switch(LLInventoryItem::II_FLAGS_WEARABLES_MASK & attachment_point)
+		switch(LLInventoryItemFlags::II_FLAGS_WEARABLES_MASK & attachment_point)
 		{
 		case WT_SHAPE:
 			idx = BODYPART_SHAPE_ICON_NAME;
@@ -1520,6 +1520,9 @@ std::string get_item_icon_name(LLAssetType::EType asset_type,
 			break;
 		case WT_TATTOO:
 			idx = CLOTHING_TATTOO_ICON_NAME;
+			break;
+		case WT_PHYSICS:
+			idx = CLOTHING_PHYSICS_ICON_NAME;
 			break;
 		default:
 			// no-op, go with choice above

@@ -68,8 +68,7 @@ LLConsole::LLConsole(const std::string& name, const LLRect &rect,
 	mFadeTime(persist_time - FADE_DURATION),
 	mFont(LLFontGL::getFontSansSerif()),
 	mConsoleWidth(0),
-	mConsoleHeight(0),
-	mQueueMutex(NULL)
+	mConsoleHeight(0)
 {
 	mTimer.reset();
 

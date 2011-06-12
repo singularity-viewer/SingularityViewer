@@ -273,7 +273,6 @@ void LLViewerInventoryItem::setTransactionID(const LLTransactionID& transaction_
 // virtual
 void LLViewerInventoryItem::packMessage(LLMessageSystem* msg) const
 {
-	LL_INFOS("Inventory") << " UDP Rez/UpdateObject of UUID " << mUUID << " parent = " << mParentUUID << " type= " << mType << " transaction= "<< mTransactionID << LL_ENDL; // OGPX
 	msg->addUUIDFast(_PREHASH_ItemID, mUUID);
 	msg->addUUIDFast(_PREHASH_FolderID, mParentUUID);
 	mPermissions.packMessage(msg);
@@ -324,8 +323,8 @@ bool LLViewerInventoryItem::exportFileLocal(LLFILE* fp) const
 	fprintf(fp, "\t\tparent_id\t%s\n", uuid_str.c_str());
 	mPermissions.exportFile(fp);
 	fprintf(fp, "\t\ttype\t%s\n", LLAssetType::lookup(mType));
-	const char* inv_type_str = LLInventoryType::lookup(mInventoryType);
-	if(inv_type_str) fprintf(fp, "\t\tinv_type\t%s\n", inv_type_str);
+	const std::string& inv_type_str = LLInventoryType::lookup(mInventoryType);
+	if(!inv_type_str.empty()) fprintf(fp, "\t\tinv_type\t%s\n", inv_type_str.c_str());
 	fprintf(fp, "\t\tname\t%s|\n", mName.c_str());
 	fprintf(fp, "\t\tcreation_date\t%d\n", (S32) mCreationDate);
 	fprintf(fp,"\t}\n");
@@ -372,7 +371,7 @@ EWearableType LLViewerInventoryItem::getWearableType() const
 	{
 		return WT_INVALID;
 	}
-	return EWearableType(getFlags() & II_FLAGS_WEARABLES_MASK);
+	return EWearableType(getFlags() & LLInventoryItemFlags::II_FLAGS_WEARABLES_MASK);
 }
 // [/RLVa:KB]
 
@@ -503,11 +502,20 @@ bool LLViewerInventoryCategory::fetchDescendents()
 		// This comes from LLInventoryFilter from llfolderview.h
 		U32 sort_order = gSavedSettings.getU32("InventorySortOrder") & 0x1;
 
-		std::string url = gAgent.getCapability("agent/inventory"); // OGPX : was WebFetchInventoryDescendents
-		if (url.empty()) //OGPX : agent/inventory Capability not found on agent domain.  See if the region has one.
+		// *NOTE: For bug EXT-2879, originally commented out
+		// gAgent.getRegion()->getCapability in order to use the old
+		// message-based system.  This has been uncommented now that
+		// AIS folks are aware of the issue and have a fix in process.
+		// see ticket for details.
+
+		std::string url;
+		if (gAgent.getRegion())
 		{
-			llinfos << " agent/inventory not on AD, checking fallback to region " << llendl; //OGPX
-			url = gAgent.getRegion()->getCapability("WebFetchInventoryDescendents");
+			url = gAgent.getRegion()->getCapability("FetchInventoryDescendents");
+		}
+		else
+		{
+			llwarns << "agent region is null" << llendl;
 		}
 		if (!url.empty()) //Capability found.  Build up LLSD and use it.
 		{
@@ -515,7 +523,7 @@ bool LLViewerInventoryCategory::fetchDescendents()
 		}
 		else
 		{	//Deprecated, but if we don't have a capability, use the old system.
-			llinfos << "WebFetchInventoryDescendents or agent/inventory capability not found.  Using deprecated UDP message." << llendl;
+			llinfos << "FetchInventoryDescendents capability not found.  Using deprecated UDP message." << llendl;
 			LLMessageSystem* msg = gMessageSystem;
 			msg->newMessage("FetchInventoryDescendents");
 			msg->nextBlock("AgentData");

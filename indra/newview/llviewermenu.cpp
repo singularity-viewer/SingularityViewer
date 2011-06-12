@@ -71,6 +71,7 @@
 #include "lltimer.h"
 #include "llvfile.h"
 #include "llvolumemgr.h"
+#include "statemachine/aifilepicker.h"
 
 // newview includes
 #include "llagent.h"
@@ -112,7 +113,6 @@
 #include "llfloaterchat.h"
 #include "llfloatercustomize.h"
 #include "llfloaterdaycycle.h"
-//#include "llfloaterdickdongs.h" No need for the custom floater right now, I think. -HgB
 #include "llfloaterdirectory.h"
 #include "llfloatereditui.h"
 #include "llfloaterchatterbox.h"
@@ -183,7 +183,7 @@
 
 #include "llparcel.h"
 
-
+#include "llpolymesh.h"
 #include "llprimitive.h"
 #include "llresmgr.h"
 #include "llselectmgr.h"
@@ -282,13 +282,15 @@ void handle_test_load_url(void*);
 //
 // Evil hackish imported globals
 //
-extern BOOL	gRenderLightGlows;
-extern BOOL gRenderAvatar;
-extern BOOL	gHideSelectedObjects;
+//extern BOOL	gHideSelectedObjects;
+//extern BOOL gAllowSelectAvatar;
+extern BOOL gDebugClicks;
+extern BOOL gDebugWindowProc;
+extern BOOL gDebugTextEditorTips;
+//extern BOOL gDebugSelectMgr;
+extern BOOL gDebugAvatarRotation;
 extern BOOL gShowOverlayTitle;
 extern BOOL gOcclusionCull;
-extern BOOL gAllowSelectAvatar;
-
 //
 // Globals
 //
@@ -429,13 +431,16 @@ void handle_area_search(void*);
 
 // <dogmode> for pose stand
 LLUUID current_pose = LLUUID::null;
+bool on_pose_stand;
 
 void set_current_pose(std::string anim)
 {
-	if (current_pose == LLUUID::null)
+	if (!on_pose_stand)
+	{
+		on_pose_stand = true;
 		gSavedSettings.setF32("AscentAvatarZModifier", gSavedSettings.getF32("AscentAvatarZModifier") + 7.5);
+	}
 
-	gAgent.sendAgentSetAppearance();
 	gAgent.sendAnimationRequest(current_pose, ANIM_REQUEST_STOP);
 	current_pose.set(anim);
 	gAgent.sendAnimationRequest(current_pose, ANIM_REQUEST_START);
@@ -446,13 +451,17 @@ void handle_pose_stand(void*)
 }
 void handle_pose_stand_stop(void*)
 {
-	if (current_pose != LLUUID::null)
+	if (on_pose_stand)
 	{
 		gSavedSettings.setF32("AscentAvatarZModifier", gSavedSettings.getF32("AscentAvatarZModifier") - 7.5);
-		gAgent.sendAgentSetAppearance();
+		on_pose_stand = false;
 		gAgent.sendAnimationRequest(current_pose, ANIM_REQUEST_STOP);
 		current_pose = LLUUID::null;
 	}
+}
+void cleanup_pose_stand(void)
+{
+	handle_pose_stand_stop(NULL);
 }
 
 void handle_toggle_pose(void* userdata) {
@@ -572,6 +581,13 @@ void handle_toggle_pg(void*);
 void handle_dump_attachments(void *);
 void handle_show_overlay_title(void*);
 void handle_dump_avatar_local_textures(void*);
+void handle_meshes_and_morphs(void*);
+void handle_mesh_save_llm(void* data);
+void handle_mesh_save_current_obj(void*);
+void handle_mesh_save_obj(void*);
+void handle_mesh_load_obj(void*);
+void handle_morph_save_obj(void*);
+void handle_morph_load_obj(void*);
 void handle_debug_avatar_textures(void*);
 void handle_grab_texture(void*);
 BOOL enable_grab_texture(void*);
@@ -1224,28 +1240,25 @@ void init_debug_world_menu(LLMenuGL* menu)
 	menu->createJumpKeys();
 }
 
-
+static void handle_export_menus_to_xml_continued(AIFilePicker* filepicker);
 void handle_export_menus_to_xml(void*)
 {
+	AIFilePicker* filepicker = AIFilePicker::create();
+	filepicker->open("", FFSAVE_XML);
+	filepicker->run(boost::bind(&handle_export_menus_to_xml_continued, filepicker));
+}
 
-	LLFilePicker& picker = LLFilePicker::instance();
-	if(!picker.getSaveFile(LLFilePicker::FFSAVE_XML))
+static void handle_export_menus_to_xml_continued(AIFilePicker* filepicker)
+{
+	if(!filepicker->hasFilename())
 	{
-		llwarns << "No file" << llendl;
 		return;
 	}
-	std::string filename = picker.getFirstFile();
-
-	llofstream out(filename);
+	llofstream out(filepicker->getFilename());
 	LLXMLNodePtr node = gMenuBarView->getXML();
 	node->writeToOstream(out);
 	out.close();
 }
-
-extern BOOL gDebugClicks;
-extern BOOL gDebugWindowProc;
-extern BOOL gDebugTextEditorTips;
-extern BOOL gDebugSelectMgr;
 
 void init_debug_ui_menu(LLMenuGL* menu)
 {
@@ -1272,7 +1285,7 @@ void init_debug_ui_menu(LLMenuGL* menu)
 		(void*)"DoubleClickTeleport"));
 	menu->appendSeparator();
 //	menu->append(new LLMenuItemCallGL( "Print Packets Lost",			&print_packets_lost, NULL, NULL, 'L', MASK_SHIFT ));
-	menu->append(new LLMenuItemToggleGL("Debug SelectMgr", &gDebugSelectMgr));
+	menu->append(new LLMenuItemCheckGL("Debug SelectMgr", menu_toggle_control, NULL, menu_check_control, (void*)"DebugSelectMgr"));
 	menu->append(new LLMenuItemToggleGL("Debug Clicks", &gDebugClicks));
 	menu->append(new LLMenuItemToggleGL("Debug Views", &LLView::sDebugRects));
 	menu->append(new LLMenuItemCheckGL("Show Name Tooltips", toggle_show_xui_names, NULL, check_show_xui_names, NULL));
@@ -1501,7 +1514,7 @@ void init_debug_rendering_menu(LLMenuGL* menu)
 	//menu->append(new LLMenuItemCheckGL("Cull Small Objects", toggle_cull_small, NULL, menu_check_control, (void*)"RenderCullBySize"));
 
 	menu->appendSeparator();
-	menu->append(new LLMenuItemToggleGL("Hide Selected", &gHideSelectedObjects));
+	menu->append(new LLMenuItemCheckGL("Hide Selected", menu_toggle_control, NULL, menu_check_control, (void*)"HideSelectedObjects"));
 	menu->appendSeparator();
 	menu->append(new LLMenuItemCheckGL("Tangent Basis", menu_toggle_control, NULL, menu_check_control, (void*)"ShowTangentBasis"));
 	menu->append(new LLMenuItemCallGL("Selected Texture Info", handle_selected_texture_info, NULL, NULL, 'T', MASK_CONTROL|MASK_SHIFT|MASK_ALT));
@@ -1587,7 +1600,7 @@ void init_debug_avatar_menu(LLMenuGL* menu)
 
 	sub_menu->append(new LLMenuItemCallGL("Toggle PG", handle_toggle_pg));
 
-	sub_menu->append(new LLMenuItemToggleGL("Allow Select Avatar", &gAllowSelectAvatar));
+	sub_menu->append(new LLMenuItemCheckGL("Allow Select Avatar", menu_toggle_control, NULL, menu_check_control, (void*)"AllowSelectAvatar"));
 	sub_menu->createJumpKeys();
 
 	menu->appendMenu(sub_menu);
@@ -1597,7 +1610,11 @@ void init_debug_avatar_menu(LLMenuGL* menu)
 	menu->append(new LLMenuItemCallGL("Reload Vertex Shader", &reload_vertex_shader, NULL));
 	menu->append(new LLMenuItemToggleGL("Animation Info", &LLVOAvatar::sShowAnimationDebug));
 	menu->append(new LLMenuItemCallGL("Slow Motion Animations", &slow_mo_animations, NULL));
-	menu->append(new LLMenuItemToggleGL("Show Look At", &LLHUDEffectLookAt::sDebugLookAt));
+
+	LLMenuItemCheckGL* item;
+	item = new LLMenuItemCheckGL("Show Look At", menu_toggle_control, NULL, menu_check_control, (void*)"AscentShowLookAt");
+	menu->append(item);
+
 	menu->append(new LLMenuItemToggleGL("Show Point At", &LLHUDEffectPointAt::sDebugPointAt));
 	menu->append(new LLMenuItemToggleGL("Debug Joint Updates", &LLVOAvatar::sJointDebug));
 	menu->append(new LLMenuItemToggleGL("Disable LOD", &LLViewerJoint::sDisableLOD));
@@ -1624,6 +1641,11 @@ void init_debug_avatar_menu(LLMenuGL* menu)
 // <edit>
 //#endif
 // </edit>
+
+	LLMenuItemCallGL* mesh_item = new LLMenuItemCallGL("Meshes And Morphs...", handle_meshes_and_morphs);
+	mesh_item->setUserData((void*)mesh_item);  // So we can remove it later
+	menu->append(mesh_item);
+
 	menu->createJumpKeys();
 }
 
@@ -3498,7 +3520,7 @@ class LLSelfSitOrStand : public view_listener_t
 {
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
 	{
-		if (gAgent.getAvatarObject() && gAgent.getAvatarObject()->mIsSitting)
+		if (gAgent.getAvatarObject() && gAgent.getAvatarObject()->isSitting())
 		{
 // [RLVa:KB] - Alternate: Snowglobe-1.3.X | Checked: 2009-12-29 (RLVa-1.1.0k) | Added: RLVa-1.1.0k | OK
 			if (gRlvHandler.hasBehaviour(RLV_BHVR_UNSIT))
@@ -3540,7 +3562,7 @@ class LLSelfEnableSitOrStand : public view_listener_t
 			stand_text = param.substr(offset+1);
 		}
 		
-		if (gAgent.getAvatarObject() && gAgent.getAvatarObject()->mIsSitting)
+		if (gAgent.getAvatarObject() && gAgent.getAvatarObject()->isSitting())
 		{
 // [RLVa:KB] - Alternate: Snowglobe-1.3.X | Checked: 2009-12-29 (RLVa-1.1.0k) | Added: RLVa-1.1.0k | OK
 			new_value &= (!gRlvHandler.hasBehaviour(RLV_BHVR_UNSIT));
@@ -3730,34 +3752,11 @@ void handle_fake_away_status(void*)
 	}
 }
 
-void handle_hide_typing_notification(void*)
-{
-	if (!gSavedSettings.controlExists("HideTypingNotification")) 
-		gSavedSettings.declareBOOL("HideTypingNotification", FALSE, "Hide your 'Name is typing...' message when Instant Messaging.");
-
-	BOOL hide = gSavedSettings.getBOOL("HideTypingNotification");
-	if (hide)
-	{
-		gSavedSettings.declareBOOL("HideTypingNotification", FALSE, "Hide your 'Name is typing...' message when Instant Messaging.");
-		gSavedSettings.setBOOL("HideTypingNotification", FALSE);
-	}
-	else
-	{
-		gSavedSettings.declareBOOL("HideTypingNotification", TRUE, "Hide your 'Name is typing...' message when Instant Messaging.");
-		gSavedSettings.setBOOL("HideTypingNotification", TRUE);
-	}
-
-	LLChat chat;
-	chat.mSourceType = CHAT_SOURCE_SYSTEM;
-	chat.mText = llformat("IM Typing Notifications: %s",(hide ? "On" : "Off"));
-	LLFloaterChat::addChat(chat);
-}
-
 void handle_force_ground_sit(void*)
 {
 	if (gAgent.getAvatarObject())
 	{
-		if(!gAgent.getAvatarObject()->mIsSitting)
+		if(!gAgent.getAvatarObject()->isSitting())
 		{
 			gAgent.setControlFlags(AGENT_CONTROL_SIT_ON_GROUND);
 		} 
@@ -3913,6 +3912,7 @@ class LLEditEnableCustomizeAvatar : public view_listener_t
 	}
 };
 
+
 class LLEditEnableChangeDisplayname : public view_listener_t
 {
        bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
@@ -3957,7 +3957,7 @@ bool handle_sit_or_stand()
 // [RLVa:KB] - Checked: 2010-08-29 (RLVa-1.1.3b) | Added: RLVa-1.2.1c | OK
 		if ( (gRlvHandler.hasBehaviour(RLV_BHVR_STANDTP)) && (gAgent.getAvatarObject()) )
 		{
-			if (gAgent.getAvatarObject()->mIsSitting)
+			if (gAgent.getAvatarObject()->isSitting())
 			{
 				if (gRlvHandler.canStand())
 					gAgent.setControlFlags(AGENT_CONTROL_STAND_UP);
@@ -4074,7 +4074,7 @@ class LLWorldEnableFly : public view_listener_t
 		BOOL sitting = FALSE;
 		if (gAgent.getAvatarObject())
 		{
-			sitting = gAgent.getAvatarObject()->mIsSitting;
+			sitting = gAgent.getAvatarObject()->isSitting();
 		}
 		gMenuHolder->findControl(userdata["control"].asString())->setValue(!sitting);
 		return true;
@@ -5157,7 +5157,7 @@ BOOL sitting_on_selection()
 		return FALSE;
 	}
 
-	return (avatar->mIsSitting && avatar->getRoot() == root_object);
+	return (avatar->isSitting() && avatar->getRoot() == root_object);
 }
 
 class LLToolsSaveToInventory : public view_listener_t
@@ -5338,26 +5338,7 @@ class LLToolsEnableLink : public view_listener_t
 {
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
 	{
-		bool new_value = false;
-		// check if there are at least 2 objects selected, and that the
-		// user can modify at least one of the selected objects.
-
-		// in component mode, can't link
-		if (!gSavedSettings.getBOOL("EditLinkedParts"))
-		{
-			if(LLSelectMgr::getInstance()->selectGetAllRootsValid() && LLSelectMgr::getInstance()->getSelection()->getRootObjectCount() >= 2)
-			{
-				struct f : public LLSelectedObjectFunctor
-				{
-					virtual bool apply(LLViewerObject* object)
-					{
-						return object->permModify();
-					}
-				} func;
-				const bool firstonly = true;
-				new_value = LLSelectMgr::getInstance()->getSelection()->applyToRootObjects(&func, firstonly);
-			}
-		}
+		bool new_value = LLSelectMgr::getInstance()->enableLinkObjects();
 		gMenuHolder->findControl(userdata["control"].asString())->setValue(new_value);
 		return true;
 	}
@@ -5367,45 +5348,7 @@ class LLToolsLink : public view_listener_t
 {
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
 	{
-		if(!LLSelectMgr::getInstance()->selectGetAllRootsValid())
-		{
-			LLNotifications::instance().add("UnableToLinkWhileDownloading");
-			return true;
-		}
-
-		S32 object_count = LLSelectMgr::getInstance()->getSelection()->getObjectCount();
-		if (object_count > MAX_CHILDREN_PER_TASK + 1)
-		{
-			LLSD args;
-			args["COUNT"] = llformat("%d", object_count);
-			int max = MAX_CHILDREN_PER_TASK+1;
-			args["MAX"] = llformat("%d", max);
-			LLNotifications::instance().add("UnableToLinkObjects", args);
-			return true;
-		}
-
-		if(LLSelectMgr::getInstance()->getSelection()->getRootObjectCount() < 2)
-		{
-			LLNotifications::instance().add("CannotLinkIncompleteSet");
-			return true;
-		}
-		if(!LLSelectMgr::getInstance()->selectGetRootsModify())
-		{
-			LLNotifications::instance().add("CannotLinkModify");
-			return true;
-		}
-		LLUUID owner_id;
-		std::string owner_name;
-		if(!LLSelectMgr::getInstance()->selectGetOwner(owner_id, owner_name))
-		{
-			// we don't actually care if you're the owner, but novices are
-			// the most likely to be stumped by this one, so offer the
-			// easiest and most likely solution.
-			LLNotifications::instance().add("CannotLinkDifferentOwners");
-			return true;
-		}
-		LLSelectMgr::getInstance()->sendLink();
-		return true;
+		return LLSelectMgr::getInstance()->linkObjects();
 	}
 };
 
@@ -5413,19 +5356,7 @@ class LLToolsEnableUnlink : public view_listener_t
 {
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
 	{
-		bool new_value = LLSelectMgr::getInstance()->selectGetAllRootsValid() &&
-			LLSelectMgr::getInstance()->getSelection()->getFirstEditableObject() &&
-			!LLSelectMgr::getInstance()->getSelection()->getFirstEditableObject()->isAttachment();
-// [RLVa:KB] - Checked: 2010-04-01 (RLVa-1.1.3b) | Modified: RLVa-0.2.0g | OK
-		if ( (new_value) && (!gRlvHandler.canStand()) )
-		{
-			// Allow only if the avie isn't sitting on any of the selected objects
-			LLObjectSelectionHandle handleSel = LLSelectMgr::getInstance()->getSelection();
-			RlvSelectIsSittingOn f(gAgent.getAvatarObject()->getRoot());
-			if (handleSel->getFirstRootNode(&f, TRUE) != NULL)
-				new_value = false;
-		}
-// [/RLVa:KB]
+		bool new_value = LLSelectMgr::getInstance()->enableUnlinkObjects();
 		gMenuHolder->findControl(userdata["control"].asString())->setValue(new_value);
 		return true;
 	}
@@ -5435,18 +5366,7 @@ class LLToolsUnlink : public view_listener_t
 {
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
 	{
-// [RLVa:KB] - Checked: 2010-04-01 (RLVa-1.1.3b) | Modified: RLVa-0.2.0g | OK
-		if ( (rlv_handler_t::isEnabled()) && (!gRlvHandler.canStand()) )
-		{
-			// Allow only if the avie isn't sitting on any of the selected objects
-			LLObjectSelectionHandle hSel = LLSelectMgr::getInstance()->getSelection();
-			RlvSelectIsSittingOn f(gAgent.getAvatarObject()->getRoot());
-			if ( (hSel.notNull()) && (hSel->getFirstRootNode(&f, TRUE)) )
-				return true;
-		}
-// [/RLVa:KB]
-
-		LLSelectMgr::getInstance()->sendDelink();
+		LLSelectMgr::getInstance()->unlinkObjects();
 		return true;
 	}
 };
@@ -6003,7 +5923,7 @@ class LLWorldSitOnGround : public view_listener_t
 	{
 		if (gAgent.getAvatarObject())
 		{
-			if(!gAgent.getAvatarObject()->mIsSitting)
+			if(!gAgent.getAvatarObject()->isSitting())
 			{
 				gAgent.setControlFlags(AGENT_CONTROL_SIT_ON_GROUND);
 			} 
@@ -6605,10 +6525,10 @@ class LLShowFloater : public view_listener_t
 		{
 			LLFloaterActiveSpeakers::toggleInstance(LLSD());
 		}
-		/*else if (floater_name == "beacons")
+		else if (floater_name == "beacons")
 		{
-			LLFloaterBeacons::toggleInstance(LLSD()); NO
-		}*/
+			LLFloaterBeacons::toggleInstance(LLSD());
+		}
 		else if (floater_name == "perm prefs")
 		{
 			LLFloaterPerms::toggleInstance(LLSD());
@@ -6642,7 +6562,7 @@ class LLFloaterVisible : public view_listener_t
 		}
 		else if (floater_name == "teleport history")
 		{
-			new_value = gFloaterTeleportHistory->getVisible();
+			new_value = (gFloaterTeleportHistory && gFloaterTeleportHistory->getVisible());
 		}
 		else if (floater_name == "im")
 		{
@@ -6672,14 +6592,10 @@ class LLFloaterVisible : public view_listener_t
 		{
 			new_value = LLFloaterActiveSpeakers::instanceVisible(LLSD());
 		}
-		/*else if (floater_name == "beacons")
+		else if (floater_name == "beacons")
 		{
-			new_value = LLFloaterBeacons::instanceVisible(LLSD()); Oh man fuck this floater so much.
+			new_value = LLFloaterBeacons::instanceVisible(LLSD());
 		}
-		else if (floater_name == "dickdongs")
-		{
-			new_value = LLFloaterDickDongs::instanceVisible(LLSD()); Not needed any more.
-		}*/
 		else if (floater_name == "inventory")
 		{
 			LLInventoryView* iv = LLInventoryView::getActiveInventory(); 
@@ -8307,9 +8223,8 @@ class LLToolsShowSelectionHighlights : public view_listener_t
 {
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
 	{
-		LLSelectMgr::sRenderSelectionHighlights = !LLSelectMgr::sRenderSelectionHighlights;
-		
-		gSavedSettings.setBOOL("RenderHighlightSelections", LLSelectMgr::sRenderSelectionHighlights);
+		LLControlVariable *ctrl = gSavedSettings.getControl("RenderHighlightSelections");
+		ctrl->setValue(!ctrl->getValue().asBoolean());
 		return true;
 	}
 };
@@ -8389,6 +8304,410 @@ void handle_dump_avatar_local_textures(void*)
 	{
 		avatar->dumpLocalTextures();
 	}
+}
+
+void handle_meshes_and_morphs(void* menu_item)
+{
+	LLMenuItemCallGL* item = (LLMenuItemCallGL*) menu_item;
+	LLMenuGL* parent_menu = (LLMenuGL*) item->getParent();
+	parent_menu->remove(item);
+
+	LLMenuGL* menu = new LLMenuGL("Meshes And Morphs");
+	menu->append(new LLMenuItemCallGL("Dump Avatar Mesh Info", &LLPolyMesh::dumpDiagInfo));
+	menu->appendSeparator();
+
+	LLVOAvatar::mesh_info_t mesh_info;
+	LLVOAvatar::getMeshInfo(&mesh_info);
+
+	for(LLVOAvatar::mesh_info_t::iterator info_iter = mesh_info.begin();
+		info_iter != mesh_info.end(); ++info_iter)
+	{
+		const std::string& type = info_iter->first;
+		LLVOAvatar::lod_mesh_map_t& lod_mesh = info_iter->second;
+
+		LLMenuGL* type_menu = new LLMenuGL(type);
+
+		for(LLVOAvatar::lod_mesh_map_t::iterator lod_iter = lod_mesh.begin();
+			lod_iter != lod_mesh.end(); ++lod_iter)
+		{
+			S32 lod = lod_iter->first;
+			std::string& mesh = lod_iter->second;
+
+			std::string caption = llformat ("%s LOD %d", type.c_str(), lod);
+
+			if (lod == 0)
+			{
+				caption = type;
+			}
+
+			LLPolyMeshSharedData* mesh_shared = LLPolyMesh::getMeshData(mesh);
+
+			LLPolyMesh::morph_list_t morph_list;
+			LLPolyMesh::getMorphList(mesh, &morph_list);
+
+			LLMenuGL* lod_menu = new LLMenuGL(caption);
+			lod_menu->append(new LLMenuItemCallGL("Save LLM", handle_mesh_save_llm, NULL, (void*) mesh_shared));
+
+			LLMenuGL* action_menu = new LLMenuGL("Base Mesh");
+			action_menu->append(new LLMenuItemCallGL("Save OBJ", handle_mesh_save_obj, NULL, (void*) mesh_shared));
+
+			if (lod == 0)
+			{
+				// Since an LOD mesh has only faces, we won't enable this for
+				// LOD meshes until we add code for processing the face commands.
+
+				action_menu->append(new LLMenuItemCallGL("Load OBJ", handle_mesh_load_obj, NULL, (void*) mesh_shared));
+			}
+
+			action_menu->createJumpKeys();
+			lod_menu->appendMenu(action_menu);
+
+			action_menu = new LLMenuGL("Current Mesh");
+
+			action_menu->append(new LLMenuItemCallGL("Save OBJ", handle_mesh_save_current_obj, NULL, (void*) mesh_shared));
+
+			action_menu->createJumpKeys();
+			lod_menu->appendMenu(action_menu);
+
+			lod_menu->appendSeparator();
+
+			for(LLPolyMesh::morph_list_t::iterator morph_iter = morph_list.begin();
+				morph_iter != morph_list.end(); ++morph_iter)
+			{
+				std::string const& morph_name = morph_iter->first;
+				LLPolyMorphData* morph_data = morph_iter->second;
+
+				action_menu = new LLMenuGL(morph_name);
+
+				action_menu->append(new LLMenuItemCallGL("Save OBJ", handle_morph_save_obj, NULL, (void*) morph_data));
+				action_menu->append(new LLMenuItemCallGL("Load OBJ", handle_morph_load_obj, NULL, (void*) morph_data));
+
+				action_menu->createJumpKeys();
+				lod_menu->appendMenu(action_menu);
+			}
+
+			lod_menu->createJumpKeys();
+			type_menu->appendMenu(lod_menu);
+		}
+		type_menu->createJumpKeys();
+		menu->appendMenu(type_menu);
+	}
+
+	menu->createJumpKeys();
+	menu->updateParent(LLMenuGL::sMenuContainer);
+	parent_menu->appendMenu(menu);
+
+	LLMenuGL::sMenuContainer->hideMenus();
+	LLFloater* tear_off_menu = LLTearOffMenu::create(menu);
+	tear_off_menu->setFocus(TRUE);
+}
+
+static void handle_mesh_save_llm_continued(void* data, AIFilePicker* filepicker);
+void handle_mesh_save_llm(void* data)
+{
+	LLPolyMeshSharedData* mesh_shared = (LLPolyMeshSharedData*) data;
+	std::string const* mesh_name = LLPolyMesh::getSharedMeshName(mesh_shared);
+	std::string default_path = gDirUtilp->getExpandedFilename(LL_PATH_CHARACTER, "");
+
+	if (!mesh_name)
+	{
+		llwarns << "LPolyMesh::getSharedMeshName returned NULL" << llendl;
+		return;
+	}
+
+	AIFilePicker* filepicker = AIFilePicker::create();
+	filepicker->open(*mesh_name, FFSAVE_ALL, default_path, "mesh_llm");
+	filepicker->run(boost::bind(&handle_mesh_save_llm_continued, data, filepicker));
+}
+
+static void handle_mesh_save_llm_continued(void* data, AIFilePicker* filepicker)
+{
+	if (!filepicker->hasFilename())
+	{
+		llwarns << "No file" << llendl;
+		return;
+	}
+	std::string selected_filename = filepicker->getFilename();
+	LLPolyMeshSharedData* mesh_shared = (LLPolyMeshSharedData*) data;
+	std::string const* mesh_name = LLPolyMesh::getSharedMeshName(mesh_shared);
+
+	llinfos << "Selected " << selected_filename << " for mesh " << *mesh_name <<llendl;
+
+	std::string bak_filename = selected_filename + ".bak";
+
+	llstat stat_selected;
+	llstat stat_bak;
+
+	if ((LLFile::stat(selected_filename, &stat_selected) == 0)
+	&&  (LLFile::stat(bak_filename, &stat_bak) != 0))
+	{
+		// NB: stat returns non-zero if it can't read the file, for example
+		// if it doesn't exist.  LLFile has no better abstraction for
+		// testing for file existence.
+
+		// The selected file exists, but there is no backup yet, so make one.
+		if (LLFile::rename(selected_filename, bak_filename) != 0 )
+		{
+			llerrs << "can't rename: " << selected_filename << llendl;
+			return;
+		}
+	}
+
+	LLFILE* fp = LLFile::fopen(selected_filename, "wb");
+	if (!fp)
+	{
+		llerrs << "can't open: " << selected_filename << llendl;
+
+		if ((LLFile::stat(bak_filename, &stat_bak) == 0)
+		&&  (LLFile::stat(selected_filename, &stat_selected) != 0) )
+		{
+			// Rename the backup to its original name
+			if (LLFile::rename(bak_filename, selected_filename) != 0 )
+			{
+				llerrs << "can't rename: " << bak_filename << " back to " << selected_filename << llendl;
+				return;
+			}
+		}
+		return;
+	}
+
+	LLPolyMesh mesh(mesh_shared,NULL);
+	mesh.saveLLM(fp);
+	fclose(fp);
+}
+
+static void handle_mesh_save_current_obj_continued(void* data, AIFilePicker* filepicker);
+void handle_mesh_save_current_obj(void* data)
+{
+	LLPolyMeshSharedData* mesh_shared = (LLPolyMeshSharedData*) data;
+	std::string const* mesh_name = LLPolyMesh::getSharedMeshName(mesh_shared);
+
+	if (!mesh_name)
+	{
+		llwarns << "LPolyMesh::getSharedMeshName returned NULL" << llendl;
+		return;
+	}
+
+	std::string file_name = *mesh_name + "_current.obj";
+	std::string default_path = gDirUtilp->getExpandedFilename(LL_PATH_CHARACTER, "");
+
+	AIFilePicker* filepicker = AIFilePicker::create();
+	filepicker->open(file_name, FFSAVE_ALL, default_path, "mesh_obj");
+	filepicker->run(boost::bind(&handle_mesh_save_current_obj_continued, data, filepicker));
+}
+
+static void handle_mesh_save_current_obj_continued(void* data, AIFilePicker* filepicker)
+{
+	if(!filepicker->hasFilename())
+	{
+		llwarns << "No file" << llendl;
+		return;
+	}
+	std::string selected_filename = filepicker->getFilename();
+	LLPolyMeshSharedData* mesh_shared = (LLPolyMeshSharedData*)data;
+	std::string const* mesh_name = LLPolyMesh::getSharedMeshName(mesh_shared);
+
+	llinfos << "Selected " << selected_filename << " for mesh " << *mesh_name <<llendl;
+
+	LLFILE* fp = LLFile::fopen(selected_filename, "wb");			/*Flawfinder: ignore*/
+	if (!fp)
+	{
+		llerrs << "can't open: " << selected_filename << llendl;
+		return;
+	}
+
+	LLVOAvatar* avatar = gAgent.getAvatarObject();
+	if ( avatar )
+	{
+		LLPolyMesh* mesh = avatar->getMesh (mesh_shared);
+		mesh->saveOBJ(fp);
+	}
+	fclose(fp);
+}
+
+static void handle_mesh_save_obj_continued(void* data, AIFilePicker* filepicker);
+void handle_mesh_save_obj(void* data)
+{
+	LLPolyMeshSharedData* mesh_shared = (LLPolyMeshSharedData*) data;
+	std::string const* mesh_name = LLPolyMesh::getSharedMeshName(mesh_shared);
+
+	if (!mesh_name)
+	{
+		llwarns << "LPolyMesh::getSharedMeshName returned NULL" << llendl;
+		return;
+	}
+
+	std::string file_name = *mesh_name + ".obj";
+	std::string default_path = gDirUtilp->getExpandedFilename(LL_PATH_CHARACTER, "");
+
+	AIFilePicker* filepicker = AIFilePicker::create();
+	filepicker->open(file_name, FFSAVE_ALL, default_path, "mesh_obj");
+	filepicker->run(boost::bind(&handle_mesh_save_obj_continued, data, filepicker));
+}
+
+static void handle_mesh_save_obj_continued(void* data, AIFilePicker* filepicker)
+{
+	if(!filepicker->hasFilename())
+	{
+		llwarns << "No file" << llendl;
+		return;
+	}
+	std::string selected_filename = filepicker->getFilename();
+	LLPolyMeshSharedData* mesh_shared = (LLPolyMeshSharedData*) data;
+	std::string const* mesh_name = LLPolyMesh::getSharedMeshName(mesh_shared);
+
+	llinfos << "Selected " << selected_filename << " for mesh " << *mesh_name <<llendl;
+
+	LLFILE* fp = LLFile::fopen(selected_filename, "wb");			/*Flawfinder: ignore*/
+	if (!fp)
+	{
+		llerrs << "can't open: " << selected_filename << llendl;
+		return;
+	}
+
+	LLPolyMesh mesh(mesh_shared,NULL);
+	mesh.saveOBJ(fp);
+	fclose(fp);
+}
+
+static void handle_mesh_load_obj_continued(void* data, AIFilePicker* filepicker);
+void handle_mesh_load_obj(void* data)
+{
+	LLPolyMeshSharedData* mesh_shared = (LLPolyMeshSharedData*) data;
+	std::string const* mesh_name = LLPolyMesh::getSharedMeshName(mesh_shared);
+	std::string default_path = gDirUtilp->getExpandedFilename(LL_PATH_CHARACTER, "");
+
+	if (!mesh_name)
+	{
+		llwarns << "LPolyMesh::getSharedMeshName returned NULL" << llendl;
+		return;
+	}
+
+	AIFilePicker* filepicker = AIFilePicker::create();
+	filepicker->open(FFLOAD_ALL, default_path, "mesh_obj");
+	filepicker->run(boost::bind(&handle_mesh_load_obj_continued, data, filepicker));
+}
+
+static void handle_mesh_load_obj_continued(void* data, AIFilePicker* filepicker)
+{
+	if(!filepicker->hasFilename())
+	{
+		llwarns << "No file" << llendl;
+		return;
+	}
+	std::string selected_filename = filepicker->getFilename();
+	LLPolyMeshSharedData* mesh_shared = (LLPolyMeshSharedData*) data;
+	std::string const* mesh_name = LLPolyMesh::getSharedMeshName(mesh_shared);
+
+	llinfos << "Selected " << selected_filename << " for mesh " << *mesh_name <<llendl;
+
+	LLFILE* fp = LLFile::fopen(selected_filename, "rb");			/*Flawfinder: ignore*/
+	if (!fp)
+	{
+		llerrs << "can't open: " << selected_filename << llendl;
+		return;
+	}
+
+	LLPolyMesh mesh(mesh_shared,NULL);
+	mesh.loadOBJ(fp);
+	mesh.setSharedFromCurrent();
+	fclose(fp);
+}
+
+static void handle_morph_save_obj_continued(void* data, AIFilePicker* filepicker);
+void handle_morph_save_obj(void* data)
+{
+	LLPolyMorphData* morph_data = (LLPolyMorphData*) data;
+	LLPolyMeshSharedData* mesh_shared = morph_data->mMesh;
+	std::string const* mesh_name = LLPolyMesh::getSharedMeshName(mesh_shared);
+	std::string const& morph_name = morph_data->getName();
+
+	if (!mesh_name)
+	{
+		llwarns << "LPolyMesh::getSharedMeshName returned NULL" << llendl;
+		return;
+	}
+
+	llinfos << "Save morph OBJ " << morph_name << " of mesh " << *mesh_name <<llendl;
+
+	std::string file_name = *mesh_name + "." + morph_name + ".obj";
+	std::string default_path = gDirUtilp->getExpandedFilename(LL_PATH_CHARACTER, "");
+
+	AIFilePicker* filepicker = AIFilePicker::create();
+	filepicker->open(file_name, FFSAVE_ALL, default_path, "mesh_obj");
+	filepicker->run(boost::bind(&handle_morph_save_obj_continued, data, filepicker));
+}
+
+static void handle_morph_save_obj_continued(void* data, AIFilePicker* filepicker)
+{
+	if (!filepicker->hasFilename())
+	{
+		llwarns << "No file" << llendl;
+		return;
+	}
+	std::string selected_filename = filepicker->getFilename();
+	LLPolyMorphData* morph_data = (LLPolyMorphData*)data;
+
+	llinfos << "Selected " << selected_filename << llendl;
+
+	LLFILE* fp = LLFile::fopen(selected_filename, "wb");			/*Flawfinder: ignore*/
+	if (!fp)
+	{
+		llerrs << "can't open: " << selected_filename << llendl;
+		return;
+	}
+
+	morph_data->saveOBJ(fp);
+	fclose(fp);
+}
+
+static void handle_morph_load_obj_continued(void* data, AIFilePicker* filepicker);
+void handle_morph_load_obj(void* data)
+{
+	LLPolyMorphData* morph_data = (LLPolyMorphData*) data;
+	LLPolyMeshSharedData* mesh_shared = morph_data->mMesh;
+	std::string const* mesh_name = LLPolyMesh::getSharedMeshName(mesh_shared);
+	std::string const& morph_name = morph_data->getName();
+	std::string default_path = gDirUtilp->getExpandedFilename(LL_PATH_CHARACTER, "");
+
+	if (!mesh_name)
+	{
+		llwarns << "LPolyMesh::getSharedMeshName returned NULL" << llendl;
+		return;
+	}
+
+	llinfos << "Load morph OBJ " << morph_name << " of mesh " << *mesh_name <<llendl;
+
+	AIFilePicker* filepicker = AIFilePicker::create();
+	filepicker->open(FFLOAD_ALL, default_path, "mesh_obj");
+	filepicker->run(boost::bind(&handle_morph_load_obj_continued, data, filepicker));
+}
+
+static void handle_morph_load_obj_continued(void* data, AIFilePicker* filepicker)
+{
+	if(!filepicker->hasFilename())
+	{
+		llwarns << "No file" << llendl;
+		return;
+	}
+	std::string selected_filename = filepicker->getFilename();
+	LLPolyMorphData* morph_data = (LLPolyMorphData*) data;
+	LLPolyMeshSharedData* mesh_shared = morph_data->mMesh;
+
+	llinfos << "Selected " << selected_filename <<llendl;
+
+	LLFILE* fp = LLFile::fopen(selected_filename, "rb");			/*Flawfinder: ignore*/
+	if (!fp)
+	{
+		llerrs << "can't open: " << selected_filename << llendl;
+		return;
+	}
+
+	LLPolyMesh mesh(mesh_shared,NULL);
+	mesh.loadOBJ(fp);
+	fclose(fp);
+
+	morph_data->setMorphFromMesh(&mesh);
 }
 
 void handle_debug_avatar_textures(void*)
@@ -8471,7 +8790,7 @@ void handle_grab_texture(void* data)
 											name,
 											LLStringUtil::null,
 											LLSaleInfo::DEFAULT,
-											LLInventoryItem::II_FLAGS_NONE,
+											LLInventoryItemFlags::II_FLAGS_NONE,
 											creation_date_now);
 
 			item->updateServer(TRUE);
@@ -8566,7 +8885,7 @@ void force_error_bad_memory_access(void *)
 
 void force_error_infinite_loop(void *)
 {
-    LLAppViewer::instance()->forceErrorInifiniteLoop();
+    LLAppViewer::instance()->forceErrorInfiniteLoop();
 }
 
 void force_error_software_exception(void *)
@@ -8648,6 +8967,7 @@ const LLRect LLViewerMenuHolderGL::getMenuRect() const
 	return LLRect(0, getRect().getHeight() - MENU_BAR_HEIGHT, getRect().getWidth(), STATUS_BAR_HEIGHT);
 }
 
+static void handle_save_to_xml_continued(LLFloater* frontmost, AIFilePicker* filepicker);
 void handle_save_to_xml(void*)
 {
 	LLFloater* frontmost = gFloaterView->getFrontmost();
@@ -8667,20 +8987,33 @@ void handle_save_to_xml(void*)
 	LLStringUtil::replaceChar(default_name, ':', '_');
 	LLStringUtil::replaceChar(default_name, '"', '_');
 
-	LLFilePicker& picker = LLFilePicker::instance();
-	if (picker.getSaveFile(LLFilePicker::FFSAVE_XML, default_name))
+	AIFilePicker* filepicker = AIFilePicker::create();
+	filepicker->open(default_name, FFSAVE_XML);
+	filepicker->run(boost::bind(&handle_save_to_xml_continued, frontmost, filepicker));
+}
+
+static void handle_save_to_xml_continued(LLFloater* frontmost, AIFilePicker* filepicker)
+{
+	if (filepicker->hasFilename())
 	{
-		std::string filename = picker.getFirstFile();
+		std::string filename = filepicker->getFilename();
 		LLUICtrlFactory::getInstance()->saveToXML(frontmost, filename);
 	}
 }
 
+static void handle_load_from_xml_continued(AIFilePicker* filepicker);
 void handle_load_from_xml(void*)
 {
-	LLFilePicker& picker = LLFilePicker::instance();
-	if (picker.getOpenFile(LLFilePicker::FFLOAD_XML))
+	AIFilePicker* filepicker = AIFilePicker::create();
+	filepicker->open(FFLOAD_XML);
+	filepicker->run(boost::bind(&handle_load_from_xml_continued, filepicker));
+}
+
+static void handle_load_from_xml_continued(AIFilePicker* filepicker)
+{
+	if (filepicker->hasFilename())
 	{
-		std::string filename = picker.getFirstFile();
+		std::string filename = filepicker->getFilename();
 		LLFloater* floater = new LLFloater("sample_floater");
 		LLUICtrlFactory::getInstance()->buildFloater(floater, filename);
 	}
@@ -8898,6 +9231,10 @@ class LLEditEnableTakeOff : public view_listener_t
 		{
 			new_value = LLAgent::selfHasWearable((void *)WT_TATTOO);
 		}
+		if (clothing == "physics")
+		{
+			new_value = LLAgent::selfHasWearable((void *)WT_PHYSICS);
+		}
 
 // [RLVa:KB] - Checked: 2009-07-07 (RLVa-1.1.3b) | Modified: RLVa-1.1.3b | OK
 		// Why aren't they using LLWearable::typeNameToType()? *confuzzled*
@@ -8960,6 +9297,10 @@ class LLEditTakeOff : public view_listener_t
 		else if (clothing == "tattoo")
 		{
 			LLAgent::userRemoveWearable((void*)WT_TATTOO);
+		}
+		else if (clothing == "physics")
+		{
+			LLAgent::userRemoveWearable((void*)WT_PHYSICS);
 		}
 		else if (clothing == "all")
 		{
@@ -9143,1103 +9484,11 @@ class LLWorldDayCycle : public view_listener_t
 	}
 };
 
-
-
 static void addMenu(view_listener_t *menu, const std::string& name)
 {
 	sMenus.push_back(menu);
 	menu->registerListener(gMenuHolder, name);
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//Chalice - Old beacon style
-class LLViewBeaconWidth : public view_listener_t
-{
-	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
-	{
-		std::string width = userdata.asString();
-		if(width == "1")
-		{
-			gSavedSettings.setS32("DebugBeaconLineWidth", 1);
-		}
-		else if(width == "4")
-		{
-			gSavedSettings.setS32("DebugBeaconLineWidth", 4);
-		}
-		else if(width == "16")
-		{
-			gSavedSettings.setS32("DebugBeaconLineWidth", 16);
-		}
-		else if(width == "32")
-		{
-			gSavedSettings.setS32("DebugBeaconLineWidth", 32);
-		}
-
-		return true;
-	}
-};
-
-//PURPLESL - Old beacon style
-class LLViewToggleBeacon : public view_listener_t
-{
-	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
-	{
-		std::string beacon = userdata.asString();
-		if (beacon == "scriptsbeacon")
-		{
-			LLPipeline::toggleRenderScriptedBeacons(NULL);
-			gSavedSettings.setBOOL( "scriptsbeacon", LLPipeline::getRenderScriptedBeacons(NULL) );
-			// toggle the other one off if it's on
-			if (LLPipeline::getRenderScriptedBeacons(NULL) && LLPipeline::getRenderScriptedTouchBeacons(NULL))
-			{
-				LLPipeline::toggleRenderScriptedTouchBeacons(NULL);
-				gSavedSettings.setBOOL( "scripttouchbeacon", LLPipeline::getRenderScriptedTouchBeacons(NULL) );
-			}
-		}
-		else if (beacon == "physicalbeacon")
-		{
-			LLPipeline::toggleRenderPhysicalBeacons(NULL);
-			gSavedSettings.setBOOL( "physicalbeacon", LLPipeline::getRenderPhysicalBeacons(NULL) );
-		}
-		else if (beacon == "soundsbeacon")
-		{
-			LLPipeline::toggleRenderSoundBeacons(NULL);
-			gSavedSettings.setBOOL( "soundsbeacon", LLPipeline::getRenderSoundBeacons(NULL) );
-		}
-		else if (beacon == "particlesbeacon")
-		{
-			LLPipeline::toggleRenderParticleBeacons(NULL);
-			gSavedSettings.setBOOL( "particlesbeacon", LLPipeline::getRenderParticleBeacons(NULL) );
-		}
-		else if (beacon == "scripttouchbeacon")
-		{
-			LLPipeline::toggleRenderScriptedTouchBeacons(NULL);
-			gSavedSettings.setBOOL( "scripttouchbeacon", LLPipeline::getRenderScriptedTouchBeacons(NULL) );
-			// toggle the other one off if it's on
-			if (LLPipeline::getRenderScriptedBeacons(NULL) && LLPipeline::getRenderScriptedTouchBeacons(NULL))
-			{
-				LLPipeline::toggleRenderScriptedBeacons(NULL);
-				gSavedSettings.setBOOL( "scriptsbeacon", LLPipeline::getRenderScriptedBeacons(NULL) );
-			}
-		}
-		else if (beacon == "renderbeacons")
-		{
-			LLPipeline::toggleRenderBeacons(NULL);
-			gSavedSettings.setBOOL( "renderbeacons", LLPipeline::getRenderBeacons(NULL) );
-			// toggle the other one on if it's not
-			if (!LLPipeline::getRenderBeacons(NULL) && !LLPipeline::getRenderHighlights(NULL))
-			{
-				LLPipeline::toggleRenderHighlights(NULL);
-				gSavedSettings.setBOOL( "renderhighlights", LLPipeline::getRenderHighlights(NULL) );
-			}
-		}
-		else if (beacon == "renderhighlights")
-		{
-			LLPipeline::toggleRenderHighlights(NULL);
-			gSavedSettings.setBOOL( "renderhighlights", LLPipeline::getRenderHighlights(NULL) );
-			// toggle the other one on if it's not
-			if (!LLPipeline::getRenderBeacons(NULL) && !LLPipeline::getRenderHighlights(NULL))
-			{
-				LLPipeline::toggleRenderBeacons(NULL);
-				gSavedSettings.setBOOL( "renderbeacons", LLPipeline::getRenderBeacons(NULL) );
-			}
-		}
-			
-		return true;
-	}
-};
-//PURPLESL - Old beacon style
-class LLViewCheckBeaconEnabled : public view_listener_t
-{
-	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
-	{
-		std::string beacon = userdata["data"].asString();
-		bool new_value = false;
-		if (beacon == "scriptsbeacon")
-		{
-			new_value = gSavedSettings.getBOOL( "scriptsbeacon");
-			LLPipeline::setRenderScriptedBeacons(new_value);
-		}
-		else if (beacon == "physicalbeacon")
-		{
-			new_value = gSavedSettings.getBOOL( "physicalbeacon");
-			LLPipeline::setRenderPhysicalBeacons(new_value);
-		}
-		else if (beacon == "soundsbeacon")
-		{
-			new_value = gSavedSettings.getBOOL( "soundsbeacon");
-			LLPipeline::setRenderSoundBeacons(new_value);
-		}
-		else if (beacon == "particlesbeacon")
-		{
-			new_value = gSavedSettings.getBOOL( "particlesbeacon");
-			LLPipeline::setRenderParticleBeacons(new_value);
-		}
-		else if (beacon == "scripttouchbeacon")
-		{
-			new_value = gSavedSettings.getBOOL( "scripttouchbeacon");
-			LLPipeline::setRenderScriptedTouchBeacons(new_value);
-		}
-		else if (beacon == "renderbeacons")
-		{
-			new_value = gSavedSettings.getBOOL( "renderbeacons");
-			LLPipeline::setRenderBeacons(new_value);
-		}
-		else if (beacon == "renderhighlights")
-		{
-			new_value = gSavedSettings.getBOOL( "renderhighlights");
-			LLPipeline::setRenderHighlights(new_value);
-		}
-		gMenuHolder->findControl(userdata["control"].asString())->setValue(new_value);
-		return true;
-	}
-};
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 void initialize_menus()
 {
@@ -10312,8 +9561,6 @@ void initialize_menus()
 	addMenu(new LLViewLookAtLastChatter(), "View.LookAtLastChatter");
 	addMenu(new LLViewShowHoverTips(), "View.ShowHoverTips");
 	addMenu(new LLViewHighlightTransparent(), "View.HighlightTransparent");
-	addMenu(new LLViewToggleBeacon(), "View.ToggleBeacon");
-	addMenu(new LLViewBeaconWidth(), "View.BeaconWidth");
 	addMenu(new LLViewToggleRenderType(), "View.ToggleRenderType");
 	addMenu(new LLViewShowHUDAttachments(), "View.ShowHUDAttachments");
 	addMenu(new LLZoomer(1.2f), "View.ZoomOut");
@@ -10331,7 +9578,6 @@ void initialize_menus()
 	addMenu(new LLViewCheckJoystickFlycam(), "View.CheckJoystickFlycam");
 	addMenu(new LLViewCheckShowHoverTips(), "View.CheckShowHoverTips");
 	addMenu(new LLViewCheckHighlightTransparent(), "View.CheckHighlightTransparent");
-	addMenu(new LLViewCheckBeaconEnabled(), "View.CheckBeaconEnabled");
 	addMenu(new LLViewCheckRenderType(), "View.CheckRenderType");
 	addMenu(new LLViewCheckHUDAttachments(), "View.CheckHUDAttachments");
 

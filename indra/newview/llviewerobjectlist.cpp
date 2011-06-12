@@ -103,6 +103,7 @@ LLViewerObjectList::LLViewerObjectList()
 	mCurLazyUpdateIndex = 0;
 	mCurBin = 0;
 	mNumDeadObjects = 0;
+	mMinNumDeadObjects = 20;
 	mNumOrphans = 0;
 	mNumNewObjects = 0;
 	mWasPaused = FALSE;
@@ -614,22 +615,26 @@ void LLViewerObjectList::dirtyAllObjectInventory()
 void LLViewerObjectList::updateApparentAngles(LLAgent &agent)
 {
 	S32 i;
-	S32 num_objects = 0;
+	S32 const objects_size = mObjects.size();
 	LLViewerObject *objectp;
 
 	S32 num_updates, max_value;
+	// The list can have shrinked since mCurLazyUpdateIndex was last updated.
+	if (mCurLazyUpdateIndex >= objects_size)
+	{
+		mCurLazyUpdateIndex = 0;
+	}
 	if (NUM_BINS - 1 == mCurBin)
 	{
-		num_updates = (S32) mObjects.size() - mCurLazyUpdateIndex;
-		max_value = (S32) mObjects.size();
+		num_updates = objects_size - mCurLazyUpdateIndex;
+		max_value = objects_size;
 		gTextureList.setUpdateStats(TRUE);
 	}
 	else
 	{
-		num_updates = ((S32) mObjects.size() / NUM_BINS) + 1;
-		max_value = llmin((S32) mObjects.size(), mCurLazyUpdateIndex + num_updates);
+		num_updates = (objects_size / NUM_BINS) + 1;
+		max_value = llmin(objects_size, mCurLazyUpdateIndex + num_updates);
 	}
-
 
 	if (!gNoRender)
 	{
@@ -667,8 +672,6 @@ void LLViewerObjectList::updateApparentAngles(LLAgent &agent)
 		objectp = mObjects[i];
 		if (!objectp->isDead())
 		{
-			num_objects++;
-
 			//  Update distance & gpw 
 			objectp->setPixelAreaAndAngle(agent); // Also sets the approx. pixel area
 			objectp->updateTextures();	// Update the image levels of textures for this object.
@@ -676,7 +679,7 @@ void LLViewerObjectList::updateApparentAngles(LLAgent &agent)
 	}
 
 	mCurLazyUpdateIndex = max_value;
-	if (mCurLazyUpdateIndex == mObjects.size())
+	if (mCurLazyUpdateIndex == objects_size)
 	{
 		mCurLazyUpdateIndex = 0;
 	}
@@ -837,7 +840,7 @@ void LLViewerObjectList::update(LLAgent &agent, LLWorld &world)
 	}
 	*/
 
-	mNumObjectsStat.addValue((S32) mObjects.size());
+	mNumObjectsStat.addValue((S32) mObjects.size() - mNumDeadObjects);
 	mNumActiveObjectsStat.addValue(num_active_objects);
 	mNumSizeCulledStat.addValue(mNumSizeCulled);
 	mNumVisCulledStat.addValue(mNumVisCulled);
@@ -847,7 +850,12 @@ void LLViewerObjectList::clearDebugText()
 {
 	for (vobj_list_t::iterator iter = mObjects.begin(); iter != mObjects.end(); ++iter)
 	{
-		(*iter)->setDebugText("");
+		LLViewerObject *objectp = *iter;
+		if (objectp->isDead())
+		{
+			continue;
+		}
+		objectp->setDebugText("");
 	}
 }
 
@@ -855,13 +863,14 @@ void LLViewerObjectList::clearDebugText()
 void LLViewerObjectList::cleanupReferences(LLViewerObject *objectp)
 {
 	LLMemType mt(LLMemType::MTYPE_OBJECT);
-	if (mDeadObjects.count(objectp->mID))
+	if (mDeadObjects.find(objectp->mID) != mDeadObjects.end())
 	{
-		llinfos << "Object " << objectp->mID << " already on dead list, ignoring cleanup!" << llendl;	
-		return;
+		llinfos << "Object " << objectp->mID << " already on dead list!" << llendl;	
 	}
-
-	mDeadObjects.insert(std::pair<LLUUID, LLPointer<LLViewerObject> >(objectp->mID, objectp));
+	else
+	{
+		mDeadObjects.insert(objectp->mID);
+	}
 
 	// Cleanup any references we have to this object
 	// Remove from object map so noone can look it up.
@@ -976,7 +985,8 @@ void LLViewerObjectList::killAllObjects()
 		objectp = *iter;
 		
 		killObject(objectp);
-		llassert(objectp->isDead());
+		// Object must be dead, or it's the LLVOAvatarSelf which never dies.
+		llassert((objectp == gAgent.getAvatarObject()) || objectp->isDead());
 	}
 
 	cleanDeadObjects(FALSE);
@@ -1002,34 +1012,60 @@ void LLViewerObjectList::killAllObjects()
 
 void LLViewerObjectList::cleanDeadObjects(BOOL use_timer)
 {
-	if (!mNumDeadObjects)
+	if (use_timer && mNumDeadObjects < mMinNumDeadObjects)
 	{
-		// No dead objects, don't need to scan object list.
+		// Not enough dead objects, don't scan the whole object list until there are a few.
+		// However, the longer it takes to reach this quota, the less demanding we are,
+		// so decrease the lower limit but never demand less than 20.
+		mMinNumDeadObjects = llmax(20, mMinNumDeadObjects - 1);
 		return;
 	}
+	// If we got this many now, we might as well demand it for the next calls too (they
+	// tend to come in batches). However, never demand more than 100.
+	mMinNumDeadObjects = llmin(100, mNumDeadObjects);
 
+	// Scan for all of the dead objects and remove any "global" references to them.
+
+	// We first move all dead objects to the end of the std::vector (the swap
+	// is VERY cheap) and only then call erase once: calling erase on a vector
+	// is very expensive!
+
+	vobj_list_t::iterator iter = mObjects.begin();		// Runs over all objects.
+	vobj_list_t::iterator const end = mObjects.end();
+	vobj_list_t::iterator last = end;					// Points to the last object that is not dead.
 	S32 num_removed = 0;
-	LLViewerObject *objectp;
-	for (vobj_list_t::iterator iter = mObjects.begin(); iter != mObjects.end(); )
-	{
-		// Scan for all of the dead objects and remove any "global" references to them.
-		objectp = *iter;
-		if (objectp->isDead())
-		{
-			iter = mObjects.erase(iter);
-			num_removed++;
 
-			if (num_removed == mNumDeadObjects)
-			{
-				// We've cleaned up all of the dead objects.
-				break;
-			}
-		}
-		else
+	// Find the first Dead object.
+	while (iter != last && !(*iter)->isDead())
+		++iter;
+
+	// While iter did not bumb into last, continue the search.
+	while (iter != last)
+	{
+		// Find the next not Dead object from the end.
+		do {
+			--last;
+			++num_removed;
+		} while (last != iter && (*last)->isDead());
+		if (iter == last)
 		{
-			++iter;
+			// There no more Dead objects left before last.
+			break;
 		}
+		// Swap both object Pointers.
+		vobj_list_t::value_type::swap(*iter, *last);
+		if (num_removed == mNumDeadObjects)
+		{
+			// There aren't any more dead objects.
+			break;
+		}
+		// Find the next Dead object at the beginning.
+		do {
+			++iter;
+		} while (iter != last && !(*iter)->isDead());
 	}
+	llassert(end - last == num_removed);
+	mObjects.erase(last, end);
 
 	// We've cleaned the global object list, now let's do some paranoia testing on objects
 	// before blowing away the dead list.
@@ -1119,9 +1155,9 @@ void LLViewerObjectList::renderObjectsForMap(LLNetMap &netmap)
 		LLViewerObject* objectp = *iter;
 
 		llassert_always(objectp);
-		llassert_always(!objectp->isDead());
-
-		if (!objectp->getRegion() || objectp->isOrphaned() || objectp->isAttachment())
+		llassert(!objectp->isDead());
+		
+		if (objectp->isDead() || !objectp->getRegion() || objectp->isOrphaned() || objectp->isAttachment())
 		{
 			continue;
 		}

@@ -4,6 +4,7 @@ project(llvfs)
 
 include(00-Common)
 include(LLCommon)
+include(UnixInstall)
 
 include_directories(
     ${LLCOMMON_INCLUDE_DIRS}
@@ -11,6 +12,7 @@ include_directories(
 
 set(llvfs_SOURCE_FILES
     lldir.cpp
+    lldiriterator.cpp
     lllfsthread.cpp
     llpidlock.cpp
     llvfile.cpp
@@ -22,6 +24,7 @@ set(llvfs_HEADER_FILES
     CMakeLists.txt
 
     lldir.h
+    lldiriterator.h
     lllfsthread.h
     llpidlock.h
     llvfile.h
@@ -58,6 +61,11 @@ list(APPEND llvfs_SOURCE_FILES ${llvfs_HEADER_FILES})
 
 add_library (llvfs ${llvfs_SOURCE_FILES})
 add_dependencies(llvfs prepare)
+
+target_link_libraries(llvfs
+    ${BOOST_FILESYSTEM_LIBRARY}
+    ${BOOST_SYSTEM_LIBRARY}
+    )
 
 if (DARWIN)
   include(CMakeFindFrameworks)

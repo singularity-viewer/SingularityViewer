@@ -261,7 +261,7 @@ public:
 		}
 		return 0;
 	}
-	S32				getVisualParamCount() { return (S32)mVisualParamIndexMap.size(); }
+	S32				getVisualParamCount() const { return (S32)mVisualParamIndexMap.size(); }
 	LLVisualParam*	getVisualParam(const char *name);
 
 

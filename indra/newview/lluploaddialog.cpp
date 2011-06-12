@@ -161,10 +161,6 @@ void LLUploadDialog::setMessage( const std::string& msg)
 LLUploadDialog::~LLUploadDialog()
 {
 	gFocusMgr.releaseFocusIfNeeded( this );
-
-//    LLFilePicker::instance().reset();
-
-
 	LLUploadDialog::sDialog = NULL;
 }
 

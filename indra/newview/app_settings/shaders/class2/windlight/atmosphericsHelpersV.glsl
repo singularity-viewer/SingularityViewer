@@ -4,6 +4,8 @@
  * Copyright (c) 2005-$CurrentYear$, Linden Research, Inc.
  * $License$
  */
+ 
+#version 120
 
 // Output variables
 vec3 getSunlitColor();

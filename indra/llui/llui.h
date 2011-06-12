@@ -43,7 +43,7 @@
 #include "llgl.h"			// *TODO: break this dependency
 #include <stack>
 #include "lltexture.h"
-#include <boost/signal.hpp>
+#include <boost/signals2.hpp>
 
 // LLUIFactory
 #include "llsd.h"
@@ -602,66 +602,10 @@ public:
 	virtual void cleanUp() = 0;
 };
 
-// This mix-in class adds support for tracking all instances of the specificed class parameter T
-// The (optional) key associates a value of type KEY with a given instance of T, for quick lookup
-// If KEY is not provided, then instances are stored in a simple list
-template<typename T, typename KEY = T*>
-class LLInstanceTracker : boost::noncopyable
-{
-public:
-	typedef typename std::map<KEY, T*>::iterator instance_iter;
-	typedef typename std::map<KEY, T*>::const_iterator instance_const_iter;
-
-	static T* getInstance(KEY k) { instance_iter found = sInstances.find(k); return (found == sInstances.end()) ? NULL : found->second; }
-
-	static instance_iter beginInstances() { return sInstances.begin(); }
-	static instance_iter endInstances() { return sInstances.end(); }
-	static S32 instanceCount() { return sInstances.size(); }
-protected:
-	LLInstanceTracker(KEY key) { add(key); }
-	virtual ~LLInstanceTracker() { remove(); }
-	virtual void setKey(KEY key) { remove(); add(key); }
-	virtual const KEY& getKey() const { return mKey; }
-
-private:
-	void add(KEY key) 
-	{ 
-		mKey = key; 
-		sInstances[key] = static_cast<T*>(this); 
-	}
-	void remove() { sInstances.erase(mKey); }
-
-private:
-
-	KEY mKey;
-	static std::map<KEY, T*> sInstances;
-};
-
-template<typename T>
-class LLInstanceTracker<T, T*> : boost::noncopyable
-{
-public:
-	typedef typename std::set<T*>::iterator instance_iter;
-	typedef typename std::set<T*>::const_iterator instance_const_iter;
-
-	static instance_iter instancesBegin() { return sInstances.begin(); }
-	static instance_iter instancesEnd() { return sInstances.end(); }
-	static S32 instanceCount() { return sInstances.size(); }
-
-protected:
-	LLInstanceTracker() { sInstances.insert(static_cast<T*>(this)); }
-	virtual ~LLInstanceTracker() { sInstances.erase(static_cast<T*>(this)); }
-
-	static std::set<T*> sInstances;
-};
-
-template <typename T, typename KEY> std::map<KEY, T*> LLInstanceTracker<T, KEY>::sInstances;
-template <typename T> std::set<T*> LLInstanceTracker<T, T*>::sInstances;
-
 class LLCallbackRegistry
 {
 public:
-	typedef boost::signal<void()> callback_signal_t;
+	typedef boost::signals2::signal<void()> callback_signal_t;
 	
 	void registerCallback(const callback_signal_t::slot_type& slot)
 	{

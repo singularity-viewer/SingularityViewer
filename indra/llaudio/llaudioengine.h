@@ -306,7 +306,11 @@ public:
 	void setPlayedOnce(const bool played_once)				{ mPlayedOnce = played_once; }
 
 	void setType(S32 type)                                  { mType = type; }
-	S32 getType()                                           { return mType; }
+	S32 getType(void) const                                 { return mType; }
+
+	LLUUID const& getOwnerID(void) const					{ return mOwnerID; }
+	LLUUID const& getSourceID(void) const					{ return mSourceID; }
+	bool getIsTrigger(void) const							{ return mIsTrigger; }
 
 	void setPositionGlobal(const LLVector3d &position_global)		{ mPositionGlobal = position_global; }
 	LLVector3d getPositionGlobal() const							{ return mPositionGlobal; }
@@ -337,6 +341,7 @@ public:
 	friend class LLAudioChannel;
 protected:
 	void setChannel(LLAudioChannel *channelp);
+public:
 	LLAudioChannel *getChannel() const						{ return mChannelp; }
 
 protected:
@@ -430,17 +435,22 @@ public:
 
 	friend class LLAudioEngine;
 	friend class LLAudioSource;
+
 protected:
 	virtual void play() = 0;
 	virtual void playSynced(LLAudioChannel *channelp) = 0;
 	virtual void cleanup() = 0;
+	void setWaiting(bool waiting)               { mWaiting = waiting; }
+
+public:
 	virtual bool isPlaying() = 0;
-	void setWaiting(const bool waiting)			{ mWaiting = waiting; }
 	bool isWaiting() const						{ return mWaiting; }
 
+protected:
 	virtual bool updateBuffer(); // Check to see if the buffer associated with the source changed, and update if necessary.
 	virtual void update3DPosition() = 0;
 	virtual void updateLoop() = 0; // Update your loop/completion status, for use by queueing/syncing.
+
 protected:
 	LLAudioSource	*mCurrentSourcep;
 	LLAudioBuffer	*mCurrentBufferp;
@@ -478,7 +488,7 @@ protected:
 extern LLAudioEngine* gAudiop;
 
 // <edit>
-typedef struct
+struct LLSoundHistoryItem
 {
 	LLUUID mID;
 	LLVector3d mPosition;
@@ -494,12 +504,27 @@ typedef struct
 	bool mReviewed;
 	bool mReviewedCollision;
 	LLAudioSource* mAudioSource;
-} LLSoundHistoryItem;
+	
+	LLSoundHistoryItem() : mType(0), mPlaying(false), mIsTrigger(false),
+			mIsLooped(false), mReviewed(false), mReviewedCollision(false),
+			mTimeStarted(0), mTimeStopped(0), mAudioSource(0) {}
+
+	bool isPlaying(void) const
+	{
+		return mPlaying && mAudioSource && mAudioSource->getChannel()
+		  // It's only REALLY playing if the following also returns true,
+		  // but it's too hard detect when that part is starting/stopping,
+		  // so in the sound explorer we call "playing" (or "looping")
+		  // those audio source that have a channel assigned and call
+		  // it a day.
+			 /*&& mAudioSource->getChannel()->isPlaying()*/ ;
+	}
+};
 
 extern std::map<LLUUID, LLSoundHistoryItem> gSoundHistory;
 
-extern void logSoundPlay(LLUUID id, LLAudioSource* audio_source, LLVector3d position, S32 type, LLUUID assetid, LLUUID ownerid, LLUUID sourceid, bool is_trigger, bool is_looped);
-extern void logSoundStop(LLUUID id);
+extern void logSoundPlay(LLAudioSource* audio_source, LLUUID const& assetid);
+extern void logSoundStop(LLUUID const& id, bool destructed);
 extern void pruneSoundLog();
 extern int gSoundHistoryPruneCounter;
 

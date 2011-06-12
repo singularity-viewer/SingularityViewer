@@ -66,6 +66,7 @@
 #include "llprefschat.h"
 #include "llprefsvoice.h"
 #include "llprefsim.h"
+#include "ascentprefschat.h"
 #include "ascentprefssys.h"
 #include "ascentprefsvan.h"
 #include "llresizehandle.h"
@@ -138,6 +139,7 @@ LLPreferenceCore::LLPreferenceCore(LLTabContainer* tab_container, LLButton * def
 	mSkinsPanel(NULL),
 	mGridsPanel(NULL),
 	mLCDPanel(NULL),
+	mPrefsAscentChat(NULL),
 	mPrefsAscentSys(NULL),
 	mPrefsAscentVan(NULL)
 {
@@ -203,13 +205,17 @@ LLPreferenceCore::LLPreferenceCore(LLTabContainer* tab_container, LLButton * def
 	mTabContainer->addTabPanel(mGridsPanel, mGridsPanel->getLabel(), FALSE, onTabChanged, mTabContainer);
 	mGridsPanel->setDefaultBtn(default_btn);
 
+	mPrefsAscentChat = new LLPrefsAscentChat();
+	mTabContainer->addTabPanel(mPrefsAscentChat, mPrefsAscentChat->getLabel(), FALSE, onTabChanged, mTabContainer);
+	mPrefsAscentChat->setDefaultBtn(default_btn);
+
 	mPrefsAscentSys = new LLPrefsAscentSys();
 	mTabContainer->addTabPanel(mPrefsAscentSys, mPrefsAscentSys->getLabel(), FALSE, onTabChanged, mTabContainer);
 	mPrefsAscentSys->setDefaultBtn(default_btn);
 
 	mPrefsAscentVan = new LLPrefsAscentVan();
-	mTabContainer->addTabPanel(mPrefsAscentVan->getPanel(), mPrefsAscentVan->getPanel()->getLabel(), FALSE, onTabChanged, mTabContainer);
-	mPrefsAscentVan->getPanel()->setDefaultBtn(default_btn);
+	mTabContainer->addTabPanel(mPrefsAscentVan, mPrefsAscentVan->getLabel(), FALSE, onTabChanged, mTabContainer);
+	mPrefsAscentVan->setDefaultBtn(default_btn);
 
 	if (!mTabContainer->selectTab(gSavedSettings.getS32("LastPrefTab")))
 	{
@@ -275,6 +281,11 @@ LLPreferenceCore::~LLPreferenceCore()
 		delete mGridsPanel;
 		mGridsPanel = NULL;
 	}
+	if (mPrefsAscentChat)
+	{
+		delete mPrefsAscentChat;
+		mPrefsAscentChat = NULL;
+	}
 	if (mPrefsAscentSys)
 	{
 		delete mPrefsAscentSys;
@@ -301,6 +312,7 @@ void LLPreferenceCore::apply()
 	mMsgPanel->apply();
 	mSkinsPanel->apply();
 	mGridsPanel->apply();
+	mPrefsAscentChat->apply();
 	mPrefsAscentSys->apply();
 	mPrefsAscentVan->apply();
 
@@ -332,6 +344,7 @@ void LLPreferenceCore::cancel()
 	mMsgPanel->cancel();
 	mSkinsPanel->cancel();
 	mGridsPanel->cancel();
+	mPrefsAscentChat->cancel();
 	mPrefsAscentSys->cancel();
 	mPrefsAscentVan->cancel();
 

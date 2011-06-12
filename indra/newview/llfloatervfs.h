@@ -3,6 +3,9 @@
 #define LL_LLFLOATERVFS_H
 #include "llfloater.h"
 #include "llassettype.h"
+
+class AIFilePicker;
+
 class LLFloaterVFS : LLFloater
 {
 typedef struct
@@ -27,6 +30,7 @@ public:
 	void reloadEntry(entry file);
 	void removeEntry();
 	static void onClickAdd(void* user_data);
+	static void onClickAdd_continued(void* user_data, AIFilePicker* filepicker);
 	static void onClickClear(void* user_data);
 	static void onClickReloadAll(void* user_data);
 	static void onCommitFileList(LLUICtrl* ctrl, void* user_data);

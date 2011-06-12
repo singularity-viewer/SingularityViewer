@@ -54,6 +54,7 @@
 #include "lltextbox.h"
 #include "lltooldraganddrop.h"
 #include "llvfile.h"
+#include "statemachine/aifilepicker.h"
 
 #include "llagent.h"
 #include "llnotify.h"
@@ -1700,23 +1701,23 @@ void LLPreviewLSL::saveAs()
 	const LLInventoryItem *item = getItem();
 	if(item)
 	{
-		default_filename = LLDir::getScrubbedFileName(item->getName());
+		default_filename = LLDir::getScrubbedFileName(item->getName()) + ".lsl";
 	}
 
-	LLFilePicker& file_picker = LLFilePicker::instance();
-	if( !file_picker.getSaveFile( LLFilePicker::FFSAVE_LSL, default_filename ) )
-	{
-		// User canceled or we failed to acquire save file.
+	AIFilePicker* filepicker = AIFilePicker::create();
+	filepicker->open(default_filename, FFSAVE_LSL);
+	filepicker->run(boost::bind(&LLPreviewLSL::saveAs_continued, this, filepicker));
+}
+
+void LLPreviewLSL::saveAs_continued(AIFilePicker* filepicker)
+{
+	if(!filepicker->hasFilename())
 		return;
-	}
-	// remember the user-approved/edited file name.
-	std::string filename = file_picker.getFirstFile();
 
 	std::string utf8text = mScriptEd->mEditor->getText();
-	LLFILE* fp = LLFile::fopen(filename, "wb");
+	LLFILE* fp = LLFile::fopen(filepicker->getFilename(), "wb");
 	fputs(utf8text.c_str(), fp);
 	fclose(fp);
-	fp = NULL;
 }
 // </edit>
 /// ---------------------------------------------------------------------------
@@ -1962,7 +1963,7 @@ void LLLiveLSLEditor::loadAsset(BOOL is_new)
 									DEFAULT_SCRIPT_NAME,
 									DEFAULT_SCRIPT_DESC,
 									LLSaleInfo::DEFAULT,
-									LLInventoryItem::II_FLAGS_NONE,
+									LLInventoryItemFlags::II_FLAGS_NONE,
 									time_corrected());
 		mAssetStatus = PREVIEW_ASSET_LOADED;
 	}
@@ -2654,19 +2655,19 @@ void LLLiveLSLEditor::saveAs()
 		default_filename = LLDir::getScrubbedFileName(item->getName());
 	}
 
-	LLFilePicker& file_picker = LLFilePicker::instance();
-	if( !file_picker.getSaveFile( LLFilePicker::FFSAVE_LSL, default_filename ) )
-	{
-		// User canceled or we failed to acquire save file.
+	AIFilePicker* filepicker = AIFilePicker::create();
+	filepicker->open(default_filename, FFSAVE_LSL);
+	filepicker->run(boost::bind(&LLLiveLSLEditor::saveAs_continued, this, filepicker));
+}
+
+void LLLiveLSLEditor::saveAs_continued(AIFilePicker* filepicker)
+{
+	if (!filepicker->hasFilename())
 		return;
-	}
-	// remember the user-approved/edited file name.
-	std::string filename = file_picker.getFirstFile();
 
 	std::string utf8text = mScriptEd->mEditor->getText();
-	LLFILE* fp = LLFile::fopen(filename, "wb");
+	LLFILE* fp = LLFile::fopen(filepicker->getFilename(), "wb");
 	fputs(utf8text.c_str(), fp);
 	fclose(fp);
-	fp = NULL;
 }
 // </edit>

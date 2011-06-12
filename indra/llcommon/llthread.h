@@ -38,10 +38,31 @@
 #include "llmemory.h"
 
 #include "apr_thread_cond.h"
+#include "aiaprpool.h"
+
+#ifdef SHOW_ASSERT
+extern LL_COMMON_API bool is_main_thread(void);
+#endif
 
 class LLThread;
 class LLMutex;
 class LLCondition;
+
+class LL_COMMON_API AIThreadLocalData
+{
+private:
+	static apr_threadkey_t* sThreadLocalDataKey;
+
+public:
+	// Thread-local memory pool.
+	AIAPRRootPool mRootPool;
+	AIVolatileAPRPool mVolatileAPRPool;
+
+	static void init(void);
+	static void destroy(void* thread_local_data);
+	static void create(LLThread* pthread);
+	static AIThreadLocalData& tldata(void);
+};
 
 class LL_COMMON_API LLThread
 {
@@ -53,7 +74,7 @@ public:
 		QUITTING= 2 	// Someone wants this thread to quit
 	} EThreadStatus;
 
-	LLThread(const std::string& name, apr_pool_t *poolp = NULL);
+	LLThread(std::string const& name);
 	virtual ~LLThread(); // Warning!  You almost NEVER want to destroy a thread unless it's in the STOPPED state.
 	virtual void shutdown(); // stops the thread
 	
@@ -82,7 +103,8 @@ public:
 	// this kicks off the apr thread
 	void start(void);
 
-	apr_pool_t *getAPRPool() { return mAPRPoolp; }
+	// Return thread-local data for the current thread.
+	static AIThreadLocalData& tldata(void) { return AIThreadLocalData::tldata(); }
 
 private:
 	BOOL				mPaused;
@@ -95,9 +117,10 @@ protected:
 	LLCondition*		mRunCondition;
 
 	apr_thread_t		*mAPRThreadp;
-	apr_pool_t			*mAPRPoolp;
-	BOOL				mIsLocalPool;
 	EThreadStatus		mStatus;
+
+	friend void AIThreadLocalData::create(LLThread* threadp);
+	AIThreadLocalData*  mThreadLocalData;
 
 	void setQuitting();
 	
@@ -125,12 +148,9 @@ protected:
 
 //============================================================================
 
-class LL_COMMON_API LLMutex
+class LL_COMMON_API LLMutexBase
 {
 public:
-	LLMutex(apr_pool_t *apr_poolp); // NULL pool constructs a new pool for the mutex
-	~LLMutex();
-	
 	void lock() { apr_thread_mutex_lock(mAPRMutexp); }
 	void unlock() { apr_thread_mutex_unlock(mAPRMutexp); }
 	// Returns true if lock was obtained successfully.
@@ -139,16 +159,64 @@ public:
 	bool isLocked(); 	// non-blocking, but does do a lock/unlock so not free
 
 protected:
-	apr_thread_mutex_t *mAPRMutexp;
-	apr_pool_t			*mAPRPoolp;
-	BOOL				mIsLocalPool;
+	// mAPRMutexp is initialized and uninitialized in the derived class.
+	apr_thread_mutex_t* mAPRMutexp;
 };
+
+class LL_COMMON_API LLMutex : public LLMutexBase
+{
+public:
+	LLMutex(AIAPRPool& parent = LLThread::tldata().mRootPool) : mPool(parent)
+	{
+		apr_thread_mutex_create(&mAPRMutexp, APR_THREAD_MUTEX_UNNESTED, mPool());
+	}
+	~LLMutex()
+	{
+		llassert(!isLocked()); // better not be locked!
+		apr_thread_mutex_destroy(mAPRMutexp);
+		mAPRMutexp = NULL;
+	}
+
+protected:
+	AIAPRPool mPool;
+private:
+	// Disable copy construction, as si teh bomb!!! -SG
+	LLMutex(const LLMutex&);
+	LLMutex& operator=(const LLMutex&);
+};
+
+#if APR_HAS_THREADS
+// No need to use a root pool in this case.
+typedef LLMutex LLMutexRootPool;
+#else  // APR_HAS_THREADS
+class LL_COMMON_API LLMutexRootPool : public LLMutexBase
+{
+public:
+	LLMutexRootPool(void)
+	{
+		apr_thread_mutex_create(&mAPRMutexp, APR_THREAD_MUTEX_UNNESTED, mRootPool());
+	}
+	~LLMutexRootPool()
+	{
+#if APR_POOL_DEBUG
+		// It is allowed to destruct root pools from a different thread.
+		mRootPool.grab_ownership();
+#endif
+		llassert(!isLocked()); // better not be locked!
+		apr_thread_mutex_destroy(mAPRMutexp);
+		mAPRMutexp = NULL;
+	}
+
+protected:
+	AIAPRRootPool mRootPool;
+};
+#endif // APR_HAS_THREADS
 
 // Actually a condition/mutex pair (since each condition needs to be associated with a mutex).
 class LL_COMMON_API LLCondition : public LLMutex
 {
 public:
-	LLCondition(apr_pool_t *apr_poolp); // Defaults to global pool, could use the thread pool as well.
+	LLCondition(AIAPRPool& parent = LLThread::tldata().mRootPool);
 	~LLCondition();
 	
 	void wait();		// blocks
@@ -162,7 +230,7 @@ protected:
 class LL_COMMON_API LLMutexLock
 {
 public:
-	LLMutexLock(LLMutex* mutex)
+	LLMutexLock(LLMutexBase* mutex)
 	{
 		mMutex = mutex;
 		mMutex->lock();
@@ -172,7 +240,102 @@ public:
 		mMutex->unlock();
 	}
 private:
-	LLMutex* mMutex;
+	LLMutexBase* mMutex;
+};
+
+class AIRWLock
+{
+public:
+	AIRWLock(AIAPRPool& parent = LLThread::tldata().mRootPool) :
+		mWriterWaitingMutex(parent), mNoHoldersCondition(parent), mHoldersCount(0), mWriterIsWaiting(false) { }
+
+private:
+	LLMutex mWriterWaitingMutex;		//!< This mutex is locked while some writer is waiting for access.
+	LLCondition mNoHoldersCondition;	//!< Access control for mHoldersCount. Condition true when there are no more holders.
+	int mHoldersCount;					//!< Number of readers or -1 if a writer locked this object.
+	// This is volatile because we read it outside the critical area of mWriterWaitingMutex, at [1].
+	// That means that other threads can change it while we are already in the (inlined) function rdlock.
+	// Without volatile, the following assembly would fail:
+	// register x = mWriterIsWaiting;
+	// /* some thread changes mWriterIsWaiting */
+	// if (x ...
+	// However, because the function is fuzzy to begin with (we don't mind that this race
+	// condition exists) it would work fine without volatile. So, basically it's just here
+	// out of principle ;).	-- Aleric
+    bool volatile mWriterIsWaiting;		//!< True when there is a writer waiting for write access.
+
+public:
+	void rdlock(bool high_priority = false)
+	{
+		// Give a writer a higher priority (kinda fuzzy).
+		if (mWriterIsWaiting && !high_priority)	// [1] If there is a writer interested,
+		{
+			mWriterWaitingMutex.lock();			// [2] then give it precedence and wait here.
+			// If we get here then the writer got it's access; mHoldersCount == -1.
+			mWriterWaitingMutex.unlock();
+		}
+		mNoHoldersCondition.lock();				// [3] Get exclusive access to mHoldersCount.
+		while (mHoldersCount == -1)				// [4]
+		{
+		  	mNoHoldersCondition.wait();			// [5] Wait till mHoldersCount is (or just was) 0.
+		}
+		++mHoldersCount;						// One more reader.
+		mNoHoldersCondition.unlock();			// Release lock on mHoldersCount.
+	}
+	void rdunlock(void)
+	{
+		mNoHoldersCondition.lock();				// Get exclusive access to mHoldersCount.
+		if (--mHoldersCount == 0)				// Was this the last reader?
+		{
+			mNoHoldersCondition.signal();		// Tell waiting threads, see [5], [6] and [7].
+		}
+		mNoHoldersCondition.unlock();			// Release lock on mHoldersCount.
+	}
+	void wrlock(void)
+	{
+		mWriterWaitingMutex.lock();				// Block new readers, see [2],
+		mWriterIsWaiting = true;				// from this moment on, see [1].
+		mNoHoldersCondition.lock();				// Get exclusive access to mHoldersCount.
+		while (mHoldersCount != 0)				// Other readers or writers have this lock?
+		{
+		  	mNoHoldersCondition.wait();			// [6] Wait till mHoldersCount is (or just was) 0.
+		}
+		mWriterIsWaiting = false;				// Stop checking the lock for new readers, see [1].
+		mWriterWaitingMutex.unlock();			// Release blocked readers, they will still hang at [3].
+		mHoldersCount = -1;						// We are a writer now (will cause a hang at [5], see [4]).
+		mNoHoldersCondition.unlock();			// Release lock on mHolders (readers go from [3] to [5]).
+	}
+	void wrunlock(void)
+	{
+		mNoHoldersCondition.lock();				// Get exclusive access to mHoldersCount.
+		mHoldersCount = 0;						// We have no writer anymore.
+		mNoHoldersCondition.signal();			// Tell waiting threads, see [5], [6] and [7].
+		mNoHoldersCondition.unlock();			// Release lock on mHoldersCount.
+	}
+	void rd2wrlock(void)
+	{
+		mNoHoldersCondition.lock();				// Get exclusive access to mHoldersCount. Blocks new readers at [3].
+		if (--mHoldersCount > 0)				// Any other reads left?
+		{
+			mWriterWaitingMutex.lock();			// Block new readers, see [2],
+			mWriterIsWaiting = true;			// from this moment on, see [1].
+			while (mHoldersCount != 0)			// Other readers (still) have this lock?
+			{
+				mNoHoldersCondition.wait();		// [7] Wait till mHoldersCount is (or just was) 0.
+			}
+			mWriterIsWaiting = false;			// Stop checking the lock for new readers, see [1].
+			mWriterWaitingMutex.unlock();		// Release blocked readers, they will still hang at [3].
+		}
+		mHoldersCount = -1;						// We are a writer now (will cause a hang at [5], see [4]).
+		mNoHoldersCondition.unlock();			// Release lock on mHolders (readers go from [3] to [5]).
+	}
+	void wr2rdlock(void)
+	{
+		mNoHoldersCondition.lock();				// Get exclusive access to mHoldersCount.
+		mHoldersCount = 1;						// Turn writer into a reader.
+		mNoHoldersCondition.signal();			// Tell waiting readers, see [5].
+		mNoHoldersCondition.unlock();			// Release lock on mHoldersCount.
+	}
 };
 
 //============================================================================
@@ -186,7 +349,6 @@ void LLThread::unlockData()
 {
 	mRunCondition->unlock();
 }
-
 
 //============================================================================
 

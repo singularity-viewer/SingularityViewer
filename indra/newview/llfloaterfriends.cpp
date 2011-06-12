@@ -62,12 +62,12 @@
 #include "llmenucommands.h"
 #include "llviewercontrol.h"
 #include "llviewermessage.h"
-#include "lltimer.h"
+#include "lleventtimer.h"
 #include "lltextbox.h"
 #include "llvoiceclient.h"
 
 #include "llsdserialize.h"
-#include "llfilepicker.h"
+#include "statemachine/aifilepicker.h"
 
 #include "llviewermenufile.h"
 #include "llviewermenu.h"
@@ -1080,17 +1080,22 @@ void LLPanelFriends::onClickRemove(void* user_data)
 
 void LLPanelFriends::onClickExport(void* user_data)
 {
-	LLPanelFriends* panelp = (LLPanelFriends*)user_data;
 	std::string agn;
 	gAgent.getName(agn);
-	std::string filename = agn+".friendlist";
-	LLFilePicker& picker = LLFilePicker::instance();
-	if(!picker.getSaveFile( LLFilePicker::FFSAVE_ALL, filename ) )
+	AIFilePicker* filepicker = AIFilePicker::create();
+	filepicker->open(agn + ".friendlist", FFSAVE_ALL);
+	filepicker->run(boost::bind(&LLPanelFriends::onClickExport_continued, user_data, filepicker));
+}
+
+void LLPanelFriends::onClickExport_continued(void* user_data, AIFilePicker* filepicker)
+{
+	if(!filepicker->hasFilename())
 	{
 		// User canceled save.
 		return;
 	}
-	filename = picker.getFirstFile();
+	std::string const filename = filepicker->getFilename();
+	LLPanelFriends* panelp = (LLPanelFriends*)user_data;
 	std::vector<LLScrollListItem*> selected = panelp->mFriendsList->getAllData();//->getAllSelected();
 
 	LLSD llsd;
@@ -1126,19 +1131,22 @@ void LLPanelFriends::onClickExport(void* user_data)
 bool LLPanelFriends::merging;
 
 void LLPanelFriends::onClickImport(void* user_data)
+{
+	AIFilePicker* filepicker = AIFilePicker::create();
+	filepicker->open();
+	filepicker->run(boost::bind(&LLPanelFriends::onClickImport_filepicker_continued, filepicker));
+}
+
 //THIS CODE IS DESIGNED SO THAT EXP/IMP BETWEEN GRIDS WILL FAIL
 //because assuming someone having the same name on another grid is the same person is generally a bad idea
 //i might add the option to query the user as to intelligently detecting matching names on a alternative grid
 // jcool410
+void LLPanelFriends::onClickImport_filepicker_continued(AIFilePicker* filepicker)
 {
-	//LLPanelFriends* panelp = (LLPanelFriends*)user_data;
-	//is_agent_friend(
-
-	const std::string filename = upload_pick((void*)LLFilePicker::FFLOAD_ALL);
-		
-	if (filename.empty())
+	if (!filepicker->hasFilename())
 		return;
 
+	std::string filename = filepicker->getFilename();
 	llifstream importer(filename);
 	LLSD data;
 	LLSDSerialize::fromXMLDocument(data, importer);

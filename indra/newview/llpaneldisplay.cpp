@@ -230,15 +230,25 @@ BOOL LLPanelDisplay::postBuild()
 	
 	//----------------------------------------------------------------------------
 	// Enable Reflections
-	mCtrlReflections = getChild<LLCheckBoxCtrl>("Reflections");
-	mCtrlReflections->setCommitCallback(&LLPanelDisplay::onVertexShaderEnable);
-	mCtrlReflections->setCallbackUserData(this);
-	mRadioReflectionDetail = getChild<LLRadioGroup>("ReflectionDetailRadio");
-	
+	mCtrlReflectionDetail = getChild<LLComboBox>("ReflectionDetailCombo");
+	mCtrlReflectionDetail->setCommitCallback(&LLPanelDisplay::onVertexShaderEnable);
+	mCtrlReflectionDetail->setCallbackUserData(this);
+
 	// WindLight
 	mCtrlWindLight = getChild<LLCheckBoxCtrl>("WindLightUseAtmosShaders");
 	mCtrlWindLight->setCommitCallback(&LLPanelDisplay::onVertexShaderEnable);
 	mCtrlWindLight->setCallbackUserData(this);
+
+	// Deferred
+	mCtrlDeferred = getChild<LLCheckBoxCtrl>("RenderDeferred");
+	mCtrlDeferred->setCommitCallback(&LLPanelDisplay::onVertexShaderEnable);
+	mCtrlDeferred->setCallbackUserData(this);
+	mCtrlDeferredGI = getChild<LLCheckBoxCtrl>("RenderDeferredGI");
+	mCtrlDeferredGI->setCommitCallback(&LLPanelDisplay::onVertexShaderEnable);
+	mCtrlDeferredGI->setCallbackUserData(this);
+	mCtrlShadowDetail = getChild<LLComboBox>("ShadowDetailCombo");
+	mCtrlShadowDetail->setCommitCallback(&LLPanelDisplay::onVertexShaderEnable);
+	mCtrlShadowDetail->setCallbackUserData(this);
 
 	//----------------------------------------------------------------------------
 	// Enable Avatar Shaders
@@ -298,6 +308,12 @@ BOOL LLPanelDisplay::postBuild()
 	mCtrlAvatarFactor->setCommitCallback(&LLPanelDisplay::updateSliderText);
 	mCtrlAvatarFactor->setCallbackUserData(mAvatarFactorText);
 
+	// Avatar physics detail slider
+	mCtrlAvatarPhysicsFactor = getChild<LLSliderCtrl>("AvatarPhysicsDetail");
+	mAvatarPhysicsFactorText = getChild<LLTextBox>("AvatarPhysicsDetailText");
+	mCtrlAvatarPhysicsFactor->setCommitCallback(&LLPanelDisplay::updateSliderText);
+	mCtrlAvatarPhysicsFactor->setCallbackUserData(mAvatarPhysicsFactorText);
+
 	// Terrain detail slider
 	mCtrlTerrainFactor = getChild<LLSliderCtrl>("TerrainMeshDetail");
 	mTerrainFactorText = getChild<LLTextBox>("TerrainMeshDetailText");
@@ -326,6 +342,7 @@ BOOL LLPanelDisplay::postBuild()
 	mTerrainText = getChild<LLTextBox>("TerrainDetailText");
 	mLightingText = getChild<LLTextBox>("LightingDetailText");
 	mMeshDetailText = getChild<LLTextBox>("MeshDetailText");
+	mShadowDetailText = getChild<LLTextBox>("ShadowDetailText");
 
 	refresh();
 
@@ -389,11 +406,14 @@ void LLPanelDisplay::refresh()
 	mBumpShiny = gSavedSettings.getBOOL("RenderObjectBump");
 	mShaderEnable = gSavedSettings.getBOOL("VertexShaderEnable");
 	mWindLight = gSavedSettings.getBOOL("WindLightUseAtmosShaders");
-	mReflections = gSavedSettings.getBOOL("RenderWaterReflections");
 	mAvatarVP = gSavedSettings.getBOOL("RenderAvatarVP");
+	mDeferred = gSavedSettings.getBOOL("RenderDeferred");
+	mDeferredGI = gSavedSettings.getBOOL("RenderDeferredGI");
 
 	// reflection radio
 	mReflectionDetail = gSavedSettings.getS32("RenderReflectionDetail");
+
+	mShadowDetail = gSavedSettings.getS32("RenderShadowDetail");
 
 	// avatar settings
 	mAvatarImpostors = gSavedSettings.getBOOL("RenderUseImpostors");
@@ -413,7 +433,7 @@ void LLPanelDisplay::refresh()
 	mPostProcess = gSavedSettings.getS32("RenderGlowResolutionPow");
 	
 	// lighting and terrain radios
-	mLightingDetail = gSavedSettings.getS32("RenderLightingDetail");
+	mLocalLights = gSavedSettings.getBOOL("RenderLocalLights");
 	mTerrainDetail =  gSavedSettings.getS32("RenderTerrainDetail");
 
 	// slider text boxes
@@ -421,6 +441,7 @@ void LLPanelDisplay::refresh()
 	updateSliderText(mCtrlFlexFactor, mFlexFactorText);
 	updateSliderText(mCtrlTreeFactor, mTreeFactorText);
 	updateSliderText(mCtrlAvatarFactor, mAvatarFactorText);
+	updateSliderText(mCtrlAvatarPhysicsFactor, mAvatarPhysicsFactorText);
 	updateSliderText(mCtrlTerrainFactor, mTerrainFactorText);
 	updateSliderText(mCtrlPostProcess, mPostProcessText);
 	updateSliderText(mCtrlSkyFactor, mSkyFactorText);
@@ -458,16 +479,11 @@ void LLPanelDisplay::refreshEnabledState()
 	BOOL reflections = gSavedSettings.getBOOL("VertexShaderEnable") 
 		&& gGLManager.mHasCubeMap 
 		&& LLCubeMap::sUseCubeMaps;
-	mCtrlReflections->setEnabled(reflections);
+	mCtrlReflectionDetail->setEnabled(reflections);
 	
 	// Bump & Shiny
 	bool bumpshiny = gGLManager.mHasCubeMap && LLCubeMap::sUseCubeMaps && LLFeatureManager::getInstance()->isFeatureAvailable("RenderObjectBump");
 	mCtrlBumpShiny->setEnabled(bumpshiny ? TRUE : FALSE);
-	
-	for (S32 i = 0; i < mRadioReflectionDetail->getItemCount(); ++i)
-	{
-		mRadioReflectionDetail->setIndexEnabled(i, mCtrlReflections->get() && reflections);
-	}
 
 	// Avatar Mode
 	S32 max_avatar_shader = LLViewerShaderMgr::instance()->mMaxAvatarShaderLevel;
@@ -482,6 +498,21 @@ void LLPanelDisplay::refreshEnabledState()
 	{
 		mCtrlAvatarCloth->setEnabled(true);
 	}
+
+	//I actually recommend RenderUseFBO:FALSE for ati users when not using deferred, so RenderUseFBO shouldn't control visibility of the element.
+	// Instead, gGLManager.mHasFramebufferObject seems better as it is determined by hardware and not current user settings. -Shyotl
+	//Enabling deferred will force RenderUseFBO to TRUE.
+	BOOL can_defer = gGLManager.mHasFramebufferObject &&
+		LLFeatureManager::getInstance()->isFeatureAvailable("RenderDeferred") && //Ensure it's enabled in the gpu feature table
+		LLFeatureManager::getInstance()->isFeatureAvailable("RenderAvatarVP") && //Hardware Skinning. Deferred forces RenderAvatarVP to true
+		LLFeatureManager::getInstance()->isFeatureAvailable("VertexShaderEnable") && gSavedSettings.getBOOL("VertexShaderEnable") && //Basic Shaders
+		LLFeatureManager::getInstance()->isFeatureAvailable("WindLightUseAtmosShaders") && gSavedSettings.getBOOL("WindLightUseAtmosShaders"); //Atmospheric Shaders
+
+
+	mCtrlDeferred->setEnabled(can_defer);
+	mCtrlShadowDetail->setEnabled(can_defer && gSavedSettings.getBOOL("RenderDeferred"));
+	//GI won't do anything with shadows off, but disabling it here is less than intuitive. Ignore shadow setting for now.
+	mCtrlDeferredGI->setEnabled(mCtrlShadowDetail->getEnabled()/* && gSavedSettings.getS32("RenderShadowDetail") > 0*/); 
 
 	// Vertex Shaders
 //	mCtrlShaderEnable->setEnabled(LLFeatureManager::getInstance()->isFeatureAvailable("VertexShaderEnable"));
@@ -530,14 +561,21 @@ void LLPanelDisplay::disableUnavailableSettings()
 		mCtrlWindLight->setEnabled(FALSE);
 		mCtrlWindLight->setValue(FALSE);
 
-		mCtrlReflections->setEnabled(FALSE);
-		mCtrlReflections->setValue(FALSE);
+		mCtrlReflectionDetail->setEnabled(FALSE);
+		mCtrlReflectionDetail->setValue(FALSE);
 
 		mCtrlAvatarVP->setEnabled(FALSE);
 		mCtrlAvatarVP->setValue(FALSE);
 
 		mCtrlAvatarCloth->setEnabled(FALSE);
 		mCtrlAvatarCloth->setValue(FALSE);
+
+		mCtrlDeferred->setEnabled(FALSE);
+		mCtrlDeferred->setValue(FALSE);
+		mCtrlDeferredGI->setEnabled(FALSE);
+		mCtrlDeferredGI->setValue(FALSE);
+		mCtrlShadowDetail->setEnabled(FALSE);
+		mCtrlShadowDetail->setValue(FALSE);
 	}
 
 	// disabled windlight
@@ -548,10 +586,10 @@ void LLPanelDisplay::disableUnavailableSettings()
 	}
 
 	// disabled reflections
-	if(!LLFeatureManager::getInstance()->isFeatureAvailable("RenderWaterReflections"))
+	if(!LLFeatureManager::getInstance()->isFeatureAvailable("RenderReflectionDetail"))
 	{
-		mCtrlReflections->setEnabled(FALSE);
-		mCtrlReflections->setValue(FALSE);
+		mCtrlReflectionDetail->setEnabled(FALSE);
+		mCtrlReflectionDetail->setValue(FALSE);
 	}
 
 	// disabled av
@@ -575,6 +613,17 @@ void LLPanelDisplay::disableUnavailableSettings()
 		mCtrlAvatarImpostors->setEnabled(FALSE);
 		mCtrlAvatarImpostors->setValue(FALSE);
 	}
+	// disabled deferred
+	if(!LLFeatureManager::getInstance()->isFeatureAvailable("RenderDeferred"))
+	{
+		mCtrlDeferred->setEnabled(FALSE);
+		mCtrlDeferred->setValue(FALSE);
+		mCtrlDeferredGI->setEnabled(FALSE);
+		mCtrlDeferredGI->setValue(FALSE);
+		mCtrlShadowDetail->setEnabled(FALSE);
+		mCtrlShadowDetail->setValue(FALSE);
+	}
+
 }
 
 void LLPanelDisplay::setHiddenGraphicsState(bool isHidden)
@@ -601,7 +650,6 @@ void LLPanelDisplay::setHiddenGraphicsState(bool isHidden)
 	llassert(mPostProcessText != NULL);
 
 	llassert(mCtrlBumpShiny != NULL);
-	llassert(mCtrlReflections != NULL);
 	llassert(mCtrlWindLight != NULL);
 	llassert(mCtrlAvatarVP != NULL);
 	llassert(mCtrlShaderEnable != NULL);
@@ -610,7 +658,7 @@ void LLPanelDisplay::setHiddenGraphicsState(bool isHidden)
 	llassert(mRadioLightingDetail2 != NULL);
 
 	llassert(mRadioTerrainDetail != NULL);
-	llassert(mRadioReflectionDetail != NULL);
+	llassert(mCtrlReflectionDetail != NULL);
 
 	llassert(mMeshDetailText != NULL);
 	llassert(mShaderText != NULL);
@@ -633,7 +681,8 @@ void LLPanelDisplay::setHiddenGraphicsState(bool isHidden)
 	mCtrlLODFactor->setVisible(!isHidden);	
 	mCtrlFlexFactor->setVisible(!isHidden);	
 	mCtrlTreeFactor->setVisible(!isHidden);	
-	mCtrlAvatarFactor->setVisible(!isHidden);	
+	mCtrlAvatarFactor->setVisible(!isHidden);
+	mCtrlAvatarPhysicsFactor->setVisible(!isHidden);
 	mCtrlTerrainFactor->setVisible(!isHidden);
 	mCtrlSkyFactor->setVisible(!isHidden);
 	mCtrlMaxParticle->setVisible(!isHidden);
@@ -643,12 +692,12 @@ void LLPanelDisplay::setHiddenGraphicsState(bool isHidden)
 	mFlexFactorText->setVisible(!isHidden);	
 	mTreeFactorText->setVisible(!isHidden);	
 	mAvatarFactorText->setVisible(!isHidden);	
+	mAvatarPhysicsFactorText->setVisible(!isHidden);
 	mTerrainFactorText->setVisible(!isHidden);
 	mSkyFactorText->setVisible(!isHidden);
 	mPostProcessText->setVisible(!isHidden);
 
 	mCtrlBumpShiny->setVisible(!isHidden);
-	mCtrlReflections->setVisible(!isHidden);
 	mCtrlWindLight->setVisible(!isHidden);
 	mCtrlAvatarVP->setVisible(!isHidden);
 	mCtrlShaderEnable->setVisible(!isHidden);
@@ -657,7 +706,11 @@ void LLPanelDisplay::setHiddenGraphicsState(bool isHidden)
 	mRadioLightingDetail2->setVisible(!isHidden);
 
 	mRadioTerrainDetail->setVisible(!isHidden);
-	mRadioReflectionDetail->setVisible(!isHidden);
+	mCtrlReflectionDetail->setVisible(!isHidden);
+
+	mCtrlDeferred->setVisible(!isHidden);
+	mCtrlDeferredGI->setVisible(!isHidden);
+	mCtrlShadowDetail->setVisible(!isHidden);
 
 	// text boxes
 	mShaderText->setVisible(!isHidden);
@@ -667,6 +720,7 @@ void LLPanelDisplay::setHiddenGraphicsState(bool isHidden)
 	mTerrainText->setVisible(!isHidden);
 	mDrawDistanceMeterText1->setVisible(!isHidden);
 	mDrawDistanceMeterText2->setVisible(!isHidden);
+	mShadowDetailText->setVisible(!isHidden);
 
 	// hide one meter text if we're making things visible
 	if(!isHidden)
@@ -689,15 +743,18 @@ void LLPanelDisplay::cancel()
 	gSavedSettings.setBOOL("RenderObjectBump", mBumpShiny);
 	gSavedSettings.setBOOL("VertexShaderEnable", mShaderEnable);
 	gSavedSettings.setBOOL("WindLightUseAtmosShaders", mWindLight);
-	gSavedSettings.setBOOL("RenderWaterReflections", mReflections);
+
 	gSavedSettings.setBOOL("RenderAvatarVP", mAvatarVP);
+	gSavedSettings.setBOOL("RenderDeferred", mDeferred);
+	gSavedSettings.setBOOL("RenderDeferredGI", mDeferredGI);
 
 	gSavedSettings.setS32("RenderReflectionDetail", mReflectionDetail);
+	gSavedSettings.setS32("RenderShadowDetail", mShadowDetail);
 
 	gSavedSettings.setBOOL("RenderUseImpostors", mAvatarImpostors);
 	gSavedSettings.setBOOL("RenderAvatarCloth", mAvatarCloth);
 
-	gSavedSettings.setS32("RenderLightingDetail", mLightingDetail);
+	gSavedSettings.setBOOL("RenderLocalLights", mLocalLights);
 	gSavedSettings.setS32("RenderTerrainDetail", mTerrainDetail);
 
 	gSavedSettings.setF32("RenderFarClip", mRenderFarClip);
@@ -950,6 +1007,13 @@ void LLPanelDisplay::updateSliderText(LLUICtrl* ctrl, void* user_data)
 		return;
 	}
 
+	//Hack to display 'Off' for avatar physics slider.
+	if(slider->getName() == "AvatarPhysicsDetail" && !slider->getValueF32())
+	{
+		text_box->setText(std::string("Off"));
+		return;
+	}
+
 	// get range and points when text should change
 	F32 range = slider->getMaxValue() - slider->getMinValue();
 	llassert(range > 0);
@@ -965,9 +1029,13 @@ void LLPanelDisplay::updateSliderText(LLUICtrl* ctrl, void* user_data)
 	{
 		text_box->setText(std::string("Mid"));
 	}
-	else
+	else if(slider->getValueF32() < slider->getMaxValue())
 	{
 		text_box->setText(std::string("High"));
+	}
+	else
+	{
+		text_box->setText(std::string("Max"));
 	}
 }
 

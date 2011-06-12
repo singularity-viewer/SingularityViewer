@@ -198,7 +198,10 @@ void LLDrawPoolAlpha::render(S32 pass)
 				simple_shader->bind();
 				pushBatches(LLRenderPass::PASS_ALPHA_MASK, getVertexDataMask());
 			}
-			fullbright_shader->bind();
+			if (fullbright_shader)
+			{
+				fullbright_shader->bind();
+			}
 			pushBatches(LLRenderPass::PASS_FULLBRIGHT_ALPHA_MASK, getVertexDataMask());
 			LLGLSLShader::bindNoShader();
 		}
@@ -238,7 +241,7 @@ void LLDrawPoolAlpha::render(S32 pass)
 		gPipeline.enableLightsFullbright(LLColor4(1,1,1,1));
 		glColor4f(1,0,0,1);
 		LLViewerFetchedTexture::sSmokeImagep->addTextureStats(1024.f*1024.f);
-		gGL.getTexUnit(0)->bind(LLViewerFetchedTexture::sSmokeImagep.get(), TRUE);
+		gGL.getTexUnit(0)->bind(LLViewerFetchedTexture::sSmokeImagep, TRUE) ;
 		renderAlphaHighlight(LLVertexBuffer::MAP_VERTEX |
 							LLVertexBuffer::MAP_TEXCOORD0);
 	}
@@ -280,6 +283,8 @@ void LLDrawPoolAlpha::renderAlpha(U32 mask)
 {
 	BOOL initialized_lighting = FALSE;
 	BOOL light_enabled = TRUE;
+	S32 diffuse_channel = 0;
+
 	//BOOL is_particle = FALSE;
 	BOOL use_shaders = (LLPipeline::sUnderWaterRender && gPipeline.canUseVertexShaders())
 		|| gPipeline.canUseWindLightShadersOnObjects();
@@ -360,11 +365,13 @@ void LLDrawPoolAlpha::renderAlpha(U32 mask)
 						if (deferred_render && current_shader != NULL)
 						{
 							gPipeline.unbindDeferredShader(*current_shader);
+							diffuse_channel = 0;
 						}
 						current_shader = target_shader;
 						if (deferred_render)
 						{
 							gPipeline.bindDeferredShader(*current_shader);
+							diffuse_channel = current_shader->enableTexture(LLViewerShaderMgr::DIFFUSE_MAP);
 						}
 						else
 						{
@@ -373,10 +380,10 @@ void LLDrawPoolAlpha::renderAlpha(U32 mask)
 					}
 					else if (!use_shaders && current_shader != NULL)
 					{
-					
 						if (deferred_render)
 						{
 							gPipeline.unbindDeferredShader(*current_shader);
+							diffuse_channel = 0;
 						}
 						LLGLSLShader::bindNoShader();
 						current_shader = NULL;
@@ -390,7 +397,7 @@ void LLDrawPoolAlpha::renderAlpha(U32 mask)
 					
 					if (params.mTexture.notNull())
 					{
-						gGL.getTexUnit(0)->bind(params.mTexture.get());
+						gGL.getTexUnit(diffuse_channel)->bind(params.mTexture.get());
 						if(params.mTexture.notNull())
 						{
 							params.mTexture->addTextureStats(params.mVSize);

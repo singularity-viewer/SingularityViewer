@@ -244,6 +244,8 @@ int APIENTRY WINMAIN(HINSTANCE hInstance,
 	}
 #endif
 	
+	gGLActive = TRUE;
+
 	viewer_app_ptr->cleanup();
 	
 #if WINDOWS_CRT_MEM_CHECKS
@@ -498,7 +500,11 @@ bool LLAppViewerWin32::initHardwareTest()
 		LL_WARNS("AppInit") << " Someone took over my exception handler (post hardware probe)!" << LL_ENDL;
 	}
 
-	gGLManager.mVRAM = gDXHardware.getVRAM();
+	if (gGLManager.mVRAM == 0)
+	{
+		gGLManager.mVRAM = gDXHardware.getVRAM();
+	}
+
 	LL_INFOS("AppInit") << "Detected VRAM: " << gGLManager.mVRAM << LL_ENDL;
 
 	return true;

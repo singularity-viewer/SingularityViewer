@@ -35,6 +35,7 @@
 #include "llwldaycycle.h"
 #include "llsdserialize.h"
 #include "llwlparammanager.h"
+#include "llweb.h"
 
 #include "llviewerwindow.h"
 
@@ -57,10 +58,7 @@ void LLWLDayCycle::loadDayCycle(const std::string & fileName)
 	mTimeMap.clear();
 
 	// bugfix for SL-46920: preventing filenames that break stuff.
-	char * curl_str = curl_escape(fileName.c_str(), fileName.size());
-	std::string escaped_filename(curl_str);
-	curl_free(curl_str);
-	curl_str = NULL;
+	std::string escaped_filename = LLWeb::curlEscape(fileName);
 
 	escaped_filename += ".xml";
 
@@ -125,10 +123,7 @@ void LLWLDayCycle::saveDayCycle(const std::string & fileName)
 {
 	
 	// bugfix for SL-46920: preventing filenames that break stuff.
-	char * curl_str = curl_escape(fileName.c_str(), fileName.size());
-	std::string escaped_filename(curl_str);
-	curl_free(curl_str);
-	curl_str = NULL;
+	std::string escaped_filename = LLWeb::curlEscape(fileName);
 
 	escaped_filename += ".xml";
 

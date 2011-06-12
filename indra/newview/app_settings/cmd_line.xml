@@ -106,6 +106,14 @@
       <string>QuitAfterSeconds</string>
     </map>
 
+
+    <key>debugsession</key>
+    <map>
+      <key>desc</key>
+      <string>Run as if RenderDebugGL is TRUE, but log errors until end of session.</string>
+      <key>map-to</key>
+      <string>DebugSession</string>
+    </map>
     <key>rotate</key>
     <map>
       <key>map-to</key>
@@ -238,7 +246,7 @@
     <key>multiple</key>		  
     <map>
       <key>desc</key>
-      <string>Allow multple viewers.</string>
+      <string>Allow multiple viewers.</string>
       <key>map-to</key>
       <string>AllowMultipleViewers</string>
     </map>

@@ -91,7 +91,3 @@ void LLDrawPoolGround::render(S32 pass)
 	glPopMatrix();
 }
 
-void LLDrawPoolGround::renderForSelect()
-{
-}
-

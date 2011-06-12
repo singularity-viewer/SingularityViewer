@@ -68,7 +68,8 @@ static void CFStringRefToLLString(CFStringRef stringRef, std::string &llString, 
 {
 	if (stringRef)
 	{
-		long	bufferSize = CFStringGetLength(stringRef) + 1;
+		long stringSize = CFStringGetLength(stringRef) + 1;
+		long bufferSize = CFStringGetMaximumSizeForEncoding(stringSize,kCFStringEncodingUTF8);
 		char* buffer = new char[bufferSize];
 		memset(buffer, 0, bufferSize);
 		if (CFStringGetCString(stringRef, buffer, bufferSize, kCFStringEncodingUTF8))
@@ -142,8 +143,33 @@ LLDir_Mac::LLDir_Mac()
 		CFURLRefToLLString(executableParentURLRef, mExecutableDir, true);
 		
 		// mAppRODataDir
-		CFURLRef	resourcesURLRef = CFBundleCopyResourcesDirectoryURL(mainBundleRef);
+
+		
+		// *NOTE: When running in a dev tree, use the copy of
+		// skins in indra/newview/ rather than in the application bundle.  This
+		// mirrors Windows dev environment behavior and allows direct checkin
+		// of edited skins/xui files. JC
+		
+		// MBW -- This keeps the mac application from finding other things.
+		// If this is really for skins, it should JUST apply to skins.
+
+		CFURLRef resourcesURLRef = CFBundleCopyResourcesDirectoryURL(mainBundleRef);
 		CFURLRefToLLString(resourcesURLRef, mAppRODataDir, true);
+		
+		U32 build_dir_pos = mExecutableDir.rfind("/indra/build-darwin-");
+		if (build_dir_pos != std::string::npos)
+		{
+			// ...we're in a dev checkout
+			mSkinBaseDir = mExecutableDir.substr(0, build_dir_pos)
+				+ "/indra/newview/skins";
+			llinfos << "Running in dev checkout with mSkinBaseDir "
+				<< mSkinBaseDir << llendl;
+		}
+		else
+		{
+			// ...normal installation running
+			mSkinBaseDir = mAppRODataDir + mDirDelimiter + "skins";
+		}
 		
 		// mOSUserDir
 		error = FSFindFolder(kUserDomain, kApplicationSupportFolderType, true, &fileRef);
@@ -205,8 +231,15 @@ LLDir_Mac::~LLDir_Mac()
 // Implementation
 
 
-void LLDir_Mac::initAppDirs(const std::string &app_name)
+void LLDir_Mac::initAppDirs(const std::string &app_name,
+							const std::string& app_read_only_data_dir)
 {
+	// Allow override so test apps can read newview directory
+	if (!app_read_only_data_dir.empty())
+	{
+		mAppRODataDir = app_read_only_data_dir;
+		mSkinBaseDir = mAppRODataDir + mDirDelimiter + "skins";
+	}
 	mCAFile = getExpandedFilename(LL_PATH_APP_SETTINGS, "CA.pem");
 
 	//dumpCurrentDirectories();
@@ -229,139 +262,6 @@ U32 LLDir_Mac::countFilesInDir(const std::string &dirname, const std::string &ma
 	}
 
 	return (file_count);
-}
-
-// get the next file in the directory
-// automatically wrap if we've hit the end
-BOOL LLDir_Mac::getNextFileInDir(const std::string &dirname, const std::string &mask, std::string &fname, BOOL wrap)
-{
-	glob_t g;
-	BOOL result = FALSE;
-	fname = "";
-	
-	if(!(dirname == mCurrentDir))
-	{
-		// different dir specified, close old search
-		mCurrentDirIndex = -1;
-		mCurrentDirCount = -1;
-		mCurrentDir = dirname;
-	}
-	
-	std::string tmp_str;
-	tmp_str = dirname;
-	tmp_str += mask;
-
-	if(glob(tmp_str.c_str(), GLOB_NOSORT, NULL, &g) == 0)
-	{
-		if(g.gl_pathc > 0)
-		{
-			if(g.gl_pathc != mCurrentDirCount)
-			{
-				// Number of matches has changed since the last search, meaning a file has been added or deleted.
-				// Reset the index.
-				mCurrentDirIndex = -1;
-				mCurrentDirCount = g.gl_pathc;
-			}
-	
-			mCurrentDirIndex++;
-	
-			if((mCurrentDirIndex >= g.gl_pathc) && wrap)
-			{
-				mCurrentDirIndex = 0;
-			}
-			
-			if(mCurrentDirIndex < g.gl_pathc)
-			{
-//				llinfos << "getNextFileInDir: returning number " << mCurrentDirIndex << ", path is " << g.gl_pathv[mCurrentDirIndex] << llendl;
-
-				// The API wants just the filename, not the full path.
-				//fname = g.gl_pathv[mCurrentDirIndex];
-
-				char *s = strrchr(g.gl_pathv[mCurrentDirIndex], '/');
-				
-				if(s == NULL)
-					s = g.gl_pathv[mCurrentDirIndex];
-				else if(s[0] == '/')
-					s++;
-					
-				fname = s;
-				
-				result = TRUE;
-			}
-		}
-		
-		globfree(&g);
-	}
-	
-	return(result);
-}
-
-// get a random file in the directory
-void LLDir_Mac::getRandomFileInDir(const std::string &dirname, const std::string &mask, std::string &fname)
-{
-	S32 which_file;
-	glob_t g;
-	fname = "";
-	
-	std::string tmp_str;
-	tmp_str = dirname;
-	tmp_str += mask;
-	
-	if(glob(tmp_str.c_str(), GLOB_NOSORT, NULL, &g) == 0)
-	{
-		if(g.gl_pathc > 0)
-		{
-			
-			which_file = ll_rand(g.gl_pathc);
-	
-//			llinfos << "getRandomFileInDir: returning number " << which_file << ", path is " << g.gl_pathv[which_file] << llendl;
-			// The API wants just the filename, not the full path.
-			//fname = g.gl_pathv[which_file];
-
-			char *s = strrchr(g.gl_pathv[which_file], '/');
-			
-			if(s == NULL)
-				s = g.gl_pathv[which_file];
-			else if(s[0] == '/')
-				s++;
-				
-			fname = s;
-		}
-		
-		globfree(&g);
-	}
-}
-
-S32 LLDir_Mac::deleteFilesInDir(const std::string &dirname, const std::string &mask)
-{
-	glob_t g;
-	S32 result = 0;
-	
-	std::string tmp_str;
-	tmp_str = dirname;
-	tmp_str += mask;
-	
-	if(glob(tmp_str.c_str(), GLOB_NOSORT, NULL, &g) == 0)
-	{
-		int i;
-		
-		for(i = 0; i < g.gl_pathc; i++)
-		{
-//			llinfos << "deleteFilesInDir: deleting number " << i << ", path is " << g.gl_pathv[i] << llendl;
-
-			if(unlink(g.gl_pathv[i]) != 0)
-			{
-				result = errno;
-
-				llwarns << "Problem removing " << g.gl_pathv[i] << " - errorcode: "
-					<< result << llendl;
-			}
-		}
-
-		globfree(&g);
-	}
-	
-	return(result);
 }
 
 std::string LLDir_Mac::getCurPath()

@@ -1347,7 +1347,7 @@ void LLIMMgr::saveIgnoreGroup()
 {
 	// llinfos << "saving ignore_groups.xml" << llendl;
 
-	std::string user_dir = gDirUtilp->getLindenUserDir();
+	std::string user_dir = gDirUtilp->getLindenUserDir(true);
 	if (!user_dir.empty())
 	{
 		std::string filename = gDirUtilp->getExpandedFilename(LL_PATH_PER_SL_ACCOUNT, "ignore_groups.xml");

@@ -58,6 +58,7 @@
 #include "llimagegl.h"
 #include "llwindow.h"
 #include "lltextparser.h"
+#include "lldir.h"
 #include <queue>
 #include "llmenugl.h"
 #include "../newview/lgghunspell_wrapper.h"
@@ -4004,7 +4005,10 @@ void LLTextEditor::appendColoredText(const std::string &new_text,
 									 const std::string& font_name)
 {
 	LLColor4 lcolor=color;
-	if (mParseHighlights)
+	// If LindenUserDir is empty then we didn't login yet.
+	// In that case we can't instantiate LLTextParser, which
+	// is initialized per user.
+	if (mParseHighlights && !gDirUtilp->getLindenUserDir(true).empty())
 	{
 		LLTextParser* highlight = LLTextParser::getInstance();
 		highlight->parseFullLineHighlights(new_text, &lcolor);
@@ -4082,7 +4086,10 @@ void LLTextEditor::appendHighlightedText(const std::string &new_text,
 										 S32  highlight_part,
 										 LLStyleSP stylep)
 {
-	if (mParseHighlights) 
+	// If LindenUserDir is empty then we didn't login yet.
+	// In that case we can't instantiate LLTextParser, which
+	// is initialized per user.
+	if (mParseHighlights && !gDirUtilp->getLindenUserDir(true).empty())
 	{
 		LLTextParser* highlight = LLTextParser::getInstance();
 		

@@ -65,32 +65,32 @@
 /**
  *@brief Generate a float from [0, RAND_MAX).
  */
-LL_COMMON_API S32 ll_rand();
+S32 LL_COMMON_API ll_rand();
 
 /**
  *@brief Generate a float from [0, val) or (val, 0].
  */
-LL_COMMON_API S32 ll_rand(S32 val);
+S32 LL_COMMON_API ll_rand(S32 val);
 
 /**
  *@brief Generate a float from [0, 1.0).
  */
-LL_COMMON_API F32 ll_frand();
+F32 LL_COMMON_API ll_frand();
 
 /**
  *@brief Generate a float from [0, val) or (val, 0].
  */
-LL_COMMON_API F32 ll_frand(F32 val);
+F32 LL_COMMON_API ll_frand(F32 val);
 
 /**
  *@brief Generate a double from [0, 1.0).
  */
-LL_COMMON_API F64 ll_drand();
+F64 LL_COMMON_API ll_drand();
 
 /**
  *@brief Generate a double from [0, val) or (val, 0].
  */
-LL_COMMON_API F64 ll_drand(F64 val);
+F64 LL_COMMON_API ll_drand(F64 val);
 
 /**
  * @brief typedefs for good boost lagged fibonacci.

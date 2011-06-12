@@ -726,15 +726,6 @@ void LLPanelAvatarWeb::handleMediaEvent(LLPluginClassMedia* self, EMediaEvent ev
 	}
 }
 
-
-
-
-
-
-
-
-
-
 //-----------------------------------------------------------------------------
 // LLPanelAvatarAdvanced
 //-----------------------------------------------------------------------------
@@ -1222,20 +1213,27 @@ void LLPanelAvatarPicks::onClickNew(void* data)
 }
 
 //Pick import and export - RK
+// static
 void LLPanelAvatarPicks::onClickImport(void* data)
 {
 	LLPanelAvatarPicks* self = (LLPanelAvatarPicks*)data;
-	LLPanelPick* panel_pick = new LLPanelPick(FALSE);
-	LLTabContainer* tabs =  self->getChild<LLTabContainer>("picks tab");
+	self->mPanelPick = new LLPanelPick(FALSE);
+	self->mPanelPick->importNewPick(&LLPanelAvatarPicks::onClickImport_continued, data);
+}
 
-	bool import = panel_pick->importNewPick();
-	if(tabs && import)
+// static
+void LLPanelAvatarPicks::onClickImport_continued(void* data, bool import)
+{
+	LLPanelAvatarPicks* self = (LLPanelAvatarPicks*)data;
+	LLTabContainer* tabs = self->getChild<LLTabContainer>("picks tab");
+	if(tabs && import && self->mPanelPick)
 	{
-		tabs->addTabPanel(panel_pick, panel_pick->getPickName());
+		tabs->addTabPanel(self->mPanelPick, self->mPanelPick->getPickName());
 		tabs->selectLastTab();
 	}
 }
 
+// static
 void LLPanelAvatarPicks::onClickExport(void* data)
 {
 	LLPanelAvatarPicks* self = (LLPanelAvatarPicks*)data;
@@ -1434,44 +1432,6 @@ void LLPanelAvatar::onCommitKey(LLUICtrl* ctrl, void* data)
 	self->setAvatarID(av_key, LLStringUtil::null, ONLINE_STATUS_NO);
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 void LLPanelAvatar::setOnlineStatus(EOnlineStatus online_status)
 {
 	// Online status NO could be because they are hidden
@@ -1483,13 +1443,6 @@ void LLPanelAvatar::setOnlineStatus(EOnlineStatus online_status)
 		online_status = ONLINE_STATUS_YES;
 	}
 	
-
-
-
-
-
-
-
 	if(online_status == ONLINE_STATUS_YES)
 	{
 		mPanelSecondLife->childSetVisible("online_yes", TRUE);
@@ -1505,9 +1458,6 @@ void LLPanelAvatar::setOnlineStatus(EOnlineStatus online_status)
 		childSetVisible("Offer Teleport...",TRUE);
 	}
 
-
-
-
 	BOOL in_prelude = gAgent.inPrelude();
 	if(gAgent.isGodlike())
 	{
@@ -1521,7 +1471,7 @@ void LLPanelAvatar::setOnlineStatus(EOnlineStatus online_status)
 	}
 	else
 	{
-		childSetEnabled("Offer Teleport...", (online_status == ONLINE_STATUS_YES));
+		childSetEnabled("Offer Teleport...", TRUE /*(online_status == ONLINE_STATUS_YES)*/);
 		childSetToolTip("Offer Teleport...", childGetValue("TeleportNormal").asString());
 	}
 }

@@ -60,17 +60,8 @@
 class LLVBOPool : public LLGLNamePool
 {
 protected:
-	virtual GLuint allocateName()
-	{
-		GLuint name;
-		glGenBuffersARB(1, &name);
-		return name;
-	}
-
-	virtual void releaseName(GLuint name)
-	{
-		glDeleteBuffersARB(1, &name);
-	}
+	virtual GLuint allocateName();
+	virtual void releaseName(GLuint name);
 };
 
 
@@ -80,17 +71,31 @@ protected:
 class LLVertexBuffer : public LLRefCount
 {
 public:
+	LLVertexBuffer(const LLVertexBuffer& rhs)
+	{
+		*this = rhs;
+	}
+
+	const LLVertexBuffer& operator=(const LLVertexBuffer& rhs)
+	{
+		llerrs << "Illegal operation!" << llendl;
+		return *this;
+	}
 	static LLVBOPool sStreamVBOPool;
 	static LLVBOPool sDynamicVBOPool;
 	static LLVBOPool sStreamIBOPool;
 	static LLVBOPool sDynamicIBOPool;
 
+	static S32	sWeight4Loc;
+
 	static BOOL	sUseStreamDraw;
 	static BOOL sOmitBlank;
-
+	static BOOL	sPreferStreamDraw;
+	
 	static void initClass(bool use_vbo, bool no_vbo_mapping);
 	static void cleanupClass();
 	static void setupClientArrays(U32 data_mask);
+	static void drawArrays(U32 mode, const std::vector<LLVector3>& pos, const std::vector<LLVector3>& norm);
  	static void clientCopy(F64 max_time = 0.005); //copy data from client to GL
 	static void unbind(); //unbind any bound vertex buffer
 
@@ -111,6 +116,7 @@ public:
 		// These use VertexAttribPointer and should possibly be made generic
 		TYPE_BINORMAL,
 		TYPE_WEIGHT,
+		TYPE_WEIGHT4,
 		TYPE_CLOTHWEIGHT,
 		TYPE_MAX,
 		TYPE_INDEX,
@@ -126,6 +132,7 @@ public:
 		// These use VertexAttribPointer and should possibly be made generic
 		MAP_BINORMAL = (1<<TYPE_BINORMAL),
 		MAP_WEIGHT = (1<<TYPE_WEIGHT),
+		MAP_WEIGHT4 = (1<<TYPE_WEIGHT4),
 		MAP_CLOTHWEIGHT = (1<<TYPE_CLOTHWEIGHT),
 	};
 	
@@ -180,6 +187,7 @@ public:
 	bool getBinormalStrider(LLStrider<LLVector3>& strider, S32 index=0);
 	bool getColorStrider(LLStrider<LLColor4U>& strider, S32 index=0);
 	bool getWeightStrider(LLStrider<F32>& strider, S32 index=0);
+	bool getWeight4Strider(LLStrider<LLVector4>& strider, S32 index=0);
 	bool getClothWeightStrider(LLStrider<LLVector4>& strider, S32 index=0);
 	
 	BOOL isEmpty() const					{ return mEmpty; }
@@ -208,6 +216,11 @@ public:
 	void draw(U32 mode, U32 count, U32 indices_offset) const;
 	void drawArrays(U32 mode, U32 offset, U32 count) const;
 	void drawRange(U32 mode, U32 start, U32 end, U32 count, U32 indices_offset) const;
+
+	//for debugging, validate data in given range is valid
+	void validateRange(U32 start, U32 end, U32 count, U32 offset) const;
+
+	
 
 protected:	
 	S32		mNumVerts;		// Number of vertices allocated
@@ -256,12 +269,12 @@ public:
 		
 	static BOOL sDisableVBOMapping; //disable glMapBufferARB
 	static BOOL sEnableVBOs;
-	static BOOL sVBOActive;
-	static BOOL sIBOActive;
 	static S32 sTypeOffsets[TYPE_MAX];
 	static U32 sGLMode[LLRender::NUM_MODES];
 	static U32 sGLRenderBuffer;
 	static U32 sGLRenderIndices;	
+	static BOOL sVBOActive;
+	static BOOL sIBOActive;
 	static U32 sLastMask;
 	static U32 sAllocatedBytes;
 	static U32 sBindCount;

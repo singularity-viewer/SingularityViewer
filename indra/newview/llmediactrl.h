@@ -34,7 +34,7 @@
 #define LL_LLMediaCtrl_H
 
 #include "llviewermedia.h"
-
+#include "llviewermediaobserver.h"
 #include "lluictrl.h"
 #include "llframetimer.h"
 #include "lldynamictexture.h"

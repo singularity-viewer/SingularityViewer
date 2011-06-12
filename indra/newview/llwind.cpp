@@ -52,7 +52,6 @@
 #include "llagent.h"
 #include "llworld.h"
 
-bool gLLWindEnabled = true;
 const F32 CLOUD_DIVERGENCE_COEF = 0.5f; 
 
 
@@ -105,7 +104,8 @@ void LLWind::init()
 
 void LLWind::decompress(LLBitPack &bitpack, LLGroupHeader *group_headerp)
 {
-	if (!mCloudDensityp || !gLLWindEnabled)
+	static const LLCachedControl<bool> wind_enabled("WindEnabled",false); 
+	if (!mCloudDensityp || !wind_enabled)
 	{
 		return;
 	}
@@ -182,7 +182,8 @@ void LLWind::decompress(LLBitPack &bitpack, LLGroupHeader *group_headerp)
 
 LLVector3 LLWind::getAverage()
 {
-	if(!gLLWindEnabled)
+	static const LLCachedControl<bool> wind_enabled("WindEnabled",false); 
+	if(!wind_enabled)
 	{
 		return LLVector3(0.f, 0.f, 0.f);
 	}
@@ -203,7 +204,8 @@ LLVector3 LLWind::getAverage()
 
 LLVector3 LLWind::getVelocityNoisy(const LLVector3 &pos_region, const F32 dim)
 {
-	if(!gLLWindEnabled)
+	static const LLCachedControl<bool> wind_enabled("WindEnabled",false); 
+	if(!wind_enabled)
 	{
 		return LLVector3(0.f, 0.f, 0.f);
 	}
@@ -237,7 +239,8 @@ LLVector3 LLWind::getVelocityNoisy(const LLVector3 &pos_region, const F32 dim)
 
 LLVector3 LLWind::getVelocity(const LLVector3 &pos_region)
 {
-	if(!gLLWindEnabled)
+	static const LLCachedControl<bool> wind_enabled("WindEnabled",false); 
+	if(!wind_enabled)
 	{
 		return LLVector3(0.f, 0.f, 0.f);
 	}
@@ -303,7 +306,8 @@ LLVector3 LLWind::getVelocity(const LLVector3 &pos_region)
 
 LLVector3 LLWind::getCloudVelocity(const LLVector3 &pos_region)
 {
-	if(!gLLWindEnabled)
+	static const LLCachedControl<bool> wind_enabled("WindEnabled",false); 
+	if(!wind_enabled)
 	{
 		return LLVector3(0.f, 0.f, 0.f);
 	}

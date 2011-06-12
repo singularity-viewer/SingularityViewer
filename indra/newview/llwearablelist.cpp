@@ -219,19 +219,13 @@ LLWearable* LLWearableList::createWearableMatchedToInventoryItem( LLWearable* ol
 {
 	lldebugs << "LLWearableList::createWearableMatchedToInventoryItem()" << llendl;
 
-	LLTransactionID tid;
-	LLAssetID new_asset_id;
-	new_asset_id = tid.makeAssetID(gAgent.getSecureSessionID());
-
-	LLWearable* wearable = new LLWearable( tid );
+	LLWearable* wearable = generateNewWearable();
 	wearable->copyDataFrom( old_wearable );
 
 	wearable->setName( item->getName() );
 	wearable->setDescription( item->getDescription() );
 	wearable->setPermissions( item->getPermissions() );
 	wearable->setSaleInfo( item->getSaleInfo() );
-
-	mList[ new_asset_id ] = wearable;
 
 	// Send to the dataserver
 	wearable->saveNewAsset();
@@ -242,22 +236,15 @@ LLWearable* LLWearableList::createWearableMatchedToInventoryItem( LLWearable* ol
 LLWearable* LLWearableList::createCopyFromAvatar( LLWearable* old_wearable, const std::string& new_name )
 {
 	lldebugs << "LLWearableList::createCopyFromAvatar()" << llendl;
-
-	LLTransactionID tid;
-	LLAssetID new_asset_id;
-	tid.generate();
-	new_asset_id = tid.makeAssetID(gAgent.getSecureSessionID());
 	
-	LLWearable* wearable = new LLWearable( tid );
+	LLWearable* wearable = generateNewWearable();
 	wearable->copyDataFrom( old_wearable );
 	LLPermissions perm(old_wearable->getPermissions());
 	perm.setOwnerAndGroup(LLUUID::null, gAgent.getID(), LLUUID::null, true);
 	wearable->setPermissions(perm);
 	wearable->readFromAvatar();  // update from the avatar
-   
-	if (!new_name.empty()) wearable->setName(new_name);
 
-	mList[ new_asset_id ] = wearable;
+	if (!new_name.empty()) wearable->setName(new_name);
 
 	// Send to the dataserver
 	wearable->saveNewAsset();
@@ -270,17 +257,13 @@ LLWearable* LLWearableList::createCopy( LLWearable* old_wearable )
 {
 	lldebugs << "LLWearableList::createCopy()" << llendl;
 
-	LLTransactionID tid;
-	LLAssetID new_asset_id;
-	tid.generate();
-	new_asset_id = tid.makeAssetID(gAgent.getSecureSessionID());
-	
-	LLWearable* wearable = new LLWearable( tid );
-	wearable->copyDataFrom( old_wearable );
+	LLWearable *wearable = generateNewWearable();
+	wearable->copyDataFrom(old_wearable);
+
 	LLPermissions perm(old_wearable->getPermissions());
 	perm.setOwnerAndGroup(LLUUID::null, gAgent.getID(), LLUUID::null, true);
 	wearable->setPermissions(perm);
-	mList[ new_asset_id ] = wearable;
+
 
 	// Send to the dataserver
 	wearable->saveNewAsset();
@@ -292,12 +275,7 @@ LLWearable* LLWearableList::createNewWearable( EWearableType type )
 {
 	lldebugs << "LLWearableList::createNewWearable()" << llendl;
 
-	LLTransactionID tid;
-	LLAssetID new_asset_id;
-	tid.generate();
-	new_asset_id = tid.makeAssetID(gAgent.getSecureSessionID());
-	
-	LLWearable* wearable = new LLWearable( tid );
+	LLWearable *wearable = generateNewWearable();
 	wearable->setType( type );
 	
 	std::string name = "New ";
@@ -310,14 +288,23 @@ LLWearable* LLWearableList::createNewWearable( EWearableType type )
 	wearable->setPermissions(perm);
 
 	// Description and sale info have default values.
-	
 	wearable->setParamsToDefaults();
 	wearable->setTexturesToDefaults();
-
-	mList[ new_asset_id ] = wearable;
 
 	// Send to the dataserver
 	wearable->saveNewAsset();
 
+
+	return wearable;
+}
+
+LLWearable *LLWearableList::generateNewWearable()
+{
+	LLTransactionID tid;
+	tid.generate();
+	LLAssetID new_asset_id = tid.makeAssetID(gAgent.getSecureSessionID());
+
+	LLWearable* wearable = new LLWearable(tid);
+	mList[new_asset_id] = wearable;
 	return wearable;
 }

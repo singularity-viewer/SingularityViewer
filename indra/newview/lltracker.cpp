@@ -752,10 +752,10 @@ void LLTracker::setLandmarkVisited()
 		LLInventoryItem* i = gInventory.getItem( mTrackedLandmarkItemID );
 		LLViewerInventoryItem* item = (LLViewerInventoryItem*)i;
 		if (   item 
-			&& !(item->getFlags()&LLInventoryItem::II_FLAGS_LANDMARK_VISITED))
+			&& !(item->getFlags()&LLInventoryItemFlags::II_FLAGS_LANDMARK_VISITED))
 		{
 			U32 flags = item->getFlags();
-			flags |= LLInventoryItem::II_FLAGS_LANDMARK_VISITED;
+			flags |= LLInventoryItemFlags::II_FLAGS_LANDMARK_VISITED;
 			item->setFlags(flags);
 			LLMessageSystem* msg = gMessageSystem;
 			msg->newMessage("ChangeInventoryItemFlags");
@@ -808,7 +808,7 @@ void LLTracker::cacheLandmarkPosition()
 			mLandmarkHasBeenVisited = FALSE;
 			LLInventoryItem* item = gInventory.getItem(mTrackedLandmarkItemID);
 			if (   item 
-				&& item->getFlags()&LLInventoryItem::II_FLAGS_LANDMARK_VISITED)
+				&& item->getFlags()&LLInventoryItemFlags::II_FLAGS_LANDMARK_VISITED)
 			{
 				mLandmarkHasBeenVisited = TRUE;
 			}

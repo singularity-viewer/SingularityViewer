@@ -429,7 +429,7 @@ void WINAPI Get_Call_Stack(const EXCEPTION_RECORD* exception_record,
 		if (Get_Module_By_Ret_Addr(Ebp->Ret_Addr, Module_Name, Module_Addr))
 		{
 			// Save module's address and full path.
-			tmp_info["CallStack"][Ret_Addr_I]["ModuleName"] = ll_convert_wide_to_string(Module_Name);
+			tmp_info["CallStack"][Ret_Addr_I]["ModuleName"] = ll_convert_wide_to_string(Module_Name,CP_ACP);
 			tmp_info["CallStack"][Ret_Addr_I]["ModuleAddress"] = (int)Module_Addr;
 			tmp_info["CallStack"][Ret_Addr_I]["CallOffset"] = (int)(Ebp->Ret_Addr - Module_Addr);
 
@@ -548,7 +548,7 @@ LLSD WINAPI Get_Exception_Info(PEXCEPTION_POINTERS pException)
 	Get_Version_Str(info);
 	
 	GetModuleFileName(NULL, Str, MAX_PATH);
-	info["Process"] = ll_convert_wide_to_string(Str);
+	info["Process"] = ll_convert_wide_to_string(Str,CP_ACP);
 	info["ThreadID"] = (S32)GetCurrentThreadId();
 
 	// If exception occurred.
@@ -560,7 +560,7 @@ LLSD WINAPI Get_Exception_Info(PEXCEPTION_POINTERS pException)
 		// If module with E.ExceptionAddress found - save its path and date.
 		if (Get_Module_By_Ret_Addr((PBYTE)E.ExceptionAddress, Module_Name, Module_Addr))
 		{
-			info["Module"] = ll_convert_wide_to_string(Module_Name);
+			info["Module"] = ll_convert_wide_to_string(Module_Name,CP_ACP);
 
 			if ((hFile = CreateFile(Module_Name, GENERIC_READ, FILE_SHARE_READ, NULL, OPEN_EXISTING,
 				FILE_ATTRIBUTE_NORMAL, NULL)) != INVALID_HANDLE_VALUE)
@@ -862,7 +862,8 @@ void LLWinDebug::generateCrashStacks(struct _EXCEPTION_POINTERS *exception_infop
 		// Since there is exception info... Release the hounds.
 		gEmergencyMemoryReserve.release();
 
-		if(gSavedSettings.getControl("SaveMinidump").notNull() && gSavedSettings.getBOOL("SaveMinidump"))
+		LLControlVariable* save_minimap = gSavedSettings.getControl("SaveMinidump");
+		if(save_minimap && save_minimap->getValue().asBoolean())
 		{
 			_MINIDUMP_EXCEPTION_INFORMATION ExInfo;
 

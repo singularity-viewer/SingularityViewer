@@ -29,13 +29,15 @@
 * COMPLETENESS OR PERFORMANCE.
 * $/LicenseInfo$
 */
+
+#include "linden_common.h"
+
 #include <cstdio>
 #include <cstdlib>
 #include <sstream>
 #include <map>
 
 #include "llcrashlogger.h"
-#include "linden_common.h"
 #include "llstring.h"
 #include "indra_constants.h"	// CRASH_BEHAVIOR_ASK, CRASH_SETTING_NAME
 #include "llerror.h"
@@ -387,8 +389,7 @@ bool LLCrashLogger::init()
 		return false;
 	}
 
-	gServicePump = new LLPumpIO(gAPRPoolp);
-	gServicePump->prime(gAPRPoolp);
+	gServicePump = new LLPumpIO;
 	LLHTTPClient::setPump(*gServicePump);
 
 	//If we've opened the crash logger, assume we can delete the marker file if it exists	

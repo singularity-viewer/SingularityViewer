@@ -73,6 +73,7 @@ class LLViewerPartSourceScript;
 class LLViewerRegion;
 class LLViewerObjectMedia;
 class LLVOInventoryListener;
+class LLPartSysData;
 
 typedef enum e_object_update_type
 {
@@ -86,7 +87,7 @@ typedef enum e_object_update_type
 
 // callback typedef for inventory
 typedef void (*inventory_callback)(LLViewerObject*,
-								   InventoryObjectList*,
+								   LLInventoryObject::object_list_t*,
 								   S32 serial_num,
 								   void*);
 
@@ -622,7 +623,7 @@ protected:
 	F32				mPixelArea; // Apparent area in pixels
 
 	// This is the object's inventory from the viewer's perspective.
-	InventoryObjectList* mInventory;
+	LLInventoryObject::object_list_t* mInventory;
 	class LLInventoryCallbackInfo
 	{
 	public:

@@ -45,7 +45,8 @@ LLCamera::LLCamera() :
 	mNearPlane(DEFAULT_NEAR_PLANE),
 	mFarPlane(DEFAULT_FAR_PLANE),
 	mFixedDistance(-1.f),
-	mPlaneCount(6)
+	mPlaneCount(6),
+	mFrustumCornerDist(0.f)
 {
 	calculateFrustumPlanes();
 } 
@@ -55,7 +56,8 @@ LLCamera::LLCamera(F32 vertical_fov_rads, F32 aspect_ratio, S32 view_height_in_p
 	LLCoordFrame(),
 	mViewHeightInPixels(view_height_in_pixels),
 	mFixedDistance(-1.f),
-	mPlaneCount(6)
+	mPlaneCount(6),
+	mFrustumCornerDist(0.f)
 {
 	mAspect = llclamp(aspect_ratio, MIN_ASPECT_RATIO, MAX_ASPECT_RATIO);
 	mNearPlane = llclamp(near_plane, MIN_NEAR_PLANE, MAX_NEAR_PLANE);
@@ -65,6 +67,10 @@ LLCamera::LLCamera(F32 vertical_fov_rads, F32 aspect_ratio, S32 view_height_in_p
 	setView(vertical_fov_rads);
 } 
 
+LLCamera::~LLCamera()
+{
+
+}
 
 // ---------------- LLCamera::getFoo() member functions ----------------
 
@@ -86,11 +92,11 @@ F32 LLCamera::getMaxView() const
 
 // ---------------- LLCamera::setFoo() member functions ----------------
 
-void LLCamera::setUserClipPlane(LLPlane plane)
+void LLCamera::setUserClipPlane(LLPlane const& plane)
 {
 	mPlaneCount = 7;
-	mAgentPlanes[6].p = plane;
-	mAgentPlanes[6].mask = calcPlaneMask(plane);
+	mAgentPlanes[6] = plane;
+	mPlaneMask[6] = plane.calcPlaneMask();
 }
 
 void LLCamera::disableUserClipPlane()
@@ -178,7 +184,7 @@ S32 LLCamera::AABBInFrustum(const LLVector3 &center, const LLVector3& radius)
 	U8 mask = 0;
 	S32 result = 2;
 
-	if (radius.magVecSquared() > mFrustumCornerDist * mFrustumCornerDist)
+	/*if (radius.magVecSquared() > mFrustumCornerDist * mFrustumCornerDist)
 	{ //box is larger than frustum, check frustum quads against box planes
 
 		static const LLVector3 dir[] = 
@@ -241,12 +247,16 @@ S32 LLCamera::AABBInFrustum(const LLVector3 &center, const LLVector3& radius)
 			result = 1;
 		}
 	}
-	else
+	else*/
 	{
 		for (U32 i = 0; i < mPlaneCount; i++)
 		{
-			mask = mAgentPlanes[i].mask;
-			LLPlane p = mAgentPlanes[i].p;
+			mask = mPlaneMask[i];
+			if (mask == 0xff)
+			{
+				continue;
+			}
+			LLPlane p = mAgentPlanes[i];
 			LLVector3 n = LLVector3(p);
 			float d = p.mV[3];
 			LLVector3 rscale = radius.scaledVec(scaler[mask]);
@@ -293,8 +303,12 @@ S32 LLCamera::AABBInFrustumNoFarClip(const LLVector3 &center, const LLVector3& r
 			continue;
 		}
 
-		mask = mAgentPlanes[i].mask;
-		LLPlane p = mAgentPlanes[i].p;
+		mask = mPlaneMask[i];
+		if (mask == 0xff)
+		{
+			continue;
+		}
+		LLPlane p = mAgentPlanes[i];
 		LLVector3 n = LLVector3(p);
 		float d = p.mV[3];
 		LLVector3 rscale = radius.scaledVec(scaler[mask]);
@@ -434,23 +448,22 @@ int LLCamera::sphereInFrustumOld(const LLVector3 &sphere_center, const F32 radiu
 int LLCamera::sphereInFrustum(const LLVector3 &sphere_center, const F32 radius) const 
 {
 	// Returns 1 if sphere is in frustum, 0 if not.
-	int res = 2;
+	bool res = false;
 	for (int i = 0; i < 6; i++)
 	{
-		float d = mAgentPlanes[i].p.dist(sphere_center);
-
-		if (d > radius) 
+		if (mPlaneMask[i] != 0xff)
 		{
-			return 0;
-		}
+			float d = mAgentPlanes[i].dist(sphere_center);
 
-		if (d > -radius)
-		{
-			res = 1;
+			if (d > radius) 
+			{
+				return 0;
+			}
+			res = res || (d > -radius);
 		}
 	}
 
-	return res;
+	return res?1:2;
 }
 
 
@@ -602,29 +615,20 @@ LLPlane planeFromPoints(LLVector3 p1, LLVector3 p2, LLVector3 p3)
 	return LLPlane(p1, n);
 }
 
-U8 LLCamera::calcPlaneMask(const LLPlane& plane)
+
+void LLCamera::ignoreAgentFrustumPlane(S32 idx)
 {
-	U8 mask = 0;
-	
-	if (plane.mV[0] >= 0)
+	if (idx < 0 || idx > (S32) mPlaneCount)
 	{
-		mask |= 1;
-	}
-	if (plane.mV[1] >= 0)
-	{
-		mask |= 2;
-	}
-	if (plane.mV[2] >= 0)
-	{
-		mask |= 4;
+		return;
 	}
 
-	return mask;
+	mPlaneMask[idx] = 0xff;
+	mAgentPlanes[idx].clear();
 }
 
 void LLCamera::calcAgentFrustumPlanes(LLVector3* frust)
 {
-
 	for (int i = 0; i < 8; i++)
 	{
 		mAgentFrustum[i] = frust[i];
@@ -637,27 +641,27 @@ void LLCamera::calcAgentFrustumPlanes(LLVector3* frust)
 	//order of planes is important, keep most likely to fail in the front of the list
 
 	//near - frust[0], frust[1], frust[2]
-	mAgentPlanes[2].p = planeFromPoints(frust[0], frust[1], frust[2]);
+	mAgentPlanes[2] = planeFromPoints(frust[0], frust[1], frust[2]);
 
 	//far  
-	mAgentPlanes[5].p = planeFromPoints(frust[5], frust[4], frust[6]);
+	mAgentPlanes[5] = planeFromPoints(frust[5], frust[4], frust[6]);
 
 	//left  
-	mAgentPlanes[0].p = planeFromPoints(frust[4], frust[0], frust[7]);
+	mAgentPlanes[0] = planeFromPoints(frust[4], frust[0], frust[7]);
 
 	//right  
-	mAgentPlanes[1].p = planeFromPoints(frust[1], frust[5], frust[6]);
+	mAgentPlanes[1] = planeFromPoints(frust[1], frust[5], frust[6]);
 
 	//top  
-	mAgentPlanes[4].p = planeFromPoints(frust[3], frust[2], frust[6]);
+	mAgentPlanes[4] = planeFromPoints(frust[3], frust[2], frust[6]);
 
 	//bottom  
-	mAgentPlanes[3].p = planeFromPoints(frust[1], frust[0], frust[4]);
+	mAgentPlanes[3] = planeFromPoints(frust[1], frust[0], frust[4]);
 
 	//cache plane octant facing mask for use in AABBInFrustum
 	for (U32 i = 0; i < mPlaneCount; i++)
 	{
-		mAgentPlanes[i].mask = calcPlaneMask(mAgentPlanes[i].p);
+		mPlaneMask[i] = mAgentPlanes[i].calcPlaneMask();
 	}
 }
 

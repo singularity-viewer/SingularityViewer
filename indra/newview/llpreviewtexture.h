@@ -40,6 +40,7 @@
 
 class LLComboBox;
 class LLImageRaw;
+class AIFilePicker;
 
 class LLPreviewTexture : public LLPreview
 {
@@ -64,6 +65,7 @@ public:
 
 	virtual BOOL		canSaveAs() const;
 	virtual void		saveAs();
+	void				saveAs_continued(LLViewerInventoryItem const* item, AIFilePicker* filepicker);
 	virtual LLUUID		getItemID();
 	virtual std::string	getItemCreatorName();
 	virtual std::string	getItemCreationDate();

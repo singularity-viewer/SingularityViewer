@@ -4,6 +4,8 @@
  * Copyright (c) 2007-$CurrentYear$, Linden Research, Inc.
  * $License$
  */
+ 
+#version 120
 
 void calcAtmospherics(vec3 inPositionEye);
 
@@ -12,12 +14,12 @@ vec3 atmosAffectDirectionalLight(float lightIntensity);
 vec3 scaleDownLight(vec3 light);
 vec3 scaleUpLight(vec3 light);
 
-varying vec4 vary_position;
 varying vec3 vary_ambient;
 varying vec3 vary_directional;
 varying vec3 vary_normal;
 varying vec3 vary_fragcoord;
 uniform float near_clip;
+varying vec4 vary_position;
 
 void main()
 {

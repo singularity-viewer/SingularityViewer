@@ -34,7 +34,7 @@
 #ifndef LL_LLERRORLEGACY_H
 #define LL_LLERRORLEGACY_H
 
-
+#include "llpreprocessor.h"
 
 /*
 	LEGACY -- DO NOT USE THIS STUFF ANYMORE

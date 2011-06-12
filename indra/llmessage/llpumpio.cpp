@@ -43,6 +43,7 @@
 #include "llmemtype.h"
 #include "llstl.h"
 #include "llstat.h"
+#include "llthread.h"
 #include "llfasttimer.h"
 #include <iterator> //VS2010
 
@@ -170,14 +171,12 @@ struct ll_delete_apr_pollset_fd_client_data
 /**
  * LLPumpIO
  */
-LLPumpIO::LLPumpIO(apr_pool_t* pool) :
+LLPumpIO::LLPumpIO(void) :
 	mState(LLPumpIO::NORMAL),
 	mRebuildPollset(false),
 	mPollset(NULL),
 	mPollsetClientID(0),
 	mNextLock(0),
-	mPool(NULL),
-	mCurrentPool(NULL),
 	mCurrentPoolReallocCount(0),
 	mChainsMutex(NULL),
 	mCallbackMutex(NULL),
@@ -186,21 +185,24 @@ LLPumpIO::LLPumpIO(apr_pool_t* pool) :
 	mCurrentChain = mRunningChains.end();
 
 	LLMemType m1(LLMemType::MTYPE_IO_PUMP);
-	initialize(pool);
+	initialize();
 }
 
 LLPumpIO::~LLPumpIO()
 {
 	LLMemType m1(LLMemType::MTYPE_IO_PUMP);
-	cleanup();
-}
-
-bool LLPumpIO::prime(apr_pool_t* pool)
-{
-	LLMemType m1(LLMemType::MTYPE_IO_PUMP);
-	cleanup();
-	initialize(pool);
-	return ((pool == NULL) ? false : true);
+#if LL_THREADS_APR
+	if (mChainsMutex) apr_thread_mutex_destroy(mChainsMutex);
+	if (mCallbackMutex) apr_thread_mutex_destroy(mCallbackMutex);
+#endif
+	mChainsMutex = NULL;
+	mCallbackMutex = NULL;
+	if(mPollset)
+	{
+//		lldebugs << "cleaning up pollset" << llendl;
+		apr_pollset_destroy(mPollset);
+		mPollset = NULL;
+	}
 }
 
 bool LLPumpIO::addChain(const chain_t& chain, F32 timeout)
@@ -360,8 +362,7 @@ bool LLPumpIO::setConditional(LLIOPipe* pipe, const apr_pollfd_t* poll)
 	{
 		// each fd needs a pool to work with, so if one was
 		// not specified, use this pool.
-		// *FIX: Should it always be this pool?
-		value.second.p = mPool;
+		value.second.p = (*mCurrentChain).mDescriptorsPool->operator()();
 	}
 	value.second.client_data = new S32(++mPollsetClientID);
 	(*mCurrentChain).mDescriptors.push_back(value);
@@ -450,7 +451,7 @@ void LLPumpIO::pump()
 void LLPumpIO::pump(const S32& poll_timeout)
 {
 	LLMemType m1(LLMemType::MTYPE_IO_PUMP);
-	LLFastTimer t1(LLFastTimer::FTM_PUMP);
+	LLFastTimer t1(LLFastTimer::FTM_PUMPIO);
 	//llinfos << "LLPumpIO::pump()" << llendl;
 
 	// Run any pending runners.
@@ -828,39 +829,15 @@ void LLPumpIO::control(LLPumpIO::EControl op)
 	}
 }
 
-void LLPumpIO::initialize(apr_pool_t* pool)
+void LLPumpIO::initialize(void)
 {
 	LLMemType m1(LLMemType::MTYPE_IO_PUMP);
-	if(!pool) return;
+	mPool.create();
 #if LL_THREADS_APR
 	// SJB: Windows defaults to NESTED and OSX defaults to UNNESTED, so use UNNESTED explicitly.
-	apr_thread_mutex_create(&mChainsMutex, APR_THREAD_MUTEX_UNNESTED, pool);
-	apr_thread_mutex_create(&mCallbackMutex, APR_THREAD_MUTEX_UNNESTED, pool);
+	apr_thread_mutex_create(&mChainsMutex, APR_THREAD_MUTEX_UNNESTED, mPool());
+	apr_thread_mutex_create(&mCallbackMutex, APR_THREAD_MUTEX_UNNESTED, mPool());
 #endif
-	mPool = pool;
-}
-
-void LLPumpIO::cleanup()
-{
-	LLMemType m1(LLMemType::MTYPE_IO_PUMP);
-#if LL_THREADS_APR
-	if(mChainsMutex) apr_thread_mutex_destroy(mChainsMutex);
-	if(mCallbackMutex) apr_thread_mutex_destroy(mCallbackMutex);
-#endif
-	mChainsMutex = NULL;
-	mCallbackMutex = NULL;
-	if(mPollset)
-	{
-//		lldebugs << "cleaning up pollset" << llendl;
-		apr_pollset_destroy(mPollset);
-		mPollset = NULL;
-	}
-	if(mCurrentPool)
-	{
-		apr_pool_destroy(mCurrentPool);
-		mCurrentPool = NULL;
-	}
-	mPool = NULL;
 }
 
 void LLPumpIO::rebuildPollset()
@@ -888,21 +865,19 @@ void LLPumpIO::rebuildPollset()
 		if(mCurrentPool
 		   && (0 == (++mCurrentPoolReallocCount % POLLSET_POOL_RECYCLE_COUNT)))
 		{
-			apr_pool_destroy(mCurrentPool);
-			mCurrentPool = NULL;
+			mCurrentPool.destroy();
 			mCurrentPoolReallocCount = 0;
 		}
 		if(!mCurrentPool)
 		{
-			apr_status_t status = apr_pool_create(&mCurrentPool, mPool);
-			(void)ll_apr_warn_status(status);
+			mCurrentPool.create(mPool);
 		}
 
 		// add all of the file descriptors
 		run_it = mRunningChains.begin();
 		LLChainInfo::conditionals_t::iterator fd_it;
 		LLChainInfo::conditionals_t::iterator fd_end;
-		apr_pollset_create(&mPollset, size, mCurrentPool, 0);
+		apr_pollset_create(&mPollset, size, mCurrentPool(), 0);
 		for(; run_it != run_end; ++run_it)
 		{
 			fd_it = (*run_it).mDescriptors.begin();
@@ -1160,7 +1135,8 @@ bool LLPumpIO::handleChainError(
 LLPumpIO::LLChainInfo::LLChainInfo() :
 	mInit(false),
 	mLock(0),
-	mEOS(false)
+	mEOS(false),
+	mDescriptorsPool(new AIAPRPool(LLThread::tldata().mRootPool))
 {
 	LLMemType m1(LLMemType::MTYPE_IO_PUMP);
 	mTimer.setTimerExpirySec(DEFAULT_CHAIN_EXPIRY_SECS);

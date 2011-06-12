@@ -55,7 +55,7 @@ protected:
 	static bool unpackProfileParams(
 		LLProfileParams* params,
 		LLMessageSystem* mesgsys,
-		char* block_name,
+		char const* block_name,
 		S32 block_num = 0);
 	static bool unpackProfileParams(LLProfileParams* params, LLDataPacker& dp);
 
@@ -66,7 +66,7 @@ protected:
 	static bool unpackPathParams(
 		LLPathParams* params,
 		LLMessageSystem* mesgsys,
-		char* block_name,
+		char const* block_name,
 		S32 block_num = 0);
 	static bool unpackPathParams(LLPathParams* params, LLDataPacker& dp);
 
@@ -89,7 +89,7 @@ public:
 	static bool unpackVolumeParams(
 		LLVolumeParams* params,
 		LLMessageSystem* mesgsys,
-		char* block_name,
+		char const* block_name,
 		S32 block_num = 0);
 	static bool unpackVolumeParams(LLVolumeParams* params, LLDataPacker &dp);
 };

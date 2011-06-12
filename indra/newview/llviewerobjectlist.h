@@ -190,6 +190,7 @@ public:
 	S32 mNumDeadObjectUpdates;
 	S32 mNumUnknownKills;
 	S32 mNumDeadObjects;
+	S32 mMinNumDeadObjects;
 protected:
 	std::vector<U64>	mOrphanParents;	// LocalID/ip,port of orphaned objects
 	std::vector<OrphanInfo> mOrphanChildren;	// UUID's of orphaned objects
@@ -202,8 +203,7 @@ protected:
 
 	vobj_list_t mMapObjects;
 
-	typedef std::map<LLUUID, LLPointer<LLViewerObject> > vo_map;
-	vo_map mDeadObjects;	// Need to keep multiple entries per UUID
+	std::set<LLUUID> mDeadObjects;	
 
 	std::map<LLUUID, LLPointer<LLViewerObject> > mUUIDObjectMap;
 	std::map<LLUUID, LLPointer<LLVOAvatar> > mUUIDAvatarMap;

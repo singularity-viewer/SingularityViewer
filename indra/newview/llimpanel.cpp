@@ -74,6 +74,7 @@
 #include "llhttpclient.h"
 #include "llmutelist.h"
 #include "llstylemap.h"
+#include "ascentkeyword.h"
 
 #include "boost/algorithm/string.hpp"
 
@@ -1592,8 +1593,23 @@ BOOL LLFloaterIMPanel::inviteToSession(const LLDynamicArray<LLUUID>& ids)
 	return TRUE;
 }
 
-void LLFloaterIMPanel::addHistoryLine(const std::string &utf8msg, const LLColor4& color, bool log_to_file, const LLUUID& source, const std::string& name)
+void LLFloaterIMPanel::addHistoryLine(const std::string &utf8msg, LLColor4 incolor, bool log_to_file, const LLUUID& source, const std::string& name)
 {
+	static const LLCachedControl<bool> mKeywordsChangeColor("KeywordsChangeColor", false, gSavedPerAccountSettings);
+	static const LLCachedControl<LLColor4> mKeywordsColor("KeywordsColor", LLColor4(1.f, 1.f, 1.f, 1.f), gSavedPerAccountSettings);
+
+    if (gAgent.getID() != source)
+	{
+		if (mKeywordsChangeColor)
+		{
+    		if (AscentKeyword::hasKeyword(utf8msg, 2))
+            {
+				incolor = mKeywordsColor;
+            }
+		}
+	}
+
+	const LLColor4& color = incolor;
 	// start tab flashing when receiving im for background session from user
 	if (source != LLUUID::null)
 	{
@@ -1652,7 +1668,7 @@ void LLFloaterIMPanel::addHistoryLine(const std::string &utf8msg, const LLColor4
 	}
 
 	//Kadah - Bold group mods chat. Doesnt work on the first msg of the session, dont have speakers list yet?
-	if (isModerator(source))
+	if (gSavedSettings.getBOOL("SingularityBoldGroupModerator") && isModerator(source))
 	{
 		mHistoryEditor->appendColoredText(utf8msg.substr(0,1), false, prepend_newline, color);
 		LLStyleSP style(new LLStyle);

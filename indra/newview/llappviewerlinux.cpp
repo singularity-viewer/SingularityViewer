@@ -36,6 +36,7 @@
 
 #include "llcommandlineparser.h"
 
+#include "lldiriterator.h"
 #include "llmemtype.h"
 #include "llurldispatcher.h"		// SLURL from other app instance
 #include "llviewernetwork.h"
@@ -98,6 +99,9 @@ static void exceptionTerminateHandler()
 
 int main( int argc, char **argv ) 
 {
+	Debug(debug::init());
+	Debug(libcw_do.on());
+
 	LLMemType mt1(LLMemType::MTYPE_STARTUP);
 
 #if LL_SOLARIS && defined(__sparc)
@@ -139,6 +143,7 @@ int main( int argc, char **argv )
 	}
 	delete viewer_app_ptr;
 	viewer_app_ptr = NULL;
+
 	return 0;
 }
 
@@ -737,8 +742,8 @@ std::string LLAppViewerLinux::generateSerialNumber()
 
 	// trawl /dev/disk/by-uuid looking for a good-looking UUID to grab
 	std::string this_name;
-	BOOL wrap = FALSE;
-	while (gDirUtilp->getNextFileInDir(uuiddir, "*", this_name, wrap))
+	LLDirIterator iter(uuiddir, "*");
+	while (iter.next(this_name))
 	{
 		if (this_name.length() > best.length() ||
 		    (this_name.length() == best.length() &&

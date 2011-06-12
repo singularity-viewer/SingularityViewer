@@ -89,6 +89,16 @@ bool LLPluginMessagePipeOwner::writeMessageRaw(const std::string &message)
 	return result;
 }
 
+bool LLPluginMessagePipeOwner::flushMessages(void)
+{
+	bool result = true;
+	if (mMessagePipe != NULL)
+	{
+		result = mMessagePipe->flushMessages();
+	}
+	return result;
+}
+
 void LLPluginMessagePipeOwner::killMessagePipe(void)
 {
 	if(mMessagePipe != NULL)
@@ -99,8 +109,6 @@ void LLPluginMessagePipeOwner::killMessagePipe(void)
 }
 
 LLPluginMessagePipe::LLPluginMessagePipe(LLPluginMessagePipeOwner *owner, LLSocket::ptr_t socket):
-	mInputMutex(gAPRPoolp),
-	mOutputMutex(gAPRPoolp),
 	mOwner(owner),
 	mSocket(socket)
 {
@@ -165,26 +173,32 @@ bool LLPluginMessagePipe::pump(F64 timeout)
 	return result;
 }
 
-bool LLPluginMessagePipe::pumpOutput()
+static apr_interval_time_t const flush_max_block_time = 10000000;	// Even when flushing, give up after 10 seconds.
+static apr_interval_time_t const flush_min_timeout = 1000;			// When flushing, initially timeout after 1 ms.
+static apr_interval_time_t const flush_max_timeout = 50000;			// Never wait longer than 50 ms.
+
+// DO NOT SET 'flush' TO TRUE WHEN CALLED ON THE VIEWER SIDE!
+// flush is only intended for plugin-side.
+bool LLPluginMessagePipe::pumpOutput(bool flush)
 {
 	bool result = true;
 	
 	if(mSocket)
 	{
-		apr_status_t status;
-		apr_size_t size;
+		apr_interval_time_t flush_time_left_usec = flush_max_block_time;
+		apr_interval_time_t timeout_usec = flush ? flush_min_timeout : 0;
 		
 		LLMutexLock lock(&mOutputMutex);
-		if(!mOutput.empty())
+		while(result && !mOutput.empty())
 		{
 			// write any outgoing messages
-			size = (apr_size_t)mOutput.size();
+			apr_size_t size = (apr_size_t)mOutput.size();
 			
-			setSocketTimeout(0);
+			setSocketTimeout(timeout_usec);
 			
 //			LL_INFOS("Plugin") << "before apr_socket_send, size = " << size << LL_ENDL;
 
-			status = apr_socket_send(
+			apr_status_t status = apr_socket_send(
 					mSocket->getSocket(),
 					(const char*)mOutput.data(),
 					&size);
@@ -195,12 +209,29 @@ bool LLPluginMessagePipe::pumpOutput()
 			{
 				// success
 				mOutput = mOutput.substr(size);
+				break;
 			}
-			else if(APR_STATUS_IS_EAGAIN(status))
+			else if(APR_STATUS_IS_EAGAIN(status) || APR_STATUS_IS_TIMEUP(status))
 			{
 				// Socket buffer is full... 
 				// remove the written part from the buffer and try again later.
 				mOutput = mOutput.substr(size);
+				if (!flush)
+					break;
+				flush_time_left_usec -= timeout_usec;
+				if (flush_time_left_usec <= 0)
+				{
+					result = false;
+				}
+				else if (size == 0)
+				{
+					// Nothing at all was written. Increment wait time.
+					timeout_usec = llmin(flush_max_timeout, 2 * timeout_usec);
+				}
+				else
+				{
+					timeout_usec = llmax(flush_min_timeout, timeout_usec / 2);
+				}
 			}
 			else if(APR_STATUS_IS_EOF(status))
 			{

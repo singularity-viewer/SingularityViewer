@@ -72,7 +72,7 @@ LLNameListCtrl::~LLNameListCtrl()
 
 // public
 BOOL LLNameListCtrl::addNameItem(const LLUUID& agent_id, EAddPosition pos,
-								 BOOL enabled, std::string& suffix)
+								 BOOL enabled, std::string const& suffix)
 {
 	//llinfos << "LLNameListCtrl::addNameItem " << agent_id << llendl;
 

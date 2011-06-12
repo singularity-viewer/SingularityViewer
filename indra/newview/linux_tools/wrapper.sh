@@ -7,7 +7,7 @@
 ## - Avoids using any OpenAL audio driver.
 #export LL_BAD_OPENAL_DRIVER=x
 ## - Avoids using any FMOD audio driver.
-export LL_BAD_FMOD_DRIVER=x
+#export LL_BAD_FMOD_DRIVER=x
 
 ## - Avoids using the FMOD ESD audio driver.
 #export LL_BAD_FMOD_ESD=x
@@ -45,6 +45,7 @@ export LL_BAD_FMOD_DRIVER=x
 ##   disable these by enabling this option:
 #export LL_DISABLE_GSTREAMER=x
 
+
 ## Everything below this line is just for advanced troubleshooters.
 ##-------------------------------------------------------------------
 
@@ -53,15 +54,8 @@ export LL_BAD_FMOD_DRIVER=x
 ##   you're building your own viewer, bear in mind that the executable
 ##   in the bin directory will be stripped: you should replace it with
 ##   an unstripped binary before you run.
-##
-##   I keep crashing without having GDB running, always run it if an
-##   environment variable is set.
-
-if [ -n "$ASCENDED_DEVELOPER" ]; then
-#	export LL_WRAPPER='cgdb --args'
-	export LL_WRAPPER='gdb --args'
-#	export LL_WRAPPER='valgrind --smc-check=all --error-limit=no --log-file=secondlife.vg --leak-check=full --suppressions=/usr/lib/valgrind/glibc-2.5.supp --suppressions=secondlife-i686.supp'
-fi
+#export LL_WRAPPER='gdb --args'
+#export LL_WRAPPER='valgrind --smc-check=all --error-limit=no --log-file=secondlife.vg --leak-check=full --suppressions=/usr/lib/valgrind/glibc-2.5.supp --suppressions=secondlife-i686.supp'
 
 ## - Avoids an often-buggy X feature that doesn't really benefit us anyway.
 export SDL_VIDEO_X11_DGAMOUSE=0
@@ -73,13 +67,6 @@ export LIBGL_DRIVERS_PATH="${LIBGL_DRIVERS_PATH}":/usr/lib64/dri:/usr/lib32/dri:
 if [ "$GTK_IM_MODULE" = "scim" ]; then
     export GTK_IM_MODULE=xim
 fi
-
-# Work around for a crash bug when restarting OpenGL after a change in the
-# graphic settings (anti-aliasing, VBO, FSAA, full screen mode, UI scale).
-# When you enable this work around, you can change the settings without
-# crashing, but you will have to restart the viewer after changing them
-# because the display still gets corrupted.
-export LL_OPENGL_RESTART_CRASH_BUG=x
 
 ## - Automatically work around the ATI mouse cursor crash bug:
 ## (this workaround is disabled as most fglrx users do not see the bug)
@@ -121,7 +108,13 @@ if [ -n "$LL_TCMALLOC" ]; then
 fi
 
 export VIEWER_BINARY='singularity-do-not-run-directly'
-export SL_ENV='LD_LIBRARY_PATH="`pwd`"/lib:"`pwd`"/app_settings/mozilla-runtime-linux-i686:"${LD_LIBRARY_PATH}"'
+BINARY_TYPE=$(expr match "$(file -b bin/$VIEWER_BINARY)" '\(.*executable\)')
+if [ "${BINARY_TYPE}" == "ELF 64-bit LSB executable" ]; then
+	export SL_ENV='LD_LIBRARY_PATH="`pwd`"/lib64:"`pwd`"/lib32:"${LD_LIBRARY_PATH}"'
+else
+	export SL_ENV='LD_LIBRARY_PATH="`pwd`"/lib:"${LD_LIBRARY_PATH}"'
+fi
+
 export SL_CMD='$LL_WRAPPER bin/$VIEWER_BINARY'
 export SL_OPT="`cat gridargs.dat` $@"
 
@@ -134,27 +127,7 @@ if [ -n "$LL_RUN_ERR" ]; then
 	if [ "$LL_RUN_ERR" = "runerr" ]; then
 		# generic error running the binary
 		echo '*** Bad shutdown. ***'
- 		BINARY_TYPE=$(expr match "$(file -b ${RUN_PATH}/bin/SLPlugin)" '\(.*executable\)')
- 		BINARY_SYSTEM=$(expr match "$(file -b /bin/uname)" '\(.*executable\)')
- 		if [ "${BINARY_SYSTEM}" == "ELF 64-bit LSB executable" -a "${BINARY_TYPE}" == "ELF 32-bit LSB executable" ]; then
-			echo
-			cat << EOFMARKER
-You are running the Second Life Viewer on a x86_64 platform.  The
-most common problems when launching the Viewer (particularly
-'bin/$VIEWER_BINARY: not found' and 'error while
-loading shared libraries') may be solved by installing your Linux
-distribution's 32-bit compatibility packages.
-For example, on Ubuntu and other Debian-based Linuxes you might run:
-$ sudo apt-get install ia32-libs ia32-libs-gtk ia32-libs-kde ia32-libs-sdl
-EOFMARKER
-		fi
+
+
 	fi
 fi
-	
-
-echo
-echo '*******************************************************'
-echo 'This is a BETA release of the Second Life linux client.'
-echo 'Thank you for testing!'
-echo 'Please see README-linux.txt before reporting problems.'
-echo

@@ -296,13 +296,6 @@ void LLFacePool::drawLoop()
 	}
 }
 
-void LLFacePool::renderFaceSelected(LLFace *facep, 
-									LLViewerTexture *image, 
-									const LLColor4 &color,
-									const S32 index_offset, const S32 index_count)
-{
-}
-
 void LLFacePool::enqueue(LLFace* facep)
 {
 	mDrawFace.push_back(facep);

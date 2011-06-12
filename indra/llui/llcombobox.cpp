@@ -178,8 +178,6 @@ LLView* LLComboBox::fromXML(LLXMLNodePtr node, LLView *parent, LLUICtrlFactory *
 							NULL);
 	combo_box->setAllowTextEntry(allow_text_entry, max_chars);
 
-	combo_box->initFromXML(node, parent);
-
 	const std::string& contents = node->getValue();
 
 	if (contents.find_first_not_of(" \n\t") != contents.npos)
@@ -209,6 +207,9 @@ LLView* LLComboBox::fromXML(LLXMLNodePtr node, LLView *parent, LLUICtrlFactory *
 			}
 		}
 	}
+
+	//Do this AFTER combo_items are set up so setValue is actually able to select the correct initial entry.
+	combo_box->initFromXML(node, parent);
 
 	// if providing user text entry or descriptive label
 	// don't select an item under the hood

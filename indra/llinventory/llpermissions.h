@@ -38,6 +38,7 @@
 #include "lluuid.h"
 #include "llxmlnode.h"
 #include "reflective.h"
+#include "llinventorytype.h"
 
 // prototypes
 class LLMessageSystem;
@@ -129,6 +130,8 @@ public:
 	void initMasks(PermissionMask base, PermissionMask owner,
 				   PermissionMask everyone, PermissionMask group,
 				   PermissionMask next);
+	// adjust permissions based on inventory type.
+	void initMasks(LLInventoryType::EType type);
 
 	//
 	// ACCESSORS
@@ -229,6 +232,9 @@ public:
 	// ownerhsip changes
 	void yesReallySetOwner(const LLUUID& owner, bool group_owned);
 
+	// Last owner doesn't have much in the way of permissions so it's 
+	//not too dangerous to do this. 
+	void setLastOwner(const LLUUID& last_owner);
 	// saves last owner, sets owner to uuid null, sets group
 	// owned. group_id must be the group of the object (that's who it
 	// is being deeded to) and the object must be group
@@ -249,7 +255,11 @@ public:
 	BOOL setGroupBits( const LLUUID& agent, const LLUUID& group, BOOL set, PermissionMask bits);
 	BOOL setEveryoneBits(const LLUUID& agent, const LLUUID& group, BOOL set, PermissionMask bits);
 	BOOL setNextOwnerBits(const LLUUID& agent, const LLUUID& group, BOOL set, PermissionMask bits);
-
+	
+	// This is currently only used in the Viewer to handle calling cards
+	// where the creator is actually used to store the target. Use with care.
+	void setCreator(const LLUUID& creator) { mCreator = creator; }
+	
 	//
 	// METHODS
 	//
@@ -261,18 +271,18 @@ public:
 	// They also return true if the object isn't owned, or the
 	// requesting agent is a system agent.  See llpermissionsflags.h
 	// for bits.
-	BOOL allowOperationBy(PermissionBit op, const LLUUID& agent, const LLUUID& group = LLUUID::null) const;
+	bool allowOperationBy(PermissionBit op, const LLUUID& agent, const LLUUID& group = LLUUID::null) const;
 
-	inline BOOL allowModifyBy(const LLUUID &agent_id) const;
-	inline BOOL allowCopyBy(const LLUUID& agent_id) const;
-	inline BOOL allowMoveBy(const LLUUID& agent_id) const;
-	inline BOOL allowModifyBy(const LLUUID &agent_id, const LLUUID& group) const;
-	inline BOOL allowCopyBy(const LLUUID& agent_id, const LLUUID& group) const;
-	inline BOOL allowMoveBy(const LLUUID &agent_id, const LLUUID &group) const;
+	inline bool allowModifyBy(const LLUUID &agent_id) const;
+	inline bool allowCopyBy(const LLUUID& agent_id) const;
+	inline bool allowMoveBy(const LLUUID& agent_id) const;
+	inline bool allowModifyBy(const LLUUID &agent_id, const LLUUID& group) const;
+	inline bool allowCopyBy(const LLUUID& agent_id, const LLUUID& group) const;
+	inline bool allowMoveBy(const LLUUID &agent_id, const LLUUID &group) const;
 
 	// This somewhat specialized function is meant for testing if the
 	// current owner is allowed to transfer to the specified agent id.
-	inline BOOL allowTransferTo(const LLUUID &agent_id) const;
+	inline bool allowTransferTo(const LLUUID &agent_id) const;
 
 	//
 	// DEPRECATED.
@@ -328,38 +338,38 @@ public:
 };
 
 // Inlines
-BOOL LLPermissions::allowModifyBy(const LLUUID& agent, const LLUUID& group) const
+bool LLPermissions::allowModifyBy(const LLUUID& agent, const LLUUID& group) const
 {
 	return allowOperationBy(PERM_MODIFY, agent, group);
 }
 
-BOOL LLPermissions::allowCopyBy(const LLUUID& agent, const LLUUID& group) const
+bool LLPermissions::allowCopyBy(const LLUUID& agent, const LLUUID& group) const
 {
 	return allowOperationBy(PERM_COPY, agent, group);
 }
 
 
-BOOL LLPermissions::allowMoveBy(const LLUUID& agent, const LLUUID& group) const
+bool LLPermissions::allowMoveBy(const LLUUID& agent, const LLUUID& group) const
 {
 	return allowOperationBy(PERM_MOVE, agent, group);
 }
 
-BOOL LLPermissions::allowModifyBy(const LLUUID& agent) const
+bool LLPermissions::allowModifyBy(const LLUUID& agent) const
 {
 	return allowOperationBy(PERM_MODIFY, agent, LLUUID::null);
 }
 
-BOOL LLPermissions::allowCopyBy(const LLUUID& agent) const
+bool LLPermissions::allowCopyBy(const LLUUID& agent) const
 {
 	return allowOperationBy(PERM_COPY, agent, LLUUID::null);
 }
 
-BOOL LLPermissions::allowMoveBy(const LLUUID& agent) const
+bool LLPermissions::allowMoveBy(const LLUUID& agent) const
 {
 	return allowOperationBy(PERM_MOVE, agent, LLUUID::null);
 }
 
-BOOL LLPermissions::allowTransferTo(const LLUUID &agent_id) const
+bool LLPermissions::allowTransferTo(const LLUUID &agent_id) const
 {
 	if (mIsGroupOwned)
 	{

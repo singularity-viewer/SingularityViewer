@@ -56,7 +56,7 @@ const F32 CUT_MAX = 1.f;
 const F32 MIN_CUT_DELTA = 0.02f;
 
 const F32 HOLLOW_MIN = 0.f;
-const F32 HOLLOW_MAX = 0.95f;
+const F32 HOLLOW_MAX = 0.99f;
 const F32 HOLLOW_MAX_SQUARE	= 0.7f;
 
 const F32 TWIST_MIN = -1.f;
@@ -65,10 +65,10 @@ const F32 TWIST_MAX =  1.f;
 const F32 RATIO_MIN = 0.f;
 const F32 RATIO_MAX = 2.f; // Tom Y: Inverted sense here: 0 = top taper, 2 = bottom taper
 
-const F32 HOLE_X_MIN= 0.05f;
+const F32 HOLE_X_MIN= 0.01f;
 const F32 HOLE_X_MAX= 1.0f;
 
-const F32 HOLE_Y_MIN= 0.05f;
+const F32 HOLE_Y_MIN= 0.01f;
 const F32 HOLE_Y_MAX= 0.5f;
 
 const F32 SHEAR_MIN = -0.5f;
@@ -103,25 +103,31 @@ BOOL check_same_clock_dir( const LLVector3& pt1, const LLVector3& pt2, const LLV
 
 BOOL LLLineSegmentBoxIntersect(const LLVector3& start, const LLVector3& end, const LLVector3& center, const LLVector3& size)
 {
-	float fAWdU[3];
-	LLVector3 dir;
-	LLVector3 diff;
+	return LLLineSegmentBoxIntersect(start.mV, end.mV, center.mV, size.mV);
+}
+
+BOOL LLLineSegmentBoxIntersect(const F32* start, const F32* end, const F32* center, const F32* size)
+{
+	F32 fAWdU[3];
+	F32 dir[3];
+	F32 diff[3];
 
 	for (U32 i = 0; i < 3; i++)
 	{
-		dir.mV[i] = 0.5f * (end.mV[i] - start.mV[i]);
-		diff.mV[i] = (0.5f * (end.mV[i] + start.mV[i])) - center.mV[i];
-		fAWdU[i] = fabsf(dir.mV[i]);
-		if(fabsf(diff.mV[i])>size.mV[i] + fAWdU[i]) return false;
+		dir[i] = 0.5f * (end[i] - start[i]);
+		diff[i] = (0.5f * (end[i] + start[i])) - center[i];
+		fAWdU[i] = fabsf(dir[i]);
+		if(fabsf(diff[i])>size[i] + fAWdU[i]) return false;
 	}
 
 	float f;
-	f = dir.mV[1] * diff.mV[2] - dir.mV[2] * diff.mV[1];    if(fabsf(f)>size.mV[1]*fAWdU[2] + size.mV[2]*fAWdU[1])  return false;
-	f = dir.mV[2] * diff.mV[0] - dir.mV[0] * diff.mV[2];    if(fabsf(f)>size.mV[0]*fAWdU[2] + size.mV[2]*fAWdU[0])  return false;
-	f = dir.mV[0] * diff.mV[1] - dir.mV[1] * diff.mV[0];    if(fabsf(f)>size.mV[0]*fAWdU[1] + size.mV[1]*fAWdU[0])  return false;
+	f = dir[1] * diff[2] - dir[2] * diff[1];    if(fabsf(f)>size[1]*fAWdU[2] + size[2]*fAWdU[1])  return false;
+	f = dir[2] * diff[0] - dir[0] * diff[2];    if(fabsf(f)>size[0]*fAWdU[2] + size[2]*fAWdU[0])  return false;
+	f = dir[0] * diff[1] - dir[1] * diff[0];    if(fabsf(f)>size[0]*fAWdU[1] + size[1]*fAWdU[0])  return false;
 	
 	return true;
 }
+
 
 
 // intersect test between triangle vert0, vert1, vert2 and a ray from orig in direction dir.
@@ -1688,7 +1694,8 @@ LLVolume::LLVolume(const LLVolumeParams &params, const F32 detail, const BOOL ge
 	mGenerateSingleFace = generate_single_face;
 
 	generate();
-	if (mParams.getSculptID().isNull() && params.getSculptType() == LL_SCULPT_TYPE_NONE)
+	
+	if (mParams.getSculptID().isNull() && mParams.getSculptType() == LL_SCULPT_TYPE_NONE)
 	{
 		createVolumeFaces();
 	}

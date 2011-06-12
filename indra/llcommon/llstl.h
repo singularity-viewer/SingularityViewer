@@ -39,6 +39,7 @@
 #include <vector>
 #include <set>
 #include <deque>
+#include "stdtypes.h"	// llcommon/stdtypes.h, needed for S32 and U32.
 
 // Use to compare the first element only of a pair
 // e.g. typedef std::set<std::pair<int, Data*>, compare_pair<int, Data*> > some_pair_set_t; 

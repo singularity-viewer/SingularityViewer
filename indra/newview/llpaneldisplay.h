@@ -84,6 +84,7 @@ protected:
 	LLComboBox		*mCtrlFullScreen;               // Fullscreen resolution
 	LLCheckBoxCtrl	*mCtrlAutoDetectAspect;			// automatically detect aspect ratio
 	LLComboBox		*mCtrlAspectRatio;				// user provided aspect ratio
+	LLComboBox		*mCtrlReflectionDetail;
 
 	LLCheckBoxCtrl	*mCtrlWindowed;					// windowed mode
 	LLComboBox      *mCtrlWindowSize;               // window size for windowed mode
@@ -100,22 +101,23 @@ protected:
 	LLSliderCtrl	*mCtrlFlexFactor;				// Timeslice for flexible objects
 	LLSliderCtrl	*mCtrlTreeFactor;				// Control tree cutoff distance
 	LLSliderCtrl	*mCtrlAvatarFactor;				// LOD for avatars
+	LLSliderCtrl	*mCtrlAvatarPhysicsFactor;		// Physics LOD for avatars
 	LLSliderCtrl	*mCtrlTerrainFactor;			// LOD for terrain
 	LLSliderCtrl	*mCtrlSkyFactor;				// LOD for terrain
 	LLSliderCtrl	*mCtrlMaxParticle;				// Max Particle
 	LLSliderCtrl	*mCtrlPostProcess;				// Max Particle
 
 	LLCheckBoxCtrl	*mCtrlBumpShiny;
-	LLCheckBoxCtrl	*mCtrlReflections;
 	LLCheckBoxCtrl	*mCtrlWindLight;
 	LLCheckBoxCtrl	*mCtrlAvatarVP;
 	LLCheckBoxCtrl	*mCtrlShaderEnable;
+	LLCheckBoxCtrl	*mCtrlDeferred;
+	LLCheckBoxCtrl	*mCtrlDeferredGI;
+	LLComboBox		*mCtrlShadowDetail;
 	LLCheckBoxCtrl	*mCtrlAvatarImpostors;
 	LLCheckBoxCtrl	*mCtrlAvatarCloth;
 	LLRadioGroup	*mRadioLightingDetail2;
-
 	LLRadioGroup	*mRadioTerrainDetail;
-	LLRadioGroup	*mRadioReflectionDetail;
 
 	LLTextBox		*mAspectRatioLabel1;
 	LLTextBox		*mDisplayResLabel;
@@ -135,9 +137,11 @@ protected:
 	LLTextBox		*mFlexFactorText;
 	LLTextBox		*mTreeFactorText;
 	LLTextBox		*mAvatarFactorText;
+	LLTextBox		*mAvatarPhysicsFactorText;
 	LLTextBox		*mTerrainFactorText;
 	LLTextBox		*mSkyFactorText;
 	LLTextBox		*mPostProcessText;
+	LLTextBox		*mShadowDetailText;
 
 	BOOL mFSAutoDetectAspect;
 	F32 mAspectRatio;
@@ -150,15 +154,17 @@ protected:
 	BOOL mBumpShiny;
 	BOOL mShaderEnable;
 	BOOL mWindLight;
-	BOOL mReflections;
+	BOOL mDeferred;
+	BOOL mDeferredGI;
 	BOOL mAvatarVP;
 
 	S32 mReflectionDetail;
+	S32 mShadowDetail;
 
 	BOOL mAvatarImpostors;
 	BOOL mAvatarCloth;
 	S32 mAvatarMode;
-	S32 mLightingDetail;
+	BOOL mLocalLights;
 	S32 mTerrainDetail;
 
 	F32 mRenderFarClip;

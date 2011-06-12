@@ -1336,16 +1336,17 @@ LLAudioSource::LLAudioSource(const LLUUID& id, const LLUUID& owner_id, const F32
 
 LLAudioSource::~LLAudioSource()
 {
+	// <edit>
+	// Record destruction of LLAudioSource object.
+	if(mType != LLAudioEngine::AUDIO_TYPE_UI)
+		logSoundStop(mLogID, true);
+	// </edit>
 	if (mChannelp)
 	{
 		// Stop playback of this sound
 		mChannelp->setSource(NULL);
-		mChannelp = NULL;
+		setChannel(NULL);
 	}
-	// <edit>
-	if(mType != LLAudioEngine::AUDIO_TYPE_UI) // && mSourceID.notNull())
-		logSoundStop(mLogID);
-	// </edit>
 }
 
 
@@ -1356,9 +1357,16 @@ void LLAudioSource::setChannel(LLAudioChannel *channelp)
 		return;
 	}
 
+	// <edit>
+	if (!channelp)
+	{
+		if(mType != LLAudioEngine::AUDIO_TYPE_UI)
+			logSoundStop(mLogID, false);
+	}
+	// </edit>
+
 	mChannelp = channelp;
 }
-
 
 void LLAudioSource::update()
 {
@@ -1434,10 +1442,6 @@ bool LLAudioSource::setupChannel()
 
 bool LLAudioSource::play(const LLUUID &audio_uuid)
 {
-	// <edit>
-	if(mType != LLAudioEngine::AUDIO_TYPE_UI) //&& mSourceID.notNull())
-		logSoundPlay(mLogID, this, mPositionGlobal, mType, audio_uuid, mOwnerID, mSourceID, mIsTrigger, mLoop); // is mID okay for source id?
-	// </edit>
 	// Special abuse of play(); don't play a sound, but kill it.
 	if (audio_uuid.isNull())
 	{
@@ -1452,6 +1456,11 @@ bool LLAudioSource::play(const LLUUID &audio_uuid)
 		}
 		return false;
 	}
+
+	// <edit>
+	if(mType != LLAudioEngine::AUDIO_TYPE_UI) //&& mSourceID.notNull())
+		logSoundPlay(this, audio_uuid);
+	// </edit>
 
 	// Reset our age timeout if someone attempts to play the source.
 	mAgeTimer.reset();
@@ -1846,36 +1855,38 @@ bool LLAudioData::load()
 std::map<LLUUID, LLSoundHistoryItem> gSoundHistory;
 
 // static
-void logSoundPlay(LLUUID id, LLAudioSource* audio_source, LLVector3d position, S32 type, LLUUID assetid, LLUUID ownerid, LLUUID sourceid, bool is_trigger, bool is_looped)
+void logSoundPlay(LLAudioSource* audio_source, LLUUID const& assetid)
 {
 	LLSoundHistoryItem item;
-	item.mID = id;
+	item.mID = audio_source->getLogID();
 	item.mAudioSource = audio_source;
-	item.mPosition = position;
-	item.mType = type;
+	item.mPosition = audio_source->getPositionGlobal();
+	item.mType = audio_source->getType();
 	item.mAssetID = assetid;
-	item.mOwnerID = ownerid;
-	item.mSourceID = sourceid;
+	item.mOwnerID = audio_source->getOwnerID();
+	item.mSourceID = audio_source->getSourceID();
 	item.mPlaying = true;
 	item.mTimeStarted = LLTimer::getElapsedSeconds();
 	item.mTimeStopped = F64_MAX;
-	item.mIsTrigger = is_trigger;
-	item.mIsLooped = is_looped;
+	item.mIsTrigger = audio_source->getIsTrigger();
+	item.mIsLooped = audio_source->isLoop();
 
 	item.mReviewed = false;
 	item.mReviewedCollision = false;
 
-	gSoundHistory[id] = item;
+	gSoundHistory[item.mID] = item;
 }
 
 //static 
-void logSoundStop(LLUUID id)
+void logSoundStop(LLUUID const& id, bool destructed)
 {
-	if(gSoundHistory.find(id) != gSoundHistory.end())
+	std::map<LLUUID, LLSoundHistoryItem>::iterator iter = gSoundHistory.find(id);
+	if(iter != gSoundHistory.end() && iter->second.mAudioSource)
 	{
-		gSoundHistory[id].mPlaying = false;
-		gSoundHistory[id].mTimeStopped = LLTimer::getElapsedSeconds();
-		gSoundHistory[id].mAudioSource = NULL; // just in case
+		iter->second.mPlaying = false;
+		iter->second.mTimeStopped = LLTimer::getElapsedSeconds();
+		if (destructed)
+			iter->second.mAudioSource = NULL;
 		pruneSoundLog();
 	}
 }

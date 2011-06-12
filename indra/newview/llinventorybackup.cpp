@@ -4,8 +4,8 @@
 #include "llinventorybackup.h"
 #include "llinventorymodel.h"
 #include "llviewerinventory.h"
-#include "llfilepicker.h"
-#include "lldirpicker.h"
+#include "statemachine/aifilepicker.h"
+#include "statemachine/aidirpicker.h"
 #include "llviewertexturelist.h" // gTextureList
 #include "llagent.h" // gAgent
 #include "llviewerwindow.h" // gViewerWindow
@@ -120,35 +120,40 @@ void LLFloaterInventoryBackupSettings::onClickNext(void* userdata)
 	}
 
 	// Get dir name
-	LLDirPicker& picker = LLDirPicker::instance();
-	std::string filename = "New Folder";
-	if (!picker.getDir(&filename))
+	AIDirPicker* dirpicker = new AIDirPicker("New Folder");
+	dirpicker->run(boost::bind(&LLFloaterInventoryBackupSettings::onClickNext_continued, userdata, dirpicker));
+}
+
+// static
+void LLFloaterInventoryBackupSettings::onClickNext_continued(void* userdata, AIDirPicker* dirpicker)
+{
+	LLFloaterInventoryBackupSettings* floater = (LLFloaterInventoryBackupSettings*)userdata;
+	LLInventoryBackupOrder* order = floater->mOrder;
+
+	if (!dirpicker->hasDirname())
 	{
 		floater->close();
 		return;
 	}
-	filename = picker.getDirName();
+	std::string dirname = dirpicker->getDirname();
 
 	// Make local directory tree
-	LLFile::mkdir(filename);
+	LLFile::mkdir(dirname);
 	std::vector<LLInventoryCategory*>::iterator _cat_iter = order->mCats.begin();
 	std::vector<LLInventoryCategory*>::iterator _cat_end = order->mCats.end();
 	for( ; _cat_iter != _cat_end; ++_cat_iter)
 	{
-		std::string path = filename + OS_SEP + LLInventoryBackup::getPath(*_cat_iter, order->mCats);
+		std::string path = dirname + OS_SEP + LLInventoryBackup::getPath(*_cat_iter, order->mCats);
 		LLFile::mkdir(path);
 	}
 
 	// Go go backup floater
-	LLFloaterInventoryBackup* backup_floater = new LLFloaterInventoryBackup(filename, order->mCats, order->mItems);
+	LLFloaterInventoryBackup* backup_floater = new LLFloaterInventoryBackup(dirname, order->mCats, order->mItems);
 	backup_floater->center();
 
 	// Close myself
 	floater->close();
 }
-
-
-
 
 // static
 bool LLInventoryBackup::itemIsFolder(LLInventoryItem* item)
@@ -158,62 +163,64 @@ bool LLInventoryBackup::itemIsFolder(LLInventoryItem* item)
 }
 
 // static
-LLFilePicker::ESaveFilter LLInventoryBackup::getSaveFilter(LLInventoryItem* item)
+ESaveFilter LLInventoryBackup::getSaveFilter(LLInventoryItem* item)
 {
 	LLAssetType::EType type = item->getType();
 	EWearableType wear = (EWearableType)(item->getFlags() & 0xFF);
 	switch(type)
 	{
 	case LLAssetType::AT_TEXTURE:
-		return LLFilePicker::FFSAVE_TGA;
+		return FFSAVE_TGA;
 	case LLAssetType::AT_SOUND:
-		return LLFilePicker::FFSAVE_OGG;
+		return FFSAVE_OGG;
 	case LLAssetType::AT_SCRIPT:
 	case LLAssetType::AT_LSL_TEXT:
-		return LLFilePicker::FFSAVE_LSL;
+		return FFSAVE_LSL;
 	case LLAssetType::AT_ANIMATION:
-		return LLFilePicker::FFSAVE_ANIMATN;
+		return FFSAVE_ANIMATN;
 	case LLAssetType::AT_GESTURE:
-		return LLFilePicker::FFSAVE_GESTURE;
+		return FFSAVE_GESTURE;
 	case LLAssetType::AT_NOTECARD:
-		return LLFilePicker::FFSAVE_NOTECARD;
+		return FFSAVE_NOTECARD;
 	case LLAssetType::AT_LANDMARK:
-		return LLFilePicker::FFSAVE_LANDMARK;
+		return FFSAVE_LANDMARK;
 	case LLAssetType::AT_BODYPART:
 	case LLAssetType::AT_CLOTHING:
 		switch(wear)
 		{
 		case WT_EYES:
-			return LLFilePicker::FFSAVE_EYES;
+			return FFSAVE_EYES;
 		case WT_GLOVES:
-			return LLFilePicker::FFSAVE_GLOVES;
+			return FFSAVE_GLOVES;
 		case WT_HAIR:
-			return LLFilePicker::FFSAVE_HAIR;
+			return FFSAVE_HAIR;
 		case WT_JACKET:
-			return LLFilePicker::FFSAVE_JACKET;
+			return FFSAVE_JACKET;
 		case WT_PANTS:
-			return LLFilePicker::FFSAVE_PANTS;
+			return FFSAVE_PANTS;
 		case WT_SHAPE:
-			return LLFilePicker::FFSAVE_SHAPE;
+			return FFSAVE_SHAPE;
 		case WT_SHIRT:
-			return LLFilePicker::FFSAVE_SHIRT;
+			return FFSAVE_SHIRT;
 		case WT_SHOES:
-			return LLFilePicker::FFSAVE_SHOES;
+			return FFSAVE_SHOES;
 		case WT_SKIN:
-			return LLFilePicker::FFSAVE_SKIN;
+			return FFSAVE_SKIN;
 		case WT_SKIRT:
-			return LLFilePicker::FFSAVE_SKIRT;
+			return FFSAVE_SKIRT;
 		case WT_SOCKS:
-			return LLFilePicker::FFSAVE_SOCKS;
+			return FFSAVE_SOCKS;
 		case WT_UNDERPANTS:
-			return LLFilePicker::FFSAVE_UNDERPANTS;
+			return FFSAVE_UNDERPANTS;
 		case WT_UNDERSHIRT:
-			return LLFilePicker::FFSAVE_UNDERSHIRT;
+			return FFSAVE_UNDERSHIRT;
+		case WT_PHYSICS:
+			return FFSAVE_PHYSICS;
 		default:
-			return LLFilePicker::FFSAVE_ALL;
+			return FFSAVE_ALL;
 		}
 	default:
-		return LLFilePicker::FFSAVE_ALL;
+		return FFSAVE_ALL;
 	}
 }
 
@@ -350,32 +357,35 @@ void LLInventoryBackup::imageCallback(BOOL success,
 			return;
 		}
 
-		LLFilePicker& file_picker = LLFilePicker::instance();
-		if( !file_picker.getSaveFile( getSaveFilter(item), LLDir::getScrubbedFileName(item->getName())) )
-		{
-			// User canceled or we failed to acquire save file.
-			return;
-		}
-		// remember the user-approved/edited file name.
-		std::string filename = file_picker.getFirstFile();
-
-		LLPointer<LLImageTGA> image_tga = new LLImageTGA;
-		if( !image_tga->encode( src ) )
-		{
-			LLSD args;
-			args["ERROR_MESSAGE"] = "Couldn't encode file.";
-			LLNotifications::instance().add("ErrorMessage", args);
-		}
-		else if( !image_tga->save( filename ) )
-		{
-			LLSD args;
-			args["ERROR_MESSAGE"] = "Couldn't write file.";
-			LLNotifications::instance().add("ErrorMessage", args);
-		}
+		AIFilePicker* filepicker = AIFilePicker::create();
+		filepicker->open(LLDir::getScrubbedFileName(item->getName()), getSaveFilter(item));
+		filepicker->run(boost::bind(&LLInventoryBackup::imageCallback_continued, src, filepicker));
 	}
 	else
 	{
 		src_vi->setBoostLevel(LLViewerTexture::BOOST_UI);
+	}
+}
+
+void LLInventoryBackup::imageCallback_continued(LLImageRaw* src, AIFilePicker* filepicker)
+{
+	if (!filepicker->hasFilename())
+		return;
+
+	std::string filename = filepicker->getFilename();
+
+	LLPointer<LLImageTGA> image_tga = new LLImageTGA;
+	if( !image_tga->encode( src ) )
+	{
+		LLSD args;
+		args["ERROR_MESSAGE"] = "Couldn't encode file.";
+		LLNotifications::instance().add("ErrorMessage", args);
+	}
+	else if( !image_tga->save( filename ) )
+	{
+		LLSD args;
+		args["ERROR_MESSAGE"] = "Couldn't write file.";
+		LLNotifications::instance().add("ErrorMessage", args);
 	}
 }
 
@@ -400,7 +410,7 @@ void LLInventoryBackup::assetCallback(LLVFS *vfs,
 	LLVFile file(vfs, asset_uuid, type, LLVFile::READ);
 	S32 size = file.getSize();
 
-	char* buffer = new char[size];
+	char* buffer = new char[size];		// Deleted in assetCallback_continued.
 	if (buffer == NULL)
 	{
 		llerrs << "Memory Allocation Failed" << llendl;
@@ -411,18 +421,22 @@ void LLInventoryBackup::assetCallback(LLVFS *vfs,
 
 	// Write it back out...
 
-	LLFilePicker& file_picker = LLFilePicker::instance();
-	if( !file_picker.getSaveFile( getSaveFilter(item), LLDir::getScrubbedFileName(item->getName())) )
-	{
-		// User canceled or we failed to acquire save file.
-		return;
-	}
-	// remember the user-approved/edited file name.
-	std::string filename = file_picker.getFirstFile();
+	AIFilePicker* filepicker = AIFilePicker::create();
+	filepicker->open(LLDir::getScrubbedFileName(item->getName()), getSaveFilter(item));
+	filepicker->run(boost::bind(&LLInventoryBackup::assetCallback_continued, buffer, size, filepicker));
+}
 
-	std::ofstream export_file(filename.c_str(), std::ofstream::binary);
-	export_file.write(buffer, size);
-	export_file.close();
+// static
+void LLInventoryBackup::assetCallback_continued(char* buffer, S32 size, AIFilePicker* filepicker)
+{
+	if (filepicker->hasFilename())
+	{
+		std::string filename = filepicker->getFilename();
+		std::ofstream export_file(filename.c_str(), std::ofstream::binary);
+		export_file.write(buffer, size);
+		export_file.close();
+	}
+	delete [] buffer;
 }
 
 // static

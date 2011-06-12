@@ -69,6 +69,19 @@
 		mouse_opaque="true" name="vbo_stream" radio_style="false"
 		tool_tip="Disabling this may improve performance when VBOs are enabled. Disabling produced observable improvement on various AMD GPUs."
 		width="315" />
+  <text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+  bottom_delta="-20" drop_shadow_visible="true" enabled="true" follows="left|top"
+  font="SansSerifSmall" h_pad="0" halign="left" height="12"
+  left="10" mouse_opaque="true" name="Enable FBO:" v_pad="0"
+  width="140">
+    Enable Framebuffer Objects:
+  </text>
+  <check_box bottom_delta="-5" control_name="RenderUseFBO" enabled="false" follows="left|top"
+		font="SansSerifSmall" height="16" initial_value="true"
+		label="Enable OpenGL Frame Buffer Objects" left="148"
+		mouse_opaque="true" name="fbo" radio_style="false"
+		tool_tip="Enabling this on modern hardware can provide a performance gain. However, enabling this when combined with antialiasing on AMD GPUs may cause edge artifacts. This setting is required for deferred rendering."
+		width="315" />
 	<slider bottom_delta="-21" can_edit_text="false" control_name="TextureMemory" 
 		decimal_digits="0" enabled="true"
 		follows="left|top" height="16" increment="16"

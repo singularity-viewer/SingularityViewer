@@ -35,17 +35,9 @@
 #include "llthread.h"
 
 //static
-BOOL LLCommon::sAprInitialized = FALSE;
-
-//static
 void LLCommon::initClass()
 {
 	LLMemory::initClass();
-	if (!sAprInitialized)
-	{
-		ll_init_apr();
-		sAprInitialized = TRUE;
-	}
 	LLTimer::initClass();
 	LLThreadSafeRefCount::initThreadSafeRefCount();
 // 	LLWorkerThread::initClass();
@@ -59,10 +51,5 @@ void LLCommon::cleanupClass()
 // 	LLWorkerThread::cleanupClass();
 	LLThreadSafeRefCount::cleanupThreadSafeRefCount();
 	LLTimer::cleanupClass();
-	if (sAprInitialized)
-	{
-		ll_cleanup_apr();
-		sAprInitialized = FALSE;
-	}
 	LLMemory::cleanupClass();
 }

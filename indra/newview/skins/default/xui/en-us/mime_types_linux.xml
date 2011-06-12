@@ -175,8 +175,8 @@
 			movie
 		</widgettype>
 		<impl>
-      media_plugin_gstreamer
-    </impl>
+			media_plugin_gstreamer
+		</impl>
 	</mimetype>
 	<mimetype name="application/javascript">
 		<label name="application/javascript_label">
@@ -235,7 +235,7 @@
 	</mimetype>
 	<mimetype name="application/smil">
 		<label name="application/smil_label">
-		    Synchronized Multimedia Integration Language (SMIL)
+			Synchronized Multimedia Integration Language (SMIL)
 		</label>
 		<widgettype>
 			movie
@@ -384,8 +384,8 @@
 			web
 		</widgettype>
 		<impl>
-      media_plugin_webkit
-    </impl>
+			media_plugin_webkit
+		</impl>
 	</mimetype>
 	<mimetype menu="1" name="text/plain">
 		<label name="text/plain_label">
@@ -417,8 +417,8 @@
 			movie
 		</widgettype>
 		<impl>
-      media_plugin_gstreamer
-    </impl>
+			media_plugin_gstreamer
+		</impl>
 	</mimetype>
 	<mimetype name="video/mp4">
 		<label name="video/mp4_label">
@@ -428,8 +428,8 @@
 			movie
 		</widgettype>
 		<impl>
-      media_plugin_gstreamer
-    </impl>
+			media_plugin_gstreamer
+		</impl>
 	</mimetype>
 	<mimetype menu="1" name="video/quicktime">
 		<label name="video/quicktime_label">
@@ -439,8 +439,8 @@
 			movie
 		</widgettype>
 		<impl>
-      media_plugin_gstreamer
-    </impl>
+			media_plugin_gstreamer
+		</impl>
 	</mimetype>
 	<mimetype name="video/x-ms-asf">
 		<label name="video/x-ms-asf_label">
@@ -450,8 +450,8 @@
 			movie
 		</widgettype>
 		<impl>
-      media_plugin_gstreamer
-    </impl>
+			media_plugin_gstreamer
+		</impl>
 	</mimetype>
 	<mimetype name="video/x-ms-wmv">
 		<label name="video/x-ms-wmv_label">
@@ -461,8 +461,8 @@
 			movie
 		</widgettype>
 		<impl>
-      media_plugin_gstreamer
-    </impl>
+			media_plugin_gstreamer
+		</impl>
 	</mimetype>
 	<mimetype menu="1" name="video/x-msvideo">
 		<label name="video/x-msvideo_label">
@@ -472,7 +472,7 @@
 			movie
 		</widgettype>
 		<impl>
-      media_plugin_gstreamer
-    </impl>
+			media_plugin_gstreamer
+		</impl>
 	</mimetype>
 </mimetypes>

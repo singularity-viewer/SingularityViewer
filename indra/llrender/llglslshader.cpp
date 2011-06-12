@@ -420,7 +420,15 @@ S32 LLGLSLShader::disableTexture(S32 uniform, LLTexUnit::eTextureType mode)
 	{
 		if (gDebugGL && gGL.getTexUnit(index)->getCurrType() != mode)
 		{
-			llerrs << "Texture channel " << index << " texture type corrupted." << llendl;
+			if (gDebugSession)
+			{
+				gFailLog << "Texture channel " << index << " texture type corrupted." << std::endl;
+				ll_fail("LLGLSLShader::disableTexture failed");
+			}
+			else
+			{
+				llerrs << "Texture channel " << index << " texture type corrupted." << llendl;
+			}
 		}
 		gGL.getTexUnit(index)->disable();
 	}
@@ -708,17 +716,46 @@ void LLGLSLShader::uniformMatrix4fv(U32 index, U32 count, GLboolean transpose, c
 
 GLint LLGLSLShader::getUniformLocation(const string& uniform)
 {
+	GLint ret = -1;
 	if (mProgramObject > 0)
 	{
 		std::map<string, GLint>::iterator iter = mUniformMap.find(uniform);
 		if (iter != mUniformMap.end())
 		{
-			llassert(iter->second == glGetUniformLocationARB(mProgramObject, uniform.c_str()));
-			return iter->second;
+			if (gDebugGL)
+			{
+				stop_glerror();
+				if (iter->second != glGetUniformLocationARB(mProgramObject, uniform.c_str()))
+				{
+					llerrs << "Uniform does not match." << llendl;
+				}
+				stop_glerror();
+			}
+			ret = iter->second;
 		}
 	}
 
-	return -1;
+	/*if (gDebugGL)
+	{
+		if (ret == -1 && ret != glGetUniformLocationARB(mProgramObject, uniform.c_str()))
+		{
+			llerrs << "Uniform map invalid." << llendl;
+		}
+	}*/
+
+	return ret;
+}
+
+GLint LLGLSLShader::getAttribLocation(U32 attrib)
+{
+	if (attrib < mAttribute.size())
+	{
+		return mAttribute[attrib];
+	}
+	else
+	{
+		return -1;
+	}
 }
 
 void LLGLSLShader::uniform1i(const string& uniform, GLint v)
@@ -892,7 +929,9 @@ void LLGLSLShader::uniformMatrix4fv(const string& uniform, U32 count, GLboolean 
 				
 	if (location >= 0)
 	{
+		stop_glerror();
 		glUniformMatrix4fvARB(location, count, transpose, v);
+		stop_glerror();
 	}
 }
 

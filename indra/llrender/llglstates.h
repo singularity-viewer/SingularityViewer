@@ -262,25 +262,4 @@ public:
 
 //----------------------------------------------------------------------------
 
-
-class LLGLSBlendFunc : public LLGLSPipeline {
-protected:
-	GLint mSavedSrc, mSavedDst;
-	LLGLEnable mBlend;
-
-public:
-	LLGLSBlendFunc(GLenum srcFunc, GLenum dstFunc) :
-		mBlend(GL_BLEND)
-	{
-		glGetIntegerv(GL_BLEND_SRC, &mSavedSrc);
-		glGetIntegerv(GL_BLEND_DST, &mSavedDst);
-		glBlendFunc(srcFunc, dstFunc);
-	}
-
-	~LLGLSBlendFunc(void) {
-		glBlendFunc(mSavedSrc, mSavedDst);
-	}
-};
-
-
 #endif

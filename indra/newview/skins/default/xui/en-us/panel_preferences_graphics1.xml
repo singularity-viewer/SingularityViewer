@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
-<panel border="true" bottom="-409" enabled="true" follows="left|top|right|bottom"
-     height="408" label="Graphics" left="102" mouse_opaque="true"
+<panel border="true" bottom="-439" enabled="true" follows="left|top|right|bottom"
+     height="438" label="Graphics" left="102" mouse_opaque="true"
      name="Display panel" width="517">
 	<button bottom="-22" follows="left|top" font="SansSerif" height="18" label="?"
 	     left="470" name="GraphicsPreferencesHelpButton" width="22" />
@@ -24,11 +24,8 @@
 	<combo_box allow_text_entry="false" bottom="-67" enabled="true" follows="left|top"
 	     height="18" left="185" max_chars="20" mouse_opaque="true"
 	     name="windowsize combo" width="150">
-		<combo_item type="string" length="1" enabled="true" name="640x480" value="640 x 480">
-			640x480
-		</combo_item>
 		<combo_item type="string" length="1" enabled="true" name="800x600" value="800 x 600">
-			800x600 
+			800x600
 		</combo_item>
 		<combo_item type="string" length="1" enabled="true" name="720x480" value="720 x 480">
 			720x480 (NTSC)
@@ -39,7 +36,16 @@
 		<combo_item type="string" length="1" enabled="true" name="1024x768" value="1024 x 768">
 			1024x768
 		</combo_item>
-
+		<combo_item type="string" length="1" enabled="true" name="1280x720" value="1280 x 720">
+			1280x720 (HDV720)
+		</combo_item>
+		<combo_item type="string" length="1" enabled="true" name="1440x1080" value="1440 x 1080">
+			1440x1080 (HDV1080)
+		</combo_item>
+		<combo_item type="string" length="1" enabled="true" name="1920x1080" value="1920 x 1080">
+			1920x1080 (HD1080)
+		</combo_item>
+		
 	</combo_box>
 	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
 	     bottom="-62" drop_shadow_visible="true" enabled="true" follows="left|top"
@@ -67,10 +73,10 @@
 			5:4 (1280x1024 LCD)
 		</combo_item>
 		<combo_item type="string" length="1" enabled="true" name="8:5(Widescreen)" value="1.6">
-			8:5 (Widescreen)
+			16:10 (Widescreen PC)
 		</combo_item>
 		<combo_item type="string" length="1" enabled="true" name="16:9(Widescreen)" value="1.7777777">
-			16:9 (Widescreen)
+			16:9 (Widescreen TV)
 		</combo_item>
 	</combo_box>
 	<check_box bottom="-44" control_name="FullScreenAutoDetectAspectRatio" enabled="true"
@@ -157,8 +163,8 @@
 	     follows="left|top" font="SansSerifSmall" height="16"
 	     initial_value="true" label="Custom" left="385" mouse_opaque="true"
 	     name="CustomSettings" radio_style="false" width="256" />
-	<view_border bevel_style="none" border_thickness="1" bottom="-375" follows="top|left"
-	     height="260" left="5" name="GraphicsBorder" width="485" />
+	<view_border bevel_style="none" border_thickness="1" bottom="-405" follows="top|left"
+	     height="290" left="5" name="GraphicsBorder" width="485" />
 	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
 	     bottom="-130" drop_shadow_visible="true" enabled="true" follows="left|top"
 	     font="SansSerifSmall" h_pad="0" halign="left" height="12"
@@ -180,18 +186,43 @@
 	     initial_value="true" label="Atmospheric Shaders" left_delta="0"
 	     mouse_opaque="true" name="WindLightUseAtmosShaders" radio_style="false"
 	     width="256" />
-	<check_box bottom_delta="-17" control_name="RenderWaterReflections" enabled="true"
+	<check_box bottom_delta="-17" control_name="RenderDeferred" enabled="true"
 	     follows="left|top" font="SansSerifSmall" height="16"
-	     initial_value="true" label="Water Reflections" left_delta="0"
-	     mouse_opaque="true" name="Reflections" radio_style="false" width="256" />
+	     initial_value="true" label="Deferred Shading" left_delta="0"
+	     mouse_opaque="true" name="RenderDeferred" radio_style="false"
+	     width="256" />
+  <check_box bottom_delta="-17" control_name="RenderDeferredGI" enabled="true"
+	     follows="left|top" font="SansSerifSmall" height="16"
+	     initial_value="true" label="Global Illumination (Experimental!)" left_delta="0"
+	     mouse_opaque="true" name="RenderDeferredGI" radio_style="false"
+	     width="256" />
 	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
-	     bottom="-223" drop_shadow_visible="true" enabled="true" follows="left|top"
+	     bottom_delta="-17" drop_shadow_visible="true" enabled="true" follows="left|top"
 	     font="SansSerifSmall" h_pad="0" halign="left" height="12"
-	     left="10" mouse_opaque="true" name="ReflectionDetailText" v_pad="0"
+	     left="15" mouse_opaque="true" name="ReflectionDetailText" v_pad="0"
 	     width="128">
-		Reflection Detail:
+		Water Reflections:
 	</text>
-	<radio_group bottom_delta="-73" control_name="RenderReflectionDetail" draw_border="false"
+	<combo_box bottom_delta="-20" control_name="RenderReflectionDetail" enabled = "true" follows="left|top" label="Reflection Detail"
+		 left_delta="-2" mouse_opaque="true" name="ReflectionDetailCombo" width="160" height="16">
+    <combo_item type="string" length="1" name="0" value="0">
+      Disabled
+    </combo_item>
+		<combo_item type="string" length="1" name="1" value="1">
+			Terrain and Trees
+		</combo_item>
+		<combo_item type="string" length="1" name="2" value="2">
+			All Static Objects
+		</combo_item>
+		<combo_item type="string" length="1" name="3" value="3">
+			All Avatars and Objects
+		</combo_item>
+		<combo_item type="string" length="1" name="4" value="4">
+			Everything
+		</combo_item>
+	</combo_box>
+
+	<!--radio_group bottom_delta="-73" control_name="RenderReflectionDetail" draw_border="false"
 	     enabled="true" follows="left|top" height="70"
 	     left_delta="-2" mouse_opaque="true" name="ReflectionDetailRadio"
 	     width="321">
@@ -211,7 +242,28 @@
 		     left="3" mouse_opaque="true" name="3" width="315">
 			Everything
 		</radio_item>
-	</radio_group>
+	</radio_group-->
+
+  <text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+	     bottom_delta="-17" drop_shadow_visible="true" enabled="true" follows="left|top"
+	     font="SansSerifSmall" h_pad="0" halign="left" height="12"
+	     left="15" mouse_opaque="true" name="ShadowDetailText" v_pad="0"
+	     width="128">
+    Deferred Shadows:
+  </text>
+  <combo_box bottom_delta="-20" control_name="RenderShadowDetail" enabled = "true" follows="left|top" label="Shadow Detail"
+		 left_delta="-2" mouse_opaque="true" name="ShadowDetailCombo" width="160" height="16">
+    <combo_item type="string" length="1" name="0" value="0">
+      Disabled
+    </combo_item>
+    <combo_item type="string" length="1" name="1" value="1">
+      Sun shadows
+    </combo_item>
+    <combo_item type="string" length="1" name="2" value="2">
+      Sun and spotlight shadows
+    </combo_item>
+  </combo_box>
+  
 	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
 	     bottom="-313" drop_shadow_visible="true" enabled="true" follows="left|top"
 	     font="SansSerifSmall" h_pad="0" halign="left" height="12" left="10"
@@ -287,6 +339,11 @@
 	     increment="0.125" initial_val="160" label="  Avatars:"
 	     label_width="140" left_delta="0" max_val="1" min_val="0"
 	     mouse_opaque="true" name="AvatarMeshDetail" show_text="false" width="223" />
+  <slider bottom_delta="-20" can_edit_text="false" control_name="RenderAvatarPhysicsLODFactor"
+	     decimal_digits="3" enabled="true" follows="left|top" height="16"
+	     increment="0.1" initial_val="160" label="  Avatar Physics:"
+	     label_width="140" left_delta="0" max_val="1" min_val="0"
+	     mouse_opaque="true" name="AvatarPhysicsDetail" show_text="false" width="223" />
 	<slider bottom_delta="-20" can_edit_text="false" control_name="RenderTerrainLODFactor"
 	     decimal_digits="3" enabled="true" follows="left|top" height="16"
 	     increment="0.125" initial_val="160" label="  Terrain:"
@@ -331,6 +388,13 @@
 	     name="AvatarMeshDetailText" v_pad="0" width="128">
 		Low
 	</text>
+  <text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+	     bottom_delta="-20" drop_shadow_visible="true" enabled="true"
+	     follows="left|top" font="SansSerifSmall" h_pad="0" halign="left"
+	     height="12" left_delta="0" mouse_opaque="true"
+	     name="AvatarPhysicsDetailText" v_pad="0" width="128">
+    Off
+  </text>
 	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
 	     bottom_delta="-20" drop_shadow_visible="true" enabled="true"
 	     follows="left|top" font="SansSerifSmall" h_pad="0" halign="left"
@@ -346,13 +410,13 @@
 		Low
 	</text>
 	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
-	     bottom="-331" drop_shadow_visible="true" enabled="true" follows="left|top"
+	     bottom="-352" drop_shadow_visible="true" enabled="true" follows="left|top"
 	     font="SansSerifSmall" h_pad="0" halign="left" height="12"
 	     left="210" mouse_opaque="true" name="LightingDetailText" v_pad="0"
 	     width="128">
 		Lighting Detail:
 	</text>
-	<radio_group bottom_delta="-43" control_name="RenderLightingDetail" draw_border="false"
+	<radio_group bottom_delta="-43" control_name="RenderLocalLights" draw_border="false"
 	     enabled="true" follows="left|top" height="38" left_delta="0"
 	     mouse_opaque="true" name="LightingDetailRadio" width="321">
 		<radio_item type="string" length="1" bottom="-19" enabled="true" follows="left|top" height="16"
@@ -365,7 +429,7 @@
 		</radio_item>
 	</radio_group>
 	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
-	     bottom="-331" drop_shadow_visible="true" enabled="true" follows="left|top"
+	     bottom="-352" drop_shadow_visible="true" enabled="true" follows="left|top"
 	     font="SansSerifSmall" h_pad="0" halign="left" height="12" left="360"
 	     mouse_opaque="true" name="TerrainDetailText" v_pad="0" width="128">
 		Terrain Detail:
@@ -382,10 +446,10 @@
 			High
 		</radio_item>
 	</radio_group>
-	<button bottom="-400" enabled="true" font="SansSerif" halign="center" height="20"
+	<button bottom="-430" enabled="true" font="SansSerif" halign="center" height="20"
 	     label="Recommended Settings" left="130" mouse_opaque="true"
 	     name="Defaults" scale_image="true" width="170" />
-	<button bottom="-400" enabled="true" font="SansSerif" halign="center" height="20"
+	<button bottom="-430" enabled="true" font="SansSerif" halign="center" height="20"
 	     label="Hardware Options" label_selected="Hardware Options"
 	     left="310" mouse_opaque="true" name="GraphicsHardwareButton"
 	     scale_image="true" width="170" />

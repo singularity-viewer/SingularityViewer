@@ -110,24 +110,58 @@ void LLImageGL::checkTexSize(bool forced) const
 {
 	if ((forced || gDebugGL) && mTarget == GL_TEXTURE_2D)
 	{
+		{
+			//check viewport
+			GLint vp[4] ;
+			glGetIntegerv(GL_VIEWPORT, vp) ;
+			llcallstacks << "viewport: " << vp[0] << " : " << vp[1] << " : " << vp[2] << " : " << vp[3] << llcallstacksendl ;
+		}
 		GLint texname;
 		glGetIntegerv(GL_TEXTURE_BINDING_2D, &texname);
+		BOOL error = FALSE;
 		if (texname != mTexName)
 		{
-			llerrs << "Invalid texture bound!" << llendl;
+			llinfos << "Bound: " << texname << " Should bind: " << mTexName << " Default: " << LLImageGL::sDefaultGLTexture->getTexName() << llendl;
+
+			error = TRUE;
+			if (gDebugSession)
+			{
+				gFailLog << "Invalid texture bound!" << std::endl;
+			}
+			else
+			{
+				llerrs << "Invalid texture bound!" << llendl;
+			}
 		}
 		stop_glerror() ;
 		LLGLint x = 0, y = 0 ;
 		glGetTexLevelParameteriv(mTarget, 0, GL_TEXTURE_WIDTH, (GLint*)&x);
 		glGetTexLevelParameteriv(mTarget, 0, GL_TEXTURE_HEIGHT, (GLint*)&y) ;
 		stop_glerror() ;
+		llcallstacks << "w: " << x << " h: " << y << llcallstacksendl ;
+
 		if(!x || !y)
 		{
 			return ;
 		}
 		if(x != (mWidth >> mCurrentDiscardLevel) || y != (mHeight >> mCurrentDiscardLevel))
 		{
-			llerrs << "wrong texture size and discard level!" << llendl ;
+			error = TRUE;
+			if (gDebugSession)
+			{
+				gFailLog << "wrong texture size and discard level!" << 
+					mWidth << " Height: " << mHeight << " Current Level: " << (S32)mCurrentDiscardLevel << std::endl;
+			}
+			else
+			{
+				llerrs << "wrong texture size and discard level: width: " << 
+					mWidth << " Height: " << mHeight << " Current Level: " << (S32)mCurrentDiscardLevel << llendl ;
+			}
+		}
+
+		if (error)
+		{
+			ll_fail("LLImageGL::checkTexSize failed.");
 		}
 	}
 }
@@ -649,7 +683,7 @@ void LLImageGL::setImage(const U8* data_in, BOOL data_hasmips)
 	}
 
 // 		LLFastTimer t2(LLFastTimer::FTM_TEMP2);
-	gGL.getTexUnit(0)->bind(this);
+	llverify(gGL.getTexUnit(0)->bind(this));
 	
 	if (mUseMipMaps)
 	{
@@ -864,12 +898,14 @@ BOOL LLImageGL::setSubImage(const U8* datap, S32 data_width, S32 data_height, S3
 	}
 	if (mTexName == 0)
 	{
-		llwarns << "Setting subimage on image without GL texture" << llendl;
+		// *TODO: Re-enable warning?  Ran into thread locking issues? DK 2011-02-18
+		//llwarns << "Setting subimage on image without GL texture" << llendl;
 		return FALSE;
 	}
 	if (datap == NULL)
 	{
-		llwarns << "Setting subimage on image with NULL datap" << llendl;
+		// *TODO: Re-enable warning?  Ran into thread locking issues? DK 2011-02-18
+		//llwarns << "Setting subimage on image with NULL datap" << llendl;
 		return FALSE;
 	}
 	
@@ -991,6 +1027,7 @@ void LLImageGL::deleteTextures(S32 numTextures, U32 *textures)
 void LLImageGL::setManualImage(U32 target, S32 miplevel, S32 intformat, S32 width, S32 height, U32 pixformat, U32 pixtype, const void *pixels)
 {
 	glTexImage2D(target, miplevel, intformat, width, height, 0, pixformat, pixtype, pixels);
+	stop_glerror();
 }
 
 //create an empty GL texture: just create a texture name
@@ -1143,6 +1180,13 @@ BOOL LLImageGL::createGLTexture(S32 discard_level, const U8* data_in, BOOL data_
 	if (mUseMipMaps)
 	{
 		mAutoGenMips = gGLManager.mHasMipMapGeneration;
+#if LL_DARWIN
+		// On the Mac GF2 and GF4MX drivers, auto mipmap generation doesn't work right with alpha-only textures.
+		if(gGLManager.mIsGF2or4MX && (mFormatInternal == GL_ALPHA8) && (mFormatPrimary == GL_ALPHA))
+		{
+			mAutoGenMips = FALSE;
+		}
+#endif
 	}
 
 	mCurrentDiscardLevel = discard_level;	

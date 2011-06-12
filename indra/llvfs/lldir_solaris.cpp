@@ -100,7 +100,7 @@ LLDir_Solaris::LLDir_Solaris()
 	mAppRODataDir = strdup(tmp_str);
 	mOSUserDir = getCurrentUserHome(tmp_str);
 	mOSUserAppDir = "";
-	mLindenUserDir = tmp_str;
+	mLindenUserDir = "";
 
 	char path [LL_MAX_PATH];	/* Flawfinder: ignore */ 
 
@@ -174,8 +174,14 @@ LLDir_Solaris::~LLDir_Solaris()
 // Implementation
 
 
-void LLDir_Solaris::initAppDirs(const std::string &app_name)
+void LLDir_Solaris::initAppDirs(const std::string &app_name,
+								const std::string& app_read_only_data_dir)
 {
+	// Allow override so test apps can read newview directory
+	if (!app_read_only_data_dir.empty())
+	{
+		mAppRODataDir = app_read_only_data_dir;
+	}
 	mAppName = app_name;
 
 	std::string upper_app_name(app_name);
@@ -238,24 +244,6 @@ void LLDir_Solaris::initAppDirs(const std::string &app_name)
 		}
 	}
 	
-	res = LLFile::mkdir(getExpandedFilename(LL_PATH_MOZILLA_PROFILE,""));
-	if (res == -1)
-	{
-		if (errno != EEXIST)
-		{
-			llwarns << "Couldn't create LL_PATH_MOZILLA_PROFILE dir " << getExpandedFilename(LL_PATH_MOZILLA_PROFILE,"") << llendl;
-		}
-	}
-
-	res = LLFile::mkdir(getExpandedFilename(LL_PATH_USER_SETTINGS, "dictionaries"));
-	if (res == -1)
-	{
-		if (errno != EEXIST)
-		{
-			llwarns << "Couldn't create LL_PATH_USER_SETTINGS/dictionaries dir " << getExpandedFilename(LL_PATH_MOZILLA_PROFILE,"") << llendl;
-		}
-	}
-
 	mCAFile = getExpandedFilename(LL_PATH_APP_SETTINGS, "CA.pem");
 }
 
@@ -276,114 +264,6 @@ U32 LLDir_Solaris::countFilesInDir(const std::string &dirname, const std::string
 	}
 
 	return (file_count);
-}
-
-// get the next file in the directory
-// automatically wrap if we've hit the end
-BOOL LLDir_Solaris::getNextFileInDir(const std::string &dirname, const std::string &mask, std::string &fname, BOOL wrap)
-{
-	glob_t g;
-	BOOL result = FALSE;
-	fname = "";
-	
-	if(!(dirname == mCurrentDir))
-	{
-		// different dir specified, close old search
-		mCurrentDirIndex = -1;
-		mCurrentDirCount = -1;
-		mCurrentDir = dirname;
-	}
-	
-	std::string tmp_str;
-	tmp_str = dirname;
-	tmp_str += mask;
-
-	if(glob(tmp_str.c_str(), GLOB_NOSORT, NULL, &g) == 0)
-	{
-		if(g.gl_pathc > 0)
-		{
-			if((int)g.gl_pathc != mCurrentDirCount)
-			{
-				// Number of matches has changed since the last search, meaning a file has been added or deleted.
-				// Reset the index.
-				mCurrentDirIndex = -1;
-				mCurrentDirCount = g.gl_pathc;
-			}
-	
-			mCurrentDirIndex++;
-	
-			if((mCurrentDirIndex >= (int)g.gl_pathc) && wrap)
-			{
-				mCurrentDirIndex = 0;
-			}
-			
-			if(mCurrentDirIndex < (int)g.gl_pathc)
-			{
-//				llinfos << "getNextFileInDir: returning number " << mCurrentDirIndex << ", path is " << g.gl_pathv[mCurrentDirIndex] << llendl;
-
-				// The API wants just the filename, not the full path.
-				//fname = g.gl_pathv[mCurrentDirIndex];
-
-				char *s = strrchr(g.gl_pathv[mCurrentDirIndex], '/');
-				
-				if(s == NULL)
-					s = g.gl_pathv[mCurrentDirIndex];
-				else if(s[0] == '/')
-					s++;
-					
-				fname = s;
-				
-				result = TRUE;
-			}
-		}
-		
-		globfree(&g);
-	}
-	
-	return(result);
-}
-
-
-// get a random file in the directory
-// automatically wrap if we've hit the end
-void LLDir_Solaris::getRandomFileInDir(const std::string &dirname, const std::string &mask, std::string &fname)
-{
-	S32 num_files;
-	S32 which_file;
-	DIR *dirp;
-	dirent *entryp = NULL;
-
-	fname = "";
-
-	num_files = countFilesInDir(dirname,mask);
-	if (!num_files)
-	{
-		return;
-	}
-
-	which_file = ll_rand(num_files);
-
-//	llinfos << "Random select file #" << which_file << llendl;
-
-    // which_file now indicates the (zero-based) index to which file to play
-	
-	if (!((dirp = opendir(dirname.c_str()))))
-	{
-		while (which_file--)
-		{
-			if (!((entryp = readdir(dirp))))
-			{
-				return;
-			}
-		}		   
-
-		if ((!which_file) && entryp)
-		{
-			fname = entryp->d_name;
-		}
-		
-		closedir(dirp);
-	}
 }
 
 std::string LLDir_Solaris::getCurPath()

@@ -981,6 +981,6 @@ void HippoGridManager::saveFile()
 	} 
 	else 
 	{
-		llerrs << "Unable to open grid info file: " << fileName << llendl;
+		llwarns << "Unable to open grid info file for save: " << fileName << llendl;
 	}
 }

@@ -58,6 +58,7 @@ class LLPrefsIM;
 class LLPanelMsgs;
 class LLPanelSkins;
 class LLScrollListCtrl;
+class LLPrefsAscentChat;
 class LLPrefsAscentSys;
 class LLPrefsAscentVan;
 
@@ -98,6 +99,7 @@ private:
 	LLPanelWeb				*mWebPanel;
 	LLPanelMsgs				*mMsgPanel;
 	LLPanelLCD				*mLCDPanel;
+	LLPrefsAscentChat		*mPrefsAscentChat;
 	LLPrefsAscentSys		*mPrefsAscentSys;
 	LLPrefsAscentVan		*mPrefsAscentVan;
 };

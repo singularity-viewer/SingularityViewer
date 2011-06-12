@@ -68,16 +68,16 @@
 	<button bottom_delta="-25" follows="top|right" height="22" label="Add..."
 	    left_delta="0" name="add_btn" tool_tip="Offer friendship to a resident"
 	    width="80" />
-	<text bottom_delta="-50" follows="right|top" font="SansSerif" height="32" left_delta="10" name="friends" width="95">
+	<text bottom_delta="-35" follows="right|top" font="SansSerif" height="32" left_delta="0" name="friends" width="95">
 		Online:
     </text>
 	<text bottom_delta="-15" follows="right|top" font="SansSerif" height="32" left_delta="0" name="f_num" width="95">
 		0000
     </text>
-	<text bottom_delta="-20" follows="right|top" font="SansSerif" height="32" left_delta="0" name="sel" width="95">
+	<text bottom_delta="-15" follows="right|top" font="SansSerif" height="32" left_delta="0" name="sel" width="95">
 		Selected:
     </text>
-	<text bottom_delta="-15" follows="right|top" font="SansSerif" height="32" left_delta="0" name="s_num" width="95">
+	<text bottom_delta="0" follows="right|top" font="SansSerif" height="32" left_delta="55" name="s_num" width="95">
 		0000
     </text>		 
 </panel>

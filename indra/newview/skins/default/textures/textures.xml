@@ -389,5 +389,6 @@
   <texture name="media_btn_scrollup.png"/>
   <texture name="media_btn_stoploading.png"/>
   <texture name="media_panel_divider.png"/>
+  <texture name="media_panel_scrollbg.png"/>
 
 </textures>

@@ -1,6 +1,7 @@
 // <edit>
 #include "llinventoryview.h"
 #include "llinventory.h"
+#include "lleventtimer.h"
 class LLBuildNewViewsScheduler : public LLEventTimer
 {
 	typedef struct

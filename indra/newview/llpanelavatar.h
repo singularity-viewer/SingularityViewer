@@ -57,6 +57,7 @@ class LLViewerObject;
 class LLMessageSystem;
 class LLIconCtrl;
 class LLMediaCtrl;
+class LLPanelPick;
 
 enum EOnlineStatus
 {
@@ -265,9 +266,13 @@ private:
 	
 	//Pick import and export - RK
 	static void onClickImport(void* data);
+	static void onClickImport_continued(void* self, bool import);
 	static void onClickExport(void* data);
 
 	bool callbackDelete(const LLSD& notification, const LLSD& response);
+
+	// Used to pass it from onClickImport to onClickImport_continued.
+	LLPanelPick* mPanelPick;
 };
 
 

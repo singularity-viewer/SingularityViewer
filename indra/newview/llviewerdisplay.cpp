@@ -212,6 +212,7 @@ void display_stats()
 	{
 		F32 fps = gRecentFrameCount / fps_log_freq;
 		llinfos << llformat("FPS: %.02f", fps) << llendl;
+		llinfos << llformat("VBO: %d  glVBO: %d", LLVertexBuffer::sCount, LLVertexBuffer::sGLCount) << llendl;
 		gRecentFrameCount = 0;
 		gRecentFPSTime.reset();
 	}
@@ -647,14 +648,14 @@ void display(BOOL rebuild, F32 zoom_factor, int subfield, BOOL for_snapshot, boo
 				&& gSavedSettings.getBOOL("UseOcclusion") 
 				&& gGLManager.mHasOcclusionQuery) ? 2 : 0;
 
-		if (LLPipeline::sUseOcclusion && LLPipeline::sRenderDeferred)
+		/*if (LLPipeline::sUseOcclusion && LLPipeline::sRenderDeferred)
 		{ //force occlusion on for all render types if doing deferred render
 			LLPipeline::sUseOcclusion = 3;
-		}
+		}*/
 
 		LLPipeline::sFastAlpha = gSavedSettings.getBOOL("RenderFastAlpha");
 		LLPipeline::sUseFarClip = gSavedSettings.getBOOL("RenderUseFarClip");
-		LLVOAvatar::sMaxVisible = gSavedSettings.getS32("RenderAvatarMaxVisible");
+		LLVOAvatar::sMaxVisible = (U32)gSavedSettings.getS32("RenderAvatarMaxVisible");
 		LLPipeline::sDelayVBUpdate = gSavedSettings.getBOOL("RenderDelayVBUpdate");
 
 		S32 occlusion = LLPipeline::sUseOcclusion;
@@ -783,7 +784,6 @@ void display(BOOL rebuild, F32 zoom_factor, int subfield, BOOL for_snapshot, boo
 		{
 			LLViewerCamera::sCurCameraID = LLViewerCamera::CAMERA_WORLD;
 			gFrameStats.start(LLFrameStats::STATE_SORT);
-			gPipeline.sAllowRebuildPriorityGroup = TRUE ;
 			gPipeline.stateSort(*LLViewerCamera::getInstance(), result);
 			stop_glerror();
 				
@@ -903,6 +903,7 @@ void display(BOOL rebuild, F32 zoom_factor, int subfield, BOOL for_snapshot, boo
 			for (U32 i = 0; i < 16; i++)
 			{
 				gGLLastModelView[i] = gGLModelView[i];
+				gGLLastProjection[i] = gGLProjection[i];
 			}
 			stop_glerror();
 		}
@@ -914,12 +915,29 @@ void display(BOOL rebuild, F32 zoom_factor, int subfield, BOOL for_snapshot, boo
 			if (LLPipeline::sRenderDeferred && !LLPipeline::sUnderWaterRender)
 			{
 				gPipeline.mDeferredScreen.flush();
+				if(LLRenderTarget::sUseFBO)
+				{
+					LLRenderTarget::copyContentsToFramebuffer(gPipeline.mDeferredScreen, 0, 0, gPipeline.mDeferredScreen.getWidth(), 
+															  gPipeline.mDeferredScreen.getHeight(), 0, 0, 
+															  gPipeline.mDeferredScreen.getWidth(), 
+															  gPipeline.mDeferredScreen.getHeight(), 
+															  GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+				}
 			}
 			else if(!tiling)
 			{
 				gPipeline.mScreen.flush();
+				if(LLRenderTarget::sUseFBO)
+				{				
+					LLRenderTarget::copyContentsToFramebuffer(gPipeline.mScreen, 0, 0, gPipeline.mScreen.getWidth(), 
+															  gPipeline.mScreen.getHeight(), 0, 0, 
+															  gPipeline.mScreen.getWidth(), 
+															  gPipeline.mScreen.getHeight(), 
+															  GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+				}
 			}
 		}
+		//gGL.flush();
 		
 		if (LLPipeline::sRenderDeferred && !LLPipeline::sUnderWaterRender)
 		{
@@ -935,9 +953,11 @@ void display(BOOL rebuild, F32 zoom_factor, int subfield, BOOL for_snapshot, boo
 			render_ui();
 		}		
 
-		gPipeline.rebuildGroups();
 
 		LLSpatialGroup::sNoDelete = FALSE;
+		gPipeline.clearReferences();
+
+		gPipeline.rebuildGroups();
 	}
 	
 	LLAppViewer::instance()->pingMainloopTimeout("Display:FrameStats");
@@ -1060,7 +1080,7 @@ void render_hud_attachments()
 	glh_set_current_modelview(current_mod);
 }
 
-BOOL setup_hud_matrices()
+LLRect get_whole_screen_region()
 {
 	LLRect whole_screen = gViewerWindow->getVirtualWindowRect();
 
@@ -1077,11 +1097,10 @@ BOOL setup_hud_matrices()
 
 		whole_screen.setLeftTopAndSize(tile_x * tile_width, gViewerWindow->getWindowHeight() - (tile_y * tile_height), tile_width, tile_height);
 	}
-
-	return setup_hud_matrices(whole_screen);
+	return whole_screen;
 }
 
-BOOL setup_hud_matrices(const LLRect& screen_region)
+bool get_hud_matrices(const LLRect& screen_region, glh::matrix4f &proj, glh::matrix4f &model)
 {
 	LLVOAvatar* my_avatarp = gAgent.getAvatarObject();
 	if (my_avatarp && my_avatarp->hasHUDAttachment())
@@ -1090,11 +1109,10 @@ BOOL setup_hud_matrices(const LLRect& screen_region)
 		LLBBox hud_bbox = my_avatarp->getHUDBBox();
 
 		// set up transform to keep HUD objects in front of camera
-		glMatrixMode(GL_PROJECTION);
 		F32 hud_depth = llmax(1.f, hud_bbox.getExtentLocal().mV[VX] * 1.1f);
-		glh::matrix4f proj = gl_ortho(-0.5f * LLViewerCamera::getInstance()->getAspect(), 0.5f * LLViewerCamera::getInstance()->getAspect(), -0.5f, 0.5f, 0.f, hud_depth);
+		proj = gl_ortho(-0.5f * LLViewerCamera::getInstance()->getAspect(), 0.5f * LLViewerCamera::getInstance()->getAspect(), -0.5f, 0.5f, 0.f, hud_depth);
 		proj.element(2,2) = -0.01f;
-
+		
 		F32 aspect_ratio = LLViewerCamera::getInstance()->getAspect();
 
 		glh::matrix4f mat;
@@ -1104,22 +1122,16 @@ BOOL setup_hud_matrices(const LLRect& screen_region)
 		mat.set_translate(
 			glh::vec3f(clamp_rescale((F32)screen_region.getCenterX(), 0.f, (F32)gViewerWindow->getWindowWidth(), 0.5f * scale_x * aspect_ratio, -0.5f * scale_x * aspect_ratio),
 						clamp_rescale((F32)screen_region.getCenterY(), 0.f, (F32)gViewerWindow->getWindowHeight(), 0.5f * scale_y, -0.5f * scale_y),
-						0.f));
+					   0.f));
 		proj *= mat;
-
-		glLoadMatrixf(proj.m);
-		glh_set_current_projection(proj);
-
-		glMatrixMode(GL_MODELVIEW);
-		glh::matrix4f model((GLfloat*) OGL_TO_CFR_ROTATION);
+		
+		glh::matrix4f tmp_model((GLfloat*) OGL_TO_CFR_ROTATION);
 		
 		mat.set_scale(glh::vec3f(zoom_level, zoom_level, zoom_level));
 		mat.set_translate(glh::vec3f(-hud_bbox.getCenterLocal().mV[VX] + (hud_depth * 0.5f), 0.f, 0.f));
-
-		model *= mat;
-		glLoadMatrixf(model.m);
-		glh_set_current_modelview(model);
-
+		
+		tmp_model *= mat;
+		model = tmp_model;		
 		return TRUE;
 	}
 	else
@@ -1128,15 +1140,46 @@ BOOL setup_hud_matrices(const LLRect& screen_region)
 	}
 }
 
+bool get_hud_matrices(glh::matrix4f &proj, glh::matrix4f &model)
+{
+	LLRect whole_screen = get_whole_screen_region();
+	return get_hud_matrices(whole_screen, proj, model);
+}
 
+BOOL setup_hud_matrices()
+{
+	LLRect whole_screen = get_whole_screen_region();
+	return setup_hud_matrices(whole_screen);
+}
+
+BOOL setup_hud_matrices(const LLRect& screen_region)
+{
+	glh::matrix4f proj, model;
+	bool result = get_hud_matrices(screen_region, proj, model);
+	if (!result) return result;
+	
+	// set up transform to keep HUD objects in front of camera
+	glMatrixMode(GL_PROJECTION);
+	glLoadMatrixf(proj.m);
+	glh_set_current_projection(proj);
+	
+	glMatrixMode(GL_MODELVIEW);
+	glLoadMatrixf(model.m);
+	glh_set_current_modelview(model);
+	return TRUE;
+}
 void render_ui(F32 zoom_factor, int subfield, bool tiling)
 {
 	LLGLState::checkStates();
 	
-	glPushMatrix();
-	glLoadMatrixd(gGLLastModelView);
 	glh::matrix4f saved_view = glh_get_current_modelview();
-	glh_set_current_modelview(glh_copy_matrix(gGLLastModelView));
+
+	if (!gSnapshot)
+	{
+		glPushMatrix();
+		glLoadMatrixd(gGLLastModelView);
+		glh_set_current_modelview(glh_copy_matrix(gGLLastModelView));
+	}
 	
 	{
 		BOOL to_texture = gPipeline.canUseVertexShaders() &&
@@ -1194,8 +1237,11 @@ void render_ui(F32 zoom_factor, int subfield, bool tiling)
 		LLVertexBuffer::unbind();
 	}
 
-	glh_set_current_modelview(saved_view);
-	glPopMatrix();
+	if (!gSnapshot)
+	{
+		glh_set_current_modelview(saved_view);
+		glPopMatrix();
+	}
 
 	if (gDisplaySwapBuffers)
 	{
@@ -1337,7 +1383,7 @@ void render_ui_2d()
 	// render outline for HUD
 	if (gAgent.getAvatarObject() && gAgent.mHUDCurZoom < 0.98f)
 	{
-		glPushMatrix();
+		gGL.pushMatrix();
 		S32 half_width = (gViewerWindow->getWindowWidth() / 2);
 		S32 half_height = (gViewerWindow->getWindowHeight() / 2);
 		glScalef(LLUI::sGLScaleFactor.mV[0], LLUI::sGLScaleFactor.mV[1], 1.f);
@@ -1346,7 +1392,7 @@ void render_ui_2d()
 		glScalef(zoom,zoom,1.f);
 		gGL.color4fv(LLColor4::white.mV);
 		gl_rect_2d(-half_width, half_height, half_width, -half_height, FALSE);
-		glPopMatrix();
+		gGL.popMatrix();
 		stop_glerror();
 	}
 	gViewerWindow->draw();

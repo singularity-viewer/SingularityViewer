@@ -50,6 +50,7 @@ class LLTextEditor;
 class LLTextureCtrl;
 class LLUICtrl;
 class LLMessageSystem;
+class AIFilePicker;
 
 class LLPanelPick : public LLPanel
 {
@@ -70,8 +71,10 @@ public:
 	void initNewPick();
 
 	//Pick import and export - RK
-	bool importNewPick();
+	void importNewPick(void (*callback)(void*, bool), void* data);
+	void importNewPick_continued(void (*callback)(void*, bool), void* data, AIFilePicker* filepicker);
 	void exportPick();
+	void exportPick_continued(AIFilePicker* filepicker);
 
 	// We need to know the creator id so the database knows which partition
 	// to query for the pick data.

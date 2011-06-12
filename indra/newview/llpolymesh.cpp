@@ -49,7 +49,16 @@
 #define HEADER_ASCII "Linden Mesh 1.0"
 #define HEADER_BINARY "Linden Binary Mesh 1.0"
 
-extern LLControlGroup gSavedSettings;				// read only
+extern LLControlGroup gSavedSettings;                           // read only
+
+LLPolyMorphData *clone_morph_param_duplicate(const LLPolyMorphData *src_data,
+					     const std::string &name);
+LLPolyMorphData *clone_morph_param_direction(const LLPolyMorphData *src_data,
+					     const LLVector3 &direction,
+					     const std::string &name);
+LLPolyMorphData *clone_morph_param_cleavage(const LLPolyMorphData *src_data,
+                                            F32 scale,
+                                            const std::string &name);
 
 //-----------------------------------------------------------------------------
 // Global table of loaded LLPolyMeshes
@@ -606,8 +615,60 @@ BOOL LLPolyMeshSharedData::loadMesh( const std::string& fileName )
 					continue;
 				}
 
-				mMorphData.insert(morph_data);
-			}
+                                mMorphData.insert(morph_data);
+
+                                if (!strcmp(morphName, "Breast_Female_Cleavage"))
+                                {
+                                        mMorphData.insert(clone_morph_param_cleavage(morph_data,
+                                                                                     .75f,
+                                                                                     "Breast_Physics_LeftRight_Driven"));
+                                }
+
+                                if (!strcmp(morphName, "Breast_Female_Cleavage"))
+                                {
+                                        mMorphData.insert(clone_morph_param_duplicate(morph_data,
+										      "Breast_Physics_InOut_Driven"));
+                                }
+                                if (!strcmp(morphName, "Breast_Gravity"))
+                                {
+                                        mMorphData.insert(clone_morph_param_duplicate(morph_data,
+										      "Breast_Physics_UpDown_Driven"));
+                                }
+
+                                if (!strcmp(morphName, "Big_Belly_Torso"))
+                                {
+                                        mMorphData.insert(clone_morph_param_direction(morph_data,
+										      LLVector3(0,0,0.05f),
+										      "Belly_Physics_Torso_UpDown_Driven"));
+                                }
+
+                                if (!strcmp(morphName, "Big_Belly_Legs"))
+                                {
+                                        mMorphData.insert(clone_morph_param_direction(morph_data,
+										      LLVector3(0,0,0.05f),
+										      "Belly_Physics_Legs_UpDown_Driven"));
+                                }
+
+                                if (!strcmp(morphName, "skirt_belly"))
+                                {
+                                        mMorphData.insert(clone_morph_param_direction(morph_data,
+										      LLVector3(0,0,0.05f),
+										      "Belly_Physics_Skirt_UpDown_Driven"));
+                                }
+
+                                if (!strcmp(morphName, "Small_Butt"))
+                                {
+                                        mMorphData.insert(clone_morph_param_direction(morph_data,
+										      LLVector3(0,0,0.05f),
+										      "Butt_Physics_UpDown_Driven"));
+                                }
+                                if (!strcmp(morphName, "Small_Butt"))
+                                {
+                                        mMorphData.insert(clone_morph_param_direction(morph_data,
+										      LLVector3(0,0.03f,0),
+										      "Butt_Physics_LeftRight_Driven"));
+                                }
+                        }
 
 			S32 numRemaps;
 			if (fread(&numRemaps, sizeof(S32), 1, fp) == 1)
@@ -803,6 +864,687 @@ LLPolyMesh *LLPolyMesh::getMesh(const std::string &name, LLPolyMesh* reference_m
 }
 
 //-----------------------------------------------------------------------------
+// LLPolyMesh::getMeshData()
+//-----------------------------------------------------------------------------
+LLPolyMeshSharedData *LLPolyMesh::getMeshData(const std::string &name)
+{
+	//-------------------------------------------------------------------------
+	// search for an existing mesh by this name
+	//-------------------------------------------------------------------------
+	LLPolyMeshSharedData* mesh_shared_data = get_if_there(sGlobalSharedMeshList, name, (LLPolyMeshSharedData*)NULL);
+
+	return mesh_shared_data;
+}
+
+//-----------------------------------------------------------------------------
+// LLPolyMesh::saveLLM()
+//-----------------------------------------------------------------------------
+BOOL LLPolyMesh::saveLLM(LLFILE *fp)
+{
+	if (!fp)
+		return FALSE;
+
+	//-------------------------------------------------------------------------
+	// Write a header
+	//-------------------------------------------------------------------------
+	if (fwrite(HEADER_BINARY, 1, strlen(HEADER_BINARY), fp) != strlen(HEADER_BINARY))
+	{
+		llwarns << "Short write" << llendl;
+	}
+
+	if (strlen(HEADER_BINARY) < 24)
+	{
+		char padding[24] = {};	// zeroes
+		int pad = 24 - strlen(HEADER_BINARY);
+		if (fwrite(&padding, 1, pad, fp) != pad)
+		{
+			llwarns << "Short write" << llendl;
+		}
+	}
+
+	//----------------------------------------------------------------
+	// HasWeights
+	//----------------------------------------------------------------
+	U8 hasWeights = (U8) mSharedData->mHasWeights;
+	if (fwrite(&hasWeights, sizeof(U8), 1, fp) != 1)
+	{
+		llwarns << "Short write" << llendl;
+	}
+
+	//----------------------------------------------------------------
+	// HasDetailTexCoords
+	//----------------------------------------------------------------
+	U8 hasDetailTexCoords = (U8) mSharedData->mHasDetailTexCoords;
+	if (fwrite(&hasDetailTexCoords, sizeof(U8), 1, fp) != 1)
+	{
+		llwarns << "Short write" << llendl;
+	}
+
+	//----------------------------------------------------------------
+	// Position
+	//----------------------------------------------------------------
+	LLVector3 position = mSharedData->mPosition;
+	llendianswizzle(position.mV, sizeof(float), 3);
+	if (fwrite(position.mV, sizeof(float), 3, fp) != 3)
+	{
+		llwarns << "Short write" << llendl;
+	}
+
+	//----------------------------------------------------------------
+	// Rotation
+	//----------------------------------------------------------------
+	LLQuaternion rotation = mSharedData->mRotation;
+	F32 roll;
+	F32 pitch;
+	F32 yaw;
+
+	rotation.getEulerAngles(&roll, &pitch, &yaw);
+
+	roll  *= RAD_TO_DEG;
+	pitch *= RAD_TO_DEG;
+	yaw   *= RAD_TO_DEG;
+
+	LLVector3 rotationAngles (roll, pitch, yaw);
+	llendianswizzle(rotationAngles.mV, sizeof(float), 3);
+	if (fwrite(rotationAngles.mV, sizeof(float), 3, fp) != 3)
+	{
+		llwarns << "Short write" << llendl;
+	}
+
+	U8 rotationOrder = 0;
+	if (fwrite(&rotationOrder, sizeof(U8), 1, fp) != 1)
+	{
+		llwarns << "Short write" << llendl;
+	}
+
+	//----------------------------------------------------------------
+	// Scale
+	//----------------------------------------------------------------
+	LLVector3 scale = mSharedData->mScale;
+	llendianswizzle(scale.mV, sizeof(float), 3);
+	if (fwrite(scale.mV, sizeof(float), 3, fp) != 3)
+	{
+		llwarns << "Short write" << llendl;
+	}
+
+	//----------------------------------------------------------------
+	// NumVertices
+	//----------------------------------------------------------------
+	U16 numVertices = mSharedData->mNumVertices;
+
+	if (!isLOD())
+	{
+		llendianswizzle(&numVertices, sizeof(U16), 1);
+		if (fwrite(&numVertices, sizeof(U16), 1, fp) != 1)
+		{
+			llwarns << "Short write" << llendl;
+		}
+		numVertices = mSharedData->mNumVertices;  // without the swizzle again
+
+		//----------------------------------------------------------------
+		// Coords
+		//----------------------------------------------------------------
+		LLVector3* coords = mSharedData->mBaseCoords;
+
+		llendianswizzle(coords, sizeof(float), 3*numVertices);
+		if (fwrite(coords, 3*sizeof(float), numVertices, fp) != numVertices)
+		{
+			llwarns << "Short write" << llendl;
+		}
+		llendianswizzle(coords, sizeof(float), 3*numVertices);
+
+		//----------------------------------------------------------------
+		// Normals
+		//----------------------------------------------------------------
+		LLVector3* normals = mSharedData->mBaseNormals;
+
+		llendianswizzle(normals, sizeof(float), 3*numVertices);
+		if (fwrite(normals, 3*sizeof(float), numVertices, fp) != numVertices)
+		{
+			llwarns << "Short write" << llendl;
+		}
+		llendianswizzle(normals, sizeof(float), 3*numVertices);
+
+		//----------------------------------------------------------------
+		// Binormals
+		//----------------------------------------------------------------
+		LLVector3* binormals = mSharedData->mBaseBinormals;
+
+		llendianswizzle(binormals, sizeof(float), 3*numVertices);
+		if (fwrite(binormals, 3*sizeof(float), numVertices, fp) != numVertices)
+		{
+			llwarns << "Short write" << llendl;
+		}
+		llendianswizzle(binormals, sizeof(float), 3*numVertices);
+
+		//----------------------------------------------------------------
+		// TexCoords
+		//----------------------------------------------------------------
+		LLVector2* tex = mSharedData->mTexCoords;
+
+		llendianswizzle(tex, sizeof(float), 2*numVertices);
+		if (fwrite(tex, 2*sizeof(float), numVertices, fp) != numVertices)
+		{
+			llwarns << "Short write" << llendl;
+		}
+		llendianswizzle(tex, sizeof(float), 2*numVertices);
+
+		//----------------------------------------------------------------
+		// DetailTexCoords
+		//----------------------------------------------------------------
+		if (hasDetailTexCoords)
+		{
+			LLVector2* detail = mSharedData->mDetailTexCoords;
+
+			llendianswizzle(detail, sizeof(float), 2*numVertices);
+			if (fwrite(detail, 2*sizeof(float), numVertices, fp) != numVertices)
+			{
+				llwarns << "Short write" << llendl;
+			}
+			llendianswizzle(detail, sizeof(float), 2*numVertices);
+		}
+
+		//----------------------------------------------------------------
+		// Weights
+		//----------------------------------------------------------------
+		if (hasWeights)
+		{
+			F32* weights = mSharedData->mWeights;
+
+			llendianswizzle(weights, sizeof(float), numVertices);
+			if (fwrite(weights, sizeof(float), numVertices, fp) != numVertices)
+			{
+				llwarns << "Short write" << llendl;
+			}
+			llendianswizzle(weights, sizeof(float), numVertices);
+		}
+	}
+
+	//----------------------------------------------------------------
+	// NumFaces
+	//----------------------------------------------------------------
+	U16 numFaces = mSharedData->mNumFaces;
+
+	llendianswizzle(&numFaces, sizeof(U16), 1);
+	if (fwrite(&numFaces, sizeof(U16), 1, fp) != 1)
+	{
+		llwarns << "Short write" << llendl;
+	}
+	numFaces = mSharedData->mNumFaces;	// without the swizzle again
+
+	//----------------------------------------------------------------
+	// Faces
+	//----------------------------------------------------------------
+	LLPolyFace* faces = mSharedData->mFaces;
+	S16 face[3];
+	U32 i;
+	for (i = 0; i < numFaces; i++)
+	{
+		face[0] = faces[i][0];
+		face[1] = faces[i][1];
+		face[2] = faces[i][2];
+
+		llendianswizzle(face, sizeof(U16), 3);
+		if (fwrite(face, sizeof(U16), 3, fp) != 3)
+		{
+			llwarns << "Short write" << llendl;
+		}
+	}
+
+	//----------------------------------------------------------------
+	// NumSkinJoints
+	//----------------------------------------------------------------
+
+	// When reading LOD mesh files, we stop here, but the actual Linden
+	// .llm files have data with zero items for these, so we do the same.
+
+	U16 numSkinJoints = mSharedData->mNumJointNames;
+
+	// At least one element is always allocated but it may be empty
+	std::string *jn = &mSharedData->mJointNames[0];
+
+	if ((numSkinJoints == 1)
+	&&  (jn->length() == 0))
+	{
+		numSkinJoints = 0;
+	}
+
+	if ( hasWeights )
+	{
+		llendianswizzle(&numSkinJoints, sizeof(U16), 1);
+		if (fwrite(&numSkinJoints, sizeof(U16), 1, fp) != 1)
+		{
+			llwarns << "Short write" << llendl;
+		}
+		llendianswizzle(&numSkinJoints, sizeof(U16), 1);
+
+		//----------------------------------------------------------------
+		// SkinJoints
+		//----------------------------------------------------------------
+		char padding[64] = {};	// zeroes
+		for (i=0; i < numSkinJoints; i++)
+		{
+			jn = &mSharedData->mJointNames[i];
+			if (fwrite(jn->c_str(), 1, jn->length(), fp) != jn->length())
+			{
+				llwarns << "Short write" << llendl;
+			}
+
+			if (jn->length() < 64)
+			{
+				int pad = 64 - jn->length();
+				if (fwrite(&padding, 1, pad, fp) != pad)
+				{
+					llwarns << "Short write" << llendl;
+				}
+			}
+		}
+	}
+
+	//-------------------------------------------------------------------------
+	// look for morph section
+	//-------------------------------------------------------------------------
+	LLPolyMeshSharedData::morphdata_list_t::iterator iter = mSharedData->mMorphData.begin();
+	LLPolyMeshSharedData::morphdata_list_t::iterator end  = mSharedData->mMorphData.end();
+
+	// Sort them
+	morph_list_t morph_list;
+	for (; iter != end; ++iter)
+	{
+		LLPolyMorphData *morph_data = *iter;
+		std::string morph_name = morph_data->getName();
+
+		morph_list.insert(std::pair<std::string,LLPolyMorphData*>(morph_name, morph_data));
+	}
+
+	char padding[64] = {};	// zeroes
+	for (morph_list_t::iterator morph_iter = morph_list.begin();
+		morph_iter != morph_list.end(); ++morph_iter)
+	{
+		const std::string& morph_name = morph_iter->first;
+		LLPolyMorphData* morph_data = morph_iter->second;
+
+		if (fwrite(morph_name.c_str(), 1, morph_name.length(), fp) != morph_name.length())
+		{
+			llwarns << "Short write" << llendl;
+		}
+
+		if (morph_name.length() < 64)
+		{
+			int pad = 64 - morph_name.length();
+			if (fwrite(&padding, 1, pad, fp) != pad)
+			{
+				llwarns << "Short write" << llendl;
+			}
+		}
+
+		if (!morph_data->saveLLM(fp))
+		{
+			llwarns << "Problem writing morph" << llendl;
+		}
+	}
+
+	char end_morphs[64] = "End Morphs";  // padded with zeroes
+	if (fwrite(end_morphs, sizeof(char), 64, fp) != 64)
+	{
+		llwarns << "Short write" << llendl;
+	}
+
+	//-------------------------------------------------------------------------
+	// Remaps
+	//-------------------------------------------------------------------------
+	S32 numRemaps = mSharedData->mSharedVerts.size();
+	llendianswizzle(&numRemaps, sizeof(S32), 1);
+	if (fwrite(&numRemaps, sizeof(S32), 1, fp) != 1)
+	{
+		llwarns << "Short write" << llendl;
+	}
+
+	std::map<S32, S32>::iterator remap_iter = mSharedData->mSharedVerts.begin();
+	std::map<S32, S32>::iterator remap_end  = mSharedData->mSharedVerts.end();
+
+	for (; remap_iter != remap_end; ++remap_iter)
+	{
+		S32 remapSrc = remap_iter->first;
+
+		llendianswizzle(&remapSrc, sizeof(S32), 1);
+		if (fwrite(&remapSrc, sizeof(S32), 1, fp) != 1)
+		{
+			llwarns << "Short write" << llendl;
+		}
+
+		S32 remapDst = remap_iter->second;
+
+		llendianswizzle(&remapDst, sizeof(S32), 1);
+		if (fwrite(&remapDst, sizeof(S32), 1, fp) != 1)
+		{
+			llwarns << "Short write" << llendl;
+		}
+	}
+
+	return TRUE;
+}
+
+//-----------------------------------------------------------------------------
+// LLPolyMesh::saveOBJ()
+//-----------------------------------------------------------------------------
+BOOL LLPolyMesh::saveOBJ(LLFILE *fp)
+{
+	if (!fp)
+		return FALSE;
+
+	// If it's an LOD mesh, the LOD vertices are usually at the start of the
+	// list of vertices, so the number of vertices is just that subset.
+	// We could also write out the rest of the vertices in case someone wants
+	// to choose new vertices for the LOD mesh, but that may confuse some people.
+
+	int nverts = mSharedData->mNumVertices;
+	int nfaces = mSharedData->mNumFaces;
+	int i;
+
+	LLVector3* coords = getWritableCoords();
+	for ( i=0; i<nverts; i++) {
+		std::string outstring = llformat("v %f %f %f\n",
+										 coords[i][0],
+										 coords[i][1],
+										 coords[i][2]);
+		if (fwrite(outstring.c_str(), 1, outstring.length(), fp) != outstring.length())
+		{
+			llwarns << "Short write" << llendl;
+		}
+	}
+
+	LLVector3* normals = getWritableNormals();
+	for ( i=0; i<nverts; i++) {
+		std::string outstring = llformat("vn %f %f %f\n",
+										 normals[i][0],
+										 normals[i][1],
+										 normals[i][2]);
+		if (fwrite(outstring.c_str(), 1, outstring.length(), fp) != outstring.length())
+		{
+			llwarns << "Short write" << llendl;
+		}
+	}
+
+	LLVector2* tex = getWritableTexCoords();
+	for ( i=0; i<nverts; i++) {
+		std::string outstring = llformat("vt %f %f\n",
+										 tex[i][0],
+										 tex[i][1]);
+		if (fwrite(outstring.c_str(), 1, outstring.length(), fp) != outstring.length())
+		{
+			llwarns << "Short write" << llendl;
+		}
+	}
+
+	LLPolyFace* faces = getFaces();
+	for ( i=0; i<nfaces; i++) {
+		S32 f1 = faces[i][0] + 1;
+		S32 f2 = faces[i][1] + 1;
+		S32 f3 = faces[i][2] + 1;
+		std::string outstring = llformat("f %d/%d/%d %d/%d/%d %d/%d/%d\n",
+										 f1, f1, f1,
+										 f2, f2, f2,
+										 f3, f3, f3);
+		if (fwrite(outstring.c_str(), 1, outstring.length(), fp) != outstring.length())
+		{
+			llwarns << "Short write" << llendl;
+		}
+	}
+
+	return TRUE;
+}
+
+//-----------------------------------------------------------------------------
+// LLPolyMesh::loadOBJ()
+//-----------------------------------------------------------------------------
+BOOL LLPolyMesh::loadOBJ(LLFILE *fp)
+{
+	if (!fp)
+		return FALSE;
+
+	int nverts = mSharedData->mNumVertices;
+	int ntris  = mSharedData->mNumFaces;
+
+	int nfaces     = 0;
+	int ncoords    = 0;
+	int nnormals   = 0;
+	int ntexcoords = 0;
+
+	LLVector3* coords    = getWritableCoords();
+	LLVector3* normals   = getWritableNormals();
+	LLVector3* binormals = getWritableBinormals();
+	LLVector2* tex       = getWritableTexCoords();
+	LLPolyFace* faces    = getFaces();
+
+	const S32 BUFSIZE = 16384;
+	char buffer[BUFSIZE];
+	// *NOTE: changing the size or type of these buffers will require
+	// changing the sscanf below.
+	char keyword[256];
+	keyword[0] = 0;
+	F32 tempX;
+	F32 tempY;
+	F32 tempZ;
+	S32 values;
+
+	while (!feof(fp))
+	{
+		if (fgets(buffer, BUFSIZE, fp) == NULL)
+		{
+			buffer[0] = '\0';
+		}
+
+		if (sscanf (buffer," %255s", keyword) != 1)
+		{
+			// blank line
+			continue;
+		}
+
+		if (!strcmp("v", keyword))
+		{
+			values = sscanf (buffer," %255s %f %f %f", keyword, &tempX, &tempY, &tempZ);
+			if (values != 4)
+			{
+				llwarns << "Expecting v x y z, but found: " << buffer <<llendl;
+				continue;
+			}
+			if (ncoords == nverts)
+			{
+				llwarns << "Too many vertices.  Ignoring from: " << buffer <<llendl;
+			}
+			if (ncoords < nverts)
+			{
+				coords[ncoords].set (tempX, tempY, tempZ);
+			}
+			ncoords++;
+		}
+		else if (!strcmp("vn",keyword))
+		{
+			values = sscanf (buffer," %255s %f %f %f", keyword, &tempX, &tempY, &tempZ);
+			if (values != 4)
+			{
+				llwarns << "Expecting vn x y z, but found: " << buffer <<llendl;
+				continue;
+			}
+			if (nnormals == nverts)
+			{
+				llwarns << "Too many normals.  Ignoring from: " << buffer <<llendl;
+			}
+			if (nnormals < nverts)
+			{
+				normals[nnormals].set (tempX, tempY, tempZ);
+			}
+			nnormals++;
+		}
+		else if (!strcmp("vt", keyword))
+		{
+			values = sscanf (buffer," %255s %f %f", keyword, &tempX, &tempY);
+			if (values != 3)
+			{
+				llwarns << "Expecting vt x y, but found: " << buffer <<llendl;
+				continue;
+			}
+			if (ntexcoords == nverts)
+			{
+				llwarns << "Too many texture vertices.  Ignoring from: " << buffer <<llendl;
+			}
+			if (ntexcoords < nverts)
+			{
+				tex[ntexcoords].set (tempX, tempY);
+			}
+			ntexcoords++;
+		}
+		else if (!strcmp("f",keyword))
+		{
+			if (nfaces == 0)
+			{
+				llwarns << "Ignoring face keywords for now." <<llendl;
+			}
+			nfaces++;
+		}
+		else
+		{
+			llinfos << "Unrecognized keyword.  Ignoring: " << buffer << llendl;
+		}
+	}
+
+	// Compute the binormals
+	// This computation is close, but not exactly what is being used in the
+	// original meshes.
+
+	int v;
+	for ( v=0; v<nverts; v++)
+	{
+		binormals[v].setZero();
+	}
+
+	int f;
+	for ( f=0; f<ntris; f++)
+	{
+		S32 f0 = faces[f][0];
+		S32 f1 = faces[f][1];
+		S32 f2 = faces[f][2];
+
+		LLVector3& v0 = coords[f0];
+		LLVector3& v1 = coords[f1];
+		LLVector3& v2 = coords[f2];
+
+		LLVector2& t0 = tex[f0];
+		LLVector2& t1 = tex[f1];
+		LLVector2& t2 = tex[f2];
+
+		LLVector3 binorm = calc_binormal_from_triangle(v0, t0, v1, t1, v2, t2);
+		binorm.normVec();
+
+		binormals[f0] += binorm;
+		binormals[f1] += binorm;
+		binormals[f2] += binorm;
+	}
+
+	for ( v=0; v<nverts; v++)
+	{
+		binormals[v].normVec();
+	}
+
+	return TRUE;
+}
+
+
+//-----------------------------------------------------------------------------
+// LLPolyMesh::setSharedFromCurrent()
+//-----------------------------------------------------------------------------
+BOOL LLPolyMesh::setSharedFromCurrent()
+{
+	// Because meshes are set by continually updating morph weights
+	// there is no easy way to reapply the morphs, so we just compute
+	// the change in the base mesh and apply that.
+
+	LLPolyMesh delta(mSharedData, NULL);
+	U32 nverts = delta.getNumVertices();
+
+	LLVector3 *delta_coords     = delta.getWritableCoords();
+	LLVector3 *delta_normals    = delta.getWritableNormals();
+	LLVector3 *delta_binormals  = delta.getWritableBinormals();
+	LLVector2 *delta_tex_coords = delta.getWritableTexCoords();
+
+	U32 vert_index;
+	for( vert_index = 0; vert_index < nverts; vert_index++)
+	{
+		delta_coords[vert_index]     -= mCoords[vert_index];
+		delta_normals[vert_index]    -= mNormals[vert_index];
+		delta_binormals[vert_index]  -= mBinormals[vert_index];
+		delta_tex_coords[vert_index] -= mTexCoords[vert_index];
+	}
+
+	// Now copy the new base mesh
+
+	memcpy(mSharedData->mBaseCoords, mCoords, sizeof(LLVector3) * mSharedData->mNumVertices);
+	memcpy(mSharedData->mBaseNormals, mNormals, sizeof(LLVector3) * mSharedData->mNumVertices);
+	memcpy(mSharedData->mBaseBinormals, mBinormals, sizeof(LLVector3) * mSharedData->mNumVertices);
+	memcpy(mSharedData->mTexCoords, mTexCoords, sizeof(LLVector2) * mSharedData->mNumVertices);
+
+	// Update all avatars by applying the delta
+
+	std::vector< LLCharacter* >::iterator avatar_it;
+	for(avatar_it = LLCharacter::sInstances.begin(); avatar_it != LLCharacter::sInstances.end(); ++avatar_it)
+	{
+		LLVOAvatar* avatarp = (LLVOAvatar*)*avatar_it;
+		LLPolyMesh* mesh = avatarp->getMesh(mSharedData);
+		if (mesh)
+		{
+			LLVector3 *mesh_coords           = mesh->getWritableCoords();
+			LLVector3 *mesh_normals          = mesh->getWritableNormals();
+			LLVector3 *mesh_binormals        = mesh->getWritableBinormals();
+			LLVector2 *mesh_tex_coords       = mesh->getWritableTexCoords();
+			LLVector3 *mesh_scaled_normals   = mesh->getScaledNormals();
+			LLVector3 *mesh_scaled_binormals = mesh->getScaledBinormals();
+
+			for( vert_index = 0; vert_index < nverts; vert_index++)
+			{
+				mesh_coords[vert_index]           -= delta_coords[vert_index];
+				mesh_tex_coords[vert_index]       -= delta_tex_coords[vert_index];
+
+				mesh_scaled_normals[vert_index]   -= delta_normals[vert_index];
+				LLVector3 normalized_normal        = mesh_scaled_normals[vert_index];
+				normalized_normal.normVec();
+				mesh_normals[vert_index]           = normalized_normal;
+
+				mesh_scaled_binormals[vert_index] -= delta_binormals[vert_index];
+				LLVector3 tangent                  = mesh_scaled_binormals[vert_index] % normalized_normal;
+				LLVector3 normalized_binormal      = normalized_normal % tangent;
+				normalized_binormal.normVec();
+				mesh_binormals[vert_index]         = normalized_binormal;
+			}
+
+			avatarp->dirtyMesh();
+		}
+	}
+
+	return TRUE;
+}
+
+//-----------------------------------------------------------------------------
+// LLPolyMesh::getSharedMeshName()
+//-----------------------------------------------------------------------------
+std::string const* LLPolyMesh::getSharedMeshName(LLPolyMeshSharedData* shared)
+{
+	//-------------------------------------------------------------------------
+	// search for an existing mesh with this shared data
+	//-------------------------------------------------------------------------
+	for(LLPolyMeshSharedDataTable::iterator iter = sGlobalSharedMeshList.begin(); iter != sGlobalSharedMeshList.end(); ++iter)
+	{
+		std::string const* mesh_name = &iter->first;
+		LLPolyMeshSharedData* mesh = iter->second;
+
+		if (mesh == shared)
+			return mesh_name;
+	}
+
+	return NULL;
+}
+
+//-----------------------------------------------------------------------------
 // LLPolyMesh::freeAllMeshes()
 //-----------------------------------------------------------------------------
 void LLPolyMesh::freeAllMeshes()
@@ -821,7 +1563,7 @@ LLPolyMeshSharedData *LLPolyMesh::getSharedData() const
 //--------------------------------------------------------------------
 // LLPolyMesh::dumpDiagInfo()
 //--------------------------------------------------------------------
-void LLPolyMesh::dumpDiagInfo()
+void LLPolyMesh::dumpDiagInfo(void*)
 {
 	// keep track of totals
 	U32 total_verts = 0;
@@ -832,7 +1574,7 @@ void LLPolyMesh::dumpDiagInfo()
 
 	llinfos << "-----------------------------------------------------" << llendl;
 	llinfos << "       Global PolyMesh Table (DEBUG only)" << llendl;
-	llinfos << "   Verts    Faces  Mem(KB) Name" << llendl;
+	llinfos << "   Verts    Faces  Mem(KB) Type Name" << llendl;
 	llinfos << "-----------------------------------------------------" << llendl;
 
 	// print each loaded mesh, and it's memory usage
@@ -846,7 +1588,14 @@ void LLPolyMesh::dumpDiagInfo()
 		S32 num_faces = mesh->mNumFaces;
 		U32 num_kb = mesh->getNumKB();
 
-		buf = llformat("%8d %8d %8d %s", num_verts, num_faces, num_kb, mesh_name.c_str());
+		std::string type;
+		if (mesh->isLOD()) {
+			type = "LOD ";
+		} else {
+			type = "base";
+		}
+
+		buf = llformat("%8d %8d %8d %s %s", num_verts, num_faces, num_kb, type.c_str(), mesh_name.c_str());
 		llinfos << buf << llendl;
 
 		total_verts += num_verts;
@@ -933,6 +1682,32 @@ void LLPolyMesh::initializeForMorph()
 	memcpy(mScaledBinormals, mSharedData->mBaseBinormals, sizeof(LLVector3) * mSharedData->mNumVertices);		/*Flawfinder: ignore*/
 	memcpy(mTexCoords, mSharedData->mTexCoords, sizeof(LLVector2) * mSharedData->mNumVertices);		/*Flawfinder: ignore*/
 	memset(mClothingWeights, 0, sizeof(LLVector4) * mSharedData->mNumVertices);
+}
+
+//-----------------------------------------------------------------------------
+// getMorphList()
+//-----------------------------------------------------------------------------
+void LLPolyMesh::getMorphList (const std::string& mesh_name, morph_list_t* morph_list)
+{
+	if (!morph_list)
+		return;
+
+	LLPolyMeshSharedData* mesh_shared_data = get_if_there(sGlobalSharedMeshList, mesh_name, (LLPolyMeshSharedData*)NULL);
+
+	if (!mesh_shared_data)
+		return;
+
+	LLPolyMeshSharedData::morphdata_list_t::iterator iter = mesh_shared_data->mMorphData.begin();
+	LLPolyMeshSharedData::morphdata_list_t::iterator end = mesh_shared_data->mMorphData.end();
+
+	for (; iter != end; ++iter)
+	{
+		LLPolyMorphData *morph_data = *iter;
+		std::string morph_name = morph_data->getName();
+
+		morph_list->insert(std::pair<std::string,LLPolyMorphData*>(morph_name, morph_data));
+	}
+	return;
 }
 
 //-----------------------------------------------------------------------------
@@ -1154,6 +1929,57 @@ void LLPolySkeletalDistortion::apply( ESex avatar_sex )
 		mAvatar->setSkeletonSerialNum(mAvatar->getSkeletonSerialNum() + 1);
 	}
 	mLastWeight = mCurWeight;
+}
+
+
+LLPolyMorphData *clone_morph_param_duplicate(const LLPolyMorphData *src_data,
+					     const std::string &name)
+{
+        LLPolyMorphData* cloned_morph_data = new LLPolyMorphData(*src_data);
+        cloned_morph_data->mName = name;
+        for (U32 v=0; v < cloned_morph_data->mNumIndices; v++)
+        {
+                cloned_morph_data->mCoords[v] = src_data->mCoords[v];
+                cloned_morph_data->mNormals[v] = src_data->mNormals[v];
+                cloned_morph_data->mBinormals[v] = src_data->mBinormals[v];
+        }
+        return cloned_morph_data;
+}
+
+LLPolyMorphData *clone_morph_param_direction(const LLPolyMorphData *src_data,
+					     const LLVector3 &direction,
+					     const std::string &name)
+{
+        LLPolyMorphData* cloned_morph_data = new LLPolyMorphData(*src_data);
+        cloned_morph_data->mName = name;
+        for (U32 v=0; v < cloned_morph_data->mNumIndices; v++)
+        {
+                cloned_morph_data->mCoords[v] = direction;
+                cloned_morph_data->mNormals[v] = LLVector3(0,0,0);
+                cloned_morph_data->mBinormals[v] = LLVector3(0,0,0);
+        }
+        return cloned_morph_data;
+}
+
+LLPolyMorphData *clone_morph_param_cleavage(const LLPolyMorphData *src_data,
+                                            F32 scale,
+                                            const std::string &name)
+{
+        LLPolyMorphData* cloned_morph_data = new LLPolyMorphData(*src_data);
+        cloned_morph_data->mName = name;
+        for (U32 v=0; v < cloned_morph_data->mNumIndices; v++)
+        {
+                cloned_morph_data->mCoords[v] = src_data->mCoords[v]*scale;
+                cloned_morph_data->mNormals[v] = src_data->mNormals[v]*scale;
+                cloned_morph_data->mBinormals[v] = src_data->mBinormals[v]*scale;
+                if (cloned_morph_data->mCoords[v][1] < 0)
+                {
+                        cloned_morph_data->mCoords[v][1] *= -1;
+                        cloned_morph_data->mNormals[v][1] *= -1;
+                        cloned_morph_data->mBinormals[v][1] *= -1;
+                }
+        }
+        return cloned_morph_data;
 }
 
 // End

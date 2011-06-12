@@ -72,6 +72,7 @@ enum EInventoryIcon
 	CLOTHING_SKIRT_ICON_NAME,
 	CLOTHING_ALPHA_ICON_NAME,
 	CLOTHING_TATTOO_ICON_NAME,
+	CLOTHING_PHYSICS_ICON_NAME,
 	
 	ANIMATION_ICON_NAME,
 	GESTURE_ICON_NAME,
@@ -231,7 +232,7 @@ public:
 	virtual void move(LLFolderViewEventListener* new_parent_bridge) {}
 	virtual BOOL isItemCopyable() const { return FALSE; }
 	virtual BOOL copyToClipboard() const { return FALSE; }
-	virtual void cutToClipboard() {}
+	virtual BOOL cutToClipboard() const { return FALSE; }
 	virtual BOOL isClipboardPasteable() const;
 	virtual BOOL isClipboardPasteableAsLink() const;
 	virtual void pasteFromClipboard() {}
@@ -276,6 +277,7 @@ protected:
 	LLInventoryType::EType mInvType;
 };
 
+class AIFilePicker;
 
 class LLItemBridge : public LLInvFVBridge
 {
@@ -302,7 +304,7 @@ public:
 	virtual BOOL hasChildren() const { return FALSE; }
 	virtual BOOL isUpToDate() const { return TRUE; }
 
-
+    static void showFloaterImagePreview(LLInventoryItem* item, AIFilePicker* filepicker);
 
 	// override for LLInvFVBridge
 	virtual void clearDisplayName() { mDisplayName.clear(); }
@@ -375,6 +377,7 @@ protected:
 	static void createNewSkin(void* user_data);
 	static void createNewHair(void* user_data);
 	static void createNewEyes(void* user_data);
+	static void createNewPhysics(void* user_data);
 
 	BOOL checkFolderForContentsOfType(LLInventoryModel* model, LLInventoryCollectFunctor& typeToCheck);
 
@@ -454,7 +457,7 @@ protected:
 		LLItemBridge(inventory, uuid) 
 	{
 		mVisited = FALSE;
-		if (flags & LLInventoryItem::II_FLAGS_LANDMARK_VISITED)
+		if (flags & LLInventoryItemFlags::II_FLAGS_LANDMARK_VISITED)
 		{
 			mVisited = TRUE;
 		}
@@ -593,7 +596,7 @@ protected:
 	{
 		mAttachPt = (flags & 0xff); // low bye of inventory flags
 
-		mIsMultiObject = ( flags & LLInventoryItem::II_FLAGS_OBJECT_HAS_MULTIPLE_ITEMS ) ?  TRUE: FALSE;
+		mIsMultiObject = ( flags & LLInventoryItemFlags::II_FLAGS_OBJECT_HAS_MULTIPLE_ITEMS ) ?  TRUE: FALSE;
 	}
 
 protected:

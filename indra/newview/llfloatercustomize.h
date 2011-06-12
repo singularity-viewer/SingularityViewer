@@ -64,6 +64,7 @@ class LLVisualParam;
 class LLVisualParamReset;
 class LLWearableSaveAsDialog;
 class LLPanelEditWearable;
+class AIFilePicker;
 
 /////////////////////////////////////////////////////////////////////
 // LLFloaterCustomize
@@ -88,7 +89,7 @@ public:
 	// New methods
 	void			clearScrollingPanelList();
 	void			generateVisualParamHints(LLViewerJointMesh* joint_mesh,
-											 param_map& params);
+											 param_map& params, bool bVisualHint);
 
 	const std::string& getEditGroup();
 	void 			updateScrollingPanelList(BOOL allow_modify);
@@ -110,7 +111,9 @@ public:
 	static void		onBtnMakeOutfit( void* userdata );
 	static void		onMakeOutfitCommit( LLMakeOutfitDialog* dialog, void* userdata );
 	static void		onBtnImport( void* userdata );
+	static void		onBtnImport_continued(AIFilePicker* filepicker);
 	static void		onBtnExport( void* userdata );	
+	static void		onBtnExport_continued(AIFilePicker* filepicker);
 
 	static void		onTabChanged( void* userdata, bool from_click );
 	static void		onTabPrecommit( void* userdata, bool from_click );
@@ -128,7 +131,7 @@ protected:
 
 	LLScrollingPanelList*	mScrollingPanelList;
 	LLScrollableContainerView* mScrollContainer;
-	LLVisualParamReset*		mResetParams;
+	LLPointer<LLVisualParamReset>		mResetParams;
 
 	LLInventoryObserver* mInventoryObserver;
 

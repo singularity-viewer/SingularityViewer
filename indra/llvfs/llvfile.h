@@ -80,16 +80,14 @@ public:
 	static const S32 READ_WRITE;
 	static const S32 APPEND;
 	
+protected:
 	LLAssetType::EType mFileType;
 
 	LLUUID	mFileID;
-
-protected:
 	S32		mPosition;
 	S32		mMode;
 	LLVFS	*mVFS;
 	F32		mPriority;
-	BOOL	mOnReadQueue;
 
 	S32		mBytesRead;
 	LLVFSThread::handle_t mHandle;

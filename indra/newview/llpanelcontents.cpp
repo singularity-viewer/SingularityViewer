@@ -136,7 +136,7 @@ void LLPanelContents::getState(LLViewerObject *objectp )
 			LLViewerObject* pObj = LLSelectMgr::getInstance()->getSelection()->getFirstRootObject(TRUE);
 
 			LLVOAvatar* pAvatar = gAgent.getAvatarObject();
-			editable = (pObj) && (pAvatar) && ((!pAvatar->mIsSitting) || (pAvatar->getRoot() != pObj->getRootEdit()));
+			editable = (pObj) && (pAvatar) && ((!pAvatar->isSitting()) || (pAvatar->getRoot() != pObj->getRootEdit()));
 		}
 	}
 // [/RLVa:KB]
@@ -185,7 +185,7 @@ void LLPanelContents::onClickNewScript(void *userdata)
 			else if ( (gRlvHandler.hasBehaviour(RLV_BHVR_UNSIT)) || (gRlvHandler.hasBehaviour(RLV_BHVR_SITTP)) )
 			{
 				LLVOAvatar* pAvatar = gAgent.getAvatarObject();
-				if ( (pAvatar) && (pAvatar->mIsSitting) && (pAvatar->getRoot() == object->getRootEdit()) )
+				if ( (pAvatar) && (pAvatar->isSitting()) && (pAvatar->getRoot() == object->getRootEdit()) )
 					return;				// .. or in a linkset the avie is sitting on under @unsit=n/@sittp=n
 			}
 		}
@@ -212,7 +212,7 @@ void LLPanelContents::onClickNewScript(void *userdata)
 				std::string("New Script"),
 				desc,
 				LLSaleInfo::DEFAULT,
-				LLViewerInventoryItem::II_FLAGS_NONE,
+				LLInventoryItemFlags::II_FLAGS_NONE,
 				time_corrected());
 		object->saveScript(new_item, TRUE, true);
 

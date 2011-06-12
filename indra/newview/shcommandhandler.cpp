@@ -175,4 +175,27 @@ CMD_SCRIPT(gettext)
 	}
 }
 
+#include "llphysicsmotion.h"
+
+void cmdline_printchat(std::string message);
+CMD_CHAT(physparams)
+{
+	//args[1] = avatar name
+	for (std::vector<LLCharacter*>::iterator iter = LLCharacter::sInstances.begin();iter != LLCharacter::sInstances.end(); ++iter)
+	{
+		LLVOAvatar* inst = (LLVOAvatar*) *iter;
+		if(!inst)continue;
+		if(inst->getFullname().find(args[1].asString())!=std::string::npos)
+		{
+			LLPhysicsMotionController *motion = (LLPhysicsMotionController*)(inst->findMotion(LLUUID("7360e029-3cb8-ebc4-863e-212df440d987")));
+			cmdline_printchat(std::string("Phys param info for ")+inst->getFullname()+":\n");
+			if(motion)
+			{
+				cmdline_printchat(motion->getString());
+			}
+			else
+				cmdline_printchat("Unable to find physics motion controller\n");
+		}
+	}
+}
 #endif //shy_mod

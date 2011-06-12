@@ -309,7 +309,7 @@ void LLSkyTex::createGLImage(S32 which)
 
 void LLSkyTex::bindTexture(BOOL curr)
 {
-	gGL.getTexUnit(0)->bind(mTexture[getWhich(curr)]);
+	gGL.getTexUnit(0)->bind(mTexture[getWhich(curr)], true);
 }
 
 /***************************************
@@ -1039,7 +1039,7 @@ void LLVOSky::calcAtmospherics(void)
 
 	// Since WL scales everything by 2, there should always be at least a 2:1 brightness ratio
 	// between sunlight and point lights in windlight to normalize point lights.
-	static const LLCachedControl<F32> render_sun_dynamic_range("RenderSunDynamicRange", 1);
+	static const LLCachedControl<F32> render_sun_dynamic_range("RenderSunDynamicRange", 1.f);
 	F32 sun_dynamic_range = llmax((float)render_sun_dynamic_range, 0.0001f);
 	LLWLParamManager::instance()->mSceneLightStrength = 2.0f * (1.0f + sun_dynamic_range * dp);
 
@@ -1190,7 +1190,7 @@ BOOL LLVOSky::updateSky()
 		}
 	}
 
-	if (mDrawable.notNull() && mDrawable->getFace(0) && mDrawable->getFace(0)->mVertexBuffer.isNull())
+	if (mDrawable.notNull() && mDrawable->getFace(0) && !mDrawable->getFace(0)->getVertexBuffer())
 	{
 		gPipeline.markRebuild(mDrawable, LLDrawable::REBUILD_VOLUME, TRUE);
 	}
@@ -1241,10 +1241,11 @@ void LLVOSky::createDummyVertexBuffer()
 		mFace[FACE_DUMMY] = mDrawable->addFace(poolp, NULL);
 	}
 
-	if(mFace[FACE_DUMMY]->mVertexBuffer.isNull())
+	if(!mFace[FACE_DUMMY]->getVertexBuffer())
 	{
-		mFace[FACE_DUMMY]->mVertexBuffer = new LLVertexBuffer(LLDrawPoolSky::VERTEX_DATA_MASK, GL_DYNAMIC_DRAW_ARB);
-		mFace[FACE_DUMMY]->mVertexBuffer->allocateBuffer(1, 1, TRUE);
+		LLVertexBuffer* buff = new LLVertexBuffer(LLDrawPoolSky::VERTEX_DATA_MASK, GL_DYNAMIC_DRAW_ARB);
+		buff->allocateBuffer(1, 1, TRUE);
+		mFace[FACE_DUMMY]->setVertexBuffer(buff);
 	}
 }
 
@@ -1261,13 +1262,13 @@ void LLVOSky::updateDummyVertexBuffer()
 
 	LLFastTimer t(LLFastTimer::FTM_RENDER_FAKE_VBO_UPDATE) ;
 
-	if(!mFace[FACE_DUMMY] || mFace[FACE_DUMMY]->mVertexBuffer.isNull())
+	if(!mFace[FACE_DUMMY] || !mFace[FACE_DUMMY]->getVertexBuffer())
 		createDummyVertexBuffer() ;
 
 	LLStrider<LLVector3> vertices ;
-	mFace[FACE_DUMMY]->mVertexBuffer->getVertexStrider(vertices,  0);
+	mFace[FACE_DUMMY]->getVertexBuffer()->getVertexStrider(vertices,  0);
 	*vertices = mCameraPosAgent ;
-	mFace[FACE_DUMMY]->mVertexBuffer->setBuffer(0) ;
+	mFace[FACE_DUMMY]->getVertexBuffer()->setBuffer(0) ;
 }
 //----------------------------------
 //end of fake vertex buffer updating
@@ -1309,14 +1310,15 @@ BOOL LLVOSky::updateGeometry(LLDrawable *drawable)
 	{
 		face = mFace[FACE_SIDE0 + side]; 
 
-		if (face->mVertexBuffer.isNull())
+		if (!face->getVertexBuffer())
 		{
 			face->setSize(4, 6);
 			face->setGeomIndex(0);
 			face->setIndicesIndex(0);
-			face->mVertexBuffer = new LLVertexBuffer(LLDrawPoolSky::VERTEX_DATA_MASK, GL_STREAM_DRAW_ARB);
-			face->mVertexBuffer->allocateBuffer(4, 6, TRUE);
-			
+			LLVertexBuffer* buff = new LLVertexBuffer(LLDrawPoolSky::VERTEX_DATA_MASK, GL_STREAM_DRAW_ARB);
+			buff->allocateBuffer(4, 6, TRUE);
+			face->setVertexBuffer(buff);
+
 			index_offset = face->getGeometry(verticesp,normalsp,texCoordsp, indicesp);
 			
 			S32 vtx = 0;
@@ -1349,7 +1351,7 @@ BOOL LLVOSky::updateGeometry(LLDrawable *drawable)
 			*indicesp++ = index_offset + 3;
 			*indicesp++ = index_offset + 2;
 
-			face->mVertexBuffer->setBuffer(0);
+			buff->setBuffer(0);
 		}
 	}
 
@@ -1476,13 +1478,14 @@ BOOL LLVOSky::updateHeavenlyBodyGeometry(LLDrawable *drawable, const S32 f, cons
 
 	facep = mFace[f]; 
 
-	if (facep->mVertexBuffer.isNull())
+	if (!facep->getVertexBuffer())
 	{
-		facep->setSize(4, 6);		
-		facep->mVertexBuffer = new LLVertexBuffer(LLDrawPoolSky::VERTEX_DATA_MASK, GL_STREAM_DRAW_ARB);
-		facep->mVertexBuffer->allocateBuffer(facep->getGeomCount(), facep->getIndicesCount(), TRUE);
+		facep->setSize(4, 6);	
+		LLVertexBuffer* buff = new LLVertexBuffer(LLDrawPoolSky::VERTEX_DATA_MASK, GL_STREAM_DRAW_ARB);
+		buff->allocateBuffer(facep->getGeomCount(), facep->getIndicesCount(), TRUE);
 		facep->setGeomIndex(0);
 		facep->setIndicesIndex(0);
+		facep->setVertexBuffer(buff);
 	}
 
 	index_offset = facep->getGeometry(verticesp,normalsp,texCoordsp, indicesp);
@@ -1511,7 +1514,7 @@ BOOL LLVOSky::updateHeavenlyBodyGeometry(LLDrawable *drawable, const S32 f, cons
 	*indicesp++ = index_offset + 2;
 	*indicesp++ = index_offset + 3;
 
-	facep->mVertexBuffer->setBuffer(0);
+	facep->getVertexBuffer()->setBuffer(0);
 
 	if (is_sun)
 	{
@@ -1880,13 +1883,14 @@ void LLVOSky::updateReflectionGeometry(LLDrawable *drawable, F32 H,
 
 	LLFace *face = mFace[FACE_REFLECTION]; 
 
-	if (face->mVertexBuffer.isNull() || quads*4 != face->getGeomCount())
+	if (!face->getVertexBuffer() || quads*4 != face->getGeomCount())
 	{
 		face->setSize(quads * 4, quads * 6);
-		face->mVertexBuffer = new LLVertexBuffer(LLDrawPoolWater::VERTEX_DATA_MASK, GL_STREAM_DRAW_ARB);
-		face->mVertexBuffer->allocateBuffer(face->getGeomCount(), face->getIndicesCount(), TRUE);
+		LLVertexBuffer* buff = new LLVertexBuffer(LLDrawPoolWater::VERTEX_DATA_MASK, GL_STREAM_DRAW_ARB);
+		buff->allocateBuffer(face->getGeomCount(), face->getIndicesCount(), TRUE);
 		face->setIndicesIndex(0);
 		face->setGeomIndex(0);
+		face->setVertexBuffer(buff);
 	}
 	
 	LLStrider<LLVector3> verticesp;
@@ -2024,7 +2028,7 @@ void LLVOSky::updateReflectionGeometry(LLDrawable *drawable, F32 H,
 		}
 	}
 
-	face->mVertexBuffer->setBuffer(0);
+	face->getVertexBuffer()->setBuffer(0);
 }
 
 

@@ -218,7 +218,7 @@ BOOL LLTexLayerSetBuffer::needsRender()
 {
 	LLVOAvatar* avatar = mTexLayerSet->getAvatar();
 	BOOL upload_now = needsUploadNow();
-	BOOL needs_update = (mNeedsUpdate || upload_now) && !avatar->mAppearanceAnimating;
+	BOOL needs_update = (mNeedsUpdate || upload_now) && !avatar->getIsAppearanceAnimating();
 	if (needs_update)
 	{
 		BOOL invalid_skirt = avatar->getBakedTE(mTexLayerSet) == TEX_SKIRT_BAKED && !avatar->isWearingWearableType(WT_SKIRT);
@@ -1736,7 +1736,7 @@ BOOL LLTexLayer::renderAlphaMasks( S32 x, S32 y, S32 width, S32 height, LLColor4
 		for( morph_list_t::iterator iter3 = mMaskedMorphs.begin();
 			 iter3 != mMaskedMorphs.end(); iter3++ )
 		{
-			LLMaskedMorph* maskedMorph = &(*iter3);
+			LLVOAvatar::LLMaskedMorph* maskedMorph = &(*iter3);
 			maskedMorph->mMorphTarget->applyMask(alpha_data, width, height, 1, maskedMorph->mInvert);
 		}
 	}
@@ -1749,7 +1749,7 @@ void LLTexLayer::applyMorphMask(U8* tex_data, S32 width, S32 height, S32 num_com
 	for( morph_list_t::iterator iter = mMaskedMorphs.begin();
 		 iter != mMaskedMorphs.end(); iter++ )
 	{
-		LLMaskedMorph* maskedMorph = &(*iter);
+		LLVOAvatar::LLMaskedMorph* maskedMorph = &(*iter);
 		maskedMorph->mMorphTarget->applyMask(tex_data, width, height, num_components, maskedMorph->mInvert);
 	}
 }
@@ -1832,7 +1832,7 @@ void LLTexLayer::requestUpdate()
 
 void LLTexLayer::addMaskedMorph(LLPolyMorphTarget* morph_target, BOOL invert)
 { 
-	mMaskedMorphs.push_front(LLMaskedMorph(morph_target, invert));
+	mMaskedMorphs.push_front(LLVOAvatar::LLMaskedMorph(morph_target, invert));
 }
 
 void LLTexLayer::invalidateMorphMasks()
@@ -2617,13 +2617,5 @@ BOOL LLTexStaticImageList::loadImageRaw( const std::string& file_name, LLImageRa
 	}
 
 	return success;
-}
-
-//-----------------------------------------------------------------------------
-// LLMaskedMorph()
-//-----------------------------------------------------------------------------
-LLMaskedMorph::LLMaskedMorph( LLPolyMorphTarget *morph_target, BOOL invert ) : mMorphTarget(morph_target), mInvert(invert)
-{
-	morph_target->addPendingMorphMask();
 }
 

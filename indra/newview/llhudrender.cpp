@@ -40,7 +40,6 @@
 #include "v3math.h"
 #include "llquaternion.h"
 #include "llfontgl.h"
-#include "llimagegl.h"
 #include "llglheaders.h"
 #include "llviewerwindow.h"
 
@@ -113,7 +112,7 @@ void hud_render_text(const LLWString &wstr, const LLVector3 &pos_agent,
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
 	glMatrixMode(GL_MODELVIEW);
-	
+	gGL.pushMatrix();
 	LLUI::pushMatrix();
 		
 	gViewerWindow->setup2DRender();
@@ -126,6 +125,7 @@ void hud_render_text(const LLWString &wstr, const LLVector3 &pos_agent,
 	
 	font.render(wstr, 0, 0, 0, color, LLFontGL::LEFT, LLFontGL::BASELINE, style, wstr.length(), 1000, &right_x);
 	LLUI::popMatrix();
+	gGL.popMatrix();
 	
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();

@@ -10,6 +10,7 @@
 #include "llmessagetemplate.h"
 #include <boost/tokenizer.hpp>
 #include "llmenugl.h"
+#include "lleventtimer.h"
 
 #include "llagent.h"
 

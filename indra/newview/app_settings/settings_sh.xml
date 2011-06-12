@@ -80,5 +80,93 @@
 			<real>1.0</real>
 		</map>
 
-	</map>
+    <key>SGBlockGeneralSpam</key>
+    <map>
+      <key>Comment</key>
+      <string>Enable automatic general spam blocking</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>0</integer>
+    </map>
+    <key>SGBlockCardSpam</key>
+    <map>
+      <key>Comment</key>
+      <string>Enable automatic calling card spam blocking</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>SGBlockChatSpam</key>
+    <map>
+      <key>Comment</key>
+      <string>Enable automatic chat spam blocking</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>0</integer>
+    </map>
+    <key>SGBlockDialogSpam</key>
+    <map>
+      <key>Comment</key>
+      <string>Enable automatic dialog spam blocking</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>SGSpamTime</key>
+    <map>
+      <key>Comment</key>
+      <string>Time of Evalulating spam. (Default: 1.000)</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>F32</string>
+      <key>Value</key>
+      <real>1.0</real>
+    </map>
+    <key>SGSpamCount</key>
+    <map>
+      <key>Comment</key>
+      <string>Number of items spammed per time period in SGSpamTime. (Default: 4)</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>U32</string>
+      <key>Value</key>
+      <real>4</real>
+    </map>
+    <key>SGChatSpamTime</key>
+    <map>
+      <key>Comment</key>
+      <string>Time of Evalulating spam. (Default: 1.000)</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>F32</string>
+      <key>Value</key>
+      <real>1.0</real>
+    </map>
+    <key>SGChatSpamCount</key>
+    <map>
+      <key>Comment</key>
+      <string>Number of items spammed per time set in SGSpamTime. (Default: 10)</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>U32</string>
+      <key>Value</key>
+      <real>10.0</real>
+    </map>
+  </map>
 </llsd>

@@ -941,10 +941,10 @@
 				Taper
 			</text>
 			<spinner bottom_delta="-19" decimal_digits="2" follows="left|top" height="16"
-			     increment="0.05" initial_val="0" label="X" label_width="10" left="121"
+			     increment="0.01" initial_val="0" label="X" label_width="10" left="121"
 			     max_val="1" min_val="-1" mouse_opaque="true" name="Taper X" width="68" />
 			<spinner bottom_delta="0" decimal_digits="2" follows="left|top" height="16"
-			     increment="0.05" initial_val="0" label="Y" label_width="10" left_delta="73"
+			     increment="0.01" initial_val="0" label="Y" label_width="10" left_delta="73"
 			     max_val="1" min_val="-1" mouse_opaque="true" name="Taper Y" width="68" />
 			<text bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
 			     bottom_delta="-12" drop_shadow_visible="true" follows="left|top"

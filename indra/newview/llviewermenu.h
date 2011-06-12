@@ -35,9 +35,6 @@
 
 #include "llmenugl.h"
 
-//newview includes
-#include "llfilepicker.h"
-
 class LLUICtrl;
 class LLView;
 class LLParcelSelection;

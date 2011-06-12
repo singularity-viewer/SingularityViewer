@@ -36,8 +36,7 @@
 #include "linden_common.h"
 
 #include "llplugininstance.h"
-
-#include "llapr.h"
+#include "aiaprpool.h"
 
 /** Virtual destructor. */
 LLPluginInstanceMessageListener::~LLPluginInstanceMessageListener()
@@ -56,8 +55,8 @@ const char *LLPluginInstance::PLUGIN_INIT_FUNCTION_NAME = "LLPluginInitEntryPoin
  */
 LLPluginInstance::LLPluginInstance(LLPluginInstanceMessageListener *owner) :
 	mDSOHandle(NULL),
-	mPluginUserData(NULL),
-	mPluginSendMessageFunction(NULL)
+	mPluginObject(NULL),
+	mReceiveMessageFunction(NULL)
 {
 	mOwner = owner;
 }
@@ -86,7 +85,7 @@ int LLPluginInstance::load(std::string &plugin_file)
 	
 	int result = apr_dso_load(&mDSOHandle,
 					  plugin_file.c_str(),
-					  gAPRPoolp);
+					  AIAPRRootPool::get()());
 	if(result != APR_SUCCESS)
 	{
 		char buf[1024];
@@ -110,9 +109,9 @@ int LLPluginInstance::load(std::string &plugin_file)
 	
 	if(result == APR_SUCCESS)
 	{
-		result = init_function(staticReceiveMessage, (void*)this, &mPluginSendMessageFunction, &mPluginUserData);
+		result = init_function(&LLPluginInstance::staticReceiveMessage, this, &mReceiveMessageFunction, &mPluginObject);
 
-		if(result != APR_SUCCESS)
+		if(result != 0)
 		{
 			LL_WARNS("Plugin") << "call to init function failed with error " << result << LL_ENDL;
 		}
@@ -121,6 +120,14 @@ int LLPluginInstance::load(std::string &plugin_file)
 	return (int)result;
 }
 
+// This is the SLPlugin process (the child process).
+// This is not part of a DSO.
+//
+// This function is called from LLPluginProcessChild::receiveMessageRaw
+// for messages received from the viewer that are not internal.
+//
+// It sends the message to the DSO by calling the registered 'received'
+// function (for example, FilepickerPlugin::receiveMessage).
 /** 
  * Sends a message to the plugin.
  *
@@ -128,10 +135,10 @@ int LLPluginInstance::load(std::string &plugin_file)
  */
 void LLPluginInstance::sendMessage(const std::string &message)
 {
-	if(mPluginSendMessageFunction)
+	if(mReceiveMessageFunction)
 	{
 		LL_DEBUGS("Plugin") << "sending message to plugin: \"" << message << "\"" << LL_ENDL;
-		mPluginSendMessageFunction(message.c_str(), &mPluginUserData);
+		mReceiveMessageFunction(message.c_str(), &mPluginObject);
 	}
 	else
 	{
@@ -148,14 +155,19 @@ void LLPluginInstance::idle(void)
 }
 
 // static
-void LLPluginInstance::staticReceiveMessage(const char *message_string, void **user_data)
+void LLPluginInstance::staticReceiveMessage(char const* message_string, LLPluginInstance** self_ptr)
 {
-	// TODO: validate that the user_data argument is still a valid LLPluginInstance pointer
+	// TODO: validate that the self argument is still a valid LLPluginInstance pointer
 	// we could also use a key that's looked up in a map (instead of a direct pointer) for safety, but that's probably overkill
-	LLPluginInstance *self = (LLPluginInstance*)*user_data;
-	self->receiveMessage(message_string);
+	(*self_ptr)->receiveMessage(message_string);
 }
 
+// This is the SLPlugin process.
+// This is not part of a DSO.
+//
+// This function is called by a loaded DSO (through a function pointer, it
+// is called from BasicPluginBase::sendMessage) for messages it wants to
+// send to the viewer. It calls LLPluginProcessChild::receivePluginMessage.
 /**
  * Plugin receives message from plugin loader shell.
  *

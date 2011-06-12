@@ -1,0 +1,1 @@
+set(CWDEBUG_LIBRARIES cwdebug)

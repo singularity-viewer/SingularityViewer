@@ -48,73 +48,8 @@
 #include "apr_atomic.h"
 #include "llstring.h"
 
-extern LL_COMMON_API apr_thread_mutex_t* gLogMutexp;
-
-/** 
- * @brief initialize the common apr constructs -- apr itself, the
- * global pool, and a mutex.
- */
-void LL_COMMON_API ll_init_apr();
-
-/** 
- * @brief Cleanup those common apr constructs.
- */
-void LL_COMMON_API ll_cleanup_apr();
-
-//
-//LL apr_pool
-//manage apr_pool_t, destroy allocated apr_pool in the destruction function.
-//
-class LL_COMMON_API LLAPRPool
-{
-public:
-	LLAPRPool(apr_pool_t *parent = NULL, apr_size_t size = 0, BOOL releasePoolFlag = TRUE) ;
-	~LLAPRPool() ;
-
-	apr_pool_t* getAPRPool() ;
-	apr_status_t getStatus() {return mStatus ; }
-
-protected:
-	void releaseAPRPool() ;
-	void createAPRPool() ;
-
-protected:
-	apr_pool_t*  mPool ;              //pointing to an apr_pool
-	apr_pool_t*  mParent ;			  //parent pool
-	apr_size_t   mMaxSize ;           //max size of mPool, mPool should return memory to system if allocated memory beyond this limit. However it seems not to work.
-	apr_status_t mStatus ;            //status when creating the pool
-	BOOL         mReleasePoolFlag ;   //if set, mPool is destroyed when LLAPRPool is deleted. default value is true.
-};
-
-//
-//volatile LL apr_pool
-//which clears memory automatically.
-//so it can not hold static data or data after memory is cleared
-//
-class LL_COMMON_API LLVolatileAPRPool : protected LLAPRPool
-{
-public:
-	LLVolatileAPRPool(apr_pool_t *parent = NULL, apr_size_t size = 0, BOOL releasePoolFlag = TRUE);
-	~LLVolatileAPRPool(){}
-
-	apr_pool_t* getVolatileAPRPool() ;
-	
-	void        clearVolatileAPRPool() ;
-
-	BOOL        isFull() ;
-	BOOL        isEmpty() {return !mNumActiveRef ;}
-
-	static void initLocalAPRFilePool();
-	static void createLocalAPRFilePool();
-	static void destroyLocalAPRFilePool(void* thread_local_data);
-	static LLVolatileAPRPool* getLocalAPRFilePool();
-
-private:
-	S32 mNumActiveRef ; //number of active pointers pointing to the apr_pool.
-	S32 mNumTotalRef ;  //number of total pointers pointing to the apr_pool since last creating.   
-
-	static apr_threadkey_t*		sLocalAPRFilePoolKey;
-} ;
+class AIAPRPool;
+class AIVolatileAPRPool;
 
 /** 
  * @class LLScopedLock
@@ -205,7 +140,8 @@ class LL_COMMON_API LLAPRFile : boost::noncopyable
 	// make this non copyable since a copy closes the file
 private:
 	apr_file_t* mFile ;
-	LLVolatileAPRPool *mCurrentFilePoolp ; //currently in use apr_pool, could be one of them: sAPRFilePoolp, or a temp pool. 
+	AIVolatileAPRPool* mVolatileFilePoolp;	// (Thread local) APR pool currently in use.
+	AIAPRPool* mRegularFilePoolp;		// ...or a regular pool.
 
 public:
 	enum access_t {
@@ -259,7 +195,5 @@ public:
 bool LL_COMMON_API ll_apr_warn_status(apr_status_t status);
 
 void LL_COMMON_API ll_apr_assert_status(apr_status_t status);
-
-extern "C" LL_COMMON_API apr_pool_t* gAPRPoolp; // Global APR memory pool
 
 #endif // LL_LLAPR_H

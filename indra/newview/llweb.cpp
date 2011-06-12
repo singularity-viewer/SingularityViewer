@@ -69,6 +69,36 @@ void LLWeb::loadURLExternal(const std::string& url)
 
 
 // static
+std::string LLWeb::curlEscape(const std::string& url)
+{
+	static const char hex[] = "0123456789ABCDEF";
+	std::stringstream escaped_url;
+	for (std::string::const_iterator iter = url.begin(); iter != url.end(); ++iter)
+	{
+		switch(*iter) {
+			case '0': case '1': case '2': case '3': case '4':
+			case '5': case '6': case '7': case '8': case '9':
+			case 'a': case 'b': case 'c': case 'd': case 'e':
+			case 'f': case 'g': case 'h': case 'i': case 'j':
+			case 'k': case 'l': case 'm': case 'n': case 'o':
+			case 'p': case 'q': case 'r': case 's': case 't':
+			case 'u': case 'v': case 'w': case 'x': case 'y': case 'z':
+			case 'A': case 'B': case 'C': case 'D': case 'E':
+			case 'F': case 'G': case 'H': case 'I': case 'J':
+			case 'K': case 'L': case 'M': case 'N': case 'O':
+			case 'P': case 'Q': case 'R': case 'S': case 'T':
+			case 'U': case 'V': case 'W': case 'X': case 'Y': case 'Z':
+				escaped_url << (*iter);
+				break;
+			default:
+				unsigned char c = (unsigned char)(*iter);
+				escaped_url << '%' << hex[c>>4] << hex[c&0xF];
+		}
+	}
+	return escaped_url.str();
+}
+
+// static
 std::string LLWeb::escapeURL(const std::string& url)
 {
 	// The CURL curl_escape() function escapes colons, slashes,

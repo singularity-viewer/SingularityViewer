@@ -4,21 +4,24 @@
  * Copyright (c) 2007-$CurrentYear$, Linden Research, Inc.
  * $License$
  */
+ 
+#version 120
 
 #extension GL_ARB_texture_rectangle : enable
+
 vec3 scaleSoftClip(vec3 inColor);
 vec3 atmosTransport(vec3 inColor);
 
 uniform sampler2D bumpMap;   
 uniform sampler2D screenTex;
 uniform sampler2D refTex;
-uniform sampler2DShadow shadowMap0;
-uniform sampler2DShadow shadowMap1;
-uniform sampler2DShadow shadowMap2;
-uniform sampler2DShadow shadowMap3;
+uniform sampler2DRectShadow shadowMap0;
+uniform sampler2DRectShadow shadowMap1;
+uniform sampler2DRectShadow shadowMap2;
+uniform sampler2DRectShadow shadowMap3;
 uniform sampler2D noiseMap;
 
-uniform mat4 shadow_matrix[4];
+uniform mat4 shadow_matrix[6];
 uniform vec4 shadow_clip;
 
 uniform float sunAngle;
@@ -33,8 +36,8 @@ uniform vec3 normScale;
 uniform float fresnelScale;
 uniform float fresnelOffset;
 uniform float blurMultiplier;
+uniform vec2 screen_res;
 uniform mat4 norm_mat; //region space to screen space
-
 
 //bigWave is (refCoord.w, view.w);
 varying vec4 refCoord;
@@ -114,51 +117,27 @@ void main()
 	vec4 fb = texture2D(screenTex, distort2);
 	
 	//mix with reflection
-	// Note we actually want to use just df1, but multiplying by 0.999999 gets around and nvidia compiler bug
+	// Note we actually want to use just df1, but multiplying by 0.999999 gets around an nvidia compiler bug
 	color.rgb = mix(fb.rgb, refcol.rgb, df1 * 0.99999);
 	
 	float shadow = 1.0;
 	vec4 pos = vary_position;
 	
 	//vec3 nz = texture2D(noiseMap, gl_FragCoord.xy/128.0).xyz;
-
-//	if (pos.z > -shadow_clip.w)
-//	{	
-		vec4 spos = pos;
-			
-/*		if (pos.z < -shadow_clip.z)
-		{
-			vec4 lpos = (shadow_matrix[3]*spos);
-			shadow = shadow2DProj(shadowMap3, lpos).x;
-		}
-		else if (pos.z < -shadow_clip.y)
-		{
-			vec4 lpos = (shadow_matrix[2]*spos);
-			shadow = shadow2DProj(shadowMap2, lpos).x;
-		}
-		else if (pos.z < -shadow_clip.x)
-		{
-			vec4 lpos = (shadow_matrix[1]*spos);
-			shadow = shadow2DProj(shadowMap1, lpos).x;
-		}
-		else
-		{
-			vec4 lpos = (shadow_matrix[0]*spos);
-			shadow = shadow2DProj(shadowMap0, lpos).x;
-		}
-	}*/
+	vec4 spos = pos;
+		
+	//spec *= shadow;
+	//color.rgb += spec * specular;
 	
-//	spec *= shadow;
-//	color.rgb += spec * specular;
-	
-//	color.rgb = atmosTransport(color.rgb);
-//	color.rgb = scaleSoftClip(color.rgb);
-//	color.a = spec * sunAngle2;
+	//color.rgb = atmosTransport(color.rgb);
+	//color.rgb = scaleSoftClip(color.rgb);
+	//color.a = spec * sunAngle2;
 
-//	gl_FragColor = color;
+	//wavef.z *= 0.1f;
+	//wavef = normalize(wavef);
 	vec3 screenspacewavef = (norm_mat*vec4(wavef, 1.0)).xyz;
 	
 	gl_FragData[0] = vec4(color.rgb, 0.5); // diffuse
 	gl_FragData[1] = vec4(0.5,0.5,0.5, 0.95); // speccolor*spec, spec
-	gl_FragData[2] = vec4(screenspacewavef, 0.0); // normalxyz, displace
+	gl_FragData[2] = vec4(screenspacewavef.xy*0.5+0.5, screenspacewavef.z, screenspacewavef.z*0.5); // normalxyz, displace
 }

@@ -66,7 +66,20 @@ const S32 CURRENT_VERSION = 101;
 //So, a global it is!
 bool gCOAEnabled = false; 
 
-LLControlVariable *LLControlVariable::getCOAActive()
+LLControlVariable* LLControlVariable::getCOAActive()
+{
+	//if no coa connection, return 'this'
+	//if per account is ON and this IS a parent, return child var
+	//if per account is ON and this IS NOT a parent, return 'this'
+	//if per account is OFF and this IS NOT a parent, return parent var
+	//if per account is OFF and this IS a parent, return 'this'
+	if(getCOAConnection() && gCOAEnabled == isCOAParent())
+		return getCOAConnection();
+	else
+		return this;
+}
+
+LLControlVariable const* LLControlVariable::getCOAActive() const
 {
 	//if no coa connection, return 'this'
 	//if per account is ON and this IS a parent, return child var
@@ -282,11 +295,9 @@ LLSD LLControlVariable::getSaveValue() const
 
 #if PROF_CTRL_CALLS
 std::vector<std::pair<std::string, U32>> gSettingsCallMap;
-#endif //PROF_CTRL_CALLS
-LLPointer<LLControlVariable> LLControlGroup::getControl(const std::string& name)
+
+static update_gSettingsCallMap(ctrl_name_table_t::const_iterator const& iter)
 {
-	ctrl_name_table_t::iterator iter = mNameTable.find(name);
-#if PROF_CTRL_CALLS
 	if(iter != mNameTable.end())
 	{
 		std::vector<std::pair<std::string, U32>>::iterator iter2 = gSettingsCallMap.begin();
@@ -302,13 +313,32 @@ LLPointer<LLControlVariable> LLControlGroup::getControl(const std::string& name)
 		if(iter2 == gSettingsCallMap.end())
 			gSettingsCallMap.push_back(std::pair<std::string, U32>(name.c_str(),1));
 	}
+}
+#endif //PROF_CTRL_CALLS
+
+LLControlVariable* LLControlGroup::getControl(std::string const& name)
+{
+	ctrl_name_table_t::iterator iter = mNameTable.find(name);
+#if PROF_CTRL_CALLS
+	update_gSettingsCallMap(iter);
 #endif //PROF_CTRL_CALLS
 	if(iter != mNameTable.end())
 		return iter->second->getCOAActive();
 	else
-		return LLPointer<LLControlVariable>();
+		return NULL;
 }
 
+LLControlVariable const* LLControlGroup::getControl(std::string const& name) const
+{
+	ctrl_name_table_t::const_iterator iter = mNameTable.find(name);
+#if PROF_CTRL_CALLS
+	update_gSettingsCallMap(iter);
+#endif //PROF_CTRL_CALLS
+	if(iter != mNameTable.end())
+		return iter->second->getCOAActive();
+	else
+		return NULL;
+}
 
 ////////////////////////////////////////////////////////////////////////////
 
@@ -502,9 +532,9 @@ std::string LLControlGroup::findString(const std::string& name)
 	return LLStringUtil::null;
 }
 
-std::string LLControlGroup::getString(const std::string& name)
+std::string LLControlGroup::getString(const std::string& name) const
 {
-	LLControlVariable* control = getControl(name);
+	LLControlVariable const* control = getControl(name);
 	
 	if (control && control->isType(TYPE_STRING))
 		return control->get().asString();
@@ -649,9 +679,9 @@ LLSD LLControlGroup::getLLSD(const std::string& name)
 	return LLSD();
 }
 
-BOOL LLControlGroup::controlExists(const std::string& name)
+BOOL LLControlGroup::controlExists(const std::string& name) const
 {
-	ctrl_name_table_t::iterator iter = mNameTable.find(name);
+	ctrl_name_table_t::const_iterator iter = mNameTable.find(name);
 	return iter != mNameTable.end();
 }
 

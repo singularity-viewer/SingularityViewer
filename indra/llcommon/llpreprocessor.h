@@ -107,17 +107,7 @@
 
 #endif
 
-// Static linking with apr on windows needs to be declared.
-#ifdef LL_WINDOWS
-#ifndef APR_DECLARE_STATIC
-#define APR_DECLARE_STATIC // For APR on Windows
-#endif
-#ifndef APU_DECLARE_STATIC
-#define APU_DECLARE_STATIC // For APR util on Windows
-#endif
-#endif
-
-// Deal with the differeneces on Windows
+// Deal with the differences on Windows
 #if defined(LL_WINDOWS)
 #define BOOST_REGEX_NO_LIB 1
 #define CURL_STATICLIB 1
@@ -169,7 +159,6 @@
 #define LL_DLLIMPORT
 #endif // LL_WINDOWS
 
-/*
 #ifdef llcommon_EXPORTS
 // Compiling llcommon (shared)
 #define LL_COMMON_API LL_DLLEXPORT
@@ -177,9 +166,5 @@
 // Using llcommon (shared)
 #define LL_COMMON_API LL_DLLIMPORT
 #endif // llcommon_EXPORTS
-*/
-
-//I hate DLLs -SG
-#define LL_COMMON_API
 
 #endif	//	not LL_LINDEN_PREPROCESSOR_H

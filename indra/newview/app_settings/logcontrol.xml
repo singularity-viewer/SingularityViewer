@@ -42,6 +42,15 @@
 						<array>
 							<string>ShaderLoading</string>
 							<string>Openjpeg</string>
+					<!-- Debug output about messages received from plugins: -->
+						<string>Plugin</string>                           <!-- Everything except what is listed below -->
+						<string>Plugin child</string>                     <!-- Plugin log messages from the plugin child process -->
+						<!--<string>PluginRaw</string>-->                 <!-- The raw LLSD data -->
+						<string>PluginRaw child</string>                  <!-- The raw LLSD data from the plugin child process -->
+						<!--<string>PluginHeartbeat</string>-->           <!-- One second interval CPU usage reports -->
+						<!--<string>PluginUpdated</string>-->             <!-- The mouse "updated" message -->
+					<!-- Debug output about messages sent to plugins: -->
+						<!--<string>PluginMouseEvent</string>-->          <!-- Mouse event data sent to plugins -->
 						</array>
 				</map>
 			</array>

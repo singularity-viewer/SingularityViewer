@@ -40,7 +40,7 @@
 #include "llvoavatar.h"
 #include "llagent.h"          // gAgent
 #include "llkeyframemotion.h"
-#include "llfilepicker.h"
+#include "statemachine/aifilepicker.h"
 #include "lllineeditor.h"
 #include "lluictrlfactory.h"
 #include "lluictrlfactory.h"
@@ -392,21 +392,22 @@ void LLPreviewAnim::gotAssetForSave(LLVFS *vfs,
 
 	// Write it back out...
 
-	LLFilePicker& file_picker = LLFilePicker::instance();
-	if( !file_picker.getSaveFile( LLFilePicker::FFSAVE_ANIMATN, LLDir::getScrubbedFileName(self->getItem()->getName())) )
-	{
-		// User canceled or we failed to acquire save file.
-		return;
-	}
-	// remember the user-approved/edited file name.
-	std::string filename = file_picker.getFirstFile();
+	AIFilePicker* filepicker = AIFilePicker::create();
+	filepicker->open(LLDir::getScrubbedFileName(self->getItem()->getName()) + ".animatn", FFSAVE_ANIMATN);
+	filepicker->run(boost::bind(&LLPreviewAnim::gotAssetForSave_continued, buffer, size, filepicker));
+}
 
-	std::ofstream export_file(filename.c_str(), std::ofstream::binary);
-	export_file.write(buffer, size);
-	export_file.close();
-	
+// static
+void LLPreviewAnim::gotAssetForSave_continued(char* buffer, S32 size, AIFilePicker* filepicker)
+{
+	if (!filepicker->hasFilename())
+	{
+		std::string filename = filepicker->getFilename();
+		std::ofstream export_file(filename.c_str(), std::ofstream::binary);
+		export_file.write(buffer, size);
+		export_file.close();
+	}
 	delete[] buffer;
-	buffer = NULL;
 }
 
 // virtual

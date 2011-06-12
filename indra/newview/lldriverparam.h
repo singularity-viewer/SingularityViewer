@@ -35,6 +35,7 @@
 
 #include "llviewervisualparam.h"
 
+class LLPhysicsMotion;
 class LLVOAvatar;
 
 //-----------------------------------------------------------------------------
@@ -78,6 +79,7 @@ protected:
 
 class LLDriverParam : public LLViewerVisualParam
 {
+	friend class LLPhysicsMotion; // physics motion needs to access driven params directly.
 public:
 	LLDriverParam(LLVOAvatar *avatarp);
 	~LLDriverParam();

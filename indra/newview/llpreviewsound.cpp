@@ -48,7 +48,7 @@
 #include "llchat.h"
 #include "llfloaterchat.h"
 #include "llviewerwindow.h" // for alert
-#include "llfilepicker.h"
+#include "statemachine/aifilepicker.h"
 // for ambient play:
 #include "llviewerregion.h"
 // </edit>
@@ -330,18 +330,22 @@ void LLPreviewSound::gotAssetForSave(LLVFS *vfs,
 
 	// Write it back out...
 
-	LLFilePicker& file_picker = LLFilePicker::instance();
-	if( !file_picker.getSaveFile( LLFilePicker::FFSAVE_OGG, LLDir::getScrubbedFileName(self->getItem()->getName())) )
-	{
-		// User canceled or we failed to acquire save file.
-		return;
-	}
-	// remember the user-approved/edited file name.
-	std::string filename = file_picker.getFirstFile();
+	AIFilePicker* filepicker = AIFilePicker::create();
+	filepicker->open(LLDir::getScrubbedFileName(self->getItem()->getName()) + ".ogg", FFSAVE_OGG);
+	filepicker->run(boost::bind(&LLPreviewSound::gotAssetForSave_continued, buffer, size, filepicker));
+}
 
-	std::ofstream export_file(filename.c_str(), std::ofstream::binary);
-	export_file.write(buffer, size);
-	export_file.close();
+// static
+void LLPreviewSound::gotAssetForSave_continued(char* buffer, S32 size, AIFilePicker* filepicker)
+{
+	if (filepicker->hasFilename())
+	{
+		std::string filename = filepicker->getFilename();
+		std::ofstream export_file(filename.c_str(), std::ofstream::binary);
+		export_file.write(buffer, size);
+		export_file.close();
+	}
+	delete [] buffer;
 }
 
 // virtual

@@ -83,6 +83,17 @@ void LLPermissions::initMasks(PermissionMask base, PermissionMask owner,
 	fix();
 }
 
+// ! BACKWARDS COMPATIBILITY ! Override masks for inventory types that
+// no longer can have restricted permissions.  This takes care of previous
+// version landmarks that could have had no copy/mod/transfer bits set.
+void LLPermissions::initMasks(LLInventoryType::EType type)
+{
+	if (LLInventoryType::cannotRestrictPermissions(type))
+	{
+		initMasks(PERM_ALL, PERM_ALL, PERM_ALL, PERM_ALL, PERM_ALL);
+	}
+}
+
 BOOL LLPermissions::getOwnership(LLUUID& owner_id, BOOL& is_group_owned) const
 {
 	if(mOwner.notNull())
@@ -277,6 +288,17 @@ BOOL LLPermissions::setOwnerAndGroup(
 	return allowed;
 }
 
+//Fix for DEV-33917, last owner isn't used much and has little impact on
+//permissions so it's reasonably safe to do this, however, for now, 
+//limiting the functionality of this routine to objects which are 
+//group owned.
+void LLPermissions::setLastOwner(const LLUUID& last_owner)
+{
+	if (isGroupOwned())
+		mLastOwner = last_owner;
+}
+
+ 
 // only call this if you know what you're doing
 // there are usually perm-bit consequences when the 
 // ownerhsip changes
@@ -457,7 +479,7 @@ BOOL LLPermissions::setNextOwnerBits(const LLUUID& agent, const LLUUID& group, B
 	return ownership;
 }
 
-BOOL LLPermissions::allowOperationBy(PermissionBit op, const LLUUID& requester, const LLUUID& group) const
+bool LLPermissions::allowOperationBy(PermissionBit op, const LLUUID& requester, const LLUUID& group) const
 {
 	if(requester.isNull())
 	{

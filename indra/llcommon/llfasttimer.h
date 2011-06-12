@@ -35,7 +35,6 @@
 
 #define FAST_TIMER_ON 1
 
-LL_COMMON_API U64 get_cpu_clock_count();
 
 class LL_COMMON_API LLFastTimer
 {
@@ -51,9 +50,13 @@ public:
 		FTM_IDLE,
 		FTM_SLEEP,
 
+		// general timers
+		FT_STRING_FORMAT,
+
 		// common messaging components
 		FTM_PUMP,
 		FTM_CURL,
+		FTM_PUMPIO,
 		
 		// common simulation components
 		FTM_UPDATE_ANIMATION,
@@ -103,7 +106,23 @@ public:
 		FTM_RENDER_BLOOM,
 			FTM_RENDER_BLOOM_FBO,		
 		FTM_RENDER_FONTS,
-		
+
+		// deferred rendering
+		FTM_RENDER_DEFERRED,
+		 FTM_BIND_DEFERRED,
+		 FTM_SUN_SHADOW,
+		 FTM_SOFTEN_SHADOW,
+		 FTM_EDGE_DETECTION,
+		 FTM_GI_TRACE,
+		 FTM_GI_GATHER,
+		 FTM_ATMOSPHERICS,
+		 FTM_LOCAL_LIGHTS,
+		 FTM_FULLSCREEN_LIGHTS,
+		 FTM_PROJECTORS,
+		 FTM_POST,
+
+		 FTM_VISIBLE_CLOUD,
+
 		// newview specific
 		FTM_MESSAGES,
 		FTM_MOUSEHANDLER,
@@ -176,6 +195,7 @@ public:
 		FTM_REFRESH,
 		FTM_SORT,
 		FTM_PICK,
+		FTM_STATEMACHINE,
 		
 		// Temp
 		FTM_TEMP1,
@@ -206,7 +226,7 @@ public:
 		//gTimerBins[gCurTimerBin]++;
 		//LLTimer::sNumTimerCalls++;
 
-		U64 cpu_clocks = get_cpu_clock_count();
+		U64 cpu_clocks =  getCPUClockCount64();
 
 		sStart[sCurDepth] = cpu_clocks;
 		sCurDepth++;
@@ -221,7 +241,7 @@ public:
 		// These don't get counted, because they use CPU clockticks
 		//gTimerBins[gCurTimerBin]++;
 		//LLTimer::sNumTimerCalls++;
-		end = get_cpu_clock_count();
+		end =  getCPUClockCount64();
 
 		sCurDepth--;
 		delta = end - sStart[sCurDepth];
@@ -236,6 +256,7 @@ public:
 	static void reset();
 	static U64 countsPerSecond();
 
+	static std::string sClockType;
 public:
 	static int sCurDepth;
 	static U64 sStart[FTM_MAX_DEPTH];
@@ -245,14 +266,17 @@ public:
 	static U64 sCallAverage[FTM_NUM_TYPES];
 	static U64 sCountHistory[FTM_HISTORY_NUM][FTM_NUM_TYPES];
 	static U64 sCallHistory[FTM_HISTORY_NUM][FTM_NUM_TYPES];
-	static S32 sCurFrameIndex;
-	static S32 sLastFrameIndex;
+
 	static int sPauseHistory;
 	static int sResetHistory;
-	static F64 sCPUClockFrequency;
-    static U64 sClockResolution;
 	
-private:
+	static U32 getCPUClockCount32();
+	static U64 getCPUClockCount64();
+
+	static U64 sClockResolution;
+	static S32 sCurFrameIndex;
+	static S32 sLastFrameIndex;
+	
 	EFastTimerType mType;
 };
 

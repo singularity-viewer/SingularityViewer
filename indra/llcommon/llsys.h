@@ -131,10 +131,10 @@ LL_COMMON_API std::ostream& operator<<(std::ostream& s, const LLCPUInfo& info);
 LL_COMMON_API std::ostream& operator<<(std::ostream& s, const LLMemoryInfo& info);
 
 // gunzip srcfile into dstfile.  Returns FALSE on error.
-LL_COMMON_API BOOL gunzip_file(const std::string& srcfile, const std::string& dstfile);
+BOOL LL_COMMON_API gunzip_file(const std::string& srcfile, const std::string& dstfile);
 // gzip srcfile into dstfile.  Returns FALSE on error.
-LL_COMMON_API BOOL gzip_file(const std::string& srcfile, const std::string& dstfile);
+BOOL LL_COMMON_API gzip_file(const std::string& srcfile, const std::string& dstfile);
 
-LL_COMMON_API extern LLCPUInfo gSysCPU;
+extern LL_COMMON_API LLCPUInfo gSysCPU;
 
 #endif // LL_LLSYS_H

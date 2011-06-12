@@ -2,8 +2,10 @@
 
 project(llcommon)
 
+include(Cwdebug)
 include(00-Common)
 include(LLCommon)
+include(APR)
 include(Linking)
 
 include_directories(
@@ -13,6 +15,7 @@ include_directories(
     )
 
 set(llcommon_SOURCE_FILES
+	aiaprpool.cpp
 	imageids.cpp
 	indra_constants.cpp
     llapp.cpp
@@ -27,9 +30,11 @@ set(llcommon_SOURCE_FILES
     llcriticaldamp.cpp
     llcursortypes.cpp
     lldate.cpp
+    lldictionary.cpp
     llerror.cpp
     llerrorthread.cpp
     llevent.cpp
+    lleventtimer.cpp
     llfasttimer.cpp
     llfile.cpp
     llfindlocale.cpp
@@ -37,6 +42,7 @@ set(llcommon_SOURCE_FILES
     llformat.cpp
     llframetimer.cpp
     llheartbeat.cpp
+    llinstancetracker.cpp
     llindraconfigfile.cpp
     llliveappconfig.cpp
     lllivefile.cpp
@@ -58,6 +64,7 @@ set(llcommon_SOURCE_FILES
     llsdutil.cpp
     llsecondlifeurls.cpp
     llstat.cpp
+    llstacktrace.cpp
     llstreamtools.cpp
     llstring.cpp
     llstringtable.cpp
@@ -77,6 +84,8 @@ set(llcommon_SOURCE_FILES
 set(llcommon_HEADER_FILES
     CMakeLists.txt
 
+    aiaprpool.h
+    aithreadsafe.h
     bitpack.h
     ctype_workaround.h
     doublelinkedlist.h
@@ -85,12 +94,12 @@ set(llcommon_HEADER_FILES
     linden_common.h
     linked_lists.h
     llagentconstants.h
+    llavatarname.h
     llapp.h
     llapr.h
     llassettype.h
     llassoclist.h
     llavatarconstants.h
-    llavatarname.h
     llbase32.h
     llbase64.h
     llboost.h
@@ -106,6 +115,7 @@ set(llcommon_HEADER_FILES
     lldate.h
     lldefs.h
     lldepthstack.h
+    lldictionary.h
     lldlinked.h
     lldqueueptr.h
     llendianswizzle.h
@@ -117,6 +127,7 @@ set(llcommon_HEADER_FILES
     llevent.h
     lleventemitter.h
     llextendedstatus.h
+    lleventtimer.h
     llfasttimer.h
     llfile.h
     llfindlocale.h
@@ -127,6 +138,7 @@ set(llcommon_HEADER_FILES
     llheartbeat.h
     llhttpstatuscodes.h
     llindexedqueue.h
+    llinstancetracker.h
     llindraconfigfile.h
     llkeythrottle.h
     lllinkedqueue.h
@@ -153,6 +165,7 @@ set(llcommon_HEADER_FILES
     llqueuedthread.h
     llrand.h
     llrun.h
+    llscopedvolatileaprpool.h
     llsd.h
     llsdserialize.h
     llsdserialize_xml.h
@@ -162,6 +175,7 @@ set(llcommon_HEADER_FILES
     llskiplist.h
     llskipmap.h
     llstack.h
+    llstacktrace.h
     llstat.h
     llstatenums.h
     llstl.h
@@ -182,7 +196,6 @@ set(llcommon_HEADER_FILES
     metaclasst.h
     metaproperty.h
     metapropertyt.h
-    processor.h
     reflective.h
     reflectivet.h
     roles_constants.h
@@ -199,7 +212,7 @@ set_source_files_properties(${llcommon_HEADER_FILES}
 
 list(APPEND llcommon_SOURCE_FILES ${llcommon_HEADER_FILES})
 
-add_library (llcommon ${llcommon_SOURCE_FILES})
+add_library (llcommon SHARED ${llcommon_SOURCE_FILES})
 add_dependencies(llcommon prepare)
 target_link_libraries(
     llcommon
@@ -208,5 +221,20 @@ target_link_libraries(
     ${EXPAT_LIBRARIES}
     ${ZLIB_LIBRARIES}
     ${WINDOWS_LIBRARIES}
+    ${CWDEBUG_LIBRARIES}
     )
 
+if (LINUX)
+    # When linking with llcommon later, we do not want to link with cwdebug.a again.
+    set_property(TARGET llcommon PROPERTY LINK_INTERFACE_LIBRARIES "-lapr-1 -laprutil-1 -lz")
+endif (LINUX)
+
+if (DARWIN)
+    # Don't embed a full path in the library's install name
+    set_target_properties(
+        llcommon
+        PROPERTIES
+        BUILD_WITH_INSTALL_RPATH 1
+        INSTALL_NAME_DIR "@executable_path/../Resources"
+      )
+endif (DARWIN)

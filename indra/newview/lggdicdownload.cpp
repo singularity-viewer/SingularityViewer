@@ -43,7 +43,7 @@
 #include "llcolorswatch.h"
 #include "llcombobox.h"
 #include "llview.h"
-#include "ascentprefssys.h"
+#include "ascentprefschat.h"
 #include "llviewercontrol.h"
 #include "llhttpclient.h"
 #include "llbufferstream.h"
@@ -76,7 +76,7 @@ public:
 	static void onClickDownload(void* data);
 	std::vector<std::string> sNames;
 	std::vector<std::string> lNames;
-	LLPrefsAscentSys * empanel;
+	LLPrefsAscentChat * empanel;
 };
 
 lggDicDownloadFloater::~lggDicDownloadFloater()
@@ -104,7 +104,7 @@ void lggDicDownloadFloater::setData(std::vector<std::string> shortNames, std::ve
 {
 	sNames = shortNames;
 	lNames = longNames;
-	empanel = (LLPrefsAscentSys*)data;
+	empanel = (LLPrefsAscentChat*)data;
 
 	LLComboBox* comboBox = getChild<LLComboBox>("Emerald_combo_dics");
 	if (comboBox != NULL) 

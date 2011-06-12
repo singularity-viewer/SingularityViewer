@@ -842,7 +842,7 @@ EKeyboardMode LLViewerKeyboard::getMode()
 	{
 		return MODE_EDIT_AVATAR;
 	}
-	else if (gAgent.getAvatarObject() && gAgent.getAvatarObject()->mIsSitting)
+	else if (gAgent.getAvatarObject() && gAgent.getAvatarObject()->isSitting())
 	{
 		return MODE_SITTING;
 	}

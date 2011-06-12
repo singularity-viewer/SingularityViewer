@@ -32,7 +32,7 @@
 #include "linden_common.h"
 #include "llerrorthread.h"
 #include "llapp.h"
-#include "lltimer.h"
+#include "lltimer.h"	// ms_sleep()
 
 LLErrorThread::LLErrorThread()
 	: LLThread("Error"),

@@ -75,7 +75,6 @@ public:
 	bool registerFunctor(const std::string& name, ResponseFunctor f)
 	{
 		bool retval = true;
-		typename FunctorMap::iterator it = mMap.find(name);
 		if (mMap.count(name) == 0)
 		{
 			mMap[name] = f;
@@ -102,7 +101,6 @@ public:
 
 	FUNCTOR_TYPE getFunctor(const std::string& name)
 	{
-		typename FunctorMap::iterator it = mMap.find(name);
 		if (mMap.count(name) != 0)
 		{
 			return mMap[name];

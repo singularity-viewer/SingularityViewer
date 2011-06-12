@@ -39,7 +39,7 @@
 // project includes
 #include "llcheckboxctrl.h"
 #include "llradiogroup.h"
-#include "lldirpicker.h"
+#include "statemachine/aidirpicker.h"
 #include "lluictrlfactory.h"
 #include "llviewercontrol.h"
 #include "llviewerwindow.h"
@@ -151,18 +151,24 @@ void LLPanelNetwork::onClickClearCache(void*)
 // static
 void LLPanelNetwork::onClickSetCache(void* user_data)
 {
-	LLPanelNetwork* self = (LLPanelNetwork*)user_data;
-
 	std::string cur_name(gSavedSettings.getString("CacheLocation"));
 	std::string proposed_name(cur_name);
 	
-	LLDirPicker& picker = LLDirPicker::instance();
-	if (! picker.getDir(&proposed_name ) )
+	AIDirPicker* dirpicker = new AIDirPicker(proposed_name, "cachelocation");
+	dirpicker->run(boost::bind(&LLPanelNetwork::onClickSetCache_continued, user_data, dirpicker));
+}
+
+// static
+void LLPanelNetwork::onClickSetCache_continued(void* user_data, AIDirPicker* dirpicker)
+{
+	if (!dirpicker->hasDirname())
 	{
 		return; //Canceled!
 	}
 
-	std::string dir_name = picker.getDirName();
+	LLPanelNetwork* self = (LLPanelNetwork*)user_data;
+	std::string cur_name(gSavedSettings.getString("CacheLocation"));
+	std::string dir_name = dirpicker->getDirname();
 	if (!dir_name.empty() && dir_name != cur_name)
 	{
 		self->childSetText("cache_location", dir_name);
@@ -180,12 +186,14 @@ void LLPanelNetwork::onClickSetCache(void* user_data)
 void LLPanelNetwork::onClickResetCache(void* user_data)
 {
  	LLPanelNetwork* self = (LLPanelNetwork*)user_data;
-	if (!gSavedSettings.getString("CacheLocation").empty())
+	if (gDirUtilp->getCacheDir(false) == gDirUtilp->getCacheDir(true))
 	{
-		gSavedSettings.setString("NewCacheLocation", "");
-		LLNotifications::instance().add("CacheWillBeMoved");
+		// The cache location was already the default.
+		return;
 	}
-	std::string cache_location = gDirUtilp->getCacheDir(true);
+	gSavedSettings.setString("NewCacheLocation", "");
+	LLNotifications::instance().add("CacheWillBeMoved");
+	std::string cache_location = gDirUtilp->getCacheDir(false);
 	self->childSetText("cache_location", cache_location);
 }
 

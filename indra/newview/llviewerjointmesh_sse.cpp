@@ -89,7 +89,7 @@ void LLViewerJointMesh::updateGeometrySSE(LLFace *face, LLPolyMesh *mesh)
 	LLStrider<LLVector3> o_vertices;
 	LLStrider<LLVector3> o_normals;
 
-	LLVertexBuffer *buffer = face->mVertexBuffer;
+	LLVertexBuffer *buffer = face->getVertexBuffer();
 	buffer->getVertexStrider(o_vertices,  mesh->mFaceVertexOffset);
 	buffer->getNormalStrider(o_normals,   mesh->mFaceVertexOffset);
 

@@ -45,13 +45,15 @@
 #include "llviewernetwork.h"
 #include "lluictrlfactory.h"
 
-#include "lldirpicker.h"
+#include "statemachine/aidirpicker.h"
 
 #include "hippogridmanager.h"
 
 // [RLVa:KB]
 #include "rlvhandler.h"
 // [/RLVa:KB]
+
+class AIDirPicker;
 
 class LLPrefsIMImpl : public LLPanel
 {
@@ -67,6 +69,7 @@ public:
 	void enableHistory();
 
 	static void onClickLogPath(void* user_data);
+	static void onClickLogPath_continued(void* user_data, AIDirPicker* dirpicker);
 	static void onCommitLogging(LLUICtrl* ctrl, void* user_data);
 
 protected:
@@ -301,13 +304,20 @@ void LLPrefsIMImpl::onClickLogPath(void* user_data)
 	
 	std::string proposed_name(self->childGetText("log_path_string"));	 
 	
-	LLDirPicker& picker = LLDirPicker::instance();
-	if (!picker.getDir(&proposed_name ) )
+	AIDirPicker* dirpicker = new AIDirPicker(proposed_name);
+	dirpicker->run(boost::bind(&LLPrefsIMImpl::onClickLogPath_continued, user_data, dirpicker));
+}
+
+// static
+void LLPrefsIMImpl::onClickLogPath_continued(void* user_data, AIDirPicker* dirpicker)
+{
+	if (!dirpicker->hasDirname())
 	{
 		return; //Canceled!
 	}
 	
-	self->childSetText("log_path_string", picker.getDirName());	 
+	LLPrefsIMImpl* self=(LLPrefsIMImpl*)user_data;
+	self->childSetText("log_path_string", dirpicker->getDirname());	 
 }
 
 

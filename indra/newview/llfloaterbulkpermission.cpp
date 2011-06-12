@@ -110,7 +110,7 @@ void LLFloaterBulkPermission::doApply()
 // worked on.
 // NOT static, virtual!
 void LLFloaterBulkPermission::inventoryChanged(LLViewerObject* viewer_object,
-											 InventoryObjectList* inv,
+											  LLInventoryObject::object_list_t* inv,
 											 S32,
 											 void* q_id)
 {
@@ -253,12 +253,12 @@ void LLFloaterBulkPermission::doCheckUncheckAll(BOOL check)
 }
 
 
-void LLFloaterBulkPermission::handleInventory(LLViewerObject* viewer_obj, InventoryObjectList* inv)
+void LLFloaterBulkPermission::handleInventory(LLViewerObject* viewer_obj,  LLInventoryObject::object_list_t* inv)
 {
 	LLScrollListCtrl* list = getChild<LLScrollListCtrl>("queue output");
 
-	InventoryObjectList::const_iterator it = inv->begin();
-	InventoryObjectList::const_iterator end = inv->end();
+	LLInventoryObject::object_list_t::const_iterator it = inv->begin();
+	LLInventoryObject::object_list_t::const_iterator end = inv->end();
 	for ( ; it != end; ++it)
 	{
 		LLAssetType::EType asstype = (*it)->getType();
@@ -292,7 +292,7 @@ void LLFloaterBulkPermission::handleInventory(LLViewerObject* viewer_obj, Invent
 				if((perm.getMaskNextOwner() != desired_next_owner_perms)
 				   && (new_item->getType() == LLAssetType::AT_OBJECT))
 				{
-					flags |= LLInventoryItem::II_FLAGS_OBJECT_SLAM_PERM;
+					flags |= LLInventoryItemFlags::II_FLAGS_OBJECT_SLAM_PERM;
 				}
 				// If everyone permissions have changed (and this is an object)
 				// then set the overwrite everyone permissions flag so they
@@ -300,7 +300,7 @@ void LLFloaterBulkPermission::handleInventory(LLViewerObject* viewer_obj, Invent
 				if ((perm.getMaskEveryone() != desired_everyone_perms)
 				    && (new_item->getType() == LLAssetType::AT_OBJECT))
 				{
-					flags |= LLInventoryItem::II_FLAGS_OBJECT_PERM_OVERWRITE_EVERYONE;
+					flags |= LLInventoryItemFlags::II_FLAGS_OBJECT_PERM_OVERWRITE_EVERYONE;
 				}
 				// If group permissions have changed (and this is an object)
 				// then set the overwrite group permissions flag so they
@@ -308,7 +308,7 @@ void LLFloaterBulkPermission::handleInventory(LLViewerObject* viewer_obj, Invent
 				if ((perm.getMaskGroup() != desired_group_perms)
 				    && (new_item->getType() == LLAssetType::AT_OBJECT))
 				{
-					flags |= LLInventoryItem::II_FLAGS_OBJECT_PERM_OVERWRITE_GROUP;
+					flags |= LLInventoryItemFlags::II_FLAGS_OBJECT_PERM_OVERWRITE_GROUP;
 				}
 
 				// chomp the inventory name so it fits in the scroll window nicely

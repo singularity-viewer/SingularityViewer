@@ -179,7 +179,7 @@ namespace LLError
 		{ return s; }
 		// used to indicate the end of a message
 		
-	class NoClassInfo { };
+	class LL_COMMON_API NoClassInfo { };
 		// used to indicate no class info known for logging
 
    //LLCallStacks keeps track of call stacks and output the call stacks to log file
@@ -303,7 +303,7 @@ typedef LLError::NoClassInfo _LL_CLASS_TO_LOG;
 	*/
 
 #ifdef SHOW_ASSERT
-extern bool is_main_thread();
+extern LL_COMMON_API bool is_main_thread();
 #endif
 
 #endif // LL_LLERROR_H

@@ -38,6 +38,7 @@
 #include "llradiogroup.h"
 #include "llbutton.h"
 #include "lluictrlfactory.h"
+#include "lldiriterator.h"
 
 // project includes
 #include "llviewercontrol.h"
@@ -79,8 +80,6 @@ void LLPanelSkins::refresh()
 
 	if(comboBox != NULL) 
 	{
-		std::string name;
-		gDirUtilp->getNextFileInDir(gDirUtilp->getChatLogsDir(),"*",name,false);//stupid hack to clear last file search
 		comboBox->removeall();
 		datas.clear();
 		//comboBox->add("===OFF===");
@@ -88,9 +87,11 @@ void LLPanelSkins::refresh()
 		llinfos << "Reading skin listing from " << path_name << llendl;
 		bool found = true;	
 		std::string currentSkinName("");
+		LLDirIterator iter(path_name, "*.xml");
 		while(found) 
 		{
-			found = gDirUtilp->getNextFileInDir(path_name, "*.xml", name, false);
+			std::string name;
+			found = iter.next(name);
 			//llinfos << "path name " << path_name << " and name " << name << " and found " << found << llendl;
 			if(found)
 			{

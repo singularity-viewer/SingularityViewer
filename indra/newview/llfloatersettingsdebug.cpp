@@ -104,7 +104,7 @@ BOOL LLFloaterSettingsDebug::postBuild()
 void LLFloaterSettingsDebug::draw()
 {
 	LLComboBox* settings_combo = getChild<LLComboBox>("settings_combo");
-	LLControlVariable* controlp = (LLControlVariable*)settings_combo->getCurrentUserdata();
+	LLControlVariable* controlp = static_cast<LLControlVariable*>(settings_combo->getCurrentUserdata());
 	updateControl(controlp ? controlp->getCOAActive() : NULL);
 
 	LLFloater::draw();
@@ -127,8 +127,8 @@ void LLFloaterSettingsDebug::show(void*)
 void LLFloaterSettingsDebug::onSettingSelect(LLUICtrl* ctrl, void* user_data)
 {
 	LLFloaterSettingsDebug* floaterp = (LLFloaterSettingsDebug*)user_data;
-	LLComboBox* combo_box = (LLComboBox*)ctrl;
-	LLControlVariable* controlp = (LLControlVariable*)combo_box->getCurrentUserdata();
+	LLComboBox* combo_box = static_cast<LLComboBox*>(ctrl);
+	LLControlVariable* controlp = static_cast<LLControlVariable*>(combo_box->getCurrentUserdata());
 
 	floaterp->updateControl(controlp ? controlp->getCOAActive() : NULL);
 }
@@ -139,7 +139,7 @@ void LLFloaterSettingsDebug::onCommitSettings(LLUICtrl* ctrl, void* user_data)
 	LLFloaterSettingsDebug* floaterp = (LLFloaterSettingsDebug*)user_data;
 
 	LLComboBox* settings_combo = floaterp->getChild<LLComboBox>("settings_combo");
-	LLControlVariable* controlp = (LLControlVariable*)settings_combo->getCurrentUserdata();
+	LLControlVariable* controlp = static_cast<LLControlVariable*>(settings_combo->getCurrentUserdata());
 	controlp = controlp ? controlp->getCOAActive() : NULL;
 	if(!controlp)//Uh oh!
 		return;

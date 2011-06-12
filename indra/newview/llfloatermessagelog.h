@@ -2,6 +2,7 @@
 #include "llfloater.h"
 #include "llmessagelog.h"
 #include "lltemplatemessagereader.h"
+#include "lleventtimer.h"
 
 class LLNetListItem
 {

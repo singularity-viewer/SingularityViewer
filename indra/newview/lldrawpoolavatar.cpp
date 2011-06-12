@@ -94,6 +94,7 @@ BOOL gAvatarEmbossBumpMap = FALSE;
 static BOOL sRenderingSkinned = FALSE;
 S32 normal_channel = -1;
 S32 specular_channel = -1;
+S32 diffuse_channel = -1;
 
 LLDrawPoolAvatar::LLDrawPoolAvatar() :
 LLFacePool(POOL_AVATAR)
@@ -400,6 +401,7 @@ void LLDrawPoolAvatar::beginImpostor()
 	}
 
 	gPipeline.enableLightsFullbright(LLColor4(1,1,1,1));
+	diffuse_channel = 0;
 }
 
 void LLDrawPoolAvatar::endImpostor()
@@ -452,6 +454,7 @@ void LLDrawPoolAvatar::beginDeferredImpostor()
 
 	normal_channel = sVertexProgram->enableTexture(LLViewerShaderMgr::DEFERRED_NORMAL);
 	specular_channel = sVertexProgram->enableTexture(LLViewerShaderMgr::SPECULAR_MAP);
+	diffuse_channel = sVertexProgram->enableTexture(LLViewerShaderMgr::DIFFUSE_MAP);
 				
 	sVertexProgram->bind();
 }
@@ -461,6 +464,7 @@ void LLDrawPoolAvatar::endDeferredImpostor()
 	sShaderLevel = mVertexShaderLevel;
 	sVertexProgram->disableTexture(LLViewerShaderMgr::DEFERRED_NORMAL);
 	sVertexProgram->disableTexture(LLViewerShaderMgr::SPECULAR_MAP);
+	sVertexProgram->disableTexture(LLViewerShaderMgr::DIFFUSE_MAP);
 	sVertexProgram->unbind();
 	gGL.getTexUnit(0)->activate();
 }
@@ -659,8 +663,10 @@ void LLDrawPoolAvatar::renderAvatars(LLVOAvatar* single_avatar, S32 pass)
 			gGL.translatef((F32)(pos.mV[VX]),	 
 						   (F32)(pos.mV[VY]),	 
 							(F32)(pos.mV[VZ]));	 
-			 gGL.scalef(0.15f, 0.15f, 0.3f);	 
-			 gSphere.render();	 
+			 gGL.scalef(0.15f, 0.15f, 0.3f);
+
+			 gSphere.renderGGL();
+
 			 gGL.popMatrix();
 			 gGL.setColorMask(true, false);
 		}
@@ -702,7 +708,7 @@ void LLDrawPoolAvatar::renderAvatars(LLVOAvatar* single_avatar, S32 pass)
 					avatarp->mImpostor.bindTexture(1, specular_channel);
 				}
 			}
-			avatarp->renderImpostor();
+			avatarp->renderImpostor(LLColor4U(255,255,255,255), diffuse_channel);
 		}
 		else if (gPipeline.hasRenderDebugFeatureMask(LLPipeline::RENDER_DEBUG_FEATURE_FOOT_SHADOWS) && !LLPipeline::sRenderDeferred)
 		{

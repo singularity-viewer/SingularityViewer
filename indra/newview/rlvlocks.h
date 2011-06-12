@@ -28,6 +28,7 @@
 #include "llviewerjointattachment.h"
 #include "llviewerobject.h"
 #include "llvoavatar.h"
+#include "lleventtimer.h"
 
 #include "rlvdefines.h"
 

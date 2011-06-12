@@ -33,7 +33,6 @@
 #include "linden_common.h"
 
 #include "lltimer.h"
-#include "timing.h"	// totalTime prototype.
 
 #include "u64.h"
 
@@ -52,6 +51,9 @@
 //
 // Locally used constants
 //
+const U32 SEC_PER_DAY = 86400;
+const F64 SEC_TO_MICROSEC = 1000000.f;
+const U64 SEC_TO_MICROSEC_U64 = 1000000;
 const F64 USEC_TO_SEC_F64 = 0.000001;
 
 
@@ -571,59 +573,6 @@ void timeStructToFormattedString(struct tm * time, std::string format, std::stri
 }
 
 
-//////////////////////////////////////////////////////////////////////////////
-//
-//		LLEventTimer Implementation
-//
-//////////////////////////////////////////////////////////////////////////////
 
-std::list<LLEventTimer*> LLEventTimer::sActiveList;
-
-LLEventTimer::LLEventTimer(F32 period)
-: mEventTimer()
-{
-	mPeriod = period;
-	sActiveList.push_back(this);
-}
-
-LLEventTimer::LLEventTimer(const LLDate& time)
-: mEventTimer()
-{
-	mPeriod = (F32)(time.secondsSinceEpoch() - LLDate::now().secondsSinceEpoch());
-	sActiveList.push_back(this);
-}
-
-
-LLEventTimer::~LLEventTimer() 
-{
-	sActiveList.remove(this);
-}
-
-void LLEventTimer::updateClass() 
-{
-	std::list<LLEventTimer*> completed_timers;
-	for (std::list<LLEventTimer*>::iterator iter = sActiveList.begin(); iter != sActiveList.end(); ) 
-	{
-		LLEventTimer* timer = *iter++;
-		F32 et = timer->mEventTimer.getElapsedTimeF32();
-		if (timer->mEventTimer.getStarted() && et > timer->mPeriod) {
-			timer->mEventTimer.reset();
-			if ( timer->tick() )
-			{
-				completed_timers.push_back( timer );
-			}
-		}
-	}
-
-	if ( completed_timers.size() > 0 )
-	{
-		for (std::list<LLEventTimer*>::iterator completed_iter = completed_timers.begin(); 
-			 completed_iter != completed_timers.end(); 
-			 completed_iter++ ) 
-		{
-			delete *completed_iter;
-		}
-	}
-}
 
 
