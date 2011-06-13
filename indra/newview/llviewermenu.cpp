@@ -2889,16 +2889,21 @@ class LLObjectImport : public view_listener_t
 		}
 		if(new_value == false) return true;
 		
-		LLFilePicker& picker = LLFilePicker::instance();
-		if (!picker.getOpenFile(LLFilePicker::FFLOAD_XML))
-		{
-			return true;
-		}
-		std::string file_name = picker.getFirstFile();
-		LLXmlImportOptions* options = new LLXmlImportOptions(file_name);
-		options->mSupplier = object;
-		new LLFloaterXmlImportOptions(options);
+		AIFilePicker* filepicker = AIFilePicker::create();
+		filepicker->open(FFLOAD_XML, "", "openfile");
+		filepicker->run(boost::bind(&LLObjectImport::callback, filepicker, object));
 		return true;
+	}
+private:
+	static void callback(AIFilePicker* filepicker, LLViewerObject* object)
+	{
+		if(filepicker->hasFilename() && !LLXmlImport::sImportInProgress) //stop multiple imports
+		{
+			std::string file_name = filepicker->getFilename();
+			LLXmlImportOptions* options = new LLXmlImportOptions(file_name);
+			options->mSupplier = object;
+			new LLFloaterXmlImportOptions(options);
+		}
 	}
 };
 

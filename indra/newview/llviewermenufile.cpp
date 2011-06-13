@@ -423,6 +423,7 @@ class LLFileImportXML : public view_listener_t
 		filepicker->run(boost::bind(&LLFileImportXML::callback, filepicker));		
 		return true;
 	}
+private:
 	static void callback(AIFilePicker* filepicker)
 	{
 		if(filepicker->hasFilename() && !LLXmlImport::sImportInProgress) //stop multiple imports

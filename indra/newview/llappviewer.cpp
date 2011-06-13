@@ -591,11 +591,16 @@ bool LLAppViewer::init()
 
 	// Build a string representing the current version number.
     gCurrentVersion = llformat("%s %d.%d.%d.%d",
-        gSavedSettings.getString("SpecifiedChannel"),
-		gSavedSettings.getU32("SpecifiedVersionMaj"),
-		gSavedSettings.getU32("SpecifiedVersionMin"),
-		gSavedSettings.getU32("SpecifiedVersionPatch"),
-		gSavedSettings.getU32("SpecifiedVersionBuild"));
+        //gSavedSettings.getString("SpecifiedChannel"),
+		LL_CHANNEL,
+		//gSavedSettings.getU32("SpecifiedVersionMaj"),
+		LL_VERSION_MAJOR,
+		//gSavedSettings.getU32("SpecifiedVersionMin"),
+		LL_VERSION_MINOR,
+		//gSavedSettings.getU32("SpecifiedVersionPatch"),
+		LL_VERSION_PATCH,
+		//gSavedSettings.getU32("SpecifiedVersionBuild"));
+		LL_VERSION_BUILD);
 
 	//////////////////////////////////////////////////////////////////////////////
 	//////////////////////////////////////////////////////////////////////////////
