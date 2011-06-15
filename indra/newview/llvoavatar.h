@@ -1191,8 +1191,9 @@ private:
 	static LLMap< LLGLenum, LLGLuint*> sScratchTexNames;
 	static LLMap< LLGLenum, F32*> sScratchTexLastBindTime;
 	static S32 sScratchTexBytes;
-	
+public:
 	static LLSD sClientResolutionList;
+private:
 	friend class LLPrefsAscentVan;
 
 	bool isUnknownClient();

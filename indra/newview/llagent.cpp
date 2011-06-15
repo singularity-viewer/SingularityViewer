@@ -7582,7 +7582,7 @@ void LLAgent::addWearableToAgentInventory(
 //-----------------------------------------------------------------------------
 // sendAgentSetAppearance()
 //-----------------------------------------------------------------------------
-void LLAgent::sendAgentSetAppearance()
+void LLAgent::sendAgentSetAppearance(const std::string& tag)
 {
 	if (!isAgentAvatarValid()) return;
 
@@ -7591,7 +7591,7 @@ void LLAgent::sendAgentSetAppearance()
 		return;
 	}
 
-
+	if(tag.empty())
 	llinfos << "TAT: Sent AgentSetAppearance: " << mAvatarObject->getBakedStatusForPrintout() << llendl;
 	//dumpAvatarTEs( "sendAgentSetAppearance()" );
 
@@ -7644,6 +7644,7 @@ void LLAgent::sendAgentSetAppearance()
 	// only update cache entries if we have all our baked textures
 	if (textures_current)
 	{
+		if(tag.empty())
 		llinfos << "TAT: Sending cached texture data" << llendl;
 		for (U8 baked_index = 0; baked_index < BAKED_NUM_INDICES; baked_index++)
 		{
@@ -7703,12 +7704,17 @@ void LLAgent::sendAgentSetAppearance()
 		}
 		else
 		{*/
+		if (!tag.empty())
+			mAvatarObject->packTEMessage( gMessageSystem, true, tag);
+		else
+		{
 			if (gSavedSettings.getBOOL("AscentUseTag"))
 				mAvatarObject->packTEMessage( gMessageSystem, true, gSavedSettings.getString("AscentReportClientUUID"));
 			else
 				mAvatarObject->packTEMessage( gMessageSystem );
 		//}
-		resetClientTag();
+			resetClientTag();
+		}
 		
 	}
 	else

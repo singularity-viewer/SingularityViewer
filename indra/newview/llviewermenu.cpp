@@ -245,6 +245,7 @@
 #include "llfloatermessagelog.h"
 #include "llfloatervfs.h"
 #include "llfloatervfsexplorer.h"
+#include "lleventtimer.h"
 // </edit>
 
 #include "scriptcounter.h"
@@ -478,6 +479,9 @@ BOOL handle_check_pose(void* userdata) {
 
 void handle_force_ground_sit(void*);
 void handle_phantom_avatar(void*);
+bool check_phantom_avatar(void*);
+void handle_rainbow_tag(void*);
+bool check_rainbow_tag(void*);
 void handle_hide_typing_notification(void*);
 void handle_close_all_notifications(void*);
 void handle_reopen_with_hex_editor(void*);
@@ -805,7 +809,7 @@ void init_menus()
 	menu->appendSeparator();
 	menu->append(new LLMenuItemCallGL(  "Fake Away Status", &handle_fake_away_status, NULL));
 	menu->append(new LLMenuItemCallGL(  "Force Ground Sit", &handle_force_ground_sit, NULL));
-	menu->append(new LLMenuItemCallGL(  "Phantom Avatar", &handle_phantom_avatar, NULL));
+	menu->append(new LLMenuItemCallGL(  "Phantom Avatar", &handle_phantom_avatar, NULL,&check_phantom_avatar,NULL));
 	menu->appendSeparator();
 	menu->append(new LLMenuItemCallGL( "Animation Override...",
 									&handle_edit_ao, NULL));
@@ -819,6 +823,7 @@ void init_menus()
 										NULL,
 										&menu_check_control,
 										(void*)"ReSit"));
+	menu->append(new LLMenuItemCallGL(  "Rainbow Tag", &handle_rainbow_tag, NULL,&check_rainbow_tag,NULL));
 	menu->appendSeparator();
 	menu->append(new LLMenuItemCallGL(	"Object Area Search", &handle_area_search, NULL));
 	menu->append(new LLMenuItemCallGL(  "Message Log", &handle_open_message_log, NULL));	
@@ -3771,7 +3776,10 @@ void handle_force_ground_sit(void*)
 		}
 	}
 }
-
+bool check_phantom_avatar(void*)
+{
+	return LLAgent::getPhantom();
+}
 void handle_phantom_avatar(void*)
 {
 	BOOL ph = LLAgent::getPhantom();
@@ -3788,7 +3796,80 @@ void handle_phantom_avatar(void*)
 	chat.mText = llformat("%s%s","Phantom ",(ph ? "On" : "Off"));
 	LLFloaterChat::addChat(chat);
 }
+class RainbowTagTimer : public LLEventTimer
+{
+public:
+	RainbowTagTimer():
+	  LLEventTimer(0.3f),
+	  running(TRUE)
+	  {
+		  itr = LLVOAvatar::sClientResolutionList.beginMap();
+	  }
+	~RainbowTagTimer()
+	{
+	}
+	BOOL tick()
+	{
+		if(running)
+		{
+			if(itr == LLVOAvatar::sClientResolutionList.endMap())
+			{
+				itr = LLVOAvatar::sClientResolutionList.beginMap();
+			}
+			std::string uuid = (*itr).first;
+			LLSD value = (*itr).second;
+			if(value.has("name"))
+			{
+				std::string name = value.get("name");
+				LLColor4 color = LLColor4(value.get("color"));
+				if(value["multiple"].asReal() != 0)
+				{
+					color *= 1.0/(value["multiple"].asReal()+1.0f);
+				}
+				gAgent.getAvatarObject()->mClientTag = name;
+				gAgent.getAvatarObject()->mClientColor = color;
+				gAgent.sendAgentSetAppearance(uuid);
+			}
+			itr++;
+		}
+		else
+		{
+			gAgent.sendAgentSetAppearance();
+		}
+		return !running;
+	}
+	void stop()
+	{
+		running = FALSE;
+	}
+	LLSD::map_iterator itr;
+	BOOL running;
+};
+RainbowTagTimer* rainbow_timer = NULL;
+bool check_rainbow_tag(void*)
+{
+	return !(rainbow_timer == NULL);
+}
+void handle_rainbow_tag(void*)
+{
+	BOOL rt = check_rainbow_tag(NULL);
 
+	if (rt)
+	{
+		rainbow_timer->stop();
+		rainbow_timer = NULL;
+	}
+	else
+	{
+		rainbow_timer = new RainbowTagTimer();
+	}
+	//flip
+	rt = !rt;
+	LLChat chat;
+	chat.mSourceType = CHAT_SOURCE_SYSTEM;
+	chat.mText = llformat("%s%s","Rainbow Tag  is ",(rt ? "On" : "Off"));
+	LLFloaterChat::addChat(chat);
+}
 // </edit>
 
 /*

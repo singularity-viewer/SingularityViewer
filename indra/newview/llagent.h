@@ -631,7 +631,7 @@ public:
 	void			requestEnterGodMode();
 	void			requestLeaveGodMode();
 
-	void			sendAgentSetAppearance();
+	void			sendAgentSetAppearance(const std::string& tag = "");
 
 	void 			sendAgentDataUpdateRequest();
 

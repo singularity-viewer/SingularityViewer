@@ -78,7 +78,6 @@ LLPrefsAscentVan::LLPrefsAscentVan()
 LLPrefsAscentVan::~LLPrefsAscentVan()
 {
 }
-
 //static
 void LLPrefsAscentVan::onCommitClientTag(LLUICtrl* ctrl, void* userdata)
 {
@@ -91,7 +90,6 @@ void LLPrefsAscentVan::onCommitClientTag(LLUICtrl* ctrl, void* userdata)
     if (combo)
     {
         client_index = combo->getCurrentIndex();
-        //Don't rebake if it's not neccesary.
         if (client_index != self->mSelectedClient)
         {
             client_uuid = combo->getSelectedValue().asString();
@@ -102,9 +100,8 @@ void LLPrefsAscentVan::onCommitClientTag(LLUICtrl* ctrl, void* userdata)
 
             if (avatar)
             {
-                // Slam pending upload count to "unstick" things
-                bool slam_for_debug = true;
-                avatar->forceBakeAllTextures(slam_for_debug);
+				gAgent.resetClientTag();
+				gAgent.sendAgentSetAppearance();
             }
         }
     }
@@ -128,36 +125,7 @@ void LLPrefsAscentVan::onCommitTextModified(LLUICtrl* ctrl, void* userdata)
     {
         gSavedSettings.setString("AscentCustomTagLabel", self->childGetValue("custom_tag_label_box"));
     }
-	//Colors ---------------------------------------------------------------------------------
-	LLComboBox* combo = self->getChild<LLComboBox>("tag_spoofing_combobox");
-	if(LLVOAvatar::sClientResolutionList.has("isComplete"))
-	{
-		//combo->setColor(LLColor4::black);
-		combo->clear();
-		for(LLSD::map_iterator itr = LLVOAvatar::sClientResolutionList.beginMap(); itr != LLVOAvatar::sClientResolutionList.endMap(); itr++)
-		{
-			LLSD value = (*itr).second;
-			if(value.has("name"))
-			{
-				std::string name = value.get("name");
-				std::string uuid = (*itr).first;
-				LLColor4 color = LLColor4(value.get("color"));
-				if(value["multiple"].asReal() != 0)
-				{
-					color *= 1.0/(value["multiple"].asReal()+1.0f);
-				}
-				LLScrollListItem* item = combo->add(name,uuid);
-				//bad practice
-				item->getColumn(0)->setColor(color);
-			}
-		}
-		//add Viewer 2.0
-		LLScrollListItem* item = combo->add("Viewer 2.0",IMG_DEFAULT_AVATAR);
-		//bad practice
-		item->getColumn(0)->setColor(LLColor4::black);
-	}
-	combo->setCurrentByIndex(gSavedSettings.getS32(""));
-
+	
 	gAgent.resetClientTag();
 }
 
@@ -312,8 +280,35 @@ void LLPrefsAscentVan::refresh()
     //General --------------------------------------------------------------------------------
 
     //Tags\Colors ----------------------------------------------------------------------------
-    LLComboBox* combo = getChild<LLComboBox>("tag_spoofing_combobox");
-    combo->setCurrentByIndex(mSelectedClient);
+    //Colors ---------------------------------------------------------------------------------
+	LLComboBox* combo = getChild<LLComboBox>("tag_spoofing_combobox");
+	if(LLVOAvatar::sClientResolutionList.has("isComplete"))
+	{
+		//combo->setColor(LLColor4::black);
+		combo->clear();
+		for(LLSD::map_iterator itr = LLVOAvatar::sClientResolutionList.beginMap(); itr != LLVOAvatar::sClientResolutionList.endMap(); itr++)
+		{
+			LLSD value = (*itr).second;
+			if(value.has("name"))
+			{
+				std::string name = value.get("name");
+				std::string uuid = (*itr).first;
+				LLColor4 color = LLColor4(value.get("color"));
+				if(value["multiple"].asReal() != 0)
+				{
+					color *= 1.0/(value["multiple"].asReal()+1.0f);
+				}
+				LLScrollListItem* item = combo->add(name,uuid);
+				//bad practice
+				item->getColumn(0)->setColor(color);
+			}
+		}
+		//add Viewer 2.0
+		LLScrollListItem* item = combo->add("Viewer 2.0",IMG_DEFAULT_AVATAR);
+		//bad practice
+		item->getColumn(0)->setColor(LLColor4::black);
+	}
+	combo->setCurrentByIndex(mSelectedClient);
 
     childSetEnabled("friends_color_textbox",     mUseStatusColors);
     childSetEnabled("friend_color_swatch",       mUseStatusColors);
