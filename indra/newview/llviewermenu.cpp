@@ -7669,6 +7669,11 @@ void handle_selected_texture_info(void*)
 		map_t::iterator it;
 		for (it = faces_per_texture.begin(); it != faces_per_texture.end(); ++it)
 		{
+			LLUUID image_id = it->first;
+			// <edit>
+			std::string uuid_str;
+			image_id.toString(uuid_str);
+			// </edit>
 			U8 te = it->second[0];
 			LLViewerTexture* img = node->getObject()->getTEImage(te);
 			S32 height = img->getHeight();
@@ -7676,7 +7681,9 @@ void handle_selected_texture_info(void*)
 			S32 components = img->getComponents();
 			// <edit>
 			//msg = llformat("%dx%d %s on face ",
-			msg = llformat("%dx%d %s on face ",
+			msg = llformat("%s, %dx%d %s on face ",
+								uuid_str.c_str(),
+			// </edit>
 								width,
 								height,
 								(components == 4 ? "alpha" : "opaque"));
@@ -7687,12 +7694,38 @@ void handle_selected_texture_info(void*)
 			LLChat chat(msg);
 			LLFloaterChat::addChat(chat);
 		}
+		// <edit>
+		if(node->getObject()->isSculpted())
+		{
+			LLSculptParams *sculpt_params = (LLSculptParams *)(node->getObject()->getParameterEntry(LLNetworkData::PARAMS_SCULPT));
+			LLUUID sculpt_id = sculpt_params->getSculptTexture();
+			std::string uuid_str;
+			sculpt_id.toString(uuid_str);
+			msg.assign("Sculpt texture: ");
+			msg.append(uuid_str.c_str());
+			LLChat chat(msg);
+			LLFloaterChat::addChat(chat);
+
+			unique_textures[sculpt_id] = true;
+		}
+		if(node->getObject()->isParticleSource())
+		{
+			//LLUUID particle_id = node->getObject()->mPartSourcep->getImage()->getID();
+		}
+		// </edit>
+	}
+	// <edit>
+	typedef std::map<LLUUID, bool>::iterator map_iter;
+	for(map_iter i = unique_textures.begin(); i != unique_textures.end(); ++i)
+	{
+		LLUUID asset_id = (*i).first;
+		LLLocalInventory::addItem(asset_id.asString(), (int)LLAssetType::AT_TEXTURE, asset_id, true);
 	}
 
 	// Show total widthxheight
-	F32 memory = (F32)total_memory;
-	memory = memory / 1000000;
-	std::string msg = llformat("Total uncompressed: %f MB", memory);
+	F32 memoriez = (F32)total_memory;
+	memoriez = memoriez / 1000000;
+	std::string msg = llformat("Total uncompressed: %f MB", memoriez);
 	LLChat chat(msg);
 	LLFloaterChat::addChat(chat);
 	// </edit>
