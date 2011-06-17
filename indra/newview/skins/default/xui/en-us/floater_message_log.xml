@@ -27,4 +27,5 @@
 	</text>
 	<text_editor name="net_info" follows="left|top|right|bottom" left="10" top="-400" bottom="30" right="-10" enabled="false" max_length="65535">
 	</text_editor>
+	<button name="send_to_message_builder_btn" follows="right|bottom" left="210" top="-570" right="-10" bottom="10" label="Send to Message Builder" enabled="false"/>
 </floater>

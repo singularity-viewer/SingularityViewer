@@ -1,19 +1,10 @@
 // <edit>
+#ifndef LLFLOATERMESSAGELOG_H
+#define LLFLOATERMESSAGELOG_H
 #include "llfloater.h"
 #include "llmessagelog.h"
 #include "lltemplatemessagereader.h"
-#include "lleventtimer.h"
-
-class LLNetListItem
-{
-public:
-	LLNetListItem(LLUUID id);
-	LLUUID mID;
-	BOOL mAutoName;
-	std::string mName;
-	std::string mPreviousRegionName;
-	LLCircuitData* mCircuitData;
-};
+#include "llfloatermessagebuilder.h"
 
 class LLFloaterMessageLogItem : public LLMessageLogEntry
 {
@@ -27,8 +18,6 @@ public:
 	U32 mFlags;
 	std::string getFull(BOOL show_header = TRUE);
 	BOOL isOutgoing();
-	void refreshNetList();
-
 private:
 	static LLTemplateMessageReader* sTemplateMessageReader;
 	static std::string getString(LLTemplateMessageReader* readerp, const char* block_name, S32 block_num, const char* var_name, e_message_variable_type var_type, BOOL &returned_hex, BOOL summary_mode = FALSE);
@@ -92,5 +81,7 @@ public:
 	ENetInfoMode mNetInfoMode;
 	static void onClickFilterChoice(void* user_data);
 	static void onClickFilterMenu(void* user_data);
+	static void onClickSendToMessageBuilder(void* user_data);
 };
 // </edit>
+#endif

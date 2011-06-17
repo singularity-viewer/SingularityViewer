@@ -68,6 +68,8 @@ include_directories(
     )
 
 set(viewer_SOURCE_FILES
+	llfloatermessagebuilder.cpp
+	lleasymessagesender.cpp
     llimportobject.cpp
     llfloaterexport.cpp
     llfloaterimport.cpp
@@ -546,6 +548,8 @@ set(viewer_HEADER_FILES
     CMakeLists.txt
     ViewerInstall.cmake
 
+	llfloatermessagebuilder.h
+	lleasymessagesender.h
     llimportobject.h
     llfloaterexport.h
     llfloaterimport.h

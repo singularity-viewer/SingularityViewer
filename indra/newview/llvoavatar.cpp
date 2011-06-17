@@ -9352,7 +9352,7 @@ void LLVOAvatar::processAvatarAppearance( LLMessageSystem* mesgsys )
 		if( param )
 		{
 			if(param->getName() == "breast_physics_mass")
-				llinfos << getFullname() << " does not have avatar physics." << llendl;
+				lldebugs << getFullname() << " does not have avatar physics." << llendl;
 			else
 				llwarns << "Number of params in AvatarAppearance msg does not match number of params in avatar xml file for " << getFullname() << " (Prematurely reached end of list at " << param->getName() << ")." << llendl;
 			//return; //ASC-TTRFE
