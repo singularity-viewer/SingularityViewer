@@ -3881,7 +3881,7 @@ void handle_rainbow_tag(void*)
 	rt = !rt;
 	LLChat chat;
 	chat.mSourceType = CHAT_SOURCE_SYSTEM;
-	chat.mText = llformat("%s%s","Rainbow Tag  is ",(rt ? "On" : "Off"));
+	chat.mText = llformat("%s%s","Rainbow Tag is ",(rt ? "On" : "Off"));
 	LLFloaterChat::addChat(chat);
 }
 // </edit>
