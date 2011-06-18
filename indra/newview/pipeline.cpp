@@ -293,6 +293,7 @@ BOOL	LLPipeline::sRenderAttachedParticles = TRUE;
 BOOL	LLPipeline::sRenderDeferred = FALSE;
 S32		LLPipeline::sVisibleLightCount = 0;
 F32		LLPipeline::sMinRenderSize = 0.f;
+F32		LLPipeline::sVolumeSAFrame = 0.f;
 
 
 static LLCullResult* sCull = NULL;
@@ -2880,6 +2881,8 @@ void LLPipeline::postSort(LLCamera& camera)
 	LLFastTimer ftm(LLFastTimer::FTM_STATESORT_POSTSORT);
 
 	assertInitialized();
+
+	sVolumeSAFrame = 0.f;
 
 	llpushcallstacks ;
 	//rebuild drawable geometry
