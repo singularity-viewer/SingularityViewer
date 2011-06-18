@@ -3799,14 +3799,27 @@ void handle_phantom_avatar(void*)
 class RainbowTagTimer : public LLEventTimer
 {
 public:
-	RainbowTagTimer():
-	  LLEventTimer(0.3f),
+	RainbowTagTimer(F32 interval):
+	  LLEventTimer(interval),
 	  running(TRUE)
 	  {
+		  gSavedSettings.getControl("RainbowTagInterval")->getSignal()->connect(boost::bind(&RainbowTagTimer::update,this,_1));
 		  itr = LLVOAvatar::sClientResolutionList.beginMap();
 	  }
 	~RainbowTagTimer()
 	{
+	}
+	void setPeriod(F32 period)
+	{
+		mPeriod = period;
+	}
+	static void update(RainbowTagTimer* timer, const LLSD& newvalue)
+	{
+		F32 rainbow_tag_interval = newvalue.asFloat();
+		if(timer)
+		{
+			timer->setPeriod(rainbow_tag_interval);
+		}
 	}
 	BOOL tick()
 	{
@@ -3852,6 +3865,7 @@ bool check_rainbow_tag(void*)
 }
 void handle_rainbow_tag(void*)
 {
+	static const LLCachedControl<F32> rainbow_tag_interval("RainbowTagInterval", 0.3f);
 	BOOL rt = check_rainbow_tag(NULL);
 
 	if (rt)
@@ -3861,7 +3875,7 @@ void handle_rainbow_tag(void*)
 	}
 	else
 	{
-		rainbow_timer = new RainbowTagTimer();
+		rainbow_timer = new RainbowTagTimer(rainbow_tag_interval);
 	}
 	//flip
 	rt = !rt;
