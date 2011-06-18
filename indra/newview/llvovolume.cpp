@@ -2530,9 +2530,9 @@ void LLVolumeGeometryManager::rebuildGeom(LLSpatialGroup* group)
 		LLVOVolume* vobj = drawablep->getVOVolume();
 		llassert_always(vobj);
 
-		static LLCachedControl<F32> volume_sa_thresh(gSavedSettings,"RenderVolumeSAThreshold");
-		static LLCachedControl<F32> sculpt_sa_thresh(gSavedSettings, "RenderSculptSAThreshold");
-		static LLCachedControl<F32> volume_sa_max_frame(gSavedSettings, "RenderVolumeSAFrameMax");
+		static LLCachedControl<F32> volume_sa_thresh("RenderVolumeSAThreshold", 50.0f);
+		static LLCachedControl<F32> sculpt_sa_thresh("RenderSculptSAThreshold", 115.0f);
+		static LLCachedControl<F32> volume_sa_max_frame("RenderVolumeSAFrameMax", 500.0f);
 		F32 max_for_this_vol = (vobj->isSculpted()) ? sculpt_sa_thresh : volume_sa_thresh;
 
 		if (vobj->mVolumeSurfaceArea > max_for_this_vol)
