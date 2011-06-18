@@ -486,6 +486,7 @@ void handle_hide_typing_notification(void*);
 void handle_close_all_notifications(void*);
 void handle_reopen_with_hex_editor(void*);
 void handle_open_message_log(void*);
+void handle_open_message_builder(void*);
 void handle_edit_ao(void*);
 void handle_local_assets(void*);
 void handle_vfs_explorer(void*);
@@ -826,7 +827,8 @@ void init_menus()
 	menu->append(new LLMenuItemCallGL(  "Rainbow Tag", &handle_rainbow_tag, NULL,&check_rainbow_tag,NULL));
 	menu->appendSeparator();
 	menu->append(new LLMenuItemCallGL(	"Object Area Search", &handle_area_search, NULL));
-	menu->append(new LLMenuItemCallGL(  "Message Log", &handle_open_message_log, NULL));	
+	menu->append(new LLMenuItemCallGL(  "Message Log", &handle_open_message_log, NULL));
+	menu->append(new LLMenuItemCallGL(	"Message Builder", &handle_open_message_builder, NULL));
 
 	menu->append(new LLMenuItemCallGL(	"Sound Explorer",
 											&handle_sounds_explorer, NULL));
@@ -3701,6 +3703,11 @@ void handle_reopen_with_hex_editor(void*)
 void handle_open_message_log(void*)
 {
 	LLFloaterMessageLog::show();
+}
+
+void handle_open_message_builder(void*)
+{
+	LLFloaterMessageBuilder::show(std::string(""));
 }
 
 void handle_edit_ao(void*)
