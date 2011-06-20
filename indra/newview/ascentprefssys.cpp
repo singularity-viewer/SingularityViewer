@@ -55,7 +55,6 @@ LLPrefsAscentSys::LLPrefsAscentSys()
     childSetCommitCallback("show_look_at_check", onCommitCheckBox, this);
     childSetCommitCallback("enable_clouds", onCommitCheckBox, this);
     childSetCommitCallback("power_user_check", onCommitCheckBox, this);
-    childSetCommitCallback("power_user_confirm_check", onCommitCheckBox, this);
 
     childSetCommitCallback("chat_cmd_toggle", onCommitCmdLine, this);
     childSetCommitCallback("AscentCmdLinePos", onCommitCmdLine, this);
@@ -112,24 +111,11 @@ void LLPrefsAscentSys::onCommitCheckBox(LLUICtrl* ctrl, void* user_data)
     else if (ctrl->getName() == "power_user_check")
     {
         bool enabled = self->childGetValue("power_user_check").asBoolean();
-        self->childSetEnabled("power_user_confirm_check", enabled);
-        self->childSetValue("power_user_confirm_check", false);
-    }
-    else if (ctrl->getName() == "power_user_confirm_check")
-    {
-        bool enabled = self->childGetValue("power_user_confirm_check").asBoolean();
-
         gSavedSettings.setBOOL("AscentPowerfulWizard", enabled);
-
-        if (enabled)
-        {
-            LLVector3d lpos_global = gAgent.getPositionGlobal();
-            gAudiop->triggerSound(LLUUID("58a38e89-44c6-c52b-deb8-9f1ddc527319"), gAgent.getID(), 1.0f, LLAudioEngine::AUDIO_TYPE_UI, lpos_global);
-            LLChat chat;
-            chat.mSourceType = CHAT_SOURCE_SYSTEM;
-            chat.mText = llformat("You are bestowed with powers beyond mortal comprehension.\nUse your newfound abilities wisely.\nUnlocked:\n- Animation Priority up to 7 - Meant for animations that should override anything and everything at all times. DO NOT USE THIS FOR GENERAL ANIMATIONS.\n- Right click > Destroy objects - Permanently deletes an object immediately, when you don't feel like waiting for the server to respond.\n- Right Click > Explode objects - Turns an object physical, temporary, and delinks it.");
-            LLFloaterChat::addChat(chat);
-        }
+		LLChat chat;
+		chat.mSourceType = CHAT_SOURCE_SYSTEM;
+		chat.mText = "Yeah, you can upload with priority 7 animations. You can explode objects. Enjoy.";
+		LLFloaterChat::addChat(chat);
     }
 }
 
@@ -242,7 +228,6 @@ void LLPrefsAscentSys::refresh()
     childSetEnabled("center_after_teleport_check",	mDoubleClickTeleport);
     childSetEnabled("offset_teleport_check",		mDoubleClickTeleport);
     childSetValue("power_user_check",				mPowerUser);
-    childSetValue("power_user_confirm_check",		mPowerUser);
     childSetEnabled("temp_in_system_check",			mUseSystemFolder);
     childSetEnabled("speed_rez_interval",           mSpeedRez);
     childSetEnabled("speed_rez_seconds",            mSpeedRez);

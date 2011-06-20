@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
-<floater bottom="-85" can_close="true" can_drag_on_left="false" can_minimize="true"
-     can_resize="false" enabled="true" height="85" left="176" min_height="0"
+<floater bottom="-110" can_close="true" can_drag_on_left="false" can_minimize="true"
+     can_resize="false" enabled="true" height="110" left="176" min_height="0"
      min_width="0" mouse_opaque="true" name="preview_sound" width="300">
 	<line_editor bevel_style="in" border_style="line" border_thickness="1" bottom="-38"
 	     enabled="true" follows="left|top|right" font="SansSerif"
@@ -22,5 +22,15 @@
 	     label="Play in World" label_selected="Play in World" left_delta="-126"
 	     mouse_opaque="true" name="Sound play btn" scale_image="true"
 	     sound_flags="0" tool_tip="Play this sound so that others can hear it."
+	     width="120" />
+  <button bottom_delta="-23" enabled="true" font="SansSerif" halign="center" height="19"
+	     label="Play Ambient" label_selected="Play Ambient" left_delta="0"
+	     mouse_opaque="true" name="Play ambient btn" scale_image="true"
+	     sound_flags="0" tool_tip="Play Ambient"
+	     width="120" />
+  <button bottom_delta="0" enabled="true" font="SansSerif" halign="center" height="19"
+	     label="Copy UUID" label_selected="Copy UUID" left_delta="126"
+	     mouse_opaque="true" name="Sound copy uuid btn" scale_image="true"
+	     sound_flags="0" tool_tip="Copy asset UUID"
 	     width="120" />
 </floater>

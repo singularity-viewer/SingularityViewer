@@ -59,17 +59,11 @@
 				tool_tip="Allows the camera to get reeeaaally close to things."
 				mouse_opaque="true" name="disable_camera_zoom_check" radio_style="false"
 				width="400" />
-			<check_box bottom_delta="-20" control_name="AscentPowerfulWizardCheck1" enabled="true"
+			<check_box bottom_delta="-20" control_name="AscentPowerfulWizardCheck" enabled="true"
 				follows="left|top" font="SansSerifSmall" height="16" initial_value="true"
 				label="Enable Power User functionality" left="10"
-				tool_tip="Adds features deemed too dangerous for normal use. These features can wreak havoc or do bad things if misused - Mostly to yourself or your belongings. If you're sure, activate the checkbox below as well."
+				tool_tip="Adds features deemed too dangerous for normal use. These features can wreak havoc or do bad things if misused - Mostly to yourself or your belongings."
 				mouse_opaque="true" name="power_user_check" radio_style="false"
-				width="400" />
-			<check_box bottom_delta="-20" control_name="AscentPowerfulWizardCheck2" enabled="true"
-				follows="left|top" font="SansSerifSmall" height="16" initial_value="true"
-				label="Confirm Power User functionality" left="10"
-				tool_tip="Confirms Power User activation. Turn this on at your own risk, and use any features it enables responsibly. Ascent devs will not replace anything you break if you ruin something important. Unlike most checkboxes, you must apply/ok changes before this will activate."
-				mouse_opaque="true" name="power_user_confirm_check" radio_style="false"
 				width="400" />
 			<check_box bottom_delta="-20" control_name="AscentUseSystemFolder" enabled="true"
 				follows="left|top" font="SansSerifSmall" height="16" initial_value="true"
@@ -353,14 +347,8 @@ Use #f for user's first name, #l for last name,
       <check_box bottom_delta="-20" enabled="true"
         follows="left|top" font="SansSerifSmall" height="16" initial_value="true"
         label="Enable Power User functionality" left="10"
-        tool_tip="Adds features deemed too dangerous for normal use. These features can wreak havoc or do bad things if misused - Mostly to yourself or your belongings. If you're sure, activate the checkbox below as well."
+        tool_tip="Adds features deemed too dangerous for normal use. These features can wreak havoc or do bad things if misused - Mostly to yourself or your belongings."
         mouse_opaque="true" name="power_user_check" radio_style="false"
-        width="400" />
-      <check_box bottom_delta="-20" enabled="true"
-        follows="left|top" font="SansSerifSmall" height="16" initial_value="true"
-        label="Confirm Power User functionality" left="20"
-        tool_tip="Confirms Power User activation. Turn this on at your own risk, and use any features it enables responsibly. Ascent devs will not replace anything you break if you ruin something important. Unlike most checkboxes, you must apply/ok changes before this will activate."
-        mouse_opaque="true" name="power_user_confirm_check" radio_style="false"
         width="400" />
       <check_box bottom_delta="-20" control_name="AscentUseSystemFolder" enabled="true"
         follows="left|top" font="SansSerifSmall" height="16" initial_value="true"
