@@ -60,7 +60,7 @@ void LLFloaterInterceptor::affect(LLViewerObject* object)
 {
 	// Objects that move are passed in here
 
-	if(!object->isRoot() || object->isAvatar())// || !object->isActive())
+	if(!object->isRoot() || object->isAvatar() || !object->isActive())// we don't want non-active objects... :|
 	{
 		letGo(object);
 		return;
