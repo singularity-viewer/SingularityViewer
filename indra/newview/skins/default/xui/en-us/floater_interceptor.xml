@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<floater can_close="true" can_drag_on_left="false" can_minimize="true" can_resize="false"
+     width="320" height="100"
+     name="Interceptor" title="Interceptor" control_name="InterceptorActive" rect_control="FloaterInterceptorRect">
+  <text allow_html="false" bg_readonly_color="0 0 0 0" bottom="-40"
+	     embedded_items="false" enabled="true" follows="left|top" height="16"
+	     left="20" name="range_label" width="185">
+    Range:
+  </text>
+  <slider bottom_delta="-16" can_edit_text="false" enabled="true" width="285" height="16" mouse_opaque="true"
+  	     decimal_digits="0" increment="1" initial_val="10" left_delta="0" min_val="0.0" max_val="100.0"
+  	     name="range" show_text="true" value="1" control_name="InterceptorRange" />
+  <text allow_html="false" bg_readonly_color="0 0 0 0" bottom_delta="-25"
+	     embedded_items="false" enabled="true" follows="left|top" height="16"
+	     left_delta="0" name="number_affected" width="185">
+  </text>
+  <check_box follows="left|top" left_delta="128" bottom_delta="0" name="affect_yours" label="Affects your objects" control_name="InterceptorAffectYours" />
+</floater>

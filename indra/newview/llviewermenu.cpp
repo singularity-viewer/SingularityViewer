@@ -67,6 +67,7 @@
 #include "llfloaterexploreanimations.h"
 #include "llfloaterexploresounds.h"
 #include "llfloaterblacklist.h"
+#include "llfloaterinterceptor.h"
 // </edit>
 #include "lltimer.h"
 #include "llvfile.h"
@@ -429,6 +430,7 @@ void handle_leave_god_mode(void*);
 // <edit>
 void handle_fake_away_status(void*);
 void handle_area_search(void*);
+void handle_interceptor(void*);
 
 // <dogmode> for pose stand
 LLUUID current_pose = LLUUID::null;
@@ -811,6 +813,9 @@ void init_menus()
 	menu->append(new LLMenuItemCallGL(  "Fake Away Status", &handle_fake_away_status, NULL));
 	menu->append(new LLMenuItemCallGL(  "Force Ground Sit", &handle_force_ground_sit, NULL));
 	menu->append(new LLMenuItemCallGL(  "Phantom Avatar", &handle_phantom_avatar, NULL,&check_phantom_avatar,NULL));
+	menu->appendSeparator();
+	menu->append(new LLMenuItemCallGL(	"Interceptor",
+						&handle_interceptor, NULL, NULL, 'I', MASK_CONTROL | MASK_ALT | MASK_SHIFT));//kind-of-a big deal -TF2Scout
 	menu->appendSeparator();
 	menu->append(new LLMenuItemCallGL( "Animation Override...",
 									&handle_edit_ao, NULL));
@@ -3708,6 +3713,12 @@ void handle_open_message_log(void*)
 void handle_open_message_builder(void*)
 {
 	LLFloaterMessageBuilder::show(std::string(""));
+}
+
+void handle_interceptor(void*)
+{
+	if(LLFloaterInterceptor::sInstance) LLFloaterInterceptor::sInstance->close(false);
+	else LLFloaterInterceptor::show();
 }
 
 void handle_edit_ao(void*)

@@ -75,7 +75,10 @@
 
 #include "llappviewer.h"
 
+// <edit>
 #include "llimportobject.h"
+#include "llfloaterinterceptor.h"
+// </edit>
 
 extern F32 gMinObjectDistance;
 extern BOOL gAnimateTextures;
@@ -582,6 +585,9 @@ void LLViewerObjectList::processObjectUpdate(LLMessageSystem *mesgsys,
 			}
 			processUpdateCore(objectp, user_data, i, update_type, NULL, justCreated);
 		}
+
+		// <edit>
+		if(LLFloaterInterceptor::gInterceptorActive) if(objectp) LLFloaterInterceptor::sInstance->affect(objectp);
 		
 		objectp->setLastUpdateType(update_type);
 		objectp->setLastUpdateCached(cached);
@@ -941,6 +947,9 @@ BOOL LLViewerObjectList::killObject(LLViewerObject *objectp)
 
 	if (objectp)
 	{
+		// <edit>
+		if(LLFloaterInterceptor::gInterceptorActive) LLFloaterInterceptor::letGo(objectp);
+		// </edit>
 		if (objectp->isDead())
 		{
 			// This object is already dead.  Don't need to do more.
