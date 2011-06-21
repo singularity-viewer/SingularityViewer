@@ -211,7 +211,7 @@ things in this group. There&apos;s a broad variety of Abilities.
 		     border_style="line" border_thickness="1" border_visible="false"
 		     bottom_delta="-16" drop_shadow_visible="false" follows="left|top"
 		     font="SansSerifSmall" height="16" is_unicode="false" left="0"
-		     max_length="20" mouse_opaque="true" name="role_title"
+		     max_length="255" mouse_opaque="true" name="role_title"
 		     width="145" spell_check="true">
 			(waiting)
 		</line_editor>

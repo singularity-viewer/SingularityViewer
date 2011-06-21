@@ -210,6 +210,7 @@ set(viewer_SOURCE_FILES
     llfloaterhud.cpp
     llfloaterimagepreview.cpp
     llfloaterinspect.cpp
+	llfloaterinterceptor.cpp
     llfloaterjoystick.cpp
     llfloaterlagmeter.cpp
     llfloaterland.cpp
@@ -690,6 +691,7 @@ set(viewer_HEADER_FILES
     llfloaterhud.h
     llfloaterimagepreview.h
     llfloaterinspect.h
+	llfloaterinterceptor.h
     llfloaterjoystick.h
     llfloaterlagmeter.h
     llfloaterland.h
