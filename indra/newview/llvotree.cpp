@@ -46,7 +46,7 @@
 #include "material_codes.h"
 #include "object_flags.h"
 
-#include "llagent.h"
+#include "llagentcamera.h"
 #include "lldrawable.h"
 #include "llface.h"
 #include "llviewercamera.h"
@@ -454,7 +454,7 @@ void LLVOTree::render(LLAgent &agent)
 void LLVOTree::setPixelAreaAndAngle(LLAgent &agent)
 {
 	LLVector3 center = getPositionAgent();//center of tree.
-	LLVector3 viewer_pos_agent = gAgent.getCameraPositionAgent();
+	LLVector3 viewer_pos_agent = gAgentCamera.getCameraPositionAgent();
 	LLVector3 lookAt = center - viewer_pos_agent;
 	F32 dist = lookAt.normVec() ;	
 	F32 cos_angle_to_view_dir = lookAt * LLViewerCamera::getInstance()->getXAxis() ;	

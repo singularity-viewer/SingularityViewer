@@ -48,6 +48,8 @@
 #include "llviewertexturelist.h"
 #include "llgroupmgr.h"
 #include "llagent.h"
+#include "llagentcamera.h"
+#include "llagentwearables.h"
 #include "llwindow.h"
 #include "llviewerstats.h"
 #include "llmd5.h"
@@ -441,7 +443,7 @@ static void settings_to_globals()
 	gFrameStats.setTrackStats(gSavedSettings.getBOOL("StatsSessionTrackFrameStats"));
 	gAgentPilot.mNumRuns		= gSavedSettings.getS32("StatsNumRuns");
 	gAgentPilot.mQuitAfterRuns	= gSavedSettings.getBOOL("StatsQuitAfterRuns");
-	gAgent.mHideGroupTitle		= gSavedSettings.getBOOL("RenderHideGroupTitle");
+	gAgent.setHideGroupTitle(gSavedSettings.getBOOL("RenderHideGroupTitle"));
 
 	gDebugWindowProc = gSavedSettings.getBOOL("DebugWindowProc");
 	gAllowIdleAFK = gSavedSettings.getBOOL("AllowIdleAFK");
@@ -583,9 +585,10 @@ bool LLAppViewer::init()
     // *NOTE:Mani - LLCurl::initClass is not thread safe. 
     // Called before threads are created.
     LLCurl::initClass();
+	LL_INFOS("InitInfo") << "LLCurl initialized." << LL_ENDL ;
 
     initThreads();
-	LL_INFOS("InitInfo") << "Threads initialized." << LL_ENDL ; ;
+	LL_INFOS("InitInfo") << "Threads initialized." << LL_ENDL ;
 
     writeSystemInfo();
 
@@ -703,7 +706,8 @@ bool LLAppViewer::init()
 		// Early out from user choice.
 		return false;
 	}
-
+	LL_INFOS("InitInfo") << "Hardware test initialization done." << LL_ENDL ;
+	
 	// Always fetch the Ethernet MAC address, needed both for login
 	// and password load.
 	LLUUID::getNodeID(gMACAddress);
@@ -2372,8 +2376,9 @@ bool LLAppViewer::initWindow()
 		// Set this flag in case we crash while initializing GL
 		gSavedSettings.setBOOL("RenderInitError", TRUE);
 		gSavedSettings.saveToFile( gSavedSettings.getString("ClientSettingsFile"), TRUE );
-	
+
 		gPipeline.init();
+		LL_INFOS("AppInit") << "gPipeline Initialized" << LL_ENDL;
 		stop_glerror();
 		gViewerWindow->initGLDefaults();
 
@@ -2401,7 +2406,7 @@ bool LLAppViewer::initWindow()
 	// show viewer window
 	//gViewerWindow->mWindow->show();
 
-	
+	LL_INFOS("AppInit") << "Window initialization done." << LL_ENDL;
 	return true;
 }
 
@@ -2459,9 +2464,9 @@ void LLAppViewer::cleanupSavedSettings()
 	gSavedSettings.setBOOL("ShowHoverTips", LLHoverView::sShowHoverTips);
 
 	// Some things are cached in LLAgent.
-	if (gAgent.mInitialized)
+	if (gAgentCamera.isInitialized())
 	{
-		gSavedSettings.setF32("RenderFarClip", gAgent.mDrawDistance);
+		gSavedSettings.setF32("RenderFarClip", gAgentCamera.mDrawDistance);
 	}
 }
 
@@ -3391,10 +3396,10 @@ void LLAppViewer::saveFinalSnapshot()
 {
 	if (!mSavedFinalSnapshot && !gNoRender)
 	{
-		gSavedSettings.setVector3d("FocusPosOnLogout", gAgent.calcFocusPositionTargetGlobal());
-		gSavedSettings.setVector3d("CameraPosOnLogout", gAgent.calcCameraPositionTargetGlobal());
+		gSavedSettings.setVector3d("FocusPosOnLogout", gAgentCamera.calcFocusPositionTargetGlobal());
+		gSavedSettings.setVector3d("CameraPosOnLogout", gAgentCamera.calcCameraPositionTargetGlobal());
 		gViewerWindow->setCursor(UI_CURSOR_WAIT);
-		gAgent.changeCameraToThirdPerson( FALSE );	// don't animate, need immediate switch
+		gAgentCamera.changeCameraToThirdPerson( FALSE );	// don't animate, need immediate switch
 		gSavedSettings.setBOOL("ShowParcelOwners", FALSE);
 		idle();
 
@@ -3604,10 +3609,8 @@ void LLAppViewer::idle()
 		// *FIX: (???) SAMANTHA
 		if (viewer_stats_timer.getElapsedTimeF32() >= SEND_STATS_PERIOD && !gDisconnected)
 		{
-			// <edit> we are not transmitting session stats
-			//llinfos << "Transmitting sessions stats" << llendl;
-			//send_stats();
-			// </edit>
+			llinfos << "Transmitting sessions stats" << llendl;
+			send_stats();
 			viewer_stats_timer.reset();
 		}
 
@@ -3835,7 +3838,7 @@ void LLAppViewer::idle()
 			LLViewerJoystick::getInstance()->moveObjects();
 		}
 
-		gAgent.updateCamera();
+		gAgentCamera.updateCamera();
 	}
 
 	// update media focus
@@ -4238,6 +4241,8 @@ void LLAppViewer::disconnectViewer()
 	// close inventory interface, close all windows
 	LLInventoryView::cleanup();
 
+	gAgentWearables.cleanup();
+	gAgentCamera.cleanup();
 	// Also writes cached agent settings to gSavedSettings
 	gAgent.cleanup();
 

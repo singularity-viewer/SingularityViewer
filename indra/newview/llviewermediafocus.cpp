@@ -39,6 +39,7 @@
 #include "llpanelmediahud.h"
 #include "llpluginclassmedia.h"
 #include "llagent.h"
+#include "llagentcamera.h"
 #include "lltoolpie.h"
 #include "llviewercamera.h"
 #include "llviewermedia.h"
@@ -120,7 +121,7 @@ void LLViewerMediaFocus::setFocusFace( BOOL b, LLPointer<LLViewerObject> objectp
 		{
 			if (!mFocus->isEmpty())
 			{
-				gAgent.setFocusOnAvatar(TRUE, ANIMATE);
+				gAgentCamera.setFocusOnAvatar(TRUE, ANIMATE);
 			}
 		}
 		mFocus = NULL;
@@ -162,7 +163,7 @@ void LLViewerMediaFocus::setCameraZoom(F32 padding_factor)
 
 	if (!LLSelectMgr::getInstance()->getSelection()->isEmpty())
 	{
-		gAgent.setFocusOnAvatar(FALSE, ANIMATE);
+		gAgentCamera.setFocusOnAvatar(FALSE, ANIMATE);
 
 		LLBBox selection_bbox = LLSelectMgr::getInstance()->getBBoxOfSelection();
 		F32 height;
@@ -200,7 +201,7 @@ void LLViewerMediaFocus::setCameraZoom(F32 padding_factor)
 		distance += depth * 0.5;
 
 		// Finally animate the camera to this new position and focal point
-		gAgent.setCameraPosAndFocusGlobal(LLSelectMgr::getInstance()->getSelectionCenterGlobal() + LLVector3d(pick.mNormal * distance), 
+		gAgentCamera.setCameraPosAndFocusGlobal(LLSelectMgr::getInstance()->getSelectionCenterGlobal() + LLVector3d(pick.mNormal * distance), 
 			LLSelectMgr::getInstance()->getSelectionCenterGlobal(), LLSelectMgr::getInstance()->getSelection()->getFirstObject()->mID );
 	}
 }

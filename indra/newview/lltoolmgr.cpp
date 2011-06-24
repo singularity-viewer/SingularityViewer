@@ -52,6 +52,7 @@
 #include "lltoolobjpicker.h"
 #include "lltoolpipette.h"
 #include "llagent.h"
+#include "llagentcamera.h"
 #include "llviewercontrol.h"
 
 
@@ -244,7 +245,7 @@ bool LLToolMgr::inBuildMode()
 	static const LLCachedControl<bool> build_btn_state("BuildBtnState",false);
 	bool b=(inEdit() 
 			&& build_btn_state
-			&& !gAgent.cameraMouselook()
+			&& !gAgentCamera.cameraMouselook()
 			&& mCurrentToolset != gFaceEditToolset);
 	
 	return b;

@@ -9,6 +9,7 @@
 #include "floaterao.h"
 
 #include "llagent.h"
+#include "llagentcamera.h"
 #include "llvoavatar.h"
 #include "llanimationstates.h"
 #include "lluictrlfactory.h"
@@ -868,7 +869,7 @@ BOOL LLFloaterAO::ChangeStand()
 	{
 		if (gAgent.getAvatarObject())
 		{
-			if (gSavedSettings.getBOOL("AONoStandsInMouselook") && gAgent.cameraMouselook()) return FALSE;
+			if (gSavedSettings.getBOOL("AONoStandsInMouselook") && gAgentCamera.cameraMouselook()) return FALSE;
 
 			if (gAgent.getAvatarObject()->isSitting())
 			{

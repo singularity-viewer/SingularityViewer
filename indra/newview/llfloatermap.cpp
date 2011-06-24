@@ -34,7 +34,8 @@
 
 #include "llfloatermap.h"
 
-#include "llagent.h"
+
+#include "llagentcamera.h"
 #include "llcolorscheme.h"
 #include "llviewercontrol.h"
 #include "lldraghandle.h"
@@ -111,7 +112,7 @@ BOOL LLFloaterMap::canClose()
 void LLFloaterMap::draw()
 {
 	// Note: we can't just gAgent.check cameraMouselook() because the transition states are wrong.
-	if( gAgent.cameraMouselook())
+	if( gAgentCamera.cameraMouselook())
 	{
 		setMouseOpaque(FALSE);
 		getDragHandle()->setMouseOpaque(FALSE);

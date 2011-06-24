@@ -177,33 +177,35 @@ ATI RV250						.*ATI.*RV250.*						0		1
 ATI RV380						.*ATI.*RV380.*						0		1
 ATI RV530						.*ATI.*RV530.*						1		1
 ATI RX700						.*ATI.*RX700.*						1		1
-Intel X3100						.*Intel.*X3100.*					0		1
-Intel 830M						.*Intel.*830M						0		0
-Intel 845G						.*Intel.*845G						0		0
-Intel 855GM						.*Intel.*855GM						0		0
-Intel 865G						.*Intel.*865G						0		0
-Intel 900						.*Intel.*900.*900					0		0
-Intel 915GM						.*Intel.*915GM						0		0
-Intel 915G						.*Intel.*915G						0		0
-Intel 945GM						.*Intel.*945GM.*					0		1
-Intel 945G						.*Intel.*945G.*						0		1
-Intel 950						.*Intel.*950.*						0		1
-Intel 965						.*Intel.*965.*						0		1
-Intel G33						.*Intel.*G33.*						0		0
-Intel G41						.*Intel.*G41.*						0		1
-Intel G45						.*Intel.*G45.*						0		1
-Intel Bear Lake					.*Intel.*Bear Lake.*				0		0
-Intel Broadwater 				.*Intel.*Broadwater.*				0		0
-Intel Brookdale					.*Intel.*Brookdale.*				0		0
-Intel Cantiga					.*Intel.*Cantiga.*					0		0
-Intel Eaglelake					.*Intel.*Eaglelake.*				0		0
-Intel Graphics Media HD			.*Intel(R) Graphics Media.*HD.*		0		1
-Intel HD Graphics				.*Intel(R) HD Graphics.*			0		1
-Intel Mobile 4 Series			.*Intel.*Mobile.*4 Series.*			0		1
-Intel Media Graphics HD			.*Intel Media Graphics HD.*			0		1
-Intel Montara					.*Intel.*Montara.*					0		0
-Intel Pineview					.*Intel.*Pineview.*					0		1
-Intel Springdale				.*Intel.*Springdale.*				0		0
+Intel X3100						.*Intel.*X3100.*							0		1
+Intel 830M						.*Intel.*830M								0		0
+Intel 845G						.*Intel.*845G								0		0
+Intel 855GM						.*Intel.*855GM								0		0
+Intel 865G						.*Intel.*865G								0		0
+Intel 900						.*Intel.*900.*900							0		0
+Intel 915GM						.*Intel.*915GM								0		0
+Intel 915G						.*Intel.*915G								0		0
+Intel 945GM						.*Intel.*945GM.*							0		1
+Intel 945G						.*Intel.*945G.*								0		1
+Intel 950						.*Intel.*950.*								0		1
+Intel 965						.*Intel.*965.*								0		1
+Intel G33						.*Intel.*G33.*								0		1
+Intel G41						.*Intel.*G41.*								0		1
+Intel G45						.*Intel.*G45.*								0		1
+Intel Bear Lake					.*Intel.*Bear Lake.*						0		1
+Intel Broadwater 				.*Intel.*Broadwater.*						0		1
+Intel Brookdale					.*Intel.*Brookdale.*						0		0
+Intel Cantiga					.*Intel.*Cantiga.*							0		1
+Intel Eaglelake					.*Intel.*Eaglelake.*						0		1
+Intel Graphics Media HD			.*Intel.*Graphics Media.*HD.*				0		1
+Intel HD Graphics				.*Intel.*HD Graphics.*						2		1
+Intel Mobile 4 Series			.*Intel.*Mobile *4 Series.*					0		1
+Intel Media Graphics HD			.*Intel.*Media Graphics HD.*				0		1
+Intel Montara					.*Intel.*Montara.*							0		0
+Intel Pineview					.*Intel.*Pineview.*							0		1
+Intel Springdale				.*Intel.*Springdale.*						0		0
+Intel HD Graphics 2000			.*Intel.*HD2000.*							1		1
+Intel HD Graphics 3000			.*Intel.*HD3000.*							2		1
 Matrox							.*Matrox.*							0		0
 Mesa							.*Mesa.*							0		0
 NVIDIA 205						.*NVIDIA.*GeForce.*20.*				2		1

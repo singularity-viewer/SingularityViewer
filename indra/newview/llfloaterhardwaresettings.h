@@ -75,6 +75,9 @@ public:
 	/// sync up menu with parameters
 	void refresh();
 
+	/// Draw the panel...
+	void draw();
+
 	/// Apply the changed values.
 	void apply();
 	
@@ -87,6 +90,7 @@ public:
 protected:
 	LLSliderCtrl*	mCtrlVideoCardMem;
 
+	//Retained values for cancel/reset
 	BOOL mUseVBO;
 	BOOL mUseFBO;
 	BOOL mUseAniso;
@@ -96,6 +100,7 @@ protected:
 	F32 mFogRatio;
 	BOOL mProbeHardwareOnStartup;
 
+	bool mLastVBOState; //track changes to LLVertexBuffer::sEnableVBOs every frame. Bleh.
 private:
 	// one instance on the inside
 	static LLFloaterHardwareSettings* sHardwareSettings;

@@ -39,6 +39,7 @@
 #include "llparcel.h"
 
 #include "llagent.h"
+#include "llagentcamera.h"
 #include "llviewercontrol.h"
 #include "llfocusmgr.h"
 #include "llfirstuse.h"
@@ -324,7 +325,7 @@ BOOL LLToolPie::pickAndShowMenu(BOOL always_show)
 			LLToolCamera::getInstance()->pickCallback(mPick);
 			if(gSavedSettings.getBOOL("ResetFocusOnSelfClick"))
 			{
-				gAgent.setFocusOnAvatar(TRUE, TRUE);
+				gAgentCamera.setFocusOnAvatar(TRUE, TRUE);
 			}
 
 			return TRUE;
@@ -755,7 +756,7 @@ BOOL LLToolPie::handleMouseUp(S32 x, S32 y, MASK mask)
 	}
 	mGrabMouseButtonDown = FALSE;
 	LLToolMgr::getInstance()->clearTransientTool();
-	gAgent.setLookAt(LOOKAT_TARGET_CONVERSATION, obj); // maybe look at object/person clicked on
+	gAgentCamera.setLookAt(LOOKAT_TARGET_CONVERSATION, obj); // maybe look at object/person clicked on
 	return LLTool::handleMouseUp(x, y, mask);
 }
 

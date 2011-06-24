@@ -41,6 +41,7 @@
 #include "llfloaterworldmap.h"
 
 #include "llagent.h"
+#include "llagentcamera.h"
 #include "llviewerwindow.h"
 #include "llbutton.h"
 #include "llcallingcard.h"
@@ -602,14 +603,14 @@ void LLFloaterWorldMap::trackLandmark( const LLUUID& landmark_item_id )
 void LLFloaterWorldMap::trackEvent(const LLItemInfo &event_info)
 {
 	mTrackedStatus = LLTracker::TRACKING_LOCATION;
-	LLTracker::trackLocation(event_info.mPosGlobal, event_info.mName, event_info.mToolTip, LLTracker::LOCATION_EVENT);
+	LLTracker::trackLocation(event_info.getGlobalPosition(), event_info.getName(), event_info.getToolTip(), LLTracker::LOCATION_EVENT);
 	setDefaultBtn("Teleport");
 }
 
 void LLFloaterWorldMap::trackGenericItem(const LLItemInfo &item)
 {
 	mTrackedStatus = LLTracker::TRACKING_LOCATION;
-	LLTracker::trackLocation(item.mPosGlobal, item.mName, item.mToolTip, LLTracker::LOCATION_ITEM);
+	LLTracker::trackLocation(item.getGlobalPosition(), item.getName(), item.getToolTip(), LLTracker::LOCATION_ITEM);
 	setDefaultBtn("Teleport");
 }
 
@@ -628,7 +629,7 @@ void LLFloaterWorldMap::trackLocation(const LLVector3d& pos_global)
 		setDefaultBtn("");
 		return;
 	}
-	if (sim_info->mAccess == SIM_ACCESS_DOWN)
+	if (sim_info->isDown())
 	{
 		// Down sim. Show the blue circle of death!
 		LLWorldMap::getInstance()->mIsTrackingUnknownLocation = TRUE;
@@ -839,8 +840,11 @@ void LLFloaterWorldMap::friendsChanged()
 	if(avatar_id.notNull())
 	{
 		LLCtrlSelectionInterface *iface = childGetSelectionInterface("friend combo");
-		if(!iface || !iface->setCurrentByID(avatar_id) || 
-			!t.getBuddyInfo(avatar_id)->isRightGrantedFrom(LLRelationship::GRANT_MAP_LOCATION) || gAgent.isGodlike())
+		const LLRelationship* buddy_info = t.getBuddyInfo(avatar_id);
+		if(!iface ||
+		   !iface->setCurrentByID(avatar_id) || 
+		   (buddy_info && !buddy_info->isRightGrantedFrom(LLRelationship::GRANT_MAP_LOCATION)) ||
+		   gAgent.isGodlike())
 		{
 			LLTracker::stopTracking(NULL);
 		}
@@ -855,11 +859,10 @@ void LLFloaterWorldMap::buildAvatarIDList()
 
     // Delete all but the "None" entry
 	S32 list_size = list->getItemCount();
-	while (list_size > 1)
+	if (list_size > 1)
 	{
-		list->selectNthItem(1);
+		list->selectItemRange(1, -1);
 		list->operateOnSelection(LLCtrlListInterface::OP_DELETE);
-		--list_size;
 	}
 
 	LLSD default_column;
@@ -1357,12 +1360,12 @@ void LLFloaterWorldMap::centerOnTarget(BOOL animate)
 		{
 			// We've got the position finally, so we're no longer busy. JC
 //			getWindow()->decBusyCount();
-			pos_global = LLTracker::getTrackedPositionGlobal() - gAgent.getCameraPositionGlobal();
+			pos_global = LLTracker::getTrackedPositionGlobal() - gAgentCamera.getCameraPositionGlobal();
 		}
 	}
 	else if(LLWorldMap::getInstance()->mIsTrackingUnknownLocation)
 	{
-		pos_global = LLWorldMap::getInstance()->mUnknownLocation - gAgent.getCameraPositionGlobal();;
+		pos_global = LLWorldMap::getInstance()->mUnknownLocation - gAgentCamera.getCameraPositionGlobal();;
 	}
 	else
 	{
@@ -1564,10 +1567,10 @@ void LLFloaterWorldMap::updateSims(bool found_null_sim)
 	BOOL match_found = FALSE;
 	S32 num_results = 0;
 	std::map<U64, LLSimInfo*>::const_iterator it;
-	for (it = LLWorldMap::getInstance()->mSimInfoMap.begin(); it != LLWorldMap::getInstance()->mSimInfoMap.end(); ++it)
+	for (it = LLWorldMap::getInstance()->getRegionMap().begin(); it != LLWorldMap::getInstance()->getRegionMap().end(); ++it)
 	{
 		LLSimInfo* info = (*it).second;
-		std::string sim_name = info->mName;
+		std::string sim_name = info->getName();
 		std::string sim_name_lower = sim_name;
 		LLStringUtil::toLower(sim_name_lower);
 
@@ -1652,15 +1655,13 @@ void LLFloaterWorldMap::onCommitSearchResult(LLUICtrl*, void* userdata)
 	LLStringUtil::toLower(sim_name);
 
 	std::map<U64, LLSimInfo*>::const_iterator it;
-	for (it = LLWorldMap::getInstance()->mSimInfoMap.begin(); it != LLWorldMap::getInstance()->mSimInfoMap.end(); ++it)
+	for (it = LLWorldMap::getInstance()->getRegionMap().begin(); it != LLWorldMap::getInstance()->getRegionMap().end(); ++it)
 	{
-		LLSimInfo* info = (*it).second;
-		std::string info_sim_name = info->mName;
-		LLStringUtil::toLower(info_sim_name);
-
-		if (sim_name == info_sim_name)
+		LLSimInfo* info = it->second;
+		
+		if (info->isName(sim_name))
 		{
-			LLVector3d pos_global = from_region_handle( info->mHandle );
+			LLVector3d pos_global = info->getGlobalOrigin();
 			F64 local_x = self->childGetValue("spin x");
 			F64 local_y = self->childGetValue("spin y");
 			F64 local_z = self->childGetValue("spin z");

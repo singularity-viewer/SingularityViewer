@@ -17,6 +17,7 @@
 #include "llviewerprecompiledheaders.h"
 #include "cofmgr.h"
 #include "llagent.h"
+#include "llagentwearables.h"
 #include "llcommonutils.h"
 #include "llerror.h"
 #include "llvoavatar.h"
@@ -81,7 +82,7 @@ public:
 		// Add all currently worn wearables
 		for (S32 idxType = 0; idxType < WT_COUNT; idxType++)
 		{
-			const LLUUID& idItem = gAgent.getWearableItem((EWearableType)idxType);
+			const LLUUID& idItem = gAgentWearables.getWearableItemID((EWearableType)idxType);
 			if (idItem.isNull())
 				continue;
 			idItems.push_back(idItem);
@@ -388,7 +389,7 @@ void LLCOFMgr::updateAttachments()
 	}
 
 	// Don't remove attachments until avatar is fully loaded (should reduce random attaching/detaching/reattaching at log-on)
-	LLAgent::userUpdateAttachments(items, !pAvatar->isFullyLoaded());
+	LLAgentWearables::userUpdateAttachments(items, !pAvatar->isFullyLoaded());
 }
 
 // ============================================================================
@@ -431,7 +432,7 @@ void LLCOFMgr::onLinkWearableComplete(const LLUUID& idItem)
 		m_PendingWearableLinks.erase(itPending);
 
 	// It may have been removed already in which case we should remove the COF link
-	if (!gAgent.isWearingItem(idItemBase))
+	if (!gAgentWearables.isWearingItem(idItemBase))
 		removeCOFItemLinks(idItemBase);
 }
 
@@ -458,7 +459,7 @@ void LLCOFMgr::synchWearables()
 	uuid_vec_t newItems;
 	for (S32 idxType = 0; idxType < WT_COUNT; idxType++)
 	{
-		const LLUUID& idItem = gAgent.getWearableItem((EWearableType)idxType);
+		const LLUUID& idItem = gAgentWearables.getWearableItemID((EWearableType)idxType);
 		if (idItem.isNull())
 			continue;
 		newItems.push_back(idItem);

@@ -1,11 +1,10 @@
 /** 
- * @file linux_volume_catcher.h
- * @brief A Linux-specific, PulseAudio-specific hack to detect and volume-adjust new audio sources
+ * @file lldeleteutils.h
+ * @brief Utility functions to simplify some common pointer-munging idioms.
  *
- * @cond
- * $LicenseInfo:firstyear=2010&license=viewergpl$
+ * $LicenseInfo:firstyear=2009&license=viewergpl$
  * 
- * Copyright (c) 2010, Linden Research, Inc.
+ * Copyright (c) 2009-2010, Linden Research, Inc.
  * 
  * Second Life Viewer Source Code
  * The source code in this file ("Source Code") is provided by Linden Lab
@@ -30,27 +29,26 @@
  * COMPLETENESS OR PERFORMANCE.
  * $/LicenseInfo$
  * 
- * @endcond
  */
+#ifndef LL_DELETE_UTILS_H
+#define LL_DELETE_UTILS_H
 
-#ifndef LINUX_VOLUME_CATCHER_H
-#define LINUX_VOLUME_CATCHER_H
+// Simple utility functions to eventually replace the common 2-line
+// idiom scattered throughout the viewer codebase.  Note that where
+// possible we would rather be using smart pointers of some sort.
 
-#include "linden_common.h"
-
-class LinuxVolumeCatcherImpl;
-
-class LinuxVolumeCatcher
+template <class T>
+inline void deleteAndClear(T*& ptr)
 {
- public:
-	LinuxVolumeCatcher();
-	~LinuxVolumeCatcher();
+	delete ptr;
+	ptr = NULL;
+}
 
-	void setVolume(F32 volume); // 0.0 - 1.0
-	void pump(); // call this at least a few times a second if you can - it affects how quickly we can 'catch' a new audio source and adjust its volume
-	
- private:
-	LinuxVolumeCatcherImpl *pimpl;
-};
+template <class T>
+inline void deleteAndClearArray(T*& array_ptr)
+{
+	delete[] array_ptr;
+	array_ptr = NULL;
+}
 
-#endif // LINUX_VOLUME_CATCHER_H
+#endif

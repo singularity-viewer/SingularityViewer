@@ -175,7 +175,7 @@ class ViewerManifest(LLManifest):
 
 class WindowsManifest(ViewerManifest):
     def final_exe(self):
-        return 'Singularity.exe'
+        return 'SingularityViewer.exe'
 
 
     def construct(self):

@@ -44,7 +44,6 @@
 #include "llviewercontrol.h"
 #include "llui.h"
 #include "llselectmgr.h"
-#include "lltoolview.h"
 #include "lltoolmgr.h"
 #include "llviewerobject.h"
 #include "llviewerobjectlist.h"

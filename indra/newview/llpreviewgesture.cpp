@@ -46,6 +46,7 @@
 
 // newview
 #include "llagent.h"		// todo: remove
+#include "llanimationstates.h"
 #include "llassetuploadresponders.h"
 #include "llbutton.h"
 #include "llcheckboxctrl.h"

@@ -32,6 +32,7 @@
 #include "llregionflags.h"
 #include "llfloaterreporter.h"
 #include "llagent.h"
+#include "llagentcamera.h"
 #include "llviewerregion.h"
 #include "lltracker.h"
 #include "llviewerstats.h"
@@ -1060,7 +1061,7 @@ void LLFloaterAvatarList::focusOnCurrent()
 		{
 			removeFocusFromAll();
 			entry->setFocus(TRUE);
-			gAgent.lookAtObject(mFocusedAvatar, CAMERA_POSITION_OBJECT);
+			gAgentCamera.lookAtObject(mFocusedAvatar, CAMERA_POSITION_OBJECT);
 			return;
 		}
 	}
@@ -1100,7 +1101,7 @@ void LLFloaterAvatarList::focusOnPrev(BOOL marked_only)
 		removeFocusFromAll();
 		prev->setFocus(TRUE);
 		mFocusedAvatar = prev->getID();
-		gAgent.lookAtObject(mFocusedAvatar, CAMERA_POSITION_OBJECT);
+		gAgentCamera.lookAtObject(mFocusedAvatar, CAMERA_POSITION_OBJECT);
 	}
 }
 
@@ -1145,7 +1146,7 @@ void LLFloaterAvatarList::focusOnNext(BOOL marked_only)
 		removeFocusFromAll();
 		next->setFocus(TRUE);
 		mFocusedAvatar = next->getID();
-		gAgent.lookAtObject(mFocusedAvatar, CAMERA_POSITION_OBJECT);
+		gAgentCamera.lookAtObject(mFocusedAvatar, CAMERA_POSITION_OBJECT);
 	}
 }
 
@@ -1155,10 +1156,10 @@ void LLFloaterAvatarList::lookAtAvatar(LLUUID &uuid)
 	LLViewerObject* voavatar = gObjectList.findObject(uuid);
 	if(voavatar && voavatar->isAvatar())
 	{
-		gAgent.setFocusOnAvatar(FALSE, FALSE);
-		gAgent.changeCameraToThirdPerson();
-		gAgent.setFocusGlobal(voavatar->getPositionGlobal(),uuid);
-		gAgent.setCameraPosAndFocusGlobal(voavatar->getPositionGlobal()
+		gAgentCamera.setFocusOnAvatar(FALSE, FALSE);
+		gAgentCamera.changeCameraToThirdPerson();
+		gAgentCamera.setFocusGlobal(voavatar->getPositionGlobal(),uuid);
+		gAgentCamera.setCameraPosAndFocusGlobal(voavatar->getPositionGlobal()
 				+ LLVector3d(3.5,1.35,0.75) * voavatar->getRotation(),
 												voavatar->getPositionGlobal(),
 												uuid );

@@ -41,6 +41,8 @@
 
 #include "cofmgr.h"
 #include "llagent.h"
+#include "llagentwearables.h"
+#include "llagentcamera.h"
 #include "llcallingcard.h"
 #include "llcheckboxctrl.h"		// for radio buttons
 #include "llradiogroup.h"
@@ -1506,7 +1508,7 @@ BOOL LLFolderBridge::isItemRemovable()
 		if ((item->getType() == LLAssetType::AT_CLOTHING ||
 			 item->getType() == LLAssetType::AT_BODYPART) && !item->getIsLinkType())
 		{
-			if( gAgent.isWearingItem( item->getUUID() ) )
+			if( gAgentWearables.isWearingItem( item->getUUID() ) )
 			{
 				return FALSE;
 			}
@@ -1660,7 +1662,7 @@ BOOL LLFolderBridge::dragCategoryIntoFolder(LLInventoryCategory* inv_cat,
 						if( (item->getType() == LLAssetType::AT_CLOTHING) ||
 							(item->getType() == LLAssetType::AT_BODYPART) )
 						{
-							if( gAgent.isWearingItem( item->getUUID() ) )
+							if( gAgentWearables.isWearingItem( item->getUUID() ) )
 							{
 								is_movable = FALSE;  // It's generally movable, but not into the trash!
 								break;
@@ -2850,7 +2852,7 @@ BOOL LLFolderBridge::dragItemIntoFolder(LLInventoryItem* inv_item,
 				{
 					case LLAssetType::AT_CLOTHING:
 					case LLAssetType::AT_BODYPART:
-						is_movable = !gAgent.isWearingItem(inv_item->getUUID());
+						is_movable = !gAgentWearables.isWearingItem(inv_item->getUUID());
 						break;
 
 					case LLAssetType::AT_OBJECT:
@@ -3937,23 +3939,23 @@ void LLObjectBridge::performAction(LLFolderView* folder, LLInventoryModel* model
 		LLViewerParcelMgr::getInstance()->deselectLand();
 		LLSelectMgr::getInstance()->deselectAll();
 
-		if (gAgent.getFocusOnAvatar() && !LLToolMgr::getInstance()->inEdit())
+		if (gAgentCamera.getFocusOnAvatar() && !LLToolMgr::getInstance()->inEdit())
 		{
 			if (objectp->isHUDAttachment() || !gSavedSettings.getBOOL("EditCameraMovement"))
 			{
 				// always freeze camera in space, even if camera doesn't move
 				// so, for example, follow cam scripts can't affect you when in build mode
-				gAgent.setFocusGlobal(gAgent.calcFocusPositionTargetGlobal(), LLUUID::null);
-				gAgent.setFocusOnAvatar(FALSE, ANIMATE);
+				gAgentCamera.setFocusGlobal(gAgentCamera.calcFocusPositionTargetGlobal(), LLUUID::null);
+				gAgentCamera.setFocusOnAvatar(FALSE, ANIMATE);
 			}
 			else
 			{
-				gAgent.setFocusOnAvatar(FALSE, ANIMATE);
+				gAgentCamera.setFocusOnAvatar(FALSE, ANIMATE);
 
 				// zoom in on object center instead of where we clicked, as we need to see the manipulator handles
-				gAgent.setFocusGlobal(objectp->getPositionGlobal(), objectp->getID());
-				gAgent.cameraZoomIn(0.666f);
-				gAgent.cameraOrbitOver( 30.f * DEG_TO_RAD );
+				gAgentCamera.setFocusGlobal(objectp->getPositionGlobal(), objectp->getID());
+				gAgentCamera.cameraZoomIn(0.666f);
+				gAgentCamera.cameraOrbitOver( 30.f * DEG_TO_RAD );
 				gViewerWindow->moveCursorToCenter();
 			}
 		}
@@ -4827,7 +4829,7 @@ void wear_inventory_category_on_avatar_step2( BOOL proceed, void* userdata )
 			obj_items.insert(obj_items.end(), obj_items_new.begin(), obj_items_new.end());
 // [/RLVa:KB]
 
-			LLAgent::userUpdateAttachments(obj_items);
+			LLAgentWearables::userUpdateAttachments(obj_items);
 		}
 		else
 		{
@@ -4935,7 +4937,7 @@ void wear_inventory_category_on_avatar_step3(LLWearableHoldingPattern* holder, B
 
 	if(wearables.count() > 0)
 	{
-		gAgent.setWearableOutfit(items, wearables, !append);
+		gAgentWearables.setWearableOutfit(items, wearables, !append);
 		gInventory.notifyObservers();
 	}
 
@@ -5021,9 +5023,9 @@ void remove_inventory_category_from_avatar_step2( BOOL proceed, void* userdata)
 		{
 			for(i = 0; i  < wearable_count; ++i)
 			{
-//				if( gAgent.isWearingItem (item_array.get(i)->getUUID()) )
+//				if( gAgentWearables.isWearingItem (item_array.get(i)->getUUID()) )
 // [RLVa:KB] - Checked: 2009-07-07 (RLVa-1.1.3b) | Modified: RLVa-0.2.2a
-				LLWearable* pWearable = gAgent.getWearableFromWearableItem(item_array.get(i)->getLinkedUUID());
+				LLWearable* pWearable = gAgentWearables.getWearableFromItemID(item_array.get(i)->getLinkedUUID());
 				if ( (pWearable) && ( (!rlv_handler_t::isEnabled()) || (gRlvWearableLocks.canRemove(pWearable->getType())) ) )
 // [/RLVa:KB]
 				{
@@ -5068,9 +5070,9 @@ void remove_inventory_category_from_avatar_step2( BOOL proceed, void* userdata)
 
 BOOL LLWearableBridge::renameItem(const std::string& new_name)
 {
-	if( gAgent.isWearingItem( mUUID ) )
+	if( gAgentWearables.isWearingItem( mUUID ) )
 	{
-		gAgent.setWearableName( mUUID, new_name );
+		gAgentWearables.setWearableName( mUUID, new_name );
 	}
 	return LLItemBridge::renameItem(new_name);
 }
@@ -5088,7 +5090,7 @@ BOOL LLWearableBridge::isItemRemovable()
 		return TRUE;
 	}
 	// <edit>
-	//if(gAgent.isWearingItem(mUUID)) return FALSE;
+	//if(gAgentWearables.isWearingItem(mUUID)) return FALSE;
 	// </edit>
 	return LLInvFVBridge::isItemRemovable();
 }
@@ -5097,7 +5099,7 @@ LLFontGL::StyleFlags LLWearableBridge::getLabelStyle() const
 { 
 	U8 font = LLFontGL::NORMAL;
 
-	if (gAgent.isWearingItem(mUUID))
+	if (gAgentWearables.isWearingItem(mUUID))
 	{
 		font |= LLFontGL::BOLD;
 	}
@@ -5113,7 +5115,7 @@ LLFontGL::StyleFlags LLWearableBridge::getLabelStyle() const
 
 std::string LLWearableBridge::getLabelSuffix() const
 {
-	if( gAgent.isWearingItem( mUUID ) )
+	if( gAgentWearables.isWearingItem( mUUID ) )
 	{
 		return LLItemBridge::getLabelSuffix() + " (worn)";
 	}
@@ -5142,7 +5144,7 @@ void LLWearableBridge::performAction(LLFolderView* folder, LLInventoryModel* mod
 	}
 	else if ("take_off" == action)
 	{
-		if(gAgent.isWearingItem(mUUID))
+		if(gAgentWearables.isWearingItem(mUUID))
 		{
 			LLViewerInventoryItem* item = getItem();
 			if (item)
@@ -5166,7 +5168,7 @@ void LLWearableBridge::openItem()
 	}
 	else if(isAgentInventory())
 	{
-		if (gAgent.isWearingItem(mUUID))
+		if (gAgentWearables.isWearingItem(mUUID))
 		{
 			performAction(NULL, NULL, "take_off");
 		}
@@ -5279,7 +5281,7 @@ BOOL LLWearableBridge::canWearOnAvatar(void* user_data)
 		LLViewerInventoryItem* item = (LLViewerInventoryItem*)self->getItem();
 		if(!item || !item->isComplete()) return FALSE;
 	}
-	return (!gAgent.isWearingItem(self->mUUID));
+	return (!gAgentWearables.isWearingItem(self->mUUID));
 }
 
 // Called from menus
@@ -5295,7 +5297,7 @@ void LLWearableBridge::wearOnAvatar()
 {
 	// Don't wear anything until initial wearables are loaded, can
 	// destroy clothing items.
-	if (!gAgent.areWearablesLoaded()) 
+	if (!gAgentWearables.areWearablesLoaded()) 
 	{
 		LLNotifications::instance().add("CanNotChangeAppearanceUntilLoaded");
 		return;
@@ -5349,7 +5351,7 @@ void LLWearableBridge::onWearOnAvatarArrived( LLWearable* wearable, void* userda
 //					item->updateAssetOnServer();
 //					wearable = new_wearable;
 //				}
-				gAgent.setWearable(item, wearable);
+				gAgentWearables.setWearableItem(item, wearable);
 				gInventory.notifyObservers();
 				//self->getFolderItem()->refreshFromRoot();
 			}
@@ -5368,7 +5370,7 @@ BOOL LLWearableBridge::canEditOnAvatar(void* user_data)
 	LLWearableBridge* self = (LLWearableBridge*)user_data;
 	if(!self) return FALSE;
 
-	return (gAgent.isWearingItem(self->mUUID));
+	return (gAgentWearables.isWearingItem(self->mUUID));
 }
 
 // static 
@@ -5384,16 +5386,16 @@ void LLWearableBridge::onEditOnAvatar(void* user_data)
 void LLWearableBridge::editOnAvatar()
 {
 	LLUUID linked_id = gInventory.getLinkedItemID(mUUID);
-	LLWearable* wearable = gAgent.getWearableFromWearableItem(linked_id);
+	LLWearable* wearable = gAgentWearables.getWearableFromItemID(linked_id);
 	if( wearable )
 	{
 		// Set the tab to the right wearable.
 		LLFloaterCustomize::setCurrentWearableType( wearable->getType() );
 
-		if( CAMERA_MODE_CUSTOMIZE_AVATAR != gAgent.getCameraMode() )
+		if( CAMERA_MODE_CUSTOMIZE_AVATAR != gAgentCamera.getCameraMode() )
 		{
 			// Start Avatar Customization
-			gAgent.changeCameraToCustomizeAvatar();
+			gAgentCamera.changeCameraToCustomizeAvatar();
 		}
 	}
 }
@@ -5404,7 +5406,7 @@ BOOL LLWearableBridge::canRemoveFromAvatar(void* user_data)
 	LLWearableBridge* self = (LLWearableBridge*)user_data;
 	if( self && (LLAssetType::AT_BODYPART != self->mAssetType) )
 	{
-		return gAgent.isWearingItem( self->mUUID );
+		return gAgentWearables.isWearingItem( self->mUUID );
 	}
 	return FALSE;
 }
@@ -5414,7 +5416,7 @@ void LLWearableBridge::onRemoveFromAvatar(void* user_data)
 {
 	LLWearableBridge* self = (LLWearableBridge*)user_data;
 	if(!self) return;
-	if(gAgent.isWearingItem(self->mUUID))
+	if(gAgentWearables.isWearingItem(self->mUUID))
 	{
 		LLViewerInventoryItem* item = self->getItem();
 		if (item)
@@ -5436,14 +5438,14 @@ void LLWearableBridge::onRemoveFromAvatarArrived(LLWearable* wearable,
 	const LLUUID &item_id = gInventory.getLinkedItemID(on_remove_struct->mUUID);
 	if(wearable)
 	{
-		if (gAgent.isWearingItem(item_id))
+		if (gAgentWearables.isWearingItem(item_id))
 		{
 			EWearableType type = wearable->getType();
 	
 			if( !(type==WT_SHAPE || type==WT_SKIN || type==WT_HAIR || type==WT_EYES) ) //&&
 				//!((!gAgent.isTeen()) && ( type==WT_UNDERPANTS || type==WT_UNDERSHIRT )) )
 			{
-				gAgent.removeWearable( type );
+				gAgentWearables.removeWearable( type );
 			}
 		}
 	}

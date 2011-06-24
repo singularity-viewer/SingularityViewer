@@ -39,6 +39,7 @@
 #include "llsd.h"
 #include "message.h"
 #include <boost/tokenizer.hpp>
+#include "../newview/hippogridmanager.h"
 
 #include "llsdutil.h"
 
@@ -553,6 +554,10 @@ BOOL LLInventoryItem::unpackMessage(LLMessageSystem* msg, const char* block, S32
 	S8 type;
 	msg->getS8Fast(block, _PREHASH_Type, type, block_num);
 	mType = static_cast<LLAssetType::EType>(type);
+	if (mType == LLAssetType::AT_LINK || mType == LLAssetType::AT_LINK_FOLDER)
+	{
+		gHippoGridManager->getConnectedGrid()->setSupportsInvLinks(true);
+	}
 	msg->getS8(block, "InvType", type, block_num);
 	mInventoryType = static_cast<LLInventoryType::EType>(type);
 	mPermissions.initMasks(mInventoryType);
@@ -1121,6 +1126,11 @@ bool LLInventoryItem::fromLLSD(const LLSD& sd)
 		{
 			S8 type = (U8)sd[w].asInteger();
 			mType = static_cast<LLAssetType::EType>(type);
+		}
+		
+		if (mType == LLAssetType::AT_LINK || mType == LLAssetType::AT_LINK_FOLDER)
+		{
+			gHippoGridManager->getConnectedGrid()->setSupportsInvLinks(true);			
 		}
 	}
 	w = INV_INVENTORY_TYPE_LABEL;

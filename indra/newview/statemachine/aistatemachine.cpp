@@ -343,7 +343,7 @@ void AIStateMachine::mainloop(void*)
 	}
 	else
 	{
-	  llassert(statemachine.mState == bs_run);
+	  llassert(statemachine.mState == bs_run || statemachine.mState == bs_initialize);
 	  ++iter;
 	}
   }

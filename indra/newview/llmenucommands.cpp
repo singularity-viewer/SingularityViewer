@@ -42,6 +42,7 @@
 #include "message.h"
 
 #include "llagent.h"
+#include "llagentcamera.h"
 #include "llcallingcard.h"
 #include "llchatbar.h"
 #include "llviewercontrol.h"
@@ -84,7 +85,7 @@ void handle_pay_by_id(const LLUUID& agent_id)
 
 void handle_mouselook(void*)
 {
-	gAgent.changeCameraToMouselook();
+	gAgentCamera.changeCameraToMouselook();
 }
 
 

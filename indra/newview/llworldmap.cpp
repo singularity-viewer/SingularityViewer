@@ -49,6 +49,7 @@
 #include "llregionflags.h"
  #include "hippogridmanager.h"
 bool LLWorldMap::sGotMapURL =  false;
+const F32 AGENTS_UPDATE_TIMER = 60.0;			// Seconds between 2 agent requests for a region
 const F32 REQUEST_ITEMS_TIMER =  10.f * 60.f; // 10 minutes
 
 // For DEV-17507, do lazy image loading in llworldmapview.cpp instead,
@@ -73,8 +74,8 @@ LLItemInfo::LLItemInfo(F32 global_x, F32 global_y,
 	mRegionHandle = to_region_handle(mPosGlobal);
 }
 
-LLSimInfo::LLSimInfo()
-:	mHandle(0),
+LLSimInfo::LLSimInfo(U64 handle)
+:	mHandle(handle),
 	mName(),
 	mAgentsUpdateTime(0),
 	mShowAgentLocations(FALSE),
@@ -86,12 +87,8 @@ LLSimInfo::LLSimInfo()
 }
 
 
-LLVector3d LLSimInfo::getGlobalOrigin() const
-{
-	return from_region_handle(mHandle);
-}
 
-LLVector3d LLSimInfo::getGlobalPos(LLVector3 local_pos) const
+LLVector3d LLSimInfo::getGlobalPos(const LLVector3& local_pos) const
 {
 	LLVector3d pos = from_region_handle(mHandle);
 	pos.mdV[VX] += local_pos.mV[VX];
@@ -100,6 +97,47 @@ LLVector3d LLSimInfo::getGlobalPos(LLVector3 local_pos) const
 	return pos;
 }
 
+LLVector3d LLSimInfo::getGlobalOrigin() const
+{
+	return from_region_handle(mHandle);
+}
+LLVector3 LLSimInfo::getLocalPos(LLVector3d global_pos) const
+{
+	LLVector3d sim_origin = from_region_handle(mHandle);
+	return LLVector3(global_pos - sim_origin);
+}
+
+void LLSimInfo::clearImage()
+{
+	if (!mOverlayImage.isNull())
+	{
+		mOverlayImage->setBoostLevel(0);
+		mOverlayImage = NULL;
+	}
+}
+
+void LLSimInfo::dropImagePriority()
+{
+	if (!mOverlayImage.isNull())
+	{
+		mOverlayImage->setBoostLevel(0);
+	}
+}
+
+// Update the agent count for that region
+void LLSimInfo::updateAgentCount(F64 time)
+{
+	if ((time - mAgentsUpdateTime > AGENTS_UPDATE_TIMER) || mFirstAgentRequest)
+	{
+		LLWorldMap::getInstance()->sendItemRequest(MAP_ITEM_AGENT_LOCATIONS, mHandle);
+		mAgentsUpdateTime = time;
+		mFirstAgentRequest = false;
+	}
+}
+bool LLSimInfo::isName(const std::string& name) const
+{
+	return (LLStringUtil::compareInsensitive(name, mName) == 0);
+}
 
 //---------------------------------------------------------------------------
 // World Map
@@ -203,20 +241,23 @@ void LLWorldMap::eraseItems()
 
 void LLWorldMap::clearImageRefs()
 {
+	// We clear the reference to the images we're holding.
+	// Images hold by the world mipmap first
 	mWorldMipmap.reset();	
 	
+	// Images hold by the region map
+	LLSimInfo* sim_info = NULL;
 	for (sim_info_map_t::iterator it = mSimInfoMap.begin(); it != mSimInfoMap.end(); ++it)
 	{
-		LLSimInfo* info = (*it).second;
-		if (info->mCurrentImage)
+		sim_info = it->second;
+		if(sim_info)
 		{
-			info->mCurrentImage->setBoostLevel(0);
-			info->mCurrentImage = NULL;
-		}
-		if (info->mOverlayImage)
-		{
-			info->mOverlayImage->setBoostLevel(0);
-			info->mOverlayImage = NULL;
+			if (sim_info->mCurrentImage)
+			{
+				sim_info->mCurrentImage->setBoostLevel(0);
+				sim_info->mCurrentImage = NULL;
+			}
+			sim_info->clearImage();
 		}
 	}
 }
@@ -231,6 +272,13 @@ void LLWorldMap::clearSimFlags()
 			mMapBlockLoaded[map][idx] = FALSE;
 		}
 	}
+}
+
+LLSimInfo* LLWorldMap::createSimInfoFromHandle(const U64 handle)
+{
+	LLSimInfo* sim_info = new LLSimInfo(handle);
+	mSimInfoMap[handle] = sim_info;
+	return sim_info;
 }
 
 void LLWorldMap::equalizeBoostLevels()
@@ -250,11 +298,7 @@ LLSimInfo* LLWorldMap::simInfoFromHandle(const U64 handle)
 	sim_info_map_t::iterator it = mSimInfoMap.find(handle);
 	if (it != mSimInfoMap.end())
 	{
-		LLSimInfo* sim_info = (*it).second;
-		if (sim_info)
-		{
-			return sim_info;
-		}
+		return it->second;
 	}
 	return NULL;
 }
@@ -265,39 +309,38 @@ LLSimInfo* LLWorldMap::simInfoFromName(const std::string& sim_name)
 	LLSimInfo* sim_info = NULL;
 	if (!sim_name.empty())
 	{
-		for (sim_info_map_t::iterator it = mSimInfoMap.begin(); it != mSimInfoMap.end(); ++it)
+		// Iterate through the entire sim info map and compare the name
+		sim_info_map_t::iterator it;
+		for (it = mSimInfoMap.begin(); it != mSimInfoMap.end(); ++it)
 		{
-			sim_info = (*it).second;
-			if (sim_info
-				&& (0 == LLStringUtil::compareInsensitive(sim_name, sim_info->mName)) )
+			sim_info = it->second;
+			if (sim_info && sim_info->isName(sim_name) )
 			{
+				// break out of loop if success
 				break;
 			}
-			sim_info = NULL;
 		}
+		// If we got to the end, we haven't found the sim. Reset the ouput value to NULL.
+		if (it == mSimInfoMap.end())
+			sim_info = NULL;
 	}
 	return sim_info;
 }
 
 bool LLWorldMap::simNameFromPosGlobal(const LLVector3d& pos_global, std::string & outSimName )
 {
-	bool gotSimName = true;
+	LLSimInfo* sim_info = simInfoFromPosGlobal(pos_global);
 
-	U64 handle = to_region_handle(pos_global);
-
-	sim_info_map_t::iterator it = mSimInfoMap.find(handle);
-	if (it != mSimInfoMap.end())
+	if (sim_info)
 	{
-		LLSimInfo* info = (*it).second;
-		outSimName = info->mName;
+		outSimName = sim_info->getName();
 	}
 	else
 	{
-		gotSimName = false;
 		outSimName = "(unknown region)";
 	}
 
-	return gotSimName;
+	return (sim_info != NULL);
 }
 
 void LLWorldMap::setCurrentLayer(S32 layer, bool request_layer)
@@ -657,28 +700,20 @@ void LLWorldMap::processMapBlockReply(LLMessageSystem* msg, void**)
 										y_meters, 
 										x_meters+REGION_WIDTH_UNITS,
 										y_meters+REGION_WIDTH_UNITS) || adjust;
-
-// 			llinfos << "Map sim " << name << " image layer " << agent_flags << " ID " << image_id.getString() << llendl;
-			
-			LLSimInfo* siminfo = new LLSimInfo();
-			sim_info_map_t::iterator iter = LLWorldMap::getInstance()->mSimInfoMap.find(handle);
-			if (iter != LLWorldMap::getInstance()->mSimInfoMap.end())
+	 		//LL_INFOS("World Map") << "Map sim : " << name << ", ID : " << image_id.getString() << LL_ENDL;
+			// Insert the region in the region map of the world map
+			// Loading the LLSimInfo object with what we got and insert it in the map
+			LLSimInfo* siminfo = LLWorldMap::getInstance()->simInfoFromHandle(handle);
+			if (siminfo == NULL)
 			{
-				LLSimInfo* oldinfo = iter->second;
-				for (S32 image=0; image<MAP_SIM_IMAGE_TYPES; ++image)
-				{
-					siminfo->mMapImageID[image] = oldinfo->mMapImageID[image];
-				}
-				delete oldinfo;
+				siminfo = LLWorldMap::getInstance()->createSimInfoFromHandle(handle);
 			}
-			LLWorldMap::getInstance()->mSimInfoMap[handle] = siminfo;
 
-			siminfo->mHandle = handle;
-			siminfo->mName.assign( name );
-			siminfo->mAccess = accesscode;
-			siminfo->mRegionFlags = region_flags;
-			siminfo->mWaterHeight = (F32) water_height;
-			siminfo->mMapImageID[agent_flags] = image_id;
+			siminfo->setName( name );
+			siminfo->setAccess( accesscode );
+			siminfo->setRegionFlags( region_flags );
+			siminfo->setWaterHeight((F32) water_height);
+			siminfo->setMapImageID( image_id, agent_flags );
 
 #ifdef IMMEDIATE_IMAGE_LOAD
 			if (use_web_map_tiles)
@@ -710,7 +745,7 @@ void LLWorldMap::processMapBlockReply(LLMessageSystem* msg, void**)
 				LLWorldMap::getInstance()->mUnknownLocation.mdV[1] >= y_meters &&
 				LLWorldMap::getInstance()->mUnknownLocation.mdV[1] < y_meters + 256)
 			{
-				if (siminfo->mAccess == SIM_ACCESS_DOWN)
+				if (siminfo->isDown())
 				{
 					// We were tracking this location, but it doesn't exist
 					LLWorldMap::getInstance()->mInvalidLocation = true;
@@ -744,12 +779,11 @@ void LLWorldMap::processMapBlockReply(LLMessageSystem* msg, void**)
 				callback(handle, LLWorldMap::getInstance()->mSLURL, image_id, LLWorldMap::getInstance()->mSLURLTeleport);
 			}
 		}
-		if(LLAgent::lure_show)
+		if(	gAgent.mPendingLure &&
+			(U16)(gAgent.mPendingLure->mPosGlobal.mdV[0] / REGION_WIDTH_UNITS) == x_regions &&
+			(U16)(gAgent.mPendingLure->mPosGlobal.mdV[1] / REGION_WIDTH_UNITS) == y_regions )
 		{
-			if((x_regions == LLAgent::lure_global_x) && (y_regions == LLAgent::lure_global_y))
-			{
-				gAgent.onFoundLureDestination();
-			}
+			gAgent.onFoundLureDestination();
 		}
 	}
 
@@ -784,7 +818,7 @@ void LLWorldMap::processMapItemReply(LLMessageSystem* msg, void**)
 		Y /= REGION_WIDTH_UNITS;
 		
 		LLItemInfo new_item(world_x, world_y, name, uuid, extra, extra2);
-		LLSimInfo* siminfo = LLWorldMap::getInstance()->simInfoFromHandle(new_item.mRegionHandle);
+		LLSimInfo* siminfo = LLWorldMap::getInstance()->simInfoFromHandle(new_item.getRegionHandle());
 
 		switch (type)
 		{
@@ -827,13 +861,13 @@ void LLWorldMap::processMapItemReply(LLMessageSystem* msg, void**)
 				S32 display_hour = timep->tm_hour % 12;
 				if (display_hour == 0) display_hour = 12;
 
-				new_item.mToolTip = llformat( "%d:%02d %s",
+				new_item.setTooltip( llformat( "%d:%02d %s",
 											  display_hour,
 											  timep->tm_min,
-											  (timep->tm_hour < 12 ? "AM" : "PM") );
+											  (timep->tm_hour < 12 ? "AM" : "PM") ) );
 
 				// HACK: store Z in extra2
-				new_item.mPosGlobal.mdV[VZ] = (F64)extra2;
+				new_item.setElevation((F64)extra2);
 				if (type == MAP_ITEM_PG_EVENT)
 				{
 					LLWorldMap::getInstance()->mPGEvents.push_back(new_item);
@@ -852,9 +886,9 @@ void LLWorldMap::processMapItemReply(LLMessageSystem* msg, void**)
 			case MAP_ITEM_LAND_FOR_SALE: // land for sale
 			case MAP_ITEM_LAND_FOR_SALE_ADULT: // adult land for sale 
 			{
-				new_item.mToolTip = llformat("%d sq. m. %s%d", new_item.mExtra,
+				new_item.setTooltip(llformat("%d sq. m. %s%d", new_item.mExtra,
 					gHippoGridManager->getConnectedGrid()->getCurrencySymbol().c_str(),
-					new_item.mExtra2);
+					new_item.mExtra2));
 				if (type == MAP_ITEM_LAND_FOR_SALE)
 				{
 					LLWorldMap::getInstance()->mLandForSale.push_back(new_item);
@@ -874,19 +908,19 @@ void LLWorldMap::processMapItemReply(LLMessageSystem* msg, void**)
 			{
 				if (!siminfo)
 				{
-					llinfos << "siminfo missing for " << new_item.mPosGlobal.mdV[0] << ", " << new_item.mPosGlobal.mdV[1] << llendl;
+					llinfos << "siminfo missing for " << new_item.getGlobalPosition().mdV[0] << ", " << new_item.getGlobalPosition().mdV[1] << llendl;
 					break;
 				}
 // 				llinfos << "New Location " << new_item.mName << llendl;
 
-				item_info_list_t& agentcounts = LLWorldMap::getInstance()->mAgentLocationsMap[new_item.mRegionHandle];
+				item_info_list_t& agentcounts = LLWorldMap::getInstance()->mAgentLocationsMap[new_item.getRegionHandle()];
 
 				// Find the last item in the list with a different name and erase them
 				item_info_list_t::iterator lastiter;
 				for (lastiter = agentcounts.begin(); lastiter!=agentcounts.end(); ++lastiter)
 				{
 					const LLItemInfo& info = *lastiter;
-					if (info.mName == new_item.mName)
+					if (info.isName(new_item.getName()))
 					{
 						break;
 					}
@@ -919,10 +953,10 @@ void LLWorldMap::dump()
 		from_region_handle(handle, &x_pos, &y_pos);
 
 		llinfos << x_pos << "," << y_pos
-			<< " " << info->mName 
-			<< " " << (S32)info->mAccess
-			<< " " << std::hex << info->mRegionFlags << std::dec
-			<< " " << info->mWaterHeight
+			<< " " << info->getName() 
+			<< " " << (S32)info->getAccess()
+			<< " " << std::hex << info->getRegionFlags() << std::dec
+			<< " " << info->getWaterHeight()
 			//<< " " << info->mTelehubName
 			//<< " " << info->mTelehubPosition
 			<< llendl;
@@ -1089,9 +1123,6 @@ void LLWorldMap::dropImagePriorities()
 	for (sim_info_map_t::iterator it = mSimInfoMap.begin(); it != mSimInfoMap.end(); ++it)
 	{
 		LLSimInfo* info = it->second;
-		if (!info->mOverlayImage.isNull())
-		{
-			info->mOverlayImage->setBoostLevel(0);
-		}
+		info->dropImagePriority();
 	}
 }

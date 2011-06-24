@@ -87,6 +87,7 @@ public:
 	void setRealCurrencySymbol(const std::string& sym);
 	void setDirectoryFee(int fee);
 	bool supportsInvLinks();
+	void setSupportsInvLinks(bool b);
 
 	bool retrieveGridInfo();
 
@@ -113,6 +114,7 @@ private:
 	std::string mLastName;
 	std::string mAvatarPassword;
 	bool mRenderCompat;
+	bool mInvLinks;
 	int mMaxAgentGroups;
 
 	std::string mCurrencySymbol;

@@ -44,6 +44,7 @@
 #include "llworldmipmap.h"
 #include "lluuid.h"
 #include "llmemory.h"
+#include "llviewerregion.h"
 #include "llviewertexture.h"
 #include "lleventinfo.h"
 #include "v3color.h"
@@ -56,14 +57,26 @@ class LLItemInfo
 public:
 	LLItemInfo(F32 global_x, F32 global_y, const std::string& name, LLUUID id, S32 extra = 0, S32 extra2 = 0);
 
+	// Setters
+	void setTooltip(const std::string& tooltip) { mToolTip = tooltip; }
+	void setElevation(F64 z) { mPosGlobal.mdV[VZ] = z; }
+	// Accessors
+	const LLVector3d& getGlobalPosition() const { return mPosGlobal; } 
+	const std::string& getName() const { return mName; }
+	const std::string& getToolTip() const { return mToolTip; }
+	const LLUUID& getUUID() const { return mID; }
+	U64 getRegionHandle() const { return mRegionHandle; }
+	bool isName(const std::string& name) const { return (mName == name); }		// True if name same as item's name
+private:
 	std::string mName;
 	std::string mToolTip;
 	LLVector3d	mPosGlobal;
 	LLUUID		mID;
+	U64			mRegionHandle;
+public: //public for now.. non-standard.
 	BOOL		mSelected;
 	S32			mExtra;
 	S32			mExtra2;
-	U64			mRegionHandle;
 };
 
 #define MAP_SIM_IMAGE_TYPES 3
@@ -74,24 +87,54 @@ public:
 class LLSimInfo
 {
 public:
-	LLSimInfo();
+	LLSimInfo(U64 handle);
 
-	LLVector3d getGlobalPos(LLVector3 local_pos) const;
+	// Convert local region coordinates into world coordinates
+	LLVector3d getGlobalPos(const LLVector3& local_pos) const;
 	// Get the world coordinates of the SW corner of that region
 	LLVector3d getGlobalOrigin() const;
+	LLVector3 getLocalPos(LLVector3d global_pos) const;
 
-public:
+	void clearImage();					// Clears the reference to the Land for sale image for that region
+	void dropImagePriority();			// Drops the boost level of the Land for sale image for that region
+	void updateAgentCount(F64 time);	// Send an item request for agent count on that region if time's up
+	// Setters
+	void setName(std::string& name) { mName = name; }
+	void setAccess (U8 accesscode) { mAccess = accesscode; }
+	void setRegionFlags (U32 region_flags) { mRegionFlags = region_flags; }
+	void setWaterHeight (F32 water_height) { mWaterHeight = water_height; }
+	void setAlpha(F32 alpha) { mAlpha = alpha; }
+	
+	void setMapImageID (const LLUUID& id, const U8 &layer) { mMapImageID[layer] = id; }
+
+	// Accessors
+	std::string getName() const { return mName; }
+	const std::string getFlagsString() const { return LLViewerRegion::regionFlagsToString(mRegionFlags); }
+	const U32 getRegionFlags() const { return mRegionFlags; }
+	const std::string getAccessString() const { return LLViewerRegion::accessToString((U8)mAccess); }
+	const U8 getAccess() const { return mAccess; }
+	
+	const F32 getWaterHeight() const { return mWaterHeight; }
+	const F32 getAlpha() const { return mAlpha; }
+	const U64 getHandle() const { return mHandle; }
+	bool isName(const std::string& name) const;
+	bool isDown() { return (mAccess == SIM_ACCESS_DOWN); }
+	bool isPG() { return (mAccess <= SIM_ACCESS_PG); }
+	bool isAdult() { return (mAccess == SIM_ACCESS_ADULT); }
+private:
 	U64 mHandle;
 	std::string mName;
 
-	F64 mAgentsUpdateTime;
-	BOOL mShowAgentLocations;	// are agents visible?
-
+	F64 mAgentsUpdateTime;		// Time stamp giving the last time the agents information was requested for that region
+	bool mFirstAgentRequest;	// Init agent request flag
 	U8 mAccess;
 	U32 mRegionFlags;
 	F32 mWaterHeight;
 
 	F32 mAlpha;
+
+public:
+	BOOL mShowAgentLocations;	// are agents visible?
 
 	// Image ID for the current overlay mode.
 	LLUUID mMapImageID[MAP_SIM_IMAGE_TYPES];
@@ -116,6 +159,7 @@ struct LLWorldMapLayer
 
 class LLWorldMap : public LLSingleton<LLWorldMap>
 {
+	friend class LLMapLayerResponder;
 public:
 	typedef void(*url_callback_t)(U64 region_handle, const std::string& url, const LLUUID& snapshot_id, bool teleport);
 
@@ -138,6 +182,9 @@ public:
 	// Drops the priority of the images being fetched	
 	void dropImagePriorities();
 
+	// Region Map access
+	typedef std::map<U64, LLSimInfo*> sim_info_map_t;
+	const LLWorldMap::sim_info_map_t& getRegionMap() const { return mSimInfoMap; }
 	// Returns simulator information, or NULL if out of range
 	LLSimInfo* simInfoFromHandle(const U64 handle);
 
@@ -195,10 +242,13 @@ public:
 private:
 	bool clearItems(bool force = false);	// Clears the item lists
 	
-public:
+	// Create a region record corresponding to the handle, insert it in the region map and returns a pointer
+	LLSimInfo* createSimInfoFromHandle(const U64 handle);
+
 	// Map from region-handle to simulator info
-	typedef std::map<U64, LLSimInfo*> sim_info_map_t;
 	sim_info_map_t mSimInfoMap;
+
+public:
 
 	BOOL			mIsTrackingUnknownLocation, mInvalidLocation, mIsTrackingDoubleClick, mIsTrackingCommit;
 	LLVector3d		mUnknownLocation;

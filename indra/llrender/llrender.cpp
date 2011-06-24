@@ -307,6 +307,11 @@ bool LLTexUnit::bind(LLCubeMap* cubeMap)
 		return false;
 	}
 
+	if (cubeMap->mImages[0].isNull())
+	{
+		llwarns << "NULL LLTexUnit::bind cubeMap->mImages[0]" << llendl;
+		return false;
+	}
 	if (mCurrTexture != cubeMap->mImages[0]->getTexName())
 	{
 		if (gGLManager.mHasCubeMap && LLCubeMap::sUseCubeMaps)

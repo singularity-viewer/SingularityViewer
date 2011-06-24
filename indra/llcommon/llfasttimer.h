@@ -226,7 +226,7 @@ public:
 		//gTimerBins[gCurTimerBin]++;
 		//LLTimer::sNumTimerCalls++;
 
-		U64 cpu_clocks =  getCPUClockCount64();
+		U64 cpu_clocks =  getCPUClockCount32();
 
 		sStart[sCurDepth] = cpu_clocks;
 		sCurDepth++;
@@ -241,7 +241,7 @@ public:
 		// These don't get counted, because they use CPU clockticks
 		//gTimerBins[gCurTimerBin]++;
 		//LLTimer::sNumTimerCalls++;
-		end =  getCPUClockCount64();
+		end =  getCPUClockCount32();
 
 		sCurDepth--;
 		delta = end - sStart[sCurDepth];

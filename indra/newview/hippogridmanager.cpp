@@ -57,6 +57,7 @@ HippoGridInfo::HippoGridInfo(const std::string& gridNick) :
 	mXmlState(XML_VOID),
 	mVoiceConnector("SLVoice"),
 	mRenderCompat(true),
+	mInvLinks(false),
 	mMaxAgentGroups(-1),
 	mCurrencySymbol("OS$"),
 	mRealCurrencySymbol("US$"),
@@ -612,10 +613,16 @@ void HippoGridInfo::initFallback()
 bool HippoGridInfo::supportsInvLinks(){
 	if(isSecondLife())
 		return true;
-	else if(mLoginUri.find("avination.")!=std::string::npos)
-		return true;
 	else
-		return false;
+		return mInvLinks;
+}
+
+void HippoGridInfo::setSupportsInvLinks(bool b) {
+	if (b == true && mInvLinks == false)
+	{
+		llinfos << "Inventory Link support detected" << llendl;
+	}
+	mInvLinks = b;
 }
 
 // ********************************************************************
@@ -927,6 +934,7 @@ void HippoGridManager::parseData(LLSD &gridInfo, bool mergeIfNewer)
 			if (gridMap.has("password")) grid->setPasswordUrl(gridMap["password"]);
 			if (gridMap.has("search")) grid->setSearchUrl(gridMap["search"]);
 			if (gridMap.has("render_compat")) grid->setRenderCompat(gridMap["render_compat"]);
+			if (gridMap.has("inventory_links")) grid->setSupportsInvLinks(gridMap["inventory_links"]);			
 			// if (gridMap.has("firstname")) grid->setFirstName(gridMap["firstname"]);
 			// if (gridMap.has("lastname")) grid->setLastName(gridMap["lastname"]);
 			// if (gridMap.has("avatarpassword")) grid->setAvatarPassword(gridMap["avatarpassword"]);
@@ -967,6 +975,7 @@ void HippoGridManager::saveFile()
 		
 		gridInfo[i]["search"] = grid->getSearchUrl();
 		gridInfo[i]["render_compat"] = grid->isRenderCompat();
+		gridInfo[i]["inventory_links"] = grid->supportsInvLinks();
 	}
 
 	// write client grid info file

@@ -73,9 +73,11 @@
 #include "llvovolume.h"
 #include "llworld.h"
 #include "pipeline.h"
+#include "llviewershadermgr.h"
 
 #include "lldrawpool.h"
 #include "lluictrlfactory.h"
+#include "lltexturectrl.h"
 
 // "Features" Tab
 
@@ -111,12 +113,28 @@ BOOL	LLPanelVolume::postBuild()
 			LightColorSwatch->setOnSelectCallback(onLightSelectColor);
 			childSetCommitCallback("colorswatch",onCommitLight,this);
 		}
+
+		LLTextureCtrl* LightTexPicker = getChild<LLTextureCtrl>("light texture control");
+		if (LightTexPicker)
+		{
+			LightTexPicker->setOnCancelCallback(onLightCancelTexture);
+			LightTexPicker->setOnSelectCallback(onLightSelectTexture);
+			childSetCommitCallback("light texture control", onCommitLight, this);
+		}
+
 		childSetCommitCallback("Light Intensity",onCommitLight,this);
 		childSetValidate("Light Intensity",precommitValidate);
 		childSetCommitCallback("Light Radius",onCommitLight,this);
 		childSetValidate("Light Radius",precommitValidate);
 		childSetCommitCallback("Light Falloff",onCommitLight,this);
 		childSetValidate("Light Falloff",precommitValidate);
+		
+		childSetCommitCallback("Light FOV", onCommitLight, this);
+		childSetValidate("Light FOV", precommitValidate);
+		childSetCommitCallback("Light Focus", onCommitLight, this);
+		childSetValidate("Light Focus", precommitValidate);
+		childSetCommitCallback("Light Ambiance", onCommitLight, this);
+		childSetValidate("Light Ambiance", precommitValidate);
 	}
 	
 	// Start with everyone disabled
@@ -221,13 +239,31 @@ void LLPanelVolume::getState( )
 			LightColorSwatch->setValid( TRUE );
 			LightColorSwatch->set(volobjp->getLightBaseColor());
 		}
+
+		childSetEnabled("label texture",true);
+		LLTextureCtrl* LightTextureCtrl = getChild<LLTextureCtrl>("light texture control");
+		if (LightTextureCtrl)
+		{
+			LightTextureCtrl->setEnabled(TRUE);
+			LightTextureCtrl->setValid(TRUE);
+			LightTextureCtrl->setImageAssetID(volobjp->getLightTextureID());
+		}
 		childSetEnabled("Light Intensity",true);
 		childSetEnabled("Light Radius",true);
 		childSetEnabled("Light Falloff",true);
 
+		childSetEnabled("Light FOV",true);
+		childSetEnabled("Light Focus",true);
+		childSetEnabled("Light Ambiance",true);
+		
 		childSetValue("Light Intensity",volobjp->getLightIntensity());
 		childSetValue("Light Radius",volobjp->getLightRadius());
 		childSetValue("Light Falloff",volobjp->getLightFalloff());
+
+		LLVector3 params = volobjp->getSpotLightParams();
+		childSetValue("Light FOV",params.mV[0]);
+		childSetValue("Light Focus",params.mV[1]);
+		childSetValue("Light Ambiance",params.mV[2]);
 
 		mLightSavedColor = volobjp->getLightColor();
 	}
@@ -244,9 +280,20 @@ void LLPanelVolume::getState( )
 			LightColorSwatch->setEnabled( FALSE );
 			LightColorSwatch->setValid( FALSE );
 		}
+		childSetEnabled("label texture",false);	
+		LLTextureCtrl* LightTextureCtrl = getChild<LLTextureCtrl>("light texture control");
+		if (LightTextureCtrl)
+		{
+			LightTextureCtrl->setEnabled(FALSE);
+			LightTextureCtrl->setValid(FALSE);
+		}
 		childSetEnabled("Light Intensity",false);
 		childSetEnabled("Light Radius",false);
 		childSetEnabled("Light Falloff",false);
+
+		childSetEnabled("Light FOV",false);
+		childSetEnabled("Light Focus",false);
+		childSetEnabled("Light Ambiance",false);
 	}
 	
 	// Flexible properties
@@ -336,6 +383,14 @@ void LLPanelVolume::refresh()
 	{
 		mRootObject = NULL;
 	}
+
+	BOOL visible = LLViewerShaderMgr::instance()->getVertexShaderLevel(LLViewerShaderMgr::SHADER_DEFERRED) > 0 ? TRUE : FALSE;
+
+	childSetVisible("label texture", visible);
+	childSetVisible("Light FOV", visible);
+	childSetVisible("Light Focus", visible);
+	childSetVisible("Light Ambiance", visible);
+	childSetVisible("light texture control", visible);
 }
 
 
@@ -355,13 +410,20 @@ void LLPanelVolume::clearCtrls()
 	childSetVisible("edit_object",false);
 	childSetEnabled("Light Checkbox Ctrl",false);
 	childSetEnabled("label color",false);
-	childSetEnabled("label color",false);
 	LLColorSwatchCtrl* LightColorSwatch = getChild<LLColorSwatchCtrl>("colorswatch");
 	if(LightColorSwatch)
 	{
 		LightColorSwatch->setEnabled( FALSE );
 		LightColorSwatch->setValid( FALSE );
 	}
+	childSetEnabled("label texture",false);
+	LLTextureCtrl* LightTextureCtrl = getChild<LLTextureCtrl>("light texture control");
+	if(LightTextureCtrl)
+	{
+		LightTextureCtrl->setEnabled( FALSE );
+		LightTextureCtrl->setValid( FALSE );
+	}
+
 	childSetEnabled("Light Intensity",false);
 	childSetEnabled("Light Radius",false);
 	childSetEnabled("Light Falloff",false);
@@ -438,6 +500,16 @@ void LLPanelVolume::onLightCancelColor(LLUICtrl* ctrl, void* userdata)
 	onLightSelectColor(NULL, userdata);
 }
 
+void LLPanelVolume::onLightCancelTexture(LLUICtrl* ctrl, void* userdata)
+{
+	LLPanelVolume* self = (LLPanelVolume*) userdata;
+	LLTextureCtrl* LightTextureCtrl = self->getChild<LLTextureCtrl>("light texture control");
+	if (LightTextureCtrl)
+	{
+		LightTextureCtrl->setImageAssetID(self->mLightSavedTexture);
+	}
+}
+
 void LLPanelVolume::onLightSelectColor(LLUICtrl* ctrl, void* userdata)
 {
 	LLPanelVolume* self = (LLPanelVolume*) userdata;
@@ -459,6 +531,25 @@ void LLPanelVolume::onLightSelectColor(LLUICtrl* ctrl, void* userdata)
 	}
 }
 
+void LLPanelVolume::onLightSelectTexture(LLUICtrl* ctrl, void* userdata)
+{
+	LLPanelVolume* self = (LLPanelVolume*) userdata;
+	LLVOVolume *volobjp = (LLVOVolume*)self->mObject.get();
+	if (!volobjp || (volobjp->getPCode() != LL_PCODE_VOLUME))
+	{
+		return;
+	}	
+
+
+	LLTextureCtrl*	LightTextureCtrl = self->getChild<LLTextureCtrl>("light texture control");
+	if(LightTextureCtrl)
+	{
+		LLUUID id = LightTextureCtrl->getImageAssetID();
+		volobjp->setLightTextureID(id);
+		self->mLightSavedTexture = id;
+	}
+}
+
 // static
 void LLPanelVolume::onCommitLight( LLUICtrl* ctrl, void* userdata )
 {
@@ -474,11 +565,44 @@ void LLPanelVolume::onCommitLight( LLUICtrl* ctrl, void* userdata )
 	volobjp->setLightIntensity((F32)self->childGetValue("Light Intensity").asReal());
 	volobjp->setLightRadius((F32)self->childGetValue("Light Radius").asReal());
 	volobjp->setLightFalloff((F32)self->childGetValue("Light Falloff").asReal());
+
 	LLColorSwatchCtrl*	LightColorSwatch = self->getChild<LLColorSwatchCtrl>("colorswatch");
 	if(LightColorSwatch)
 	{
 		LLColor4	clr = LightColorSwatch->get();
 		volobjp->setLightColor(LLColor3(clr));
+	}
+
+	LLTextureCtrl*	LightTextureCtrl = self->getChild<LLTextureCtrl>("light texture control");
+	if(LightTextureCtrl)
+	{
+		LLUUID id = LightTextureCtrl->getImageAssetID();
+		if (id.notNull())
+		{
+			if (!volobjp->isLightSpotlight())
+			{ //this commit is making this a spot light, set UI to default params
+				volobjp->setLightTextureID(id);
+				LLVector3 spot_params = volobjp->getSpotLightParams();
+				self->getChild<LLUICtrl>("Light FOV")->setValue(spot_params.mV[0]);
+				self->getChild<LLUICtrl>("Light Focus")->setValue(spot_params.mV[1]);
+				self->getChild<LLUICtrl>("Light Ambiance")->setValue(spot_params.mV[2]);
+			}
+			else
+			{ //modifying existing params
+				LLVector3 spot_params;
+				spot_params.mV[0] = (F32) self->getChild<LLUICtrl>("Light FOV")->getValue().asReal();
+				spot_params.mV[1] = (F32) self->getChild<LLUICtrl>("Light Focus")->getValue().asReal();
+				spot_params.mV[2] = (F32) self->getChild<LLUICtrl>("Light Ambiance")->getValue().asReal();
+				volobjp->setSpotLightParams(spot_params);
+			}
+		}
+		else if (volobjp->isLightSpotlight())
+		{ //no longer a spot light
+			volobjp->setLightTextureID(id);
+			//self->getChildView("Light FOV")->setEnabled(FALSE);
+			//self->getChildView("Light Focus")->setEnabled(FALSE);
+			//self->getChildView("Light Ambiance")->setEnabled(FALSE);
+		}
 	}
 }
 

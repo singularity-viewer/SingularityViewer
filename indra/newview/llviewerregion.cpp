@@ -46,6 +46,7 @@
 #include "v4math.h"
 
 #include "llagent.h"
+#include "llagentcamera.h"
 #include "llcallingcard.h"
 #include "llcaphttpsender.h"
 #include "lldir.h"
@@ -809,7 +810,7 @@ void LLViewerRegion::calculateCenterGlobal()
 
 void LLViewerRegion::calculateCameraDistance()
 {
-	mCameraDistanceSquared = (F32)(gAgent.getCameraPositionGlobal() - getCenterGlobal()).magVecSquared();
+	mCameraDistanceSquared = (F32)(gAgentCamera.getCameraPositionGlobal() - getCenterGlobal()).magVecSquared();
 }
 
 U32 LLViewerRegion::getNetDetailsForLCD()

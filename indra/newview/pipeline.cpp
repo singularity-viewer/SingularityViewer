@@ -55,6 +55,7 @@
 
 // newview includes
 #include "llagent.h"
+#include "llagentcamera.h"
 #include "lldrawable.h"
 #include "lldrawpoolalpha.h"
 #include "lldrawpoolavatar.h"
@@ -929,6 +930,8 @@ void LLPipeline::restoreGL()
 			}
 		}
 	}
+
+	resetLocalLights(); //Default all gl light parameters. Fixes light brightness problems on fullscren toggle
 }
 
 
@@ -4681,6 +4684,29 @@ static F32 calc_light_dist(LLVOVolume* light, const LLVector3& cam_pos, F32 max_
 	return dist;
 }
 
+//Default all gl light parameters. Used upon restoreGL. Fixes brightness problems on fullscren toggle
+void LLPipeline::resetLocalLights()
+{
+	glEnable(GL_LIGHTING);
+	for (S32 i = 0; i < 8; ++i)
+	{
+		LLLightState *pLight = gGL.getLight(i);
+		pLight->enable();
+		pLight->setAmbient(LLColor4::black);
+		pLight->setConstantAttenuation(0.f);
+		pLight->setDiffuse(LLColor4::black);
+		pLight->setLinearAttenuation(0.f);
+		pLight->setPosition(LLVector4(0.f,0.f,0.f,0.f));
+		pLight->setQuadraticAttenuation(0.f);
+		pLight->setSpecular(LLColor4::black);
+		pLight->setSpotCutoff(0.f);
+		pLight->setSpotDirection(LLVector3(0.f,0.f,0.f));
+		pLight->setSpotExponent(0.f);
+		pLight->disable();
+	}
+	glDisable(GL_LIGHTING);
+}
+
 void LLPipeline::calcNearbyLights(LLCamera& camera)
 {
 	assertInitialized();
@@ -4695,7 +4721,7 @@ void LLPipeline::calcNearbyLights(LLCamera& camera)
 		// mNearbyLight (and all light_set_t's) are sorted such that
 		// begin() == the closest light and rbegin() == the farthest light
 		const S32 MAX_LOCAL_LIGHTS = 6;
-// 		LLVector3 cam_pos = gAgent.getCameraPositionAgent();
+// 		LLVector3 cam_pos = gAgentCamera.getCameraPositionAgent();
 		LLVector3 cam_pos = LLViewerJoystick::getInstance()->getOverrideCamera() ?
 						camera.getOrigin() : 
 						gAgent.getPositionAgent();
@@ -4714,6 +4740,7 @@ void LLPipeline::calcNearbyLights(LLCamera& camera)
 				LLVOVolume* volight = drawable->getVOVolume();
 				if (!volight || !drawable->isState(LLDrawable::LIGHT))
 				{
+					setLight(drawable,false);	//remove from mLight list
 					drawable->clearState(LLDrawable::NEARBY_LIGHT);
 					continue;
 				}
@@ -6175,7 +6202,7 @@ void LLPipeline::renderBloom(BOOL for_snapshot, F32 zoom_factor, int subfield, b
 				{ //focus on point under cursor
 					focus_point = gDebugRaycastIntersection;
 				}
-				else if (gAgent.cameraMouselook())
+				else if (gAgentCamera.cameraMouselook())
 				{ //focus on point under mouselook crosshairs
 					gViewerWindow->cursorIntersect(-1, -1, 512.f, NULL, -1, FALSE,
 												  NULL,
@@ -6183,10 +6210,10 @@ void LLPipeline::renderBloom(BOOL for_snapshot, F32 zoom_factor, int subfield, b
 				}
 				else
 				{
-					LLViewerObject* obj = gAgent.getFocusObject();
+					LLViewerObject* obj = gAgentCamera.getFocusObject();
 					if (obj)
 					{ //focus on alt-zoom target
-						focus_point = LLVector3(gAgent.getFocusGlobal()-gAgent.getRegion()->getOriginGlobal());
+						focus_point = LLVector3(gAgentCamera.getFocusGlobal()-gAgent.getRegion()->getOriginGlobal());
 					}
 					else
 					{ //focus on your avatar
@@ -7714,7 +7741,7 @@ void LLPipeline::generateWaterReflection(LLCamera& camera_in)
 	if (LLPipeline::sWaterReflections && assertInitialized() && LLDrawPoolWater::sNeedsReflectionUpdate)
 	{
 		LLVOAvatar* agent = gAgent.getAvatarObject();
-		if (!isAgentAvatarValid() || gAgent.getCameraAnimating() || gAgent.getCameraMode() != CAMERA_MODE_MOUSELOOK)
+		if (!isAgentAvatarValid() || gAgentCamera.getCameraAnimating() || gAgentCamera.getCameraMode() != CAMERA_MODE_MOUSELOOK)
 		{
 			agent = NULL;
 		}
@@ -7949,7 +7976,7 @@ void LLPipeline::generateWaterReflection(LLCamera& camera_in)
 
 		if (agent)
 		{
-			agent->updateAttachmentVisibility(gAgent.getCameraMode());
+			agent->updateAttachmentVisibility(gAgentCamera.getCameraMode());
 		}
 
 		LLViewerCamera::sCurCameraID = LLViewerCamera::CAMERA_WORLD;
@@ -8548,7 +8575,7 @@ void LLPipeline::generateSunShadow(LLCamera& camera)
 	//put together a universal "near clip" plane for shadow frusta
 	/*LLPlane shadow_near_clip;
 	{
-		LLVector3 p = gAgent.getCameraPositionAgent();//gAgent.getPositionAgent();
+		LLVector3 p = gAgentCamera.getCameraPositionAgent();//gAgent.getPositionAgent();
 		p += mSunDir * gSavedSettings.getF32("RenderFarClip")*2.f;
 		shadow_near_clip.setVec(p, mSunDir);
 	}*/

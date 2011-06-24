@@ -44,6 +44,7 @@
 #include "llsdserialize.h"
 
 #include "llagent.h"
+#include "llagentcamera.h"
 #include "llcallbacklist.h"
 #include "llcriticaldamp.h"
 #include "llfloaterperms.h"
@@ -893,7 +894,7 @@ BOOL LLSnapshotLivePreview::onIdle( void* snapshot_preview )
 				previewp->setThumbnailImageSize();
 			}
 
-			previewp->mPosTakenGlobal = gAgent.getCameraPositionGlobal();
+			previewp->mPosTakenGlobal = gAgentCamera.getCameraPositionGlobal();
 			previewp->mShineCountdown = 4; // wait a few frames to avoid animation glitch due to readback this frame
 		}
 	}

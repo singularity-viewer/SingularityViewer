@@ -114,6 +114,7 @@ set(llcommon_HEADER_FILES
     lldarrayptr.h
     lldate.h
     lldefs.h
+    lldeleteutils.h
     lldepthstack.h
     lldictionary.h
     lldlinked.h

@@ -126,6 +126,17 @@ static std::string nameJoin(const std::string& first,const std::string& last) {
 	}
 }
 
+static std::string getDisplayString(const std::string& first, const std::string& last, const std::string& grid) {
+	if(grid == gHippoGridManager->getDefaultGridNick())
+		return nameJoin(first, last);
+	else
+		return nameJoin(first, last) + " (" + grid + ")";
+}
+
+static std::string getDisplayString(const LLSavedLoginEntry& entry) {
+	return getDisplayString(entry.getFirstName(), entry.getLastName(), entry.getGrid());
+}
+
 class LLLoginRefreshHandler : public LLCommandHandler
 {
 public:
@@ -249,6 +260,7 @@ LLPanelLogin::LLPanelLogin(const LLRect &rect,
 	name_combo->setFocusLostCallback(onLoginComboLostFocus);
 	name_combo->setPrevalidate(LLLineEditor::prevalidatePrintableNotPipe);
 	name_combo->setSuppressTentative(true);
+	name_combo->setSuppressAutoComplete(true);
 
 	childSetCommitCallback("remember_name_check", onNameCheckChanged);
 	childSetCommitCallback("password_edit", mungePassword);
@@ -614,8 +626,8 @@ void LLPanelLogin::setLoginHistory(LLSavedLogins const& login_history)
 	     i != saved_login_entries.rend(); ++i)
 	{
 		LLSD e = i->asLLSD();
-		if (e.isMap())
-			login_combo->add(nameJoin(i->getFirstName(), i->getLastName()), e);
+		if (e.isMap() && gHippoGridManager->getGrid(i->getGrid()))
+			login_combo->add(getDisplayString(*i), e);
 	}
 }
 
@@ -836,8 +848,14 @@ void LLPanelLogin::setFields(const LLSavedLoginEntry& entry, bool takeFocus)
 	LLCheckBoxCtrl* remember_pass_check = sInstance->getChild<LLCheckBoxCtrl>("remember_check");
 	std::string fullname = nameJoin(entry.getFirstName(), entry.getLastName()); 
 	LLComboBox* login_combo = sInstance->getChild<LLComboBox>("name_combo");
-	login_combo->setLabel(fullname);
-	sInstance->childSetText("name_combo", fullname);
+	login_combo->setTextEntry(fullname);
+	//sInstance->childSetText("name_combo", fullname);
+
+	std::string grid = entry.getGrid();
+	if(!grid.empty() && gHippoGridManager->getGrid(grid) && grid != gHippoGridManager->getCurrentGridNick()) {
+		gHippoGridManager->setCurrentGrid(grid);
+		LLPanelLogin::refreshLoginPage();
+	}
 	
 	if (entry.getPassword().empty())
 	{
@@ -869,8 +887,8 @@ void LLPanelLogin::getFields(std::string *firstname,
 		llwarns << "Attempted getFields with no login view shown" << llendl;
 		return;
 	}
-
-	nameSplit(sInstance->childGetText("name_combo"), *firstname, *lastname);
+	
+	nameSplit(sInstance->getChild<LLComboBox>("name_combo")->getTextEntry(), *firstname, *lastname);
 	LLStringUtil::trim(*firstname);
 	LLStringUtil::trim(*lastname);
 	
@@ -1274,8 +1292,8 @@ void LLPanelLogin::onClickConnect(void *)
 		// JC - Make sure the fields all get committed.
 		sInstance->setFocus(FALSE);
 
-		std::string first, last;
-		if (nameSplit(sInstance->childGetText("name_combo"), first, last))
+		std::string first, last, password;
+		if (nameSplit(sInstance->getChild<LLComboBox>("name_combo")->getTextEntry(), first, last))
 		{
 			// has both first and last name typed
 			sInstance->mCallback(0, sInstance->mCallbackData);
@@ -1416,7 +1434,10 @@ void LLPanelLogin::onLoginComboLostFocus(LLFocusableElement* fe, void*)
 			{
 				clearPassword();
 			}
-			onSelectLoginEntry(combo, NULL);
+			else
+			{
+				onSelectLoginEntry(combo, NULL);
+			}
 		}
 	}
 }

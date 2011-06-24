@@ -42,6 +42,7 @@
 #include "importtracker.h"
 #include "llrender.h"
 #include "llagent.h"
+#include "llagentcamera.h"
 #include "llbutton.h"
 #include "llchatbar.h"
 #include "llfocusmgr.h"
@@ -371,7 +372,7 @@ void LLOverlayBar::refresh()
 	// turn off the whole bar in mouselook
 	static BOOL last_mouselook = FALSE;
 
-	BOOL in_mouselook = gAgent.cameraMouselook();
+	BOOL in_mouselook = gAgentCamera.cameraMouselook();
 
 	if(last_mouselook != in_mouselook)
 	{
@@ -442,7 +443,7 @@ void LLOverlayBar::onClickResetView(void* data)
 //static
 void LLOverlayBar::onClickMouselook(void*)
 {
-	gAgent.changeCameraToMouselook();
+	gAgentCamera.changeCameraToMouselook();
 }
 
 //static

@@ -154,25 +154,17 @@ void LLMapLayerResponder::result(const LLSD& result)
 
 				// 			llinfos << "Map sim " << name << " image layer " << agent_flags << " ID " << image_id.getString() << llendl;
 			
-				LLSimInfo* siminfo = new LLSimInfo();
-				LLWorldMap::sim_info_map_t::iterator iter = LLWorldMap::getInstance()->mSimInfoMap.find(handle);
-				if (iter != LLWorldMap::getInstance()->mSimInfoMap.end())
+				LLSimInfo* siminfo = LLWorldMap::getInstance()->simInfoFromHandle(handle);
+				if (siminfo == NULL)
 				{
-					LLSimInfo* oldinfo = iter->second;
-					for (S32 image=0; image<MAP_SIM_IMAGE_TYPES; ++image)
-					{
-						siminfo->mMapImageID[image] = oldinfo->mMapImageID[image];
-					}
-					delete oldinfo;
+					siminfo = LLWorldMap::getInstance()->createSimInfoFromHandle(handle);
 				}
-				LLWorldMap::getInstance()->mSimInfoMap[handle] = siminfo;
 
-				siminfo->mHandle = handle;
-				siminfo->mName.assign( name );
-				siminfo->mAccess = access;		/*Flawfinder: ignore*/
-				siminfo->mRegionFlags = region_flags;
-				siminfo->mWaterHeight = (F32) water_height;
-				siminfo->mMapImageID[agent_flags] = image_id;
+				siminfo->setName( name );
+				siminfo->setAccess( access );		/*Flawfinder: ignore*/
+				siminfo->setRegionFlags( region_flags );
+				siminfo->setWaterHeight( (F32) water_height );
+				siminfo->setMapImageID( image_id, agent_flags );
 				if (use_web_map_tiles)
 				{
 					siminfo->mCurrentImage = LLWorldMap::loadObjectsTile((U32)x_regions, (U32)y_regions);
@@ -199,7 +191,7 @@ void LLMapLayerResponder::result(const LLSD& result)
 					LLWorldMap::getInstance()->mUnknownLocation.mdV[1] >= y_meters &&
 					LLWorldMap::getInstance()->mUnknownLocation.mdV[1] < y_meters + 256)
 				{
-					if (siminfo->mAccess == SIM_ACCESS_DOWN)
+					if (siminfo->isDown())
 					{
 						// We were tracking this location, but it doesn't exist
 						LLWorldMap::getInstance()->mInvalidLocation = true;

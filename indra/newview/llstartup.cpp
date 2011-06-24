@@ -86,6 +86,8 @@
 #include "v3math.h"
 
 #include "llagent.h"
+#include "llagentcamera.h"
+#include "llagentwearables.h"
 #include "llagentpilot.h"
 #include "llfloateravatarlist.h"
 #include "llfloateravatarpicker.h"
@@ -684,6 +686,8 @@ bool idle_startup()
 				if(init)
 				{
 					gAudiop->setMuted(TRUE);
+					if(gSavedSettings.getBOOL("AllowLargeSounds"))
+						gAudiop->setAllowLargeSounds(true);
 				}
 				else
 				{
@@ -846,7 +850,7 @@ bool idle_startup()
 			gViewerWindow->setShowProgress(FALSE);
 
 			// Load login history
-			std::string login_hist_filepath = gDirUtilp->getExpandedFilename(LL_PATH_USER_SETTINGS, "saved_logins_sg1.xml");
+			std::string login_hist_filepath = gDirUtilp->getExpandedFilename(LL_PATH_USER_SETTINGS, "saved_logins_sg2.xml");
 			LLSavedLogins login_history = LLSavedLogins::loadFile(login_hist_filepath);
 
 			// Show the login dialog.
@@ -1547,7 +1551,7 @@ bool idle_startup()
 			text = LLUserAuth::getInstance()->getResponse("secure_session_id");
 			if(!text.empty()) gAgent.mSecureSessionID.set(text);
 
-			text = LLUserAuth::getInstance()->getResponse("first_name");
+			text = LLUserAuth::getInstance()->getResponse("firsst_name");
 			if(!text.empty()) 
 			{
 				// Remove quotes from string.  Login.cgi sends these to force
@@ -1579,13 +1583,14 @@ bool idle_startup()
 
 			{
 				// Save the login history data to disk
-				std::string history_file = gDirUtilp->getExpandedFilename(LL_PATH_USER_SETTINGS, "saved_logins_sg1.xml");
+				std::string history_file = gDirUtilp->getExpandedFilename(LL_PATH_USER_SETTINGS, "saved_logins_sg2.xml");
 
 				LLSavedLogins history_data = LLSavedLogins::loadFile(history_file);
-				history_data.deleteEntry(firstname, lastname);
+				std::string grid_nick = gHippoGridManager->getConnectedGrid()->getGridNick();
+				history_data.deleteEntry(firstname, lastname, grid_nick);
 				if (gSavedSettings.getBOOL("RememberLogin"))
 				{
-					LLSavedLoginEntry login_entry(firstname, lastname, password);
+					LLSavedLoginEntry login_entry(firstname, lastname, password, grid_nick);
 					history_data.addEntry(login_entry);
 				}
 				else
@@ -1697,7 +1702,7 @@ bool idle_startup()
 				it = options[0].find("folder_id");
 				if(it != options[0].end())
 				{
-					gAgent.mInventoryRootID.set((*it).second);
+					gAgent.setInventoryRootID(LLUUID((*it).second));
 					//gInventory.mock(gAgent.getInventoryRootID());
 				}
 			}
@@ -1901,6 +1906,7 @@ bool idle_startup()
 
 		// Finish agent initialization.  (Requires gSavedSettings, builds camera)
 		gAgent.init();
+		gAgentCamera.init();
 		set_underclothes_menu_options();
 
 		// Since we connected, save off the settings so the user doesn't have to
@@ -1932,7 +1938,7 @@ bool idle_startup()
 		// World initialization must be done after above window init
 
 		// User might have overridden far clip
-		LLWorld::getInstance()->setLandFarClip( gAgent.mDrawDistance );
+		LLWorld::getInstance()->setLandFarClip( gAgentCamera.mDrawDistance );
 
 		// Before we create the first region, we need to set the agent's mOriginGlobal
 		// This is necessary because creating objects before this is set will result in a
@@ -2143,8 +2149,8 @@ bool idle_startup()
 
 		gAgent.setPositionAgent(agent_start_position_region);
 		gAgent.resetAxes(agent_start_look_at);
-		gAgent.stopCameraAnimation();
-		gAgent.resetCamera();
+		gAgentCamera.stopCameraAnimation();
+		gAgentCamera.resetCamera();
 
 		// Initialize global class data needed for surfaces (i.e. textures)
 		if (!gNoRender)
@@ -2711,15 +2717,15 @@ bool idle_startup()
 				if (samename)
 				{
 					// restore old camera pos
-					gAgent.setFocusOnAvatar(FALSE, FALSE);
-					gAgent.setCameraPosAndFocusGlobal(gSavedSettings.getVector3d("CameraPosOnLogout"), gSavedSettings.getVector3d("FocusPosOnLogout"), LLUUID::null);
+					gAgentCamera.setFocusOnAvatar(FALSE, FALSE);
+					gAgentCamera.setCameraPosAndFocusGlobal(gSavedSettings.getVector3d("CameraPosOnLogout"), gSavedSettings.getVector3d("FocusPosOnLogout"), LLUUID::null);
 					BOOL limit_hit = FALSE;
-					gAgent.calcCameraPositionTargetGlobal(&limit_hit);
+					gAgentCamera.calcCameraPositionTargetGlobal(&limit_hit);
 					if (limit_hit)
 					{
-						gAgent.setFocusOnAvatar(TRUE, FALSE);
+						gAgentCamera.setFocusOnAvatar(TRUE, FALSE);
 					}
-					gAgent.stopCameraAnimation();
+					gAgentCamera.stopCameraAnimation();
 				}
 			}
 		}
@@ -2833,7 +2839,7 @@ bool idle_startup()
 		else
 		{
 			// OK to just get the wearables
-			if ( gAgent.areWearablesLoaded() )
+			if ( gAgentWearables.areWearablesLoaded() )
 			{
 				// We have our clothing, proceed.
 				//llinfos << "wearables loaded" << llendl;
@@ -3517,7 +3523,7 @@ void register_viewer_callbacks(LLMessageSystem* msg)
 	//					LLFloaterRate::processReputationIndividualReply);
 
 	msg->setHandlerFuncFast(_PREHASH_AgentWearablesUpdate,
-						LLAgent::processAgentInitialWearablesUpdate );
+						LLAgentWearables::processAgentInitialWearablesUpdate );
 
 	msg->setHandlerFunc("ScriptControlChange",
 						LLAgent::processScriptControlChange );
@@ -3664,7 +3670,7 @@ void LLStartUp::loadInitialOutfit( const std::string& outfit_folder_name,
 									has_name);
 	if (0 == cat_array.count())
 	{
-		gAgent.createStandardWearables(gender);
+		gAgentWearables.createStandardWearables(gender);
 	}
 	else
 	{
@@ -3789,6 +3795,11 @@ void LLStartUp::setStartupState( EStartupState state )
 
 void reset_login()
 {
+	gAgentWearables.cleanup();
+	gAgentCamera.cleanup();
+	gAgent.cleanup();
+	LLWorld::getInstance()->destroyClass();
+
 	// OGPX : Save URL history file
 	// This needs to be done on login failure because it gets read on *every* login attempt 
 	LLURLHistory::saveFile("url_history.xml");

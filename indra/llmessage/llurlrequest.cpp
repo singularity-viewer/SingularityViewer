@@ -233,6 +233,7 @@ LLIOPipe::EStatus LLURLRequest::process_impl(
 	LLMemType m1(LLMemType::MTYPE_IO_URL_REQUEST);
 	//llinfos << "LLURLRequest::process_impl()" << llendl;
 	if(!buffer) return STATUS_ERROR;
+	if(!mDetail) return STATUS_ERROR; //Seems to happen on occasion. Need to hunt down why.
 	switch(mState)
 	{
 	case STATE_INITIALIZED:

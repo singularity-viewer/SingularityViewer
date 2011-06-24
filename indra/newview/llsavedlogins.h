@@ -56,7 +56,9 @@ public:
 	 * @param	password	Munged password of PASSWORD_HASH_LENGTH.
 	 */
 	LLSavedLoginEntry(const std::string& firstname,
-					  const std::string& lastname, const std::string& password);
+					  const std::string& lastname,
+	                  const std::string& password,
+	                  const std::string& grid);
 	/**
 	 * @brief	Returns the first name associated with this login entry.
 	 * @return	First name as string.
@@ -108,12 +110,18 @@ public:
 	 * @brief	Returns the login entry as an LLSD for serialization.
 	 * *return	LLSD containing login entry details.
 	 */
+	
+	const std::string getGrid() const
+	{
+		return (mEntry.has("grid") ? mEntry.get("grid").asString() : std::string());		
+	}
+	
+	void setGrid(const std::string& value){
+		mEntry.insert("grid", LLSD(value));
+	}
+	
 	LLSD asLLSD() const;
-	/**
-	 * @brief	Provides a string containing the username and grid for display.
-	 * @return	Formatted string with login details.
-	 */
-	const std::string getDisplayString() const;
+
 	static const size_t PASSWORD_HASH_LENGTH = 32;
 private:
 	static const std::string decryptPassword(const LLSD& pwdata);
@@ -148,8 +156,9 @@ public:
 	 * @brief	Deletes a login history entry by looking up its name and grid.
 	 * @param	firstname	First name to find and delete.
 	 * @param	lastname	Last name to find and delete.
+	 * @param	grid	grif nickname to find and delete.
 	 */
-	void deleteEntry(const std::string& firstname, const std::string& lastname);
+	void deleteEntry(const std::string& firstname, const std::string& lastname, const std::string& grid);
 	/**
 	 * @brief	Access internal vector of login entries from the history.
 	 * @return	Const reference to internal login history storage.

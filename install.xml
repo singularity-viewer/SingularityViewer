@@ -1021,16 +1021,16 @@ anguage Infrstructure (CLI) international standard</string>
           <key>darwin</key>
           <map>
             <key>md5sum</key>
-            <string>79bab0948f53add62d7a37be68704bf5</string>
+            <string>5a154313bc30eacd8cfa1acd852ecd3e</string>
             <key>url</key>
-            <uri>https://github.com/downloads/siana/SingularityViewer/ogg_vorbis-1.2.2-1.3.2-darwin-20110512.tar.bz2</uri>
+			<uri>https://github.com/downloads/siana/SingularityViewer/ogg_vorbis-1.2.2-1.3.2-darwin-20110616.tar.bz2</uri>
           </map>
           <key>linux</key>
           <map>
             <key>md5sum</key>
-            <string>95c99fe37289500b60e2feee2c2f3991</string>
+            <string>712b1d30790e9de83fea84ec3bc8fab0</string>
             <key>url</key>
-            <uri>https://github.com/downloads/siana/SingularityViewer/ogg_vorbis-1.2.2-1.3.2-linux-20110512.tar.bz2</uri>
+			<uri>https://github.com/downloads/siana/SingularityViewer/ogg_vorbis-1.2.2-1.3.2-linux-20110616.tar.bz2</uri>
           </map>
           <key>linux64</key>
           <map>

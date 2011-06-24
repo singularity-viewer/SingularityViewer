@@ -75,6 +75,7 @@ LLComboBox::LLComboBox(	const std::string& name, const LLRect &rect, const std::
 	mPrearrangeCallback( NULL ),
 	mTextEntryCallback( NULL ),
 	mSuppressTentative( false ),
+	mSuppressAutoComplete( false ),
 	mLabel(label),
 	mListColor(LLUI::sColorsGroup->getColor("ComboBoxBg"))
 {
@@ -904,6 +905,11 @@ void LLComboBox::setTextEntry(const LLStringExplicit& text)
 	}
 }
 
+const std::string LLComboBox::getTextEntry() const
+{
+	return mTextEntry->getText();
+}
+
 //static 
 void LLComboBox::onTextEntry(LLLineEditor* line_editor, void* user_data)
 {
@@ -981,6 +987,10 @@ void LLComboBox::onTextEntry(LLLineEditor* line_editor, void* user_data)
 
 void LLComboBox::updateSelection()
 {
+	if(mSuppressAutoComplete) {
+		return;
+	}
+	
 	LLWString left_wstring = mTextEntry->getWText().substr(0, mTextEntry->getCursor());
 	// user-entered portion of string, based on assumption that any selected
     // text was a result of auto-completion
@@ -1033,6 +1043,11 @@ void LLComboBox::setSuppressTentative(bool suppress)
 {
 	mSuppressTentative = suppress;
 	if (mTextEntry && mSuppressTentative) mTextEntry->setTentative(FALSE);
+}
+
+void LLComboBox::setSuppressAutoComplete(bool suppress)
+{
+	mSuppressAutoComplete = suppress;
 }
 
 

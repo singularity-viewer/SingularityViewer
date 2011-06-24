@@ -47,6 +47,7 @@
 
 // Viewer includes
 #include "llagent.h"
+#include "llagentcamera.h"
 #include "llavatarnamecache.h"
 #include "llcachename.h"
 #include "llviewercontrol.h"
@@ -120,7 +121,7 @@ void LLHoverView::updateHover(LLTool* current_tool)
 	BOOL picking_tool = (	current_tool == LLToolPie::getInstance() 
 							|| current_tool == LLToolSelectLand::getInstance() );
 
-	mUseHover = !gAgent.cameraMouselook() 
+	mUseHover = !gAgentCamera.cameraMouselook() 
 				&& picking_tool 
 				&& !mTyping;
 	if (mUseHover)
@@ -735,11 +736,11 @@ void LLHoverView::draw()
 			LLViewerObject *hover_object = getLastHoverObject();
 			if (hover_object->isAvatar())
 			{
-				gAgent.setLookAt(LOOKAT_TARGET_HOVER, getLastHoverObject(), LLVector3::zero);
+				gAgentCamera.setLookAt(LOOKAT_TARGET_HOVER, getLastHoverObject(), LLVector3::zero);
 			}
 			else
 			{
-				gAgent.setLookAt(LOOKAT_TARGET_HOVER, getLastHoverObject(), mHoverOffset);
+				gAgentCamera.setLookAt(LOOKAT_TARGET_HOVER, getLastHoverObject(), mHoverOffset);
 			}
 		}
 	}

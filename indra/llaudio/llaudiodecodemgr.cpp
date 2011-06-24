@@ -249,7 +249,7 @@ BOOL LLVorbisDecodeState::initDecode()
 		llwarns << "Bad sound caught by zmagic" << llendl;
 		abort_decode = true;
 	}
-	else
+	else if(!gAudiop->getAllowLargeSounds())
 	{
 	// </edit> 
 	//Much more restrictive than zmagic. Perhaps make toggleable.

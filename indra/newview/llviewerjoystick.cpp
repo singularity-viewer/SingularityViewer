@@ -43,6 +43,7 @@
 #include "llselectmgr.h"
 #include "llviewermenu.h"
 #include "llagent.h"
+#include "llagentcamera.h"
 #include "llfocusmgr.h"
 
 
@@ -106,7 +107,7 @@ void LLViewerJoystick::setOverrideCamera(bool val)
 
 	if (mOverrideCamera)
 	{
-		gAgent.changeCameraToDefault();
+		gAgentCamera.changeCameraToDefault();
 	}
 }
 
@@ -949,7 +950,7 @@ bool LLViewerJoystick::toggleFlycam()
 
 	if (!mOverrideCamera)
 	{
-		gAgent.changeCameraToDefault();
+		gAgentCamera.changeCameraToDefault();
 	}
 
 	if (gAwayTimer.getElapsedTimeF32() > MIN_AFK_TIME)

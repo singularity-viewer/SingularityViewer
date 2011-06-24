@@ -38,6 +38,7 @@
 #include "lluictrlfactory.h"
 
 // Viewer includes
+#include "llagentcamera.h"
 #include "lljoystickbutton.h"
 #include "llviewercontrol.h"
 

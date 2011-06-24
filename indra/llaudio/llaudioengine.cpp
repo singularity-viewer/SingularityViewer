@@ -115,6 +115,8 @@ void LLAudioEngine::setDefaults()
 
 	for (U32 i = 0; i < LLAudioEngine::AUDIO_TYPE_COUNT; i++)
 		mSecondaryGain[i] = 1.0f;
+
+	mAllowLargeSounds = false;
 }
 
 

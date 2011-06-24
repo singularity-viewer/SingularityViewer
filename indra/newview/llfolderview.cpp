@@ -67,6 +67,7 @@
 // We need these because some of the code below relies on things like
 // gAgent root folder. Remove them once the abstraction leak is fixed.
 #include "llagent.h"
+#include "llagentwearables.h"
 #include "llappviewer.h"
 
 ///----------------------------------------------------------------------------
@@ -4688,7 +4689,7 @@ BOOL LLInventoryFilter::check(LLFolderViewItem* item)
 	mSubStringMatchOffset = mFilterSubString.size() ? item->getSearchableLabel().find(mFilterSubString) : std::string::npos;
 	BOOL passed = (0x1 << listener->getInventoryType() & mFilterOps.mFilterTypes || listener->getInventoryType() == LLInventoryType::IT_NONE)
 					&& (mFilterSubString.size() == 0 || mSubStringMatchOffset != std::string::npos)
-					&& (mFilterWorn == false || gAgent.isWearingItem(item_id) ||
+					&& (mFilterWorn == false || gAgentWearables.isWearingItem(item_id) ||
 						(gAgent.getAvatarObject() && gAgent.getAvatarObject()->isWearingAttachment(item_id)))
 					&& ((listener->getPermissionMask() & mFilterOps.mPermissions) == mFilterOps.mPermissions)
 					&& (listener->getCreationDate() >= earliest && listener->getCreationDate() <= mFilterOps.mMaxDate);

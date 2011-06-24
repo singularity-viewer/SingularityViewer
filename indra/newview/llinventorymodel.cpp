@@ -3582,7 +3582,7 @@ bool LLInventoryCollectFunctor::itemTransferCommonlyAllowed(LLInventoryItem* ite
 		
 	case LLAssetType::AT_BODYPART:
 	case LLAssetType::AT_CLOTHING:
-		if(!gAgent.isWearingItem(item->getUUID()))
+		if(!gAgentWearables.isWearingItem(item->getUUID()))
 		{
 			allowed = true;
 		}

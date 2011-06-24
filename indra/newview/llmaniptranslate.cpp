@@ -42,6 +42,7 @@
 #include "llrender.h"
 
 #include "llagent.h"
+#include "llagentcamera.h"
 #include "llbbox.h"
 #include "llbox.h"
 #include "llviewercontrol.h"
@@ -427,12 +428,12 @@ BOOL LLManipTranslate::handleHover(S32 x, S32 y, MASK mask)
 	{
 		if (x < ROTATE_H_MARGIN)
 		{
-			gAgent.cameraOrbitAround(rotate_angle);
+			gAgentCamera.cameraOrbitAround(rotate_angle);
 			rotated = TRUE;
 		}
 		else if (x > gViewerWindow->getWindowWidth() - ROTATE_H_MARGIN)
 		{
-			gAgent.cameraOrbitAround(-rotate_angle);
+			gAgentCamera.cameraOrbitAround(-rotate_angle);
 			rotated = TRUE;
 		}
 	}
@@ -786,7 +787,7 @@ BOOL LLManipTranslate::handleHover(S32 x, S32 y, MASK mask)
 	}
 
 	LLSelectMgr::getInstance()->updateSelectionCenter();
-	gAgent.clearFocusObject();
+	gAgentCamera.clearFocusObject();
 	dialog_refresh_all();		// ??? is this necessary?
 
 	lldebugst(LLERR_USER_INPUT) << "hover handled by LLManipTranslate (active)" << llendl;
@@ -827,7 +828,7 @@ void LLManipTranslate::highlightManipulators(S32 x, S32 y)
 		LLMatrix4 cfr(OGL_TO_CFR_ROTATION);
 		transform *= cfr;
 		LLMatrix4 window_scale;
-		F32 zoom_level = 2.f * gAgent.mHUDCurZoom;
+		F32 zoom_level = 2.f * gAgentCamera.mHUDCurZoom;
 		window_scale.initAll(LLVector3(zoom_level / LLViewerCamera::getInstance()->getAspect(), zoom_level, 0.f),
 			LLQuaternion::DEFAULT,
 			LLVector3::zero);
@@ -1065,7 +1066,7 @@ void LLManipTranslate::render()
 	gGL.pushMatrix();
 	if (mObjectSelection->getSelectType() == SELECT_TYPE_HUD)
 	{
-		F32 zoom = gAgent.mHUDCurZoom;
+		F32 zoom = gAgentCamera.mHUDCurZoom;
 		glScalef(zoom, zoom, zoom);
 	}
 	{
@@ -1230,7 +1231,7 @@ void LLManipTranslate::renderSnapGuides()
 
 		if (mObjectSelection->getSelectType() == SELECT_TYPE_HUD)
 		{
-			guide_size_meters = 1.f / gAgent.mHUDCurZoom;
+			guide_size_meters = 1.f / gAgentCamera.mHUDCurZoom;
 			mSnapOffsetMeters = mArrowLengthMeters * 1.5f;
 		}
 		else
@@ -1813,11 +1814,11 @@ void LLManipTranslate::renderTranslationHandles()
 	if (mObjectSelection->getSelectType() == SELECT_TYPE_HUD)
 	{
 		mArrowLengthMeters = mAxisArrowLength / gViewerWindow->getWindowHeight();
-		mArrowLengthMeters /= gAgent.mHUDCurZoom;
+		mArrowLengthMeters /= gAgentCamera.mHUDCurZoom;
 	}
 	else
 	{
-		LLVector3 camera_pos_agent = gAgent.getCameraPositionAgent();
+		LLVector3 camera_pos_agent = gAgentCamera.getCameraPositionAgent();
 		F32 range = dist_vec(camera_pos_agent, selection_center);
 		F32 range_from_agent = dist_vec(gAgent.getPositionAgent(), selection_center);
 		
@@ -2099,7 +2100,7 @@ void LLManipTranslate::renderTranslationHandles()
 
 			// Copied from LLDrawable::updateGeometry
 			LLVector3 pos_agent     = first_object->getPositionAgent();
-			LLVector3 camera_agent	= gAgent.getCameraPositionAgent();
+			LLVector3 camera_agent	= gAgentCamera.getCameraPositionAgent();
 			LLVector3 headPos		= pos_agent - camera_agent;
 
 			LLVector3 orientWRTHead    = headPos * invRotation;
@@ -2141,7 +2142,7 @@ void LLManipTranslate::renderTranslationHandles()
 			}
 			else
 			{
-				camera_axis.setVec(gAgent.getCameraPositionAgent() - first_object->getPositionAgent());
+				camera_axis.setVec(gAgentCamera.getCameraPositionAgent() - first_object->getPositionAgent());
 			}
 
 			for (U32 i = 0; i < NUM_AXES*2; i++)

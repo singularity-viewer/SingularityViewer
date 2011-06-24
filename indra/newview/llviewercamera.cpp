@@ -38,6 +38,7 @@
 #include "llquaternion.h"
 
 #include "llagent.h"
+#include "llagentcamera.h"
 #include "llviewercontrol.h"
 #include "lldrawable.h"
 #include "llface.h"
@@ -340,7 +341,7 @@ void LLViewerCamera::setPerspective(BOOL for_selection,
 		}
 		else
 		{
-			z_far = gAgent.mDrawDistance;
+			z_far = gAgentCamera.mDrawDistance;
 		}
 	}
 	else

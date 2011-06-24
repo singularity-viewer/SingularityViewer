@@ -187,6 +187,8 @@ public:
 
 	bool updateBufferForData(LLAudioData *adp, const LLUUID &audio_uuid = LLUUID::null);
 
+	void setAllowLargeSounds(bool allow) { mAllowLargeSounds = allow ;}
+	bool getAllowLargeSounds() const {return mAllowLargeSounds;}
 
 	// Asset callback when we're retrieved a sound from the asset server.
 	void startNextTransfer();
@@ -260,6 +262,8 @@ protected:
 private:
 	void setDefaults();
 	LLStreamingAudioInterface *mStreamingAudioImpl;
+
+	bool mAllowLargeSounds;
 };
 
 

@@ -37,6 +37,8 @@
 #include "llviewertexture.h"
 #include "llframetimer.h"
 #include "llapr.h"
+#include "m3math.h"		// LLMatrix3
+#include "m4math.h"		// LLMatrix4
 #include <map>
 
 class LLViewerTextureAnim;

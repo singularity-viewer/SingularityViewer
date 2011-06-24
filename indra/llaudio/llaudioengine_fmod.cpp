@@ -107,6 +107,7 @@ bool LLAudioEngine_FMOD::init(const S32 num_channels, void* userdata)
 	// This means we also try to play audio when minimized,
 	// so we manually handle muting in that case. JC
 	fmod_flags |= FSOUND_INIT_GLOBALFOCUS;
+	fmod_flags |= FSOUND_INIT_DSOUND_HRTF_FULL;
 #endif
 
 #if LL_LINUX

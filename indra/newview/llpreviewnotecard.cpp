@@ -37,6 +37,7 @@
 #include "llinventory.h"
 
 #include "llagent.h"
+#include "llagentcamera.h"
 #include "llassetuploadresponders.h"
 #include "llviewerwindow.h"
 #include "llbutton.h"
@@ -152,7 +153,7 @@ LLPreviewNotecard::LLPreviewNotecard(const std::string& name,
 		editor->setHandleEditKeysDirectly(TRUE);
 	}
 
-	gAgent.changeCameraToDefault();
+	gAgentCamera.changeCameraToDefault();
 }
 
 LLPreviewNotecard::~LLPreviewNotecard()

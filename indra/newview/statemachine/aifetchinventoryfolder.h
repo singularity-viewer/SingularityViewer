@@ -79,6 +79,7 @@ class AIFetchInventoryFolder : public AIStateMachine {
 	void fetch(LLUUID const& parentUUID, std::string const& foldername, bool create = false, bool fetch_contents = true)
 	{
 	  mParentFolder = parentUUID;
+	  mCreate = create;
 	  mFetchContents = fetch_contents;
 	  if (mFolderName != foldername)
 	  {

@@ -44,6 +44,7 @@
 
 // viewer project includes
 #include "llagent.h"
+#include "llagentaccess.h"
 #include "llbutton.h"
 #include "llcheckboxctrl.h"
 #include "llcombobox.h"

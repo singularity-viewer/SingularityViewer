@@ -40,6 +40,7 @@
 // For Listeners
 #include "llaudioengine.h"
 #include "llagent.h"
+#include "llagentcamera.h"
 #include "llavatarnamecache.h"
 #include "llconsole.h"
 #include "lldrawpoolterrain.h"
@@ -109,7 +110,7 @@ static bool handleRenderAvatarMouselookChanged(const LLSD& newvalue)
 static bool handleRenderFarClipChanged(const LLSD& newvalue)
 {
 	F32 draw_distance = (F32) newvalue.asReal();
-	gAgent.mDrawDistance = draw_distance;
+	gAgentCamera.mDrawDistance = draw_distance; //Force it to a sane value. I've had drawdistance get knocked down to 0.. and BAD things happen.
 	LLWorld::getInstance()->setLandFarClip(draw_distance);
 	return true;
 }
@@ -582,6 +583,12 @@ static bool handlePhoenixNameSystemChanged(const LLSD& newvalue)
 }
 // [/Ansariel: Display name support]
 
+static bool handleAllowLargeSounds(const LLSD& newvalue)
+{
+	if(gAudiop)
+		gAudiop->setAllowLargeSounds(newvalue.asBoolean());
+	return true;
+}
 ////////////////////////////////////////////////////////////////////////////
 void settings_setup_listeners()
 {
@@ -753,6 +760,8 @@ void settings_setup_listeners()
     // [Ansariel: Display name support]
 	gSavedSettings.getControl("PhoenixNameSystem")->getSignal()->connect(boost::bind(&handlePhoenixNameSystemChanged, _1));
     // [/Ansariel: Display name support]
+
+	gSavedSettings.getControl("AllowLargeSounds")->getSignal()->connect(boost::bind(&handleAllowLargeSounds, _1));
 }
 
 template <> eControlType get_control_type<U32>(const U32& in, LLSD& out) 

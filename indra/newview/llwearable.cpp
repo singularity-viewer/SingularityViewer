@@ -39,6 +39,8 @@
 #include "llquantize.h"
 
 #include "llagent.h"
+#include "llagentcamera.h"
+#include "llagentwearables.h"
 #include "llassetuploadresponders.h"
 #include "llviewerwindow.h"
 #include "llfloatercustomize.h"
@@ -781,7 +783,7 @@ void LLWearable::writeToAvatar( BOOL set_by_user )
 	if( gFloaterCustomize )
 	{
 		LLViewerInventoryItem* item;
-		item = (LLViewerInventoryItem*)gInventory.getItem(gAgent.getWearableItem(mType));
+		item = (LLViewerInventoryItem*)gInventory.getItem(gAgentWearables.getWearableItemID(mType));
 		U32 perm_mask = PERM_NONE;
 		BOOL is_complete = FALSE;
 		if(item)

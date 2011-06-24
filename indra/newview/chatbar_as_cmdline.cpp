@@ -37,6 +37,7 @@
 
 #include "llchatbar.h"
 #include "llagent.h"
+#include "llagentcamera.h"
 #include "stdtypes.h"
 #include "llviewerregion.h"
 #include "llworld.h"
@@ -260,7 +261,7 @@ bool cmd_line_chat(std::string revised_text, EChatType type)
                 if(i >> drawDist)
                 {
                     gSavedSettings.setF32("RenderFarClip", drawDist);
-                    gAgent.mDrawDistance=drawDist;
+                    gAgentCamera.mDrawDistance=drawDist;
                     char buffer[DB_IM_MSG_BUF_SIZE * 2];  /* Flawfinder: ignore */
                     snprintf(buffer,sizeof(buffer),"Draw distance set to: %dm",drawDist);
 					cmdline_printchat(std::string(buffer));
@@ -269,7 +270,7 @@ bool cmd_line_chat(std::string revised_text, EChatType type)
 			}
 			else if(command == utf8str_tolower(sAscentCmdTeleportToCam))
             {
-				gAgent.teleportViaLocation(gAgent.getCameraPositionGlobal());
+				gAgent.teleportViaLocation(gAgentCamera.getCameraPositionGlobal());
 				return false;
             }
 			else if(command == utf8str_tolower(sAscentCmdLineKeyToName))

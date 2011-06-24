@@ -110,6 +110,7 @@ public:
 
 	void			setAllowTextEntry(BOOL allow, S32 max_chars = 50, BOOL make_tentative = TRUE);
 	void			setTextEntry(const LLStringExplicit& text);
+	const std::string	getTextEntry() const;
 	void			setFocusText(BOOL b);	// Sets focus to the text input area instead of the list
 	BOOL			isTextDirty() const;	// Returns TRUE if the user has modified the text input area
 	void			resetTextDirty();		// Resets the dirty flag on the input field
@@ -187,6 +188,7 @@ public:
 	static void		onTextCommit(LLUICtrl* caller, void* user_data);
 
 	void			setSuppressTentative(bool suppress);
+	void			setSuppressAutoComplete(bool suppress);
 
 	void			updateSelection();
 	virtual void	showList();
@@ -206,6 +208,7 @@ private:
 	BOOL				mAllowTextEntry;
 	S32					mMaxChars;
 	BOOL				mTextEntryTentative;
+	bool				mSuppressAutoComplete;
 	bool				mSuppressTentative;
 	void				(*mPrearrangeCallback)(LLUICtrl*,void*);
 	void				(*mTextEntryCallback)(LLLineEditor*, void*);

@@ -379,8 +379,7 @@ Returns the rotation of detected object number (returns &lt;0,0,0,1&gt; if numbe
   </string>
   <string name="LSLTipText_llDetectedGroup">
 integer llDetectedGroup(integer number)
-Returns an integer that is a boolean representing if the detected object or avatar is in the same group 
-that the prim containing the script is set to
+Returns TRUE if detected object is part of same group as owner
   </string>
   <string name="LSLTipText_llDetectedLinkNumber">
 integer llDetectedLinkNumber(integer number)
@@ -1656,7 +1655,8 @@ Returns the value for header for request_id
   </string>
   <string name="LSLTipText_llGetPrimMediaParams">
     list llGetPrimMediaParams(integer face, list params)
-    Returns a list of values in the order requested.
+Returns the media params for a particular face on an object, given the desired list of names, in the order requested.
+(Returns an empty list if no media exists on the face.)
   </string>
   <string name="LSLTipText_llClearPrimMedia">
     integer llClearPrimMedia(integer face)
@@ -1667,12 +1667,13 @@ Returns the value for header for request_id
     Set primitive parameters for linknumber based on rules with no built-in script sleep.
   </string>
   <string name="LSLTipText_llGetLinkPrimitiveParams">
-    list llGetLinkPrimitiveParams(integer link, list params)
-    Returns the list of primitive attributes requested in the params  list for link.
+    list llGetLinkPrimitiveParams(integer linknumber,list rules)
+Get primitive parameters for linknumber based on rules.
   </string>
   <string name="LSLTipText_llLinkParticleSystem">
-    list llLinkParticleSystem(integer link, list rules)
-    A particle system defined by a list of rules is set for the prim(s) link.
+    list llLinkParticleSystem(integer linknumber, list rules)
+Creates a particle system based on rules.  Empty list removes particle system from object.
+List format is [ rule1, data1, rule2, data2 . . . rulen, datan ].
   </string>
   <string name="LSLTipText_llSetLinkTextureAnim">
     llSetLinkTextureAnim(integer link, integer mode, integer face, integer sizex, integer sizey, float start, float length, float rate)
@@ -1698,6 +1699,14 @@ Returns the value for header for request_id
     key llRequestDisplayName(key id)
     Requests name of an avatar.  When data is available the dataserver event will be raised.
   </string>
+<string name="LSLTipText_llRegionSayTo">
+llRegionSayTo(key target, integer channel, string msg)
+Sends msg on channel (not DEBUG_CHANNEL) directly to prim or avatar target anywhere within the region
+</string>
+<string name="LSLTipText_llGetEnv">
+string llGetEnv(string name)
+Returns a string with the requested data about the region
+</string>
 
 </strings>
 

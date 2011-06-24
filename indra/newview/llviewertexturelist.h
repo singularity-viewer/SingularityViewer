@@ -90,6 +90,7 @@ public:
 	void dump();
 	void destroyGL(BOOL save_state = TRUE);
 	void restoreGL();
+	BOOL isInitialized() const {return mInitialized;}
 
 	LLViewerFetchedTexture *findImage(const LLUUID &image_id);
 
@@ -196,6 +197,7 @@ private:
 	// simply holds on to LLViewerFetchedTexture references to stop them from being purged too soon
 	std::set<LLPointer<LLViewerFetchedTexture> > mImagePreloads;
 
+	BOOL mInitialized ;
 	BOOL mUpdateStats;
 	S32	mMaxResidentTexMemInMegaBytes;
 	S32 mMaxTotalTextureMemInMegaBytes;

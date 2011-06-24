@@ -381,7 +381,13 @@ S32 LLImageJ2C::calcDataSize(S32 discard_level)
 	static const LLCachedControl<bool> legacy_size("SianaLegacyJ2CSize", false);
 	
 	if (legacy_size) {
-		return calcDataSizeJ2C(getWidth(), getHeight(), getComponents(), discard_level, mRate);
+		static const LLCachedControl<F32> exponent("SianaJ2CSizeExponent", 1.0f);
+		static const LLCachedControl<S32> offset("SianaJ2CSizeOffset", 0);
+		
+		S32 size = calcDataSizeJ2C(getWidth(), getHeight(), getComponents(), discard_level, mRate);
+		S32 size_d0 = calcDataSizeJ2C(getWidth(), getHeight(), getComponents(), discard_level, mRate);
+		
+		return pow(size/size_d0, exponent)*size_d0 + offset;
 	}
 
 	discard_level = llclamp(discard_level, 0, MAX_DISCARD_LEVEL);

@@ -34,6 +34,7 @@
 #include "llsavedlogins.h"
 #include "llxorcipher.h"
 #include "llsdserialize.h"
+#include "hippogridmanager.h"
 
 //---------------------------------------------------------------------------
 // LLSavedLoginEntry methods
@@ -57,6 +58,10 @@ LLSavedLoginEntry::LLSavedLoginEntry(const LLSD& entry_data)
 	{
 		throw std::invalid_argument("Missing password key.");
 	}
+	if (!entry_data.has("grid"))
+	{
+		throw std::invalid_argument("Missing grid key.");
+	}
 	if (!entry_data.get("firstname").isString())
 	{
 		throw std::invalid_argument("firstname key is not string.");
@@ -69,29 +74,28 @@ LLSavedLoginEntry::LLSavedLoginEntry(const LLSD& entry_data)
 	{
 		throw std::invalid_argument("password key is neither blank nor binary.");
 	}
+	if (!entry_data.get("grid").isString())
+	{
+		throw std::invalid_argument("grid key is not string.");
+	}
 	mEntry = entry_data;
 }
 
 LLSavedLoginEntry::LLSavedLoginEntry(const std::string& firstname,
 									 const std::string& lastname,
-									 const std::string& password)
+									 const std::string& password,
+                                     const std::string& grid)
 {
 	mEntry.clear();
 	mEntry.insert("firstname", LLSD(firstname));
 	mEntry.insert("lastname", LLSD(lastname));
+	mEntry.insert("grid", LLSD(grid));
 	setPassword(password);
 }
 
 LLSD LLSavedLoginEntry::asLLSD() const
 {
 	return mEntry;
-}
-
-const std::string LLSavedLoginEntry::getDisplayString() const
-{
-	std::ostringstream etitle;
-	etitle << getFirstName() << " " << getLastName();
-	return etitle.str();
 }
 
 const std::string LLSavedLoginEntry::getPassword() const
@@ -177,13 +181,14 @@ void LLSavedLogins::addEntry(const LLSavedLoginEntry& entry)
 }
 
 void LLSavedLogins::deleteEntry(const std::string& firstname,
-				const std::string& lastname)
+				const std::string& lastname, const std::string& grid)
 {
 	for (LLSavedLoginsList::iterator i = mEntries.begin();
 		 i != mEntries.end();)
 	{
 		if (i->getFirstName() == firstname &&
-			i->getLastName() == lastname)
+			i->getLastName() == lastname &&
+		    i->getGrid() == grid)
 		{
 			i = mEntries.erase(i);
 		}

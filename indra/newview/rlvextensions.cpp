@@ -16,6 +16,7 @@
 
 #include "llviewerprecompiledheaders.h"
 #include "llagent.h"
+#include "llagentcamera.h"
 #include "llfloaterwindlight.h"
 #include "llviewercontrol.h"
 #include "llviewerwindow.h"
@@ -121,7 +122,7 @@ bool RlvExtGetSet::processCommand(const RlvCommand& rlvCmd, ERlvCmdRet& eRet)
 		{
 			nAngle = RLV_SETROT_OFFSET - nAngle;
 
-			gAgent.startCameraAnimation();
+			gAgentCamera.startCameraAnimation();
 
 			LLVector3 at(LLVector3::x_axis);
 			at.rotVec(nAngle, LLVector3::z_axis);

@@ -1385,6 +1385,11 @@ BOOL LLPanelAvatar::postBuild(void)
 	childSetVisible("csr_btn", FALSE);
 	childSetEnabled("csr_btn", FALSE);
 
+	//This text never changes. We simply toggle visibility.
+	childSetVisible("online_yes", FALSE);
+	childSetColor("online_yes",LLColor4::green);
+	childSetValue("online_yes","Currently Online");
+
 	return TRUE;
 }
 
@@ -1443,12 +1448,7 @@ void LLPanelAvatar::setOnlineStatus(EOnlineStatus online_status)
 		online_status = ONLINE_STATUS_YES;
 	}
 	
-	if(online_status == ONLINE_STATUS_YES)
-	{
-		mPanelSecondLife->childSetVisible("online_yes", TRUE);
-		mPanelSecondLife->childSetColor("online_yes",LLColor4::green);
-		mPanelSecondLife->childSetValue("online_yes","Currently Online");
-	}
+	mPanelSecondLife->childSetVisible("online_yes", online_status == ONLINE_STATUS_YES);
 
 	// Since setOnlineStatus gets called after setAvatarID
 	// need to make sure that "Offer Teleport" doesn't get set
@@ -1717,14 +1717,7 @@ void LLPanelAvatar::resetGroupList()
 				row["id"] = id ;
 				row["columns"][0]["value"] = group_string;
 				row["columns"][0]["font"] = "SANSSERIF_SMALL";
-				if (group_data.mListInProfile)
-				{
-					row["columns"][0]["color"] = gColors.getColor("DefaultListText").getValue();
-				}
-				else
-				{
-					row["columns"][0]["color"] = gColors.getColor("ScrollUnselectedColor").getValue();
-				}
+				row["columns"][0]["font-style"] = group_data.mListInProfile ? "BOLD" : "NORMAL";
 				row["columns"][0]["width"] = 0;
 				group_list->addElement(row);
 			}

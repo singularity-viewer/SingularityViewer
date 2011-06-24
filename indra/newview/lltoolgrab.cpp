@@ -46,7 +46,7 @@
 
 // newview headers
 #include "llagent.h"
-//#include "llfloateravatarinfo.h"
+#include "llagentcamera.h"
 #include "lldrawable.h"
 #include "llfloatertools.h"
 #include "llhudeffect.h"
@@ -83,9 +83,15 @@ LLToolGrab::LLToolGrab( LLToolComposite* composite )
 :	LLTool( std::string("Grab"), composite ),
 	mMode( GRAB_INACTIVE ),
 	mVerticalDragging( FALSE ),
+	mHitLand(FALSE),
+	mLastMouseX(0),
+	mLastMouseY(0),
+	mAccumDeltaX(0),
+	mAccumDeltaY(0),	
 	mHasMoved( FALSE ),
 	mOutsideSlop(FALSE),
 	mDeselectedThisClick(FALSE),
+	mLastFace(0),
 	mSpinGrabbing( FALSE ),
 	mSpinRotation(),
 	mHideBuildHighlight(FALSE)
@@ -222,7 +228,7 @@ BOOL LLToolGrab::handleObjectHit(const LLPickInfo& info)
 		// non-touchable objects.  If it has a touch handler, we
 		// do grab it (so llDetectedGrab works), but movement is
 		// blocked on the server side. JC
-		if (gAgent.cameraMouselook() && !script_touch)
+		if (gAgentCamera.cameraMouselook() && !script_touch)
 		{
 			mMode = GRAB_LOCKED;
 			gViewerWindow->hideCursor();
@@ -281,8 +287,8 @@ BOOL LLToolGrab::handleObjectHit(const LLPickInfo& info)
 		LLVector3 local_edit_point = gAgent.getPosAgentFromGlobal(info.mPosGlobal);
 		local_edit_point -= edit_object->getPositionAgent();
 		local_edit_point = local_edit_point * ~edit_object->getRenderRotation();
-		gAgent.setPointAt(POINTAT_TARGET_GRAB, edit_object, local_edit_point );
-		gAgent.setLookAt(LOOKAT_TARGET_SELECT, edit_object, local_edit_point );
+		gAgentCamera.setPointAt(POINTAT_TARGET_GRAB, edit_object, local_edit_point );
+		gAgentCamera.setLookAt(LOOKAT_TARGET_SELECT, edit_object, local_edit_point );
 	}
 
 	// on transient grabs (clicks on world objects), kill the grab immediately
@@ -386,7 +392,7 @@ void LLToolGrab::startGrab()
 
 	// This planar drag starts at the grab point
 	mDragStartPointGlobal = grab_start_global;
-	mDragStartFromCamera = grab_start_global - gAgent.getCameraPositionGlobal();
+	mDragStartFromCamera = grab_start_global - gAgentCamera.getCameraPositionGlobal();
 
 	LLMessageSystem	*msg = gMessageSystem;
 	msg->newMessageFast(_PREHASH_ObjectGrab);
@@ -514,7 +520,7 @@ void LLToolGrab::handleHoverActive(S32 x, S32 y, MASK mask)
 		mVerticalDragging = FALSE;
 
 		mDragStartPointGlobal = gViewerWindow->clickPointInWorldGlobal(x, y, objectp);
-		mDragStartFromCamera = mDragStartPointGlobal - gAgent.getCameraPositionGlobal();
+		mDragStartFromCamera = mDragStartPointGlobal - gAgentCamera.getCameraPositionGlobal();
 	}
 	else if (!mVerticalDragging && (mask == MASK_VERTICAL) )
 	{
@@ -522,7 +528,7 @@ void LLToolGrab::handleHoverActive(S32 x, S32 y, MASK mask)
 		mVerticalDragging = TRUE;
 
 		mDragStartPointGlobal = gViewerWindow->clickPointInWorldGlobal(x, y, objectp);
-		mDragStartFromCamera = mDragStartPointGlobal - gAgent.getCameraPositionGlobal();
+		mDragStartFromCamera = mDragStartPointGlobal - gAgentCamera.getCameraPositionGlobal();
 	}
 
 	const F32 RADIANS_PER_PIXEL_X = 0.01f;
@@ -610,7 +616,7 @@ void LLToolGrab::handleHoverActive(S32 x, S32 y, MASK mask)
 			// need to return offset from mGrabStartPoint
 			LLVector3d grab_point_global;
 
-			grab_point_global = gAgent.getCameraPositionGlobal() + mGrabHiddenOffsetFromCamera;
+			grab_point_global = gAgentCamera.getCameraPositionGlobal() + mGrabHiddenOffsetFromCamera;
 
 			/* Snap to grid disabled for grab tool - very confusing
 			// Handle snapping to grid, but only when the tool is formally selected.
@@ -644,7 +650,7 @@ void LLToolGrab::handleHoverActive(S32 x, S32 y, MASK mask)
 
 			grab_point_global = LLWorld::getInstance()->clipToVisibleRegions(mDragStartPointGlobal, grab_point_global);
 			// propagate constrained grab point back to grab offset
-			mGrabHiddenOffsetFromCamera = grab_point_global - gAgent.getCameraPositionGlobal();
+			mGrabHiddenOffsetFromCamera = grab_point_global - gAgentCamera.getCameraPositionGlobal();
 
 			// Handle auto-rotation at screen edge.
 			LLVector3 grab_pos_agent = gAgent.getPosAgentFromGlobal( grab_point_global );
@@ -658,24 +664,24 @@ void LLToolGrab::handleHoverActive(S32 x, S32 y, MASK mask)
 			// ...build mode moves camera about focus point
 			if (grab_center_gl.mX < ROTATE_H_MARGIN)
 			{
-				if (gAgent.getFocusOnAvatar())
+				if (gAgentCamera.getFocusOnAvatar())
 				{
 					gAgent.yaw(rotate_angle);
 				}
 				else
 				{
-					gAgent.cameraOrbitAround(rotate_angle);
+					gAgentCamera.cameraOrbitAround(rotate_angle);
 				}
 			}
 			else if (grab_center_gl.mX > gViewerWindow->getWindowWidth() - ROTATE_H_MARGIN)
 			{
-				if (gAgent.getFocusOnAvatar())
+				if (gAgentCamera.getFocusOnAvatar())
 				{
 					gAgent.yaw(-rotate_angle);
 				}
 				else
 				{
-					gAgent.cameraOrbitAround(-rotate_angle);
+					gAgentCamera.cameraOrbitAround(-rotate_angle);
 				}
 			}
 
@@ -717,17 +723,17 @@ void LLToolGrab::handleHoverActive(S32 x, S32 y, MASK mask)
 	// once we've initiated a drag, lock the camera down
 	if (mHasMoved)
 	{
-		if (!gAgent.cameraMouselook() && 
+		if (!gAgentCamera.cameraMouselook() && 
 			!objectp->isHUDAttachment() && 
 			objectp->getRoot() == gAgent.getAvatarObject()->getRoot())
 		{
 			// force focus to point in space where we were looking previously
-			gAgent.setFocusGlobal(gAgent.calcFocusPositionTargetGlobal(), LLUUID::null);
-			gAgent.setFocusOnAvatar(FALSE, ANIMATE);
+			gAgentCamera.setFocusGlobal(gAgentCamera.calcFocusPositionTargetGlobal(), LLUUID::null);
+			gAgentCamera.setFocusOnAvatar(FALSE, ANIMATE);
 		}
 		else
 		{
-			gAgent.clearFocusObject();
+			gAgentCamera.clearFocusObject();
 		}
 	}
 
@@ -826,7 +832,7 @@ void LLToolGrab::handleHoverNonPhysical(S32 x, S32 y, MASK mask)
 		}
 		
 		// need to return offset from mGrabStartPoint
-		LLVector3d grab_point_global = gAgent.getCameraPositionGlobal() + mGrabHiddenOffsetFromCamera;
+		LLVector3d grab_point_global = gAgentCamera.getCameraPositionGlobal() + mGrabHiddenOffsetFromCamera;
 		grab_pos_region = objectp->getRegion()->getPosRegionFromGlobal( grab_point_global );
 	}
 
@@ -884,8 +890,8 @@ void LLToolGrab::handleHoverNonPhysical(S32 x, S32 y, MASK mask)
 		LLVector3 local_edit_point = pick.mIntersection;
 		local_edit_point -= objectp->getPositionAgent();
 		local_edit_point = local_edit_point * ~objectp->getRenderRotation();
-		gAgent.setPointAt(POINTAT_TARGET_GRAB, objectp, local_edit_point );
-		gAgent.setLookAt(LOOKAT_TARGET_SELECT, objectp, local_edit_point );
+		gAgentCamera.setPointAt(POINTAT_TARGET_GRAB, objectp, local_edit_point );
+		gAgentCamera.setLookAt(LOOKAT_TARGET_SELECT, objectp, local_edit_point );
 	}
 	
 	
@@ -904,7 +910,7 @@ void LLToolGrab::handleHoverInactive(S32 x, S32 y, MASK mask)
 	// Only works in fullscreen
 	if (gSavedSettings.getBOOL("FullScreen"))
 	{
-		if (gAgent.cameraThirdPerson() )
+		if (gAgentCamera.cameraThirdPerson() )
 		{
 			if (x == 0)
 			{
@@ -1006,7 +1012,7 @@ void LLToolGrab::onMouseCaptureLost()
 		return;
 	}
 	// First, fix cursor placement
-	if( !gAgent.cameraMouselook() 
+	if( !gAgentCamera.cameraMouselook() 
 		&& (GRAB_ACTIVE_CENTER == mMode))
 	{
 		if (objectp->isHUDAttachment())
@@ -1047,8 +1053,8 @@ void LLToolGrab::onMouseCaptureLost()
 	mGrabPick.mObjectID.setNull();
 
 	LLSelectMgr::getInstance()->updateSelectionCenter();
-	gAgent.setPointAt(POINTAT_TARGET_CLEAR);
-	gAgent.setLookAt(LOOKAT_TARGET_CLEAR);
+	gAgentCamera.setPointAt(POINTAT_TARGET_CLEAR);
+	gAgentCamera.setLookAt(LOOKAT_TARGET_CLEAR);
 
 	dialog_refresh_all();
 }
@@ -1140,7 +1146,7 @@ LLVector3d LLToolGrab::getGrabPointGlobal()
 	case GRAB_ACTIVE_CENTER:
 	case GRAB_NONPHYSICAL:
 	case GRAB_LOCKED:
-		return gAgent.getCameraPositionGlobal() + mGrabHiddenOffsetFromCamera;
+		return gAgentCamera.getCameraPositionGlobal() + mGrabHiddenOffsetFromCamera;
 
 	case GRAB_NOOBJECT:
 	case GRAB_INACTIVE:

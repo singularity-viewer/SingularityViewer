@@ -242,6 +242,7 @@ public:
 
 	S32  getLightCount() const { return mLights.size(); }
 
+	void resetLocalLights();		//Default all gl light parameters. Used upon restoreGL. Fixes light brightness problems on fullscren toggle
 	void calcNearbyLights(LLCamera& camera);
 	void setupHWLights(LLDrawPool* pool);
 	void setupAvatarLights(BOOL for_edit = FALSE);

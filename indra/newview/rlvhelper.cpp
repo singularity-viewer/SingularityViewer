@@ -28,6 +28,7 @@
 #include "llvoavatar.h"
 #include "llwearablelist.h"
 #include "llwlparammanager.h"
+#include "llagentwearables.h"
 
 #include "rlvhelper.h"
 #include "rlvinventory.h"
@@ -211,7 +212,7 @@ RlvCommandOptionGetPath::RlvCommandOptionGetPath(const RlvCommand& rlvCmd)
 	if (rlvCmdOption.isWearableType())			// <option> can be a clothing layer
 	{
 		EWearableType wtType = rlvCmdOption.getWearableType();
-		m_idItems.push_back(gAgent.getWearableItem(wtType));
+		m_idItems.push_back(gAgentWearables.getWearableItemID(wtType));
 	}
 	else if (rlvCmdOption.isAttachmentPoint())	// ... or it can specify an attachment point
 	{
@@ -330,7 +331,7 @@ bool RlvForceWear::isWearingItem(const LLInventoryItem* pItem)
 		{
 			case LLAssetType::AT_BODYPART:
 			case LLAssetType::AT_CLOTHING:
-				return gAgent.isWearingItem(pItem->getUUID());
+				return gAgentWearables.isWearingItem(pItem->getUUID());
 			case LLAssetType::AT_OBJECT:
 				return (gAgent.getAvatarObject()) && (gAgent.getAvatarObject()->isWearingAttachment(pItem->getUUID()));
 			case LLAssetType::AT_GESTURE:
@@ -348,7 +349,7 @@ bool RlvForceWear::isWearingItem(const LLInventoryItem* pItem)
 void RlvForceWear::forceFolder(const LLViewerInventoryCategory* pFolder, EWearAction eAction, EWearFlags eFlags)
 {
 	// [See LLWearableBridge::wearOnAvatar(): don't wear anything until initial wearables are loaded, can destroy clothing items]
-	if (!gAgent.areWearablesLoaded())
+	if (!gAgentWearables.areWearablesLoaded())
 	{
 		LLNotifications::instance().add("CanNotChangeAppearanceUntilLoaded");
 		return;
@@ -397,7 +398,7 @@ void RlvForceWear::forceFolder(const LLViewerInventoryCategory* pFolder, EWearAc
 				}
 				else
 				{
-					const LLWearable* pWearable = gAgent.getWearableFromWearableItem(pItem->getUUID());
+					const LLWearable* pWearable = gAgentWearables.getWearableFromItemID(pItem->getUUID());
 					if ( (pWearable) && (isForceRemovable(pWearable, false)) )
 						remWearable(pWearable);
 				}
@@ -552,7 +553,7 @@ bool RlvForceWear::isForceRemovable(const LLWearable* pWearable, bool fCheckComp
 		(pWearable) && (LLAssetType::AT_CLOTHING == pWearable->getAssetType()) 
 		&& ( (idExcept.isNull()) ? !gRlvWearableLocks.isLockedWearable(pWearable)
 		                         : !gRlvWearableLocks.isLockedWearableExcept(pWearable, idExcept) )
-		&& (isStrippable(gAgent.getWearableItem(pWearable->getType())))
+		&& (isStrippable(gAgentWearables.getWearableItemID(pWearable->getType())))
 		#ifdef RLV_EXPERIMENTAL_COMPOSITEFOLDERS
 		&& ( (!fCheckComposite) || (!RlvSettings::getEnableComposites()) || 
 		     (!gRlvHandler.getCompositeInfo(pWearable->getItemID(), NULL, &pFolder)) || (gRlvHandler.canTakeOffComposite(pFolder)) )
@@ -564,7 +565,7 @@ bool RlvForceWear::isForceRemovable(const LLWearable* pWearable, bool fCheckComp
 bool RlvForceWear::isForceRemovable(EWearableType wtType, bool fCheckComposite /*=true*/, const LLUUID& idExcept /*=LLUUID::null*/)
 {
 	// Wearable type can be removed by an RLV command if there's at least one currently worn wearable that can be removed
-	if (isForceRemovable(gAgent.getWearable(wtType), fCheckComposite, idExcept))
+	if (isForceRemovable(gAgentWearables.getWearable(wtType), fCheckComposite, idExcept))
 		return true;
 	return false;
 }
@@ -581,7 +582,7 @@ void RlvForceWear::forceRemove(const LLWearable* pWearable)
 		#ifdef RLV_EXPERIMENTAL_COMPOSITEFOLDERS
 		LLViewerInventoryCategory* pFolder = NULL;
 		if ( (RlvSettings::getEnableComposites()) && 
-			 (gRlvHandler.getCompositeInfo(gAgent.getWearableItem(wtType), NULL, &pFolder)) )
+			 (gRlvHandler.getCompositeInfo(gAgentWearables.getWearableItemID(wtType), NULL, &pFolder)) )
 		{
 			// Wearable belongs to a composite folder so detach the entire folder (if we can take it off)
 			if (gRlvHandler.canTakeOffComposite(pFolder))
@@ -598,7 +599,7 @@ void RlvForceWear::forceRemove(const LLWearable* pWearable)
 // Checked: 2010-03-19 (RLVa-1.1.3a) | Added: RLVa-1.2.0a
 void RlvForceWear::forceRemove(EWearableType wtType)
 {
-	forceRemove(gAgent.getWearable(wtType));
+	forceRemove(gAgentWearables.getWearable(wtType));
 }
 
 // Checked: 2010-03-19 (RLVa-1.2.0c) | Modified: RLVa-1.2.0a
@@ -708,7 +709,7 @@ void RlvForceWear::remAttachment(const LLViewerObject* pAttachObj)
 // Checked: 2010-08-30 (RLVa-1.1.3b) | Modified: RLVa-1.2.1c
 void RlvForceWear::addWearable(const LLViewerInventoryItem* pItem, EWearAction eAction)
 {
-	const LLWearable* pWearable = gAgent.getWearableFromWearableItem(pItem->getLinkedUUID());
+	const LLWearable* pWearable = gAgentWearables.getWearableFromItemID(pItem->getLinkedUUID());
 	// When replacing remove all currently worn wearables of this type *unless* the item is currently worn
 	if ( (ACTION_WEAR_REPLACE == eAction) && (!pWearable) )
 		forceRemove(pItem->getWearableType());
@@ -739,7 +740,7 @@ void RlvForceWear::addWearable(const LLViewerInventoryItem* pItem, EWearAction e
 void RlvForceWear::remWearable(const LLWearable* pWearable)
 {
 	// Remove it from 'm_addWearables' if it's queued for wearing
-	const LLViewerInventoryItem* pItem = gInventory.getItem(gAgent.getWearableItem(pWearable->getType()));
+	const LLViewerInventoryItem* pItem = gInventory.getItem(gAgentWearables.getWearableItemID(pWearable->getType()));
 	if ( (pItem) && (isAddWearable(pItem)) )
 	{
 		addwearables_map_t::iterator itAddWearables = m_addWearables.find(pItem->getWearableType());
@@ -773,7 +774,7 @@ void RlvForceWear::done()
 	if (m_remWearables.size())
 	{
 		for (std::list<const LLWearable*>::const_iterator itWearable = m_remWearables.begin(); itWearable != m_remWearables.end(); ++itWearable)
-			gAgent.removeWearable((*itWearable)->getType());
+			gAgentWearables.removeWearable((*itWearable)->getType());
 		m_remWearables.clear();
 	}
 

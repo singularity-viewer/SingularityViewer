@@ -18,6 +18,7 @@
 #include "llattachmentsmgr.h"
 #include "llviewerobjectlist.h"
 #include "pipeline.h"
+#include "llagentwearables.h"
 
 #include "rlvhelper.h"
 #include "rlvlocks.h"
@@ -822,7 +823,7 @@ void RlvWearableLocks::addWearableTypeLock(EWearableType eType, const LLUUID& id
 bool RlvWearableLocks::canRemove(EWearableType eType) const
 {
 	// NOTE: we return TRUE if the wearable type has at least one wearable that can be removed by the user
-	LLWearable* pWearable = gAgent.getWearable(eType);
+	LLWearable* pWearable = gAgentWearables.getWearable(eType);
 	if ( (pWearable) && (!isLockedWearable(pWearable)) )
 		return true;
 	return false;
@@ -832,7 +833,7 @@ bool RlvWearableLocks::canRemove(EWearableType eType) const
 bool RlvWearableLocks::hasLockedWearable(EWearableType eType) const
 {
 	// NOTE: we return TRUE if there is at least 1 non-removable wearable currently worn on this wearable type
-	LLWearable* pWearable = gAgent.getWearable(eType);
+	LLWearable* pWearable = gAgentWearables.getWearable(eType);
 	if ( (pWearable) && (isLockedWearable(pWearable)) )
 		return true;
 	return false;

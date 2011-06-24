@@ -34,6 +34,7 @@
 
 //LLPanelMediaHUD
 #include "llagent.h"
+#include "llagentcamera.h"
 #include "llparcel.h"
 #include "llpanel.h"
 #include "llselectmgr.h"
@@ -467,7 +468,7 @@ void LLPanelMediaHUD::onClickClose(void* user_data)
 	LLPanelMediaHUD* this_panel = static_cast<LLPanelMediaHUD*> (user_data);
 	if(this_panel->mCurrentZoom != ZOOM_NONE)
 	{
-		// gAgent.setFocusOnAvatar(TRUE, ANIMATE);
+		// gAgentCamera.setFocusOnAvatar(TRUE, ANIMATE);
 		this_panel->mCurrentZoom = ZOOM_NONE;
 	}
 	this_panel->setVisible(FALSE);
@@ -587,7 +588,7 @@ void LLPanelMediaHUD::nextZoomLevel()
 	{
 	case ZOOM_NONE:
 		{
-			gAgent.setFocusOnAvatar(TRUE, ANIMATE);
+			gAgentCamera.setFocusOnAvatar(TRUE, ANIMATE);
 			break;
 		}
 	case ZOOM_MEDIUM:
@@ -597,7 +598,7 @@ void LLPanelMediaHUD::nextZoomLevel()
 		}
 	default:
 		{
-			gAgent.setFocusOnAvatar(TRUE, ANIMATE);
+			gAgentCamera.setFocusOnAvatar(TRUE, ANIMATE);
 			break;
 		}
 	}

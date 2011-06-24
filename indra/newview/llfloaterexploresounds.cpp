@@ -6,6 +6,7 @@
 #include "lluictrlfactory.h"
 #include "llscrolllistctrl.h"
 #include "llagent.h"
+#include "llagentcamera.h"
 #include "llviewerwindow.h"
 #include "llviewerobjectlist.h"
 #include "llviewerregion.h"
@@ -335,9 +336,9 @@ void LLFloaterExploreSounds::handle_look_at(void* user_data)
 	cam += pos_global;
 	cam += LLVector3d(0.f, 0.f, 3.0f);
 
-	gAgent.setFocusOnAvatar(FALSE, FALSE);
-	gAgent.setCameraPosAndFocusGlobal(cam, pos_global, item.mSourceID);
-	gAgent.setCameraAnimating(FALSE);
+	gAgentCamera.setFocusOnAvatar(FALSE, FALSE);
+	gAgentCamera.setCameraPosAndFocusGlobal(cam, pos_global, item.mSourceID);
+	gAgentCamera.setCameraAnimating(FALSE);
 }
 
 // static

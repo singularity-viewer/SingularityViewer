@@ -14,6 +14,7 @@
 
 // Viewer includes
 #include "llagent.h"
+#include "llagentcamera.h"
 #include "llbox.h"
 #include "llcylinder.h"
 #include "llfloatertools.h"
@@ -163,7 +164,7 @@ BOOL QToolAlign::findSelectedManipulator(S32 x, S32 y)
 		LLMatrix4 cfr(OGL_TO_CFR_ROTATION);
 		transform *= cfr;
 		LLMatrix4 window_scale;
-		F32 zoom_level = 2.f * gAgent.mHUDCurZoom;
+		F32 zoom_level = 2.f * gAgentCamera.mHUDCurZoom;
 		window_scale.initAll(LLVector3(zoom_level / LLViewerCamera::getInstance()->getAspect(), zoom_level, 0.f),
 							 LLQuaternion::DEFAULT,
 							 LLVector3::zero);
@@ -322,11 +323,11 @@ void QToolAlign::computeManipulatorSize()
 	if (LLSelectMgr::getInstance()->getSelection()->getSelectType() == SELECT_TYPE_HUD)
 	{
 		mManipulatorSize = MANIPULATOR_SIZE / (LLViewerCamera::getInstance()->getViewHeightInPixels() *
-											   gAgent.mHUDCurZoom);
+											   gAgentCamera.mHUDCurZoom);
 	}
 	else
 	{
-		F32 distance = dist_vec(gAgent.getCameraPositionAgent(), mBBox.getCenterAgent());
+		F32 distance = dist_vec(gAgentCamera.getCameraPositionAgent(), mBBox.getCenterAgent());
 
 		if (distance > 0.001f)
 		{

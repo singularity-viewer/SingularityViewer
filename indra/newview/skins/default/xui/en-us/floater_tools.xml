@@ -1068,22 +1068,67 @@
 			     mouse_opaque="true" name="label color" v_pad="0" width="58">
 				Color
 			</text>
+			<text bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+			     bottom_delta="0" drop_shadow_visible="true" follows="left|top"
+			     font="SansSerifSmall" h_pad="0" halign="left" height="10" left_delta="114"
+			     mouse_opaque="true" name="label texture" v_pad="0" width="58">
+				Texture
+			</text>
 			<color_swatch border_color="0.45098, 0.517647, 0.607843, 1" bottom_delta="-28"
+				left="55"
 			     can_apply_immediately="true" color="0.5, 0.5, 0.5, 1" follows="left|top"
-			     height="48" label="" left_delta="67" mouse_opaque="true" name="colorswatch"
+			     height="48" label="" mouse_opaque="true" name="colorswatch"
 			     tool_tip="Click to open Color Picker" width="32" />
+			
+			 <texture_picker
+		            allow_no_texture="true"
+		            bottom_delta="-1"
+		            can_apply_immediately="true"
+		            default_image_name="Default"
+		            follows="left|top"
+		            height="48"
+		            label=""
+		            left_delta="124"
+		            mouse_opaque="true"
+		            name="light texture control"
+		            tool_tip="Click to choose a projection image (only has effect with deferred rendering enabled)"
+		            width="32" />
 			<spinner bottom_delta="-4" decimal_digits="5" follows="left|top" height="16"
-			     increment="0.1" initial_val="0.5" label="Intensity" label_width="65"
-			     left="10" max_val="1" min_val="0" mouse_opaque="true"
-			     name="Light Intensity" width="128" />
+				left="10"
+			     increment="0.1" initial_val="0.5" label="Intensity" label_width="45"
+			     max_val="1" min_val="0" mouse_opaque="true"
+			     name="Light Intensity" 
+			     width="108" />
+			<spinner bottom_delta="0" decimal_digits="3" follows="left|top" height="16"
+				left_delta="114"
+			     increment="0.1" initial_val="0.5" label="FOV" label_width="55"
+			     max_val="3" min_val="0" mouse_opaque="true"
+			     name="Light FOV" 
+			     width="118" />
 			<spinner bottom_delta="-20" decimal_digits="5" follows="left|top" height="16"
-			     increment="0.1" initial_val="5" label="Radius" label_width="65"
-			     left_delta="0" max_val="20" min_val="0" mouse_opaque="true"
-			     name="Light Radius" width="128" />
+				left="10"
+			     increment="0.1" initial_val="5" label="Radius" label_width="45"
+			     max_val="20" min_val="0" mouse_opaque="true"
+			     name="Light Radius" 
+			     width="108" />
+			<spinner bottom_delta="0" decimal_digits="3" follows="left|top" height="16"
+				left_delta="114" 
+			     increment="0.5" initial_val="0.5" label="Focus" label_width="55"
+			     max_val="20" min_val="-20" mouse_opaque="true"
+			     name="Light Focus" 
+			     width="118" />
 			<spinner bottom_delta="-20" decimal_digits="5" follows="left|top" height="16"
-			     increment="0.25" initial_val="1" label="Falloff" label_width="65"
-			     left_delta="0" max_val="2" min_val="0" mouse_opaque="true"
-			     name="Light Falloff" width="128" />
+				left="10"
+			     increment="0.25" initial_val="1" label="Falloff" label_width="45"
+			     max_val="2" min_val="0" mouse_opaque="true"
+			     name="Light Falloff" 
+			     width="108" />
+			<spinner bottom_delta="0" decimal_digits="3" follows="left|top" height="16"
+				left_delta="114" 
+			     increment="0.05" initial_val="1" label="Ambiance" label_width="55"
+			     max_val="1" min_val="0" mouse_opaque="true"
+			     name="Light Ambiance" 
+			     width="118" />
 		</panel>
 
 <!-- Texture sub-tab -->

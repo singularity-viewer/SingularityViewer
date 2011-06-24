@@ -39,6 +39,7 @@
 
 // Viewer includes
 #include "llagent.h"
+#include "llagentcamera.h"
 #include "llviewercontrol.h"
 #include "llbutton.h"
 #include "llviewerwindow.h"

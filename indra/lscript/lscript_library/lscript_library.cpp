@@ -449,12 +449,13 @@ void LLScriptLibrary::init()
 	addFunction(10.f, 0.f, dummy_func, "llReleaseURL", NULL, "s");
 	addFunction(10.f, 0.f, dummy_func, "llHTTPResponse", NULL, "kis");
 	addFunction(10.f, 0.f, dummy_func, "llGetHTTPHeader", "s", "ks");
-	//Lesse if I can crash the sim! -HgB
+
+	// Prim media (see lscript_prim_media.h)
 	addFunction(10.f, 1.0f, dummy_func, "llSetPrimMediaParams", "i", "il");
 	addFunction(10.f, 1.0f, dummy_func, "llGetPrimMediaParams", "l", "il");
 	addFunction(10.f, 1.0f, dummy_func, "llClearPrimMedia", "i", "i");
 	addFunction(10.f, 0.f, dummy_func, "llSetLinkPrimitiveParamsFast", NULL, "il");
-	addFunction(10.f, 0.f, dummy_func, "llGetLinkPrimitiveParams", NULL, "il");
+	addFunction(10.f, 0.f, dummy_func, "llGetLinkPrimitiveParams", "l", "il");
 	addFunction(10.f, 0.f, dummy_func, "llLinkParticleSystem", NULL, "il");
 	addFunction(10.f, 0.f, dummy_func, "llSetLinkTextureAnim", NULL, "iiiiifff");
 
@@ -464,9 +465,12 @@ void LLScriptLibrary::init()
     addFunction(10.f, 0.f, dummy_func, "llGetUsername", "s", "k");
     addFunction(10.f, 0.f, dummy_func, "llRequestUsername", "k", "k");
     addFunction(10.f, 0.f, dummy_func, "llGetDisplayName", "s", "k");
-    addFunction(10.f, 0.f, dummy_func, "llRequestDisplayName", "k", "k");
+	addFunction(10.f, 0.f, dummy_func, "llRequestDisplayName", "k", "k");
 
-	// energy, sleep, dummy_func, name, return type, parameters, gods-only
+	addFunction(10.f, 0.f, dummy_func, "llGetEnv", "s", "s");
+	addFunction(10.f, 0.f, dummy_func, "llRegionSayTo", NULL, "kis");
+
+	// energy, sleep, dummy_func, name, return type, parameters, help text, gods-only
 
 	// IF YOU ADD NEW SCRIPT CALLS, YOU MUST PUT THEM AT THE END OF THIS LIST.
 	// Otherwise the bytecode numbers for each call will be wrong, and all

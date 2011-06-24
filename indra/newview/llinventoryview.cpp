@@ -40,6 +40,7 @@
 #include "message.h"
 
 #include "llagent.h"
+#include "llagentcamera.h"
 #include "llcallingcard.h"
 #include "llcheckboxctrl.h"		// for radio buttons
 #include "llradiogroup.h"
@@ -850,7 +851,7 @@ LLInventoryView* LLInventoryView::showAgentInventory(BOOL take_keyboard_focus)
 		iv = NULL;
 	}
 #endif
-	if(!iv && !gAgent.cameraMouselook())
+	if(!iv && !gAgentCamera.cameraMouselook())
 	{
 		// create one.
 		iv = new LLInventoryView(std::string("Inventory"),
@@ -1985,7 +1986,7 @@ public:
 	virtual bool operator()(LLInventoryCategory* cat,
 							LLInventoryItem* item)
 	{
-		return !gAgent.isWearingItem(item->getUUID());
+		return !gAgentWearables.isWearingItem(item->getUUID());
 	}
 };
 

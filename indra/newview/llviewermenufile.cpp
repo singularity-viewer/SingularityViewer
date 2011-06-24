@@ -36,6 +36,7 @@
 
 // project includes
 #include "llagent.h"
+#include "llagentcamera.h"
 
 #include "llimagejpeg.h"
 #include "llimagepng.h"
@@ -172,9 +173,9 @@ class AIFileUpload {
 
 void AIFileUpload::start_filepicker(ELoadFilter filter, char const* context)
 {
-	if( gAgent.cameraMouselook() )
+	if( gAgentCamera.cameraMouselook() )
 	{
-		gAgent.changeCameraToDefault();
+		gAgentCamera.changeCameraToDefault();
 		// This doesn't seem necessary. JC
 		// display();
 	}
@@ -335,9 +336,9 @@ class LLFileUploadBulk : public view_listener_t
 {
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
 	{
-		if( gAgent.cameraMouselook() )
+		if( gAgentCamera.cameraMouselook() )
 		{
-			gAgent.changeCameraToDefault();
+			gAgentCamera.changeCameraToDefault();
 		}
 
 		// TODO:

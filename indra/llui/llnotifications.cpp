@@ -607,7 +607,12 @@ void LLNotification::init(const std::string& template_name, const LLSD& form_ele
 
 	// add default substitutions
 	// TODO: change this to read from the translatable strings file!
-	mSubstitutions["[SECOND_LIFE]"] = "Second Life";
+	if (gHippoGridManager->getConnectedGrid()->isSecondLife()) {
+		mSubstitutions["[SECOND_LIFE]"] = "Second Life";
+	}
+	else {
+		mSubstitutions["[SECOND_LIFE]"] = gHippoGridManager->getConnectedGrid()->getGridName();
+	} 
 	mSubstitutions["[VIEWER_NAME]"] = LLNotifications::instance().getGlobalString("VIEWER_NAME");
 	mSubstitutions["[VIEWER_SITE]"] = LLNotifications::instance().getGlobalString("VIEWER_SITE");
 	

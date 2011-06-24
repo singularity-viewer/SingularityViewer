@@ -44,6 +44,7 @@
 #include "lluserauth.h"
 
 #include "llagent.h"
+#include "llagentaccess.h"
 #include "llavatarconstants.h" //For new Online check - HgB
 #include "llfloateravatarpicker.h"
 #include "llbutton.h"

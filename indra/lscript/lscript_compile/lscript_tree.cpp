@@ -631,8 +631,8 @@ static void print_cil_cast(LLFILE* fp, LSCRIPTType srcType, LSCRIPTType targetTy
 		switch(targetType)
 		{
 		case LST_INTEGER:
-			//fprintf(fp, "call int32 [LslLibrary]LindenLab.SecondLife.LslRunTime::ToInteger(float32)\n");
-			fprintf(fp, "conv.i4\n"); // TODO replace this line with the above
+			fprintf(fp, "call int32 [LslLibrary]LindenLab.SecondLife.LslRunTime::ToInteger(float32)\n");
+			//fprintf(fp, "conv.i4\n"); // TODO replace this line with the above
 			// we the entire grid is > 1.25.1
 			break;
 		case LST_STRING:
@@ -8375,10 +8375,18 @@ void LLScriptStateChange::recurse(LLFILE *fp, S32 tabs, S32 tabsize, LSCRIPTComp
 			chunk->addInteger(mIdentifier->mScopeEntry->mCount);
 		}
 		break;
+	case LSCP_TYPE:
+		mReturnType = basetype;
+		break;
 	case LSCP_EMIT_CIL_ASSEMBLY:
 		fprintf(fp, "ldarg.0\n");
 		fprintf(fp, "ldstr \"%s\"\n", mIdentifier->mName);
 		fprintf(fp, "call instance void class [LslUserScript]LindenLab.SecondLife.LslUserScript::ChangeState(string)\n");
+		// We are doing a state change. In the LSL interpreter, this is basically a longjmp. We emulate it
+		// here using a call to the ChangeState followed by a short cut return of the current method. To
+		// maintain type safety we need to push an arbitrary variable of the current method's return type
+		// onto the stack before returning. This will be ignored and discarded.
+		print_cil_init_variable(fp, mReturnType);
 		fprintf(fp, "ret\n");
 		break;
 	default:
@@ -9799,6 +9807,9 @@ void LLScriptEventHandler::recurse(LLFILE *fp, S32 tabs, S32 tabsize, LSCRIPTCom
 		break;
 	case LSCP_EMIT_BYTE_CODE:
 		{
+			llassert(mEventp);
+			if (!mEventp) return;
+
 			// order for event handler
 			// set jump table value
 			S32 jumpoffset;
@@ -9812,13 +9823,11 @@ void LLScriptEventHandler::recurse(LLFILE *fp, S32 tabs, S32 tabsize, LSCRIPTCom
 			chunk->addBytes(4);
 
 			// null terminated event name and null terminated parameters
-			if (mEventp)
-			{
-				LLScriptByteCodeChunk	*event = new LLScriptByteCodeChunk(FALSE);
-				mEventp->recurse(fp, tabs, tabsize, pass, ptype, prunearg, scope, type, basetype, count, event, heap, stacksize, entry, entrycount, NULL);
-				chunk->addBytes(event->mCodeChunk, event->mCurrentOffset);
-				delete event;
-			}
+			LLScriptByteCodeChunk	*event = new LLScriptByteCodeChunk(FALSE);
+			mEventp->recurse(fp, tabs, tabsize, pass, ptype, prunearg, scope, type, basetype, count, event, heap, stacksize, entry, entrycount, NULL);
+			chunk->addBytes(event->mCodeChunk, event->mCurrentOffset);
+			delete event;
+		
 			chunk->addBytes(1);
 
 			// now we're at the first opcode
@@ -10620,6 +10629,8 @@ LLScriptScript::LLScriptScript(LLScritpGlobalStorage *globals,
 		}
 		temp = temp->mNextp;
 	}
+
+	mClassName[0] = '\0';
 }
 
 void LLScriptScript::setBytecodeDest(const char* dst_filename)

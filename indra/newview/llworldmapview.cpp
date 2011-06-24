@@ -42,6 +42,7 @@
 #include "llrender.h"
 
 #include "llagent.h"
+#include "llagentcamera.h"
 #include "llcallingcard.h"
 #include "llcolorscheme.h"
 #include "llviewercontrol.h"
@@ -125,10 +126,6 @@ std::map<std::string,std::string> LLWorldMapView::sStringsMap;
 #define SIM_NULL_MAP_SCALE 4 // width in pixels, where we start drawing "null" sims
 #define SIM_MAP_AGENT_SCALE 8 // width in pixels, where we start drawing agents
 #define SIM_MAP_SCALE 4 // width in pixels, where we start drawing sim tiles
-
-// Updates for agent locations.
-#define AGENTS_UPDATE_TIME 60.0 // in seconds
-
 
 
 void LLWorldMapView::initClass()
@@ -260,7 +257,7 @@ void LLWorldMapView::setScale( F32 scale )
 		F32 old_scale = sMapScale;
 
 		sMapScale = scale;
-		if (sMapScale == 0.f)
+		if (sMapScale <= 0.f)
 		{
 			sMapScale = 0.1f;
 		}
@@ -307,7 +304,7 @@ void LLWorldMapView::setPan( S32 x, S32 y, BOOL snap )
 
 BOOL is_agent_in_region(LLViewerRegion* region, LLSimInfo* info)
 {
-	return ((region && info) && (info->mName == region->getName()));
+	return ((region && info) && (info->isName(region->getName())));
 }
 
 
@@ -327,7 +324,9 @@ void LLWorldMapView::draw()
 
 	const S32 width = getRect().getWidth();
 	const S32 height = getRect().getHeight();
-	LLVector3d camera_global = gAgent.getCameraPositionGlobal();
+	const F32 half_width = F32(width) / 2.0f;
+	const F32 half_height = F32(height) / 2.0f;
+	LLVector3d camera_global = gAgentCamera.getCameraPositionGlobal();
 
 	LLLocalClipRect clip(getLocalRect());
 	{
@@ -345,6 +344,7 @@ void LLWorldMapView::draw()
 	}
 
 	gGL.flush();
+
 	gGL.setAlphaRejectSettings(LLRender::CF_DEFAULT);
 	gGL.setColorMask(true, true);
 	gGL.setSceneBlendType(LLRender::BT_ALPHA);
@@ -353,17 +353,15 @@ void LLWorldMapView::draw()
 		drawMipmap(width, height);
 	else
 		drawTiles(width, height);
-	
+	gGL.flush();	
 	LLFontGL* font = LLFontGL::getFontSansSerifSmall();
-	const F32 half_width = F32(width) / 2.0f;
-	const F32 half_height = F32(height) / 2.0f;	
 
 	// Draw the region name in the lower left corner	
-	for (LLWorldMap::sim_info_map_t::iterator it = LLWorldMap::getInstance()->mSimInfoMap.begin();
-		 it != LLWorldMap::getInstance()->mSimInfoMap.end(); ++it)
+	for (LLWorldMap::sim_info_map_t::const_iterator it = LLWorldMap::getInstance()->getRegionMap().begin();
+		 it != LLWorldMap::getInstance()->getRegionMap().end(); ++it)
 	{
 		U64 handle = it->first;
-		LLSimInfo* info = (*it).second;		
+		LLSimInfo* info = it->second;
 		
 		LLVector3d origin_global = from_region_handle(handle);
 
@@ -371,29 +369,26 @@ void LLWorldMapView::draw()
 		LLVector3d rel_region_pos = origin_global - camera_global;
 		F32 relative_x = (rel_region_pos.mdV[0] / REGION_WIDTH_METERS) * sMapScale;
 		F32 relative_y = (rel_region_pos.mdV[1] / REGION_WIDTH_METERS) * sMapScale;
-		
-		F32 bottom =	sPanY + half_height + relative_y;
-		F32 left =		sPanX + half_width + relative_x;
-		F32 top =		bottom + sMapScale ;
-		F32 right =		left + sMapScale ;
-		
-		// disregard regions that are outside the rectangle
-		if (top < 0.f ||
-			bottom > height ||
-			right < 0.f ||
-			left > width )
+
+		// Coordinates of the sim in pixels in the UI panel
+		// When the view isn't panned, 0,0 = center of rectangle
+		F32 bottom =    sPanY + half_height + relative_y;
+		F32 left =      sPanX + half_width + relative_x;
+		F32 top =       bottom + sMapScale ;
+		F32 right =     left + sMapScale ;
+
+		// Discard if region is outside the screen rectangle (not visible on screen)
+		if ((top < 0.f)   || (bottom > height) ||
+			(right < 0.f) || (left > width)       )
 		{
+			// Drop the "land for sale" fetching priority since it's outside the view rectangle
+			info->dropImagePriority();
 			continue;			
 		}
 		
 		info->mShowAgentLocations = (sMapScale >= SIM_MAP_AGENT_SCALE);
 		mVisibleRegions.push_back(handle);		
-		// See if the agents need updating
-		if (current_time - info->mAgentsUpdateTime > AGENTS_UPDATE_TIME)
-		{
-			LLWorldMap::getInstance()->sendItemRequest(MAP_ITEM_AGENT_LOCATIONS, info->mHandle);
-			info->mAgentsUpdateTime = current_time;
-		}		
+		info->updateAgentCount(current_time);
 		
 		std::string mesg;
 		if (sMapScale < sThresholdA)
@@ -415,14 +410,14 @@ void LLWorldMapView::draw()
 				mesg = RlvStrings::getString(RLV_STRING_HIDDEN);
 			}
 			// [/RLVa:KB]
-			else if (info->mAccess == SIM_ACCESS_DOWN)
+			else if (info->isDown())
 			{
-				mesg = llformat( "%s (%s)", info->mName.c_str(), sStringsMap["offline"].c_str());
+				mesg = llformat( "%s (%s)", info->getName().c_str(), sStringsMap["offline"].c_str());
 			}
 			else
 			{
-				mesg = info->mName;
-				U8 access = info->mAccess;
+				mesg = info->getName();
+				U8 access = info->getAccess();
 				switch(access)
 				{
 				case SIM_ACCESS_MIN:
@@ -614,8 +609,8 @@ void LLWorldMapView::setVisible(BOOL visible)
 		}
 	}
 				}
-		for (LLWorldMap::sim_info_map_t::iterator it = LLWorldMap::getInstance()->mSimInfoMap.begin();
-			 it != LLWorldMap::getInstance()->mSimInfoMap.end(); ++it)
+		for (LLWorldMap::sim_info_map_t::const_iterator it = LLWorldMap::getInstance()->getRegionMap().begin();
+			 it != LLWorldMap::getInstance()->getRegionMap().end(); ++it)
 		{
 			LLSimInfo* info = (*it).second;
 			if (info->mCurrentImage.notNull())
@@ -634,7 +629,7 @@ void LLWorldMapView::drawTiles(S32 width, S32 height) {
 	const F32 half_width = F32(width) / 2.0f;
 	const F32 half_height = F32(height) / 2.0f;
 	F32 layer_alpha = 1.f;
-	LLVector3d camera_global = gAgent.getCameraPositionGlobal();
+	LLVector3d camera_global = gAgentCamera.getCameraPositionGlobal();
 	
 	// Draw one image per layer
 	for (U32 layer_idx=0; layer_idx<LLWorldMap::getInstance()->mMapLayers[LLWorldMap::getInstance()->mCurrentMap].size(); ++layer_idx)
@@ -741,8 +736,8 @@ void LLWorldMapView::drawTiles(S32 width, S32 height) {
 
 	bool use_web_map_tiles = LLWorldMap::useWebMapTiles();
 
-	for (LLWorldMap::sim_info_map_t::iterator it = LLWorldMap::getInstance()->mSimInfoMap.begin();
-		 it != LLWorldMap::getInstance()->mSimInfoMap.end(); ++it)
+	for (LLWorldMap::sim_info_map_t::const_iterator it = LLWorldMap::getInstance()->getRegionMap().begin();
+		 it != LLWorldMap::getInstance()->getRegionMap().end(); ++it)
 	{
 		U64 handle = (*it).first;
 		LLSimInfo* info = (*it).second;
@@ -758,7 +753,7 @@ void LLWorldMapView::drawTiles(S32 width, S32 height) {
 		}
 
 		LLVector3d origin_global = from_region_handle(handle);
-		LLVector3d camera_global = gAgent.getCameraPositionGlobal();
+		LLVector3d camera_global = gAgentCamera.getCameraPositionGlobal();
 
 		// Find x and y position relative to camera's center.
 		LLVector3d rel_region_pos = origin_global - camera_global;
@@ -775,7 +770,7 @@ void LLWorldMapView::drawTiles(S32 width, S32 height) {
 		// 1. Tiles are zoomed out small enough, or
 		// 2. Sim's texture has not been loaded yet
 		F32 map_scale_cutoff = SIM_MAP_SCALE;
-		if ((info->mRegionFlags & REGION_FLAGS_NULL_LAYER) > 0)
+		if ((info->getRegionFlags() & REGION_FLAGS_NULL_LAYER) > 0)
 		{
 			map_scale_cutoff = SIM_NULL_MAP_SCALE;
 		}
@@ -788,18 +783,18 @@ void LLWorldMapView::drawTiles(S32 width, S32 height) {
 		if (sim_visible)
 		{
 			// Fade in
-			if (info->mAlpha < 0.0f)
-				info->mAlpha = 1.f; // don't fade initially
+			if (info->getAlpha() < 0.0f)
+				info->setAlpha( 1.f ); // don't fade initially
 			else
-				info->mAlpha = lerp(info->mAlpha, 1.f, LLCriticalDamp::getInterpolant(0.15f));
+				info->setAlpha(lerp(info->getAlpha(), 1.f, LLCriticalDamp::getInterpolant(0.15f)));
 		}
 		else
 		{
 			// Fade out
-			if (info->mAlpha < 0.0f)
-				info->mAlpha = 0.f; // don't fade initially
+			if (info->getAlpha() < 0.0f)
+				info->setAlpha( 0.f ); // don't fade initially
 			else
-				info->mAlpha = lerp(info->mAlpha, 0.f, LLCriticalDamp::getInterpolant(0.15f));
+				info->setAlpha(lerp(info->getAlpha(), 0.f, LLCriticalDamp::getInterpolant(0.15f)));
 		}
 
 		// discard regions that are outside the rectangle
@@ -869,7 +864,7 @@ void LLWorldMapView::drawTiles(S32 width, S32 height) {
 			
 // 		LLTextureView::addDebugImage(simimage);
 
-		if (sim_visible && info->mAlpha > 0.001f)
+		if (sim_visible && info->getAlpha() > 0.001f)
 		{
 			// Draw using the texture.  If we don't clamp we get artifact at
 			// the edge.
@@ -878,7 +873,7 @@ void LLWorldMapView::drawTiles(S32 width, S32 height) {
 				gGL.getTexUnit(0)->bind(simimage);
 
 			gGL.setSceneBlendType(LLRender::BT_ALPHA);
-			F32 alpha = sim_alpha * info->mAlpha;
+			F32 alpha = sim_alpha * info->getAlpha();
 			gGL.color4f(1.f, 1.0f, 1.0f, alpha);
 
 			gGL.begin(LLRender::QUADS);
@@ -908,7 +903,7 @@ void LLWorldMapView::drawTiles(S32 width, S32 height) {
 				gGL.end();
 			}
 		
-			if ((info->mRegionFlags & REGION_FLAGS_NULL_LAYER) == 0)
+			if ((info->getRegionFlags() & REGION_FLAGS_NULL_LAYER) == 0)
 			{
 				// draw an alpha of 1 where the sims are visible (except NULL sims)
 				gGL.flush();
@@ -929,7 +924,7 @@ void LLWorldMapView::drawTiles(S32 width, S32 height) {
 			}
 		}
 
-		if (info->mAccess == SIM_ACCESS_DOWN)
+		if (info->isDown())
 		{
 			// Draw a transparent red square over down sims
 			gGL.blendFunc(LLRender::BF_DEST_ALPHA, LLRender::BF_SOURCE_ALPHA);
@@ -979,7 +974,7 @@ void LLWorldMapView::drawGenericItems(const LLWorldMap::item_info_list_t& items,
 
 void LLWorldMapView::drawGenericItem(const LLItemInfo& item, LLUIImagePtr image)
 {
-	drawImage(item.mPosGlobal, image);
+	drawImage(item.getGlobalPosition(), image);
 }
 
 
@@ -1017,7 +1012,7 @@ void LLWorldMapView::drawAgents()
 	{
 		U64 handle = *iter;
 		LLSimInfo* siminfo = LLWorldMap::getInstance()->simInfoFromHandle(handle);
-		if (siminfo && (siminfo->mAccess == SIM_ACCESS_DOWN))
+		if (siminfo && (siminfo->isDown()))
 		{
 			continue;
 		}
@@ -1035,7 +1030,7 @@ void LLWorldMapView::drawAgents()
 				sim_agent_count += info.mExtra;
 				// Here's how we'd choose the color if info.mID were available but it's not being sent:
 				//LLColor4 color = (agent_count == 1 && is_agent_friend(info.mID)) ? friend_color : avatar_color;
-				drawImageStack(info.mPosGlobal, sAvatarSmallImage, agent_count, 3.f, avatar_color);
+				drawImageStack(info.getGlobalPosition(), sAvatarSmallImage, agent_count, 3.f, avatar_color);
 		}
 			LLWorldMap::getInstance()->mNumAgents[handle] = sim_agent_count; // override mNumAgents for this sim
 		}
@@ -1304,7 +1299,7 @@ bool LLWorldMapView::drawMipmapLevel(S32 width, S32 height, S32 level, bool load
 
 LLVector3 LLWorldMapView::globalPosToView( const LLVector3d& global_pos )
 {
-	LLVector3d relative_pos_global = global_pos - gAgent.getCameraPositionGlobal();
+	LLVector3d relative_pos_global = global_pos - gAgentCamera.getCameraPositionGlobal();
 	LLVector3 pos_local;
 	pos_local.setVec(relative_pos_global);  // convert to floats from doubles
 
@@ -1400,7 +1395,7 @@ LLVector3d LLWorldMapView::viewPosToGlobal( S32 x, S32 y )
 	
 	LLVector3d pos_global;
 	pos_global.setVec( pos_local );
-	pos_global += gAgent.getCameraPositionGlobal();
+	pos_global += gAgentCamera.getCameraPositionGlobal();
 	if(gAgent.isGodlike())
 	{
 		pos_global.mdV[VZ] = GODLY_TELEPORT_HEIGHT; // Godly height should always be 200.
@@ -1426,14 +1421,14 @@ BOOL LLWorldMapView::handleToolTip( S32 x, S32 y, std::string& msg, LLRect* stic
 //		std::string message = llformat("%s (%s)", info->getName().c_str(), info->getAccessString().c_str());
 // [RLVa:KB] - Alternate: Snowglobe-1.2.4 | Checked: 2009-07-04 (RLVa-1.0.0a)
 		std::string message = llformat("%s (%s)", 
-			(!gRlvHandler.hasBehaviour(RLV_BHVR_SHOWLOC)) ? info->mName.c_str() : RlvStrings::getString(RLV_STRING_HIDDEN).c_str(), 
-				 LLViewerRegion::accessToString(info->mAccess).c_str());
+			(!gRlvHandler.hasBehaviour(RLV_BHVR_SHOWLOC)) ? info->getName().c_str() : RlvStrings::getString(RLV_STRING_HIDDEN).c_str(), 
+				info->getAccessString().c_str());
 // [/RLVa:KB]
 
-		if (info->mAccess != SIM_ACCESS_DOWN)
+		if (!info->isDown())
 		{
-			S32 agent_count = LLWorldMap::getInstance()->mNumAgents[info->mHandle];			
-			if (region && region->getHandle() == info->mHandle)
+			S32 agent_count = LLWorldMap::getInstance()->mNumAgents[info->getHandle()];
+			if (region && region->getHandle() == info->getHandle())
 			{
 				++agent_count; // Bump by 1 if we're here
 			}
@@ -1457,7 +1452,7 @@ BOOL LLWorldMapView::handleToolTip( S32 x, S32 y, std::string& msg, LLRect* stic
 		msg.assign( message );
 
 		// Optionally show region flags
-		std::string region_flags = LLViewerRegion::regionFlagsToString(info->mRegionFlags);
+		std::string region_flags = info->getFlagsString();
 
 		if (!region_flags.empty())
 		{
@@ -1807,7 +1802,7 @@ void LLWorldMapView::reshape( S32 width, S32 height, BOOL called_from_parent )
 
 bool LLWorldMapView::checkItemHit(S32 x, S32 y, LLItemInfo& item, LLUUID* id, bool track)
 {
-	LLVector3 pos_view = globalPosToView(item.mPosGlobal);
+	LLVector3 pos_view = globalPosToView(item.getGlobalPosition());
 	S32 item_x = llround(pos_view.mV[VX]);
 	S32 item_y = llround(pos_view.mV[VY]);
 
@@ -1816,12 +1811,12 @@ bool LLWorldMapView::checkItemHit(S32 x, S32 y, LLItemInfo& item, LLUUID* id, bo
 	if (y < item_y - BIG_DOT_RADIUS) return false;
 	if (y > item_y + BIG_DOT_RADIUS) return false;
 
-	LLSimInfo* sim_info = LLWorldMap::getInstance()->simInfoFromHandle(item.mRegionHandle);
+	LLSimInfo* sim_info = LLWorldMap::getInstance()->simInfoFromHandle(item.getRegionHandle());
 	if (sim_info)
 	{
 		if (track)
 		{
-			gFloaterWorldMap->trackLocation(item.mPosGlobal);
+			gFloaterWorldMap->trackLocation(item.getGlobalPosition());
 		}
 	}
 
@@ -1831,7 +1826,7 @@ bool LLWorldMapView::checkItemHit(S32 x, S32 y, LLItemInfo& item, LLUUID* id, bo
 	}
 
 	item.mSelected = TRUE;
-	*id = item.mID;
+	*id = item.getUUID();
 
 	return true;
 }
@@ -2038,7 +2033,7 @@ U32 LLWorldMapView::updateVisibleBlocks()
 		return 0;
 	}
 
-	LLVector3d camera_global = gAgent.getCameraPositionGlobal();
+	LLVector3d camera_global = gAgentCamera.getCameraPositionGlobal();
 	
 	F32 pixels_per_region = sMapScale;
 	const S32 width = getRect().getWidth();
@@ -2166,7 +2161,7 @@ BOOL LLWorldMapView::handleDoubleClick( S32 x, S32 y, MASK mask )
 					// Teleport if we got a valid location
 					LLVector3d pos_global = viewPosToGlobal(x,y);
 					LLSimInfo* sim_info = LLWorldMap::getInstance()->simInfoFromPosGlobal(pos_global);
-					if (sim_info && sim_info->mAccess != SIM_ACCESS_DOWN)
+					if (sim_info && !sim_info->isDown())
 					{
 						gAgent.teleportViaLocation( pos_global );
 					}

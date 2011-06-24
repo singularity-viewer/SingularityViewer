@@ -15,13 +15,13 @@ include_directories(
 
 ### basic_plugin_base
 
-if(NOT CMAKE_SIZEOF_VOID_P MATCHES 4)
+if(NOT WORD_SIZE EQUAL 32)
 	if(WINDOWS)
 		add_definitions(/FIXED:NO)
 	else(WINDOWS) # not windows therefore gcc LINUX and DARWIN
 		add_definitions(-fPIC)
 	endif(WINDOWS)
-endif (NOT CMAKE_SIZEOF_VOID_P MATCHES 4)
+endif (NOT WORD_SIZE EQUAL 32)
 
 set(basic_plugin_base_SOURCE_FILES
     basic_plugin_base.cpp

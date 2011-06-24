@@ -44,6 +44,7 @@
 #include "lluictrlfactory.h"
 
 #include "llagent.h"
+#include "llagentcamera.h"
 #include "llcallingcard.h"
 #include "llchat.h"
 #include "llresmgr.h"
@@ -489,10 +490,10 @@ void LLIMMgr::toggle(void*)
 	BOOL old_state = gIMMgr->getFloaterOpen();
 	
 	// If we're in mouselook and we triggered the Talk View, we want to talk.
-	if( gAgent.cameraMouselook() && old_state )
+	if( gAgentCamera.cameraMouselook() && old_state )
 	{
 		return_to_mouselook = TRUE;
-		gAgent.changeCameraToDefault();
+		gAgentCamera.changeCameraToDefault();
 		return;
 	}
 
@@ -501,18 +502,18 @@ void LLIMMgr::toggle(void*)
 	if (new_state)
 	{
 		// ...making visible
-		if ( gAgent.cameraMouselook() )
+		if ( gAgentCamera.cameraMouselook() )
 		{
 			return_to_mouselook = TRUE;
-			gAgent.changeCameraToDefault();
+			gAgentCamera.changeCameraToDefault();
 		}
 	}
 	else
 	{
 		// ...hiding
-		if ( gAgent.cameraThirdPerson() && return_to_mouselook )
+		if ( gAgentCamera.cameraThirdPerson() && return_to_mouselook )
 		{
-			gAgent.changeCameraToMouselook();
+			gAgentCamera.changeCameraToMouselook();
 		}
 		return_to_mouselook = FALSE;
 	}
