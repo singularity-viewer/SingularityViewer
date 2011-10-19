@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<floater bottom="-423" can_close="true" can_drag_on_left="false" can_minimize="true"
+     can_resize="false" can_tear_off="true" enabled="true" height="120"
+     left="223" min_height="100" min_width="100" mouse_opaque="true"
+     name="script search" title="Search / Replace" width="300">
+	<check_box bottom="-77" control_name="LSLFindCaseInsensitivity" enabled="true" follows="left|top" font="SansSerifSmall"
+	     height="16" initial_value="false" label="Case Insensitive" left="55"
+	     mouse_opaque="true" name="case_text" radio_style="false" width="240" />
+	<button bottom="-108" enabled="true" font="SansSerif" halign="center" height="24"
+	     label="Search" label_selected="Search" left="10" mouse_opaque="true"
+	     name="search_btn" scale_image="true" width="90" />
+	<button bottom="-108" enabled="true" font="SansSerif" halign="center" height="24"
+	     label="Replace" label_selected="Replace" left="105" mouse_opaque="true"
+	     name="replace_btn" scale_image="true" width="90" />
+	<button bottom="-108" enabled="true" font="SansSerif" halign="center" height="24"
+	     label="Replace All" label_selected="Replace All" left="200"
+	     mouse_opaque="true" name="replace_all_btn" scale_image="true" width="90" />
+	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+	     bottom="-37" drop_shadow_visible="true" enabled="true" follows="left|top"
+	     font="SansSerifSmall" h_pad="0" halign="left" height="16" left="5"
+	     mouse_opaque="true" name="search_label" v_pad="0" width="45">
+		Search
+	</text>
+	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+	     bottom="-58" drop_shadow_visible="true" enabled="true" follows="left|top"
+	     font="SansSerifSmall" h_pad="0" halign="left" height="16" left="5"
+	     mouse_opaque="true" name="replace_label" v_pad="0" width="45">
+		Replace
+	</text>
+	<line_editor bevel_style="in" border_style="line" border_thickness="1" bottom="-37"
+	     enabled="true" follows="left|top" font="SansSerifSmall"
+	     handle_edit_keys_directly="false" height="16" left="55" max_length="254"
+	     mouse_opaque="true" name="search_text" select_all_on_focus_received="false"
+	     select_on_focus="false" width="240" />
+	<line_editor bevel_style="in" border_style="line" border_thickness="1" bottom="-58"
+	     enabled="true" follows="left|top" font="SansSerifSmall"
+	     handle_edit_keys_directly="false" height="16" left="55" max_length="254"
+	     mouse_opaque="true" name="replace_text"
+	     select_all_on_focus_received="false" select_on_focus="false" width="240" />
+</floater>

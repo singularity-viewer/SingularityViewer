@@ -71,7 +71,7 @@ class AIFetchInventoryFolder : public AIStateMachine {
 	 * is set, you will also be able to scan over the contents of the folder
 	 * upon successful finish.
 	 *
-	 * @param parentUUID The UUID of the parent. Passing gAgent.getInventoryRootID(), or a null ID, will assume a root folder.
+	 * @param parentUUID The UUID of the parent. Passing gInventory.getRootFolderID(), or a null ID, will assume a root folder.
 	 * @param foldername The name of the folder.
 	 * @param create if set, create the folder if it doesn't exists yet.
 	 * @param fetch_contents if set, fetch the contents before finishing.

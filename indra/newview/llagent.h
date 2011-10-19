@@ -47,6 +47,8 @@
 #include "llinventorymodel.h"
 #include "v3dmath.h"
 
+#include <boost/signals2.hpp>
+
 extern const BOOL 	ANIMATE;
 extern const U8 	AGENT_STATE_TYPING;  // Typing indication
 extern const U8 	AGENT_STATE_EDITING; // Set when agent has objects selected
@@ -85,7 +87,6 @@ struct LLGroupData
 	std::string mName;
 };
 
-BOOL isAgentAvatarValid();
 
 // forward declarations
 
@@ -108,16 +109,9 @@ public:
 	//--------------------------------------------------------------------
 public:
 	LLAgent();
-	~LLAgent();
-
+	virtual 		~LLAgent();
 	void			init();
 	void			cleanup();
-
-//Avatar object decoupled from agent in v2. Access changed to global gAgentAvatarp pointer. Stuff below will vanish.
-	void			setAvatarObject(LLVOAvatar *avatar); //Legacy
- 	LLVOAvatar	   *getAvatarObject() const			{ return mAvatarObject; }
-private:
-	LLPointer<LLVOAvatar> mAvatarObject;
 
 	//--------------------------------------------------------------------
 	// Login
@@ -253,7 +247,6 @@ public:
 	const LLHost&	getRegionHost() const;
 	BOOL			inPrelude();
 	std::string		getSLURL() const; //Return uri for current region
-	void buildLocationString(std::string& str); //Build a description string for current location
 	
 	// <edit>
 	struct SHLureRequest
@@ -454,6 +447,14 @@ public:
 	void			unpauseAnimation() { mPauseRequest = NULL; }
 	BOOL			getCustomAnim() const { return mCustomAnim; }
 	void			setCustomAnim(BOOL anim) { mCustomAnim = anim; }
+	
+	typedef boost::signals2::signal<void ()> camera_signal_t;
+	boost::signals2::connection setMouselookModeInCallback( const camera_signal_t::slot_type& cb );
+	boost::signals2::connection setMouselookModeOutCallback( const camera_signal_t::slot_type& cb );
+
+private:
+	camera_signal_t* mMouselookModeInSignal;
+	camera_signal_t* mMouselookModeOutSignal;
 	BOOL            mCustomAnim; 		// Current animation is ANIM_AGENT_CUSTOMIZE ?
 	LLPointer<LLPauseRequestHandle> mPauseRequest;
 	BOOL			mViewsPushed; 		// Keep track of whether or not we have pushed views
@@ -500,8 +501,16 @@ public:
 	// Autopilot
 	//--------------------------------------------------------------------
 public:
-	BOOL				getAutoPilot() const	{ return mAutoPilot; }
-	LLVector3d			getAutoPilotTargetGlobal() const	{ return mAutoPilotTargetGlobal; }
+	BOOL			getAutoPilot() const				{ return mAutoPilot; }
+	LLVector3d		getAutoPilotTargetGlobal() const 	{ return mAutoPilotTargetGlobal; }
+	LLUUID			getAutoPilotLeaderID() const		{ return mLeaderID; }
+	F32				getAutoPilotStopDistance() const	{ return mAutoPilotStopDistance; }
+	F32				getAutoPilotTargetDist() const		{ return mAutoPilotTargetDist; }
+	BOOL			getAutoPilotUseRotation() const		{ return mAutoPilotUseRotation; }
+	LLVector3		getAutoPilotTargetFacing() const	{ return mAutoPilotTargetFacing; }
+	F32				getAutoPilotRotationThreshold() const	{ return mAutoPilotRotationThreshold; }
+	std::string		getAutoPilotBehaviorName() const	{ return mAutoPilotBehaviorName; }
+
 	void			startAutoPilotGlobal(const LLVector3d &pos_global, 
 										 const std::string& behavior_name = std::string(), 
 										 const LLQuaternion *target_rotation = NULL, 
@@ -509,8 +518,8 @@ public:
 										 F32 stop_distance = 0.f, F32 rotation_threshold = 0.03f);
 	void 			startFollowPilot(const LLUUID &leader_id);
 	void			stopAutoPilot(BOOL user_cancel = FALSE);
-	void 			setAutoPilotGlobal(const LLVector3d &pos_global);
-	void			autoPilot(F32 *delta_yaw);			// autopilot walking action, angles in radians
+	void 			setAutoPilotTargetGlobal(const LLVector3d &target_global);
+	void			autoPilot(F32 *delta_yaw); 			// Autopilot walking action, angles in radians
 	void			renderAutoPilotTarget();
 private:
 	BOOL			mAutoPilot;
@@ -622,6 +631,7 @@ private:
 	//--------------------------------------------------------------------
 public:
 	bool			isGodlike() const;
+	bool			isGodlikeWithoutAdminMenuFakery() const;
 	U8				getGodLevel() const;
 	void			setAdminOverride(BOOL b);
 	void			setGodLevel(U8 god_level);
@@ -775,7 +785,10 @@ public:
 	void			sendReliableMessage();
 	void			sendAgentSetAppearance(const std::string& tag = "");
 	void 			sendAgentDataUpdateRequest();
-	
+	void 			sendAgentUserInfoRequest();
+	// IM to Email and Online visibility
+	void			sendAgentUpdateUserInfo(bool im_to_email, const std::string& directory_visibility);
+
 	//--------------------------------------------------------------------
 	// Receive
 	//--------------------------------------------------------------------
@@ -823,15 +836,12 @@ private:
  **                    Depreciated stuff. Move when ready.
  **/
 public:
-	const LLUUID&	getInventoryRootID() const 	{ return mInventoryRootID; }
-	void			setInventoryRootID(const LLUUID &id) { mInventoryRootID = id; }
 	//What's this t-posed stuff from?
 	static BOOL			isTPosed() { return mForceTPose; }
 	static void			setTPosed(BOOL TPose) { mForceTPose = TPose; }
 	static void			toggleTPosed();
 	
 private:
-	LLUUID			mInventoryRootID;
  	static BOOL 	mForceTPose;
 	
 
@@ -874,4 +884,5 @@ extern std::string gAuthString;
 extern LLUUID gReSitTargetID;
 extern LLVector3 gReSitOffset;
 // </edit>
+void update_group_floaters(const LLUUID& group_id);
 #endif

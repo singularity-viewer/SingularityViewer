@@ -44,6 +44,7 @@ set(llui_SOURCE_FILES
     llmultislider.cpp
     llmultisliderctrl.cpp
     llnotifications.cpp
+    llnotificationsutil.cpp
     llpanel.cpp
     llprogressbar.cpp
     llradiogroup.cpp
@@ -100,7 +101,9 @@ set(llui_HEADER_FILES
     llmodaldialog.h
     llmultisliderctrl.h
     llmultislider.h
+    llnotificationptr.h
     llnotifications.h
+    llnotificationsutil.h
     llpanel.h
     llprogressbar.h
     llradiogroup.h

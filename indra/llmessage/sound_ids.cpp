@@ -29,6 +29,7 @@
  * COMPLETENESS OR PERFORMANCE.
  * $/LicenseInfo$
  */
+#include "linden_common.h"
 
 #include "sound_ids.h"
 

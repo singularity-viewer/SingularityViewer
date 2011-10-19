@@ -56,6 +56,9 @@ LLJoint::LLJoint()
 	mUpdateXform = TRUE;
 	mJointNum = -1;
 	touch();
+#if MESH_ENABLED
+	mResetAfterRestoreOldXform = false;
+#endif //MESH_ENABLED
 }
 
 
@@ -239,6 +242,43 @@ void LLJoint::setPosition( const LLVector3& pos )
 	}
 }
 
+#if MESH_ENABLED
+//--------------------------------------------------------------------
+// setPosition()
+//--------------------------------------------------------------------
+void LLJoint::setDefaultFromCurrentXform( void )
+{
+	mDefaultXform = mXform;
+	touch(MATRIX_DIRTY | POSITION_DIRTY);
+	
+}
+
+//--------------------------------------------------------------------
+// storeCurrentXform()
+//--------------------------------------------------------------------
+void LLJoint::storeCurrentXform( const LLVector3& pos )
+{
+	mOldXform = mXform;
+	mResetAfterRestoreOldXform = true;
+	setPosition( pos );
+}
+//--------------------------------------------------------------------
+// restoreOldXform()
+//--------------------------------------------------------------------
+void LLJoint::restoreOldXform( void )
+{
+	mResetAfterRestoreOldXform = false;
+	mXform = mOldXform;
+}
+//--------------------------------------------------------------------
+// restoreOldXform()
+//--------------------------------------------------------------------
+void LLJoint::restoreToDefaultXform( void )
+{	
+	mXform = mDefaultXform;
+	setPosition( mXform.getPosition() );	
+}
+#endif //MESH_ENABLED
 
 //--------------------------------------------------------------------
 // getWorldPosition()

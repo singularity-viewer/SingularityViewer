@@ -79,7 +79,7 @@ AITHREADSAFESIMPLE(U64, AIStateMachine::sMaxCount, );
 void AIStateMachine::updateSettings(void)
 {
   Dout(dc::statemachine, "Initializing AIStateMachine::sMaxCount");
-  *AIAccess<U64>(sMaxCount) = LLFastTimer::countsPerSecond() * gSavedSettings.getU32("StateMachineMaxTime") / 1000;
+  *AIAccess<U64>(sMaxCount) = LLFastTimer::sClockResolution * gSavedSettings.getU32("StateMachineMaxTime") / 1000;
 }
 
 //----------------------------------------------------------------------------
@@ -319,7 +319,7 @@ void AIStateMachine::mainloop(void*)
 	  if (total_clocks >= max_count)
 	  {
 #ifndef LL_RELEASE_FOR_DOWNLOAD
-		llwarns << "AIStateMachine::mainloop did run for " << (total_clocks * 1000 / LLFastTimer::countsPerSecond()) << " ms." << llendl;
+		llwarns << "AIStateMachine::mainloop did run for " << (total_clocks * 1000 / LLFastTimer::sClockResolution) << " ms." << llendl;
 #endif
 		std::sort(active_statemachines.begin(), active_statemachines.end(), QueueElementComp());
 		break;

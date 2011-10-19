@@ -37,6 +37,7 @@
 #include "llstring.h"
 #include "llmemory.h"
 #include "llthread.h"
+#include "aithreadsafe.h"
 
 const S32 MIN_IMAGE_MIP =  2; // 4x4, only used for expand/contract power of 2
 const S32 MAX_IMAGE_MIP = 11; // 2048x2048
@@ -241,7 +242,7 @@ protected:
 	void setDataAndSize(U8 *data, S32 width, S32 height, S8 components) ;
 
 public:
-	static S32 sGlobalRawMemory;
+	static AIThreadSafeSimple<S32> sGlobalRawMemory;
 	static S32 sRawImageCount;
 
 	static S32 sRawImageCachedCount;

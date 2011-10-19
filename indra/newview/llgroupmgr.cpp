@@ -53,6 +53,7 @@
 #include "llviewerwindow.h"
 #include "llfloaterdirectory.h"
 #include "llfloatergroupinfo.h"
+#include "llnotificationsutil.h"
 #include "lluictrlfactory.h"
 #if LL_MSVC
 #pragma warning( disable       : 4265 )	// "class has virtual functions, but destructor is not virtual"
@@ -221,7 +222,6 @@ LLGroupMgrGroupData::LLGroupMgrGroupData(const LLUUID& id) :
 	mOpenEnrollment(FALSE), 
 	mMembershipFee(0),
 	mAllowPublish(FALSE),
-	mListInProfile(FALSE),
 	mMaturePublish(FALSE),
 	mChanged(FALSE),
 	mMemberCount(0),
@@ -1377,7 +1377,7 @@ void LLGroupMgr::processCreateGroupReply(LLMessageSystem* msg, void ** data)
 		// *TODO:translate
 		LLSD args;
 		args["MESSAGE"] = message;
-		LLNotifications::instance().add("UnableToCreateGroup", args);
+		LLNotificationsUtil::add("UnableToCreateGroup", args);
 	}
 }
 

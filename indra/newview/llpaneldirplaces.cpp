@@ -50,6 +50,7 @@
 #include "llcombobox.h"
 #include "llfloaterdirectory.h"
 #include "lllineeditor.h"
+#include "llnotificationsutil.h"
 #include "llviewerwindow.h"
 #include "llpaneldirbrowser.h"
 #include "lltextbox.h"
@@ -57,7 +58,6 @@
 #include "llviewercontrol.h"
 #include "llviewermessage.h"
 #include "llworldmap.h"
-#include "llnotify.h"
 
 LLPanelDirPlaces::LLPanelDirPlaces(const std::string& name, LLFloaterDirectory* floater)
 	:	LLPanelDirBrowser(name, floater)
@@ -141,7 +141,7 @@ void LLPanelDirPlaces::performQuery()
 	// possible we threw away all the short words in the query so check length
 	if ( query_string.length() < mMinSearchChars )
 	{
-		LLNotifications::instance().add("SeachFilteredOnShortWordsEmpty");
+		LLNotificationsUtil::add("SeachFilteredOnShortWordsEmpty");
 		return;
 	};
 
@@ -150,7 +150,7 @@ void LLPanelDirPlaces::performQuery()
 	{
 		LLSD args;
 		args["FINALQUERY"] = query_string;
-		LLNotifications::instance().add("SeachFilteredOnShortWords", args);
+		LLNotificationsUtil::add("SeachFilteredOnShortWords", args);
 	};
 
 	std::string catstring = childGetValue("Category").asString();
@@ -207,7 +207,7 @@ void LLPanelDirPlaces::performQuery()
  
 	if (0x0 == flags)
 	{
-		LLNotifications::instance().add("NoContentToSearch");
+		LLNotificationsUtil::add("NoContentToSearch");
 		return; 
 	}
 	

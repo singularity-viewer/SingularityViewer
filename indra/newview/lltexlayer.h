@@ -547,7 +547,7 @@ public:
 	LLVOAvatar*				mAvatar;	 // just backlink, don't LLPointer 
 	LLTexLayerSet*			mTexLayerSet;
 	LLTexLayerSetBuffer*	mLayerSetBuffer;
-	LLUUID					mWearableAssets[WT_COUNT];
+	LLUUID					mWearableAssets[LLWearableType::WT_COUNT];
 	U64						mStartTime;		// Used to measure time baked texture upload requires
 };
 

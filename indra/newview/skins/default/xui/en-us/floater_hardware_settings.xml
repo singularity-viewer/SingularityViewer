@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <floater bottom="-400" can_close="true" can_drag_on_left="false" 
-	can_minimize="true" can_resize="false" height="224"
-	left="50" min_height="200" min_width="600" mouse_opaque="true" 
+	can_minimize="true" can_resize="false" height="244"
+	left="50" min_height="244" min_width="500" mouse_opaque="true" 
 	name="Hardware Settings Floater" title="Hardware Settings" width="500">
 	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
 	     bottom="-42" drop_shadow_visible="true" enabled="true" follows="left|top"
@@ -94,6 +94,16 @@
 	     follows="left|top" height="16" increment="0.1"
 	     initial_val="4" label="Fog Distance Ratio:" label_width="138" left="10"
 	     max_val="10" min_val="0.5" mouse_opaque="true" name="fog" width="202" />
+
+	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+		bottom_delta="-50" drop_shadow_visible="true" enabled="true" follows="left|top"
+		font="SansSerifSmall" h_pad="0" halign="left" height="40"
+		left="10" mouse_opaque="true" name="note" v_pad="0"
+		width="480">
+		Note: the Gamma and Fog Distance Ratio settings are unavailable (since useless) when the
+          Atmospheric Shaders are enabled.
+	</text>
+
 	<button bottom="10" enabled="true" follows="right|bottom" font="SansSerif"
 	     halign="center" height="20" label="OK" label_selected="OK"
 	     left="-110" mouse_opaque="true" name="OK" scale_image="true" width="90" />

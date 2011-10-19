@@ -91,7 +91,7 @@ LLSpeaker::LLSpeaker(const LLUUID& id, const std::string& name, const ESpeakerTy
 
 	gVoiceClient->setUserVolume(id, LLMuteList::getInstance()->getSavedResidentVolume(id));
 
-	mActivityTimer.resetWithExpiry(SPEAKER_TIMEOUT);
+	mActivityTimer.reset(SPEAKER_TIMEOUT);
 }
 
 
@@ -1021,7 +1021,7 @@ LLPointer<LLSpeaker> LLSpeakerMgr::setSpeaker(const LLUUID& id, const std::strin
 		{
 			// keep highest priority status (lowest value) instead of overriding current value
 			speakerp->mStatus = llmin(speakerp->mStatus, status);
-			speakerp->mActivityTimer.resetWithExpiry(SPEAKER_TIMEOUT);
+			speakerp->mActivityTimer.reset(SPEAKER_TIMEOUT);
 			// RN: due to a weird behavior where IMs from attached objects come from the wearer's agent_id
 			// we need to override speakers that we think are objects when we find out they are really
 			// residents
@@ -1329,7 +1329,7 @@ void LLIMSpeakerMgr::updateSpeakers(const LLSD& update)
 				{
 					speakerp->mStatus = LLSpeaker::STATUS_NOT_IN_CHANNEL;
 					speakerp->mDotColor = INACTIVE_COLOR;
-					speakerp->mActivityTimer.resetWithExpiry(SPEAKER_TIMEOUT);
+					speakerp->mActivityTimer.reset(SPEAKER_TIMEOUT);
 				}
 				else if (agent_data["transition"].asString() == "ENTER")
 				{
@@ -1377,7 +1377,7 @@ void LLIMSpeakerMgr::updateSpeakers(const LLSD& update)
 			{
 				speakerp->mStatus = LLSpeaker::STATUS_NOT_IN_CHANNEL;
 				speakerp->mDotColor = INACTIVE_COLOR;
-				speakerp->mActivityTimer.resetWithExpiry(SPEAKER_TIMEOUT);
+				speakerp->mActivityTimer.reset(SPEAKER_TIMEOUT);
 			}
 			else if ( agent_transition == "ENTER")
 			{
@@ -1476,7 +1476,7 @@ void LLLocalSpeakerMgr::updateSpeakerList()
 			{
 				speakerp->mStatus = LLSpeaker::STATUS_NOT_IN_CHANNEL;
 				speakerp->mDotColor = INACTIVE_COLOR;
-				speakerp->mActivityTimer.resetWithExpiry(SPEAKER_TIMEOUT);
+				speakerp->mActivityTimer.reset(SPEAKER_TIMEOUT);
 			}
 		}
 	}

@@ -5,7 +5,7 @@
  * $License$
  */
  
-#version 120
+
 
 //////////////////////////////////////////////////////////
 // The fragment shader for the terrain atmospherics

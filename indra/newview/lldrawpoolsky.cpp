@@ -70,6 +70,7 @@ void LLDrawPoolSky::prerender()
 void LLDrawPoolSky::render(S32 pass)
 {
 	gGL.flush();
+
 	if (mDrawFace.empty())
 	{
 		return;
@@ -86,6 +87,10 @@ void LLDrawPoolSky::render(S32 pass)
 	{
 		mShader = &gObjectFullbrightWaterProgram;
 		mShader->bind();
+	}
+	else if (LLGLSLShader::sNoFixedFunction)
+	{ //just use the UI shader (generic single texture no lighting)
+		gUIProgram.bind();
 	}
 	else
 	{

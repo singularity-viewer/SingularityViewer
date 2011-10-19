@@ -129,7 +129,9 @@ public:
 	void			setHAlign( LLFontGL::HAlign align )		{ mHAlign = align; }
 	LLFontGL::HAlign getHAlign() const						{ return mHAlign; }
 	void			setLeftHPad( S32 pad )					{ mLeftHPad = pad; }
+	S32				getLeftHPad() const						{ return mLeftHPad; }
 	void			setRightHPad( S32 pad )					{ mRightHPad = pad; }
+	S32				getRightHPad() const					{ return mRightHPad; }
 
 	const std::string	getLabelUnselected() const { return wstring_to_utf8str(mUnselectedLabel); }
 	const std::string	getLabelSelected() const { return wstring_to_utf8str(mSelectedLabel); }

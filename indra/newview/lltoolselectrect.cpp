@@ -48,6 +48,7 @@
 #include "llviewerobject.h"
 #include "llviewerobjectlist.h"
 #include "llviewerwindow.h"
+#include "llwindow.h"
 #include "llviewercamera.h"
 
 #include "llglheaders.h"

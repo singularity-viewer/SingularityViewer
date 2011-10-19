@@ -89,6 +89,7 @@ LLJointState *LLPose::getNextJointState()
 //-----------------------------------------------------------------------------
 BOOL LLPose::addJointState(const LLPointer<LLJointState>& jointState)
 {
+	llassert_always(jointState.notNull());
 	if (mJointMap.find(jointState->getJoint()->getName()) == mJointMap.end())
 	{
 		mJointMap[jointState->getJoint()->getName()] = jointState;
@@ -161,6 +162,7 @@ void LLPose::setWeight(F32 weight)
 		// <edit>
 		// there was a crash here
 		// </edit>
+		llassert_always(iter->second.notNull());
 		iter->second->setWeight(weight);
 	}
 	mWeight = weight;

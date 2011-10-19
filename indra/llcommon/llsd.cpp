@@ -754,11 +754,7 @@ void LLSD::insert(const String& k, const LLSD& v) {	makeMap(impl).insert(k, v); 
 LLSD& LLSD::with(const String& k, const LLSD& v)
 										{ 
 											makeMap(impl).insert(k, v); 
-											#ifdef LL_MSVC7
-												return *dynamic_cast<LLSD*>(this);
-											#else
-												return *this;
-											#endif
+											return *this;
 										}
 void LLSD::erase(const String& k)		{ makeMap(impl).erase(k); }
 
@@ -784,11 +780,7 @@ void LLSD::insert(Integer i, const LLSD& v) { makeArray(impl).insert(i, v); }
 LLSD& LLSD::with(Integer i, const LLSD& v)
 										{ 
 											makeArray(impl).insert(i, v); 
-											#ifdef LL_MSVC7
-												return *dynamic_cast<LLSD*>(this);
-											#else
-												return *this;
-											#endif
+											return *this;
 										}
 void LLSD::append(const LLSD& v)		{ makeArray(impl).append(v); }
 void LLSD::erase(Integer i)				{ makeArray(impl).erase(i); }

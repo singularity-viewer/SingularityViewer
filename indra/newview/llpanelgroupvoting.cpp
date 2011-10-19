@@ -35,6 +35,7 @@
 #include "roles_constants.h"
 
 #include "lllineeditor.h"
+#include "llnotificationsutil.h"
 #include "lltextbox.h"
 #include "lltexteditor.h"
 #include "llscrolllistctrl.h"
@@ -648,7 +649,7 @@ void LLPanelGroupVoting::handleResponse(
 				args["MESSAGE"] = self->mPanel.getString("vote_previously_recorded");
 			}
 
-			LLNotifications::instance().add("SystemMessage", args);
+			LLNotificationsUtil::add("SystemMessage", args);
 
 			self->sendGroupVoteHistoryRequest(self->mGroupID);
 		}
@@ -1357,7 +1358,7 @@ void LLPanelGroupVoting::impl::onClickSubmitProposal(void *userdata)
 			//throw up an error dialog
 			LLSD args;
 			args["MESSAGE"] = self->mPanel.getString("empty_proposal_txt");
-			LLNotifications::instance().add("GenericAlert", args);
+			LLNotificationsUtil::add("GenericAlert", args);
 			return;
 		}
 
@@ -1400,7 +1401,7 @@ void LLPanelGroupVoting::impl::onClickViewProposalItem(void *userdata)
 		}
 		else
 		{
-			LLNotifications::instance().add("SelectProposalToView");
+			LLNotificationsUtil::add("SelectProposalToView");
 		}
 	}
 }
@@ -1440,7 +1441,7 @@ void LLPanelGroupVoting::impl::onClickViewHistoryItem(void *userdata)
 		}
 		else
 		{
-			LLNotifications::instance().add("SelectHistoryItemToView");
+			LLNotificationsUtil::add("SelectHistoryItemToView");
 		}
 	}
 }

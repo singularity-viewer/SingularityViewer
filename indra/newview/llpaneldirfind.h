@@ -53,7 +53,7 @@ public:
 
 	/*virtual*/ void draw();
 	/*virtual*/ BOOL postBuild();
-	/*virtual*/ void onVisibilityChange(BOOL new_visibility);
+	/*virtual*/ void handleVisibilityChange(BOOL new_visibility);
 
 	// Pure virtual.  Must be implemented
 	virtual void search(const std::string& search_text) = 0;

@@ -35,6 +35,8 @@
 #include "message.h"
 #include "lltooldraganddrop.h"
 
+#include "llnotificationsutil.h"
+
 #include "llinstantmessage.h"
 #include "lldir.h"
 
@@ -49,6 +51,7 @@
 #include "llhudeffecttrail.h"
 #include "llhudmanager.h"
 #include "llinventorybridge.h"
+#include "llinventorydefines.h"
 #include "llinventorymodel.h"
 #include "llinventoryview.h"
 #include "llmutelist.h"
@@ -98,7 +101,7 @@ public:
 	virtual bool operator()(LLInventoryCategory* cat,
 							LLInventoryItem* item)
 	{
-		if(cat && (cat->getPreferredType() == LLAssetType::AT_NONE))
+		if(cat && (cat->getPreferredType() == LLFolderType::FT_NONE))
 		{
 			return true;
 		}
@@ -115,7 +118,7 @@ public:
 							LLInventoryItem* item)
 	{
 		if(item) return true;
-		if(cat && (cat->getPreferredType() == LLAssetType::AT_NONE))
+		if(cat && (cat->getPreferredType() == LLFolderType::FT_NONE))
 		{
 			return true;
 		}
@@ -1086,7 +1089,7 @@ BOOL LLToolDragAndDrop::handleDropTextureProtections(LLViewerObject* hit_obj,
 		hit_obj->fetchInventoryFromServer();
 		LLSD args;
 		args["ERROR_MESSAGE"] = "Unable to add texture.\nPlease wait a few seconds and try again.";
-		LLNotifications::instance().add("ErrorMessage", args);
+		LLNotificationsUtil::add("ErrorMessage", args);
 		return FALSE;
 	}
 	if (hit_obj->getInventoryItemByAsset(item->getAssetUUID()))
@@ -1278,7 +1281,7 @@ void LLToolDragAndDrop::dropScript(LLViewerObject* hit_obj,
  		// </edit>
 		// VEFFECT: SetScript
 			LLHUDEffectSpiral *effectp = (LLHUDEffectSpiral *)LLHUDManager::getInstance()->createViewerEffect(LLHUDObject::LL_HUD_EFFECT_BEAM, TRUE);
-			effectp->setSourceObject(gAgent.getAvatarObject());
+			effectp->setSourceObject(gAgentAvatarp);
 			effectp->setTargetObject(hit_obj);
 			effectp->setDuration(LL_HUD_DUR_SHORT);
 			effectp->setColor(LLColor4U(gAgent.getEffectColor()));
@@ -1348,7 +1351,7 @@ void LLToolDragAndDrop::dropObject(LLViewerObject* raycast_target,
 	// Check if it's in the trash.
 	bool is_in_trash = false;
 	LLUUID trash_id;
-	trash_id = gInventory.findCategoryUUIDForType(LLAssetType::AT_TRASH);
+	trash_id = gInventory.findCategoryUUIDForType(LLFolderType::FT_TRASH);
 	if(gInventory.isObjectDescendentOf(item->getUUID(), trash_id))
 	{
 		is_in_trash = true;
@@ -1468,7 +1471,7 @@ void LLToolDragAndDrop::dropObject(LLViewerObject* raycast_target,
 		// </edit>
 		// VEFFECT: DropObject
 		LLHUDEffectSpiral *effectp = (LLHUDEffectSpiral *)LLHUDManager::getInstance()->createViewerEffect(LLHUDObject::LL_HUD_EFFECT_BEAM, TRUE);
-		effectp->setSourceObject(gAgent.getAvatarObject());
+		effectp->setSourceObject(gAgentAvatarp);
 		effectp->setPositionGlobal(mLastHitPos);
 		effectp->setDuration(LL_HUD_DUR_SHORT);
 		effectp->setColor(LLColor4U(gAgent.getEffectColor()));
@@ -1536,7 +1539,7 @@ void LLToolDragAndDrop::dropInventory(LLViewerObject* hit_obj,
 		// </edit>
 		// VEFFECT: AddToInventory
 		LLHUDEffectSpiral *effectp = (LLHUDEffectSpiral *)LLHUDManager::getInstance()->createViewerEffect(LLHUDObject::LL_HUD_EFFECT_BEAM, TRUE);
-		effectp->setSourceObject(gAgent.getAvatarObject());
+		effectp->setSourceObject(gAgentAvatarp);
 		effectp->setTargetObject(hit_obj);
 		effectp->setDuration(LL_HUD_DUR_SHORT);
 		effectp->setColor(LLColor4U(gAgent.getEffectColor()));
@@ -1579,7 +1582,7 @@ void LLToolDragAndDrop::giveInventory(const LLUUID& to_agent,
 		LLSD payload;
 		payload["agent_id"] = to_agent;
 		payload["item_id"] = item->getUUID();
-		LLNotifications::instance().add("CannotCopyWarning", LLSD(), payload, 
+		LLNotificationsUtil::add("CannotCopyWarning", LLSD(), payload, 
 		        &LLToolDragAndDrop::handleCopyProtectedItem);
 	}
 }
@@ -1603,12 +1606,12 @@ bool LLToolDragAndDrop::handleCopyProtectedItem(const LLSD& notification, const 
 		}
 		else
 		{
-			LLNotifications::instance().add("CannotGiveItem");		
+			LLNotificationsUtil::add("CannotGiveItem");		
 		}
 		break;
 
 	default: // no, cancel, whatever, who cares, not yes.
-		LLNotifications::instance().add("TransactionCancelled");
+		LLNotificationsUtil::add("TransactionCancelled");
 		break;
 	}
 	return false;
@@ -1652,7 +1655,7 @@ void LLToolDragAndDrop::commitGiveInventoryItem(const LLUUID& to_agent,
 		// </edit>
 		// VEFFECT: giveInventory
 		LLHUDEffectSpiral *effectp = (LLHUDEffectSpiral *)LLHUDManager::getInstance()->createViewerEffect(LLHUDObject::LL_HUD_EFFECT_BEAM, TRUE);
-		effectp->setSourceObject(gAgent.getAvatarObject());
+		effectp->setSourceObject(gAgentAvatarp);
 		effectp->setTargetObject(gObjectList.findObject(to_agent));
 		effectp->setDuration(LL_HUD_DUR_SHORT);
 		effectp->setColor(LLColor4U(gAgent.getEffectColor()));
@@ -1681,7 +1684,7 @@ void LLToolDragAndDrop::giveInventoryCategory(const LLUUID& to_agent,
 	llinfos << "LLToolDragAndDrop::giveInventoryCategory() - "
 			<< cat->getUUID() << llendl;
 
-	LLVOAvatar* my_avatar = gAgent.getAvatarObject();
+	LLVOAvatar* my_avatar = gAgentAvatarp;
 	if( !my_avatar )
 	{
 		return;
@@ -1708,18 +1711,18 @@ void LLToolDragAndDrop::giveInventoryCategory(const LLUUID& to_agent,
 	}
 	if(!complete)
 	{
-		LLNotifications::instance().add("IncompleteInventory");
+		LLNotificationsUtil::add("IncompleteInventory");
 		return;
 	}
  	count = items.count() + cats.count();
  	if(count > MAX_ITEMS)
   	{
-		LLNotifications::instance().add("TooManyItems");
+		LLNotificationsUtil::add("TooManyItems");
   		return;
   	}
  	else if(count == 0)
   	{
-		LLNotifications::instance().add("NoItems");
+		LLNotificationsUtil::add("NoItems");
   		return;
   	}
 	else
@@ -1737,7 +1740,7 @@ void LLToolDragAndDrop::giveInventoryCategory(const LLUUID& to_agent,
 			LLSD payload;
 			payload["agent_id"] = to_agent;
 			payload["folder_id"] = cat->getUUID();
-			LLNotifications::instance().add("CannotCopyCountItems", args, payload, &LLToolDragAndDrop::handleCopyProtectedCategory);
+			LLNotificationsUtil::add("CannotCopyCountItems", args, payload, &LLToolDragAndDrop::handleCopyProtectedCategory);
 		}
 	}
 }
@@ -1773,12 +1776,12 @@ bool LLToolDragAndDrop::handleCopyProtectedCategory(const LLSD& notification, co
 		}
 		else
 		{
-			LLNotifications::instance().add("CannotGiveCategory");
+			LLNotificationsUtil::add("CannotGiveCategory");
 		}
 		break;
 
 	default: // no, cancel, whatever, who cares, not yes.
-		LLNotifications::instance().add("TransactionCancelled");
+		LLNotificationsUtil::add("TransactionCancelled");
 		break;
 	}
 	return false;
@@ -1810,12 +1813,12 @@ void LLToolDragAndDrop::commitGiveInventoryCategory(const LLUUID& to_agent,
  	S32 count = items.count() + cats.count();
  	if(count > MAX_ITEMS)
   	{
-		LLNotifications::instance().add("TooManyItems");
+		LLNotificationsUtil::add("TooManyItems");
   		return;
   	}
  	else if(count == 0)
   	{
-		LLNotifications::instance().add("NoItems");
+		LLNotificationsUtil::add("NoItems");
   		return;
   	}
 	else
@@ -1875,7 +1878,7 @@ void LLToolDragAndDrop::commitGiveInventoryCategory(const LLUUID& to_agent,
  			// </edit>
 			// VEFFECT: giveInventoryCategory
 			LLHUDEffectSpiral *effectp = (LLHUDEffectSpiral *)LLHUDManager::getInstance()->createViewerEffect(LLHUDObject::LL_HUD_EFFECT_BEAM, TRUE);
-			effectp->setSourceObject(gAgent.getAvatarObject());
+			effectp->setSourceObject(gAgentAvatarp);
 			effectp->setTargetObject(gObjectList.findObject(to_agent));
 			effectp->setDuration(LL_HUD_DUR_SHORT);
 			effectp->setColor(LLColor4U(gAgent.getEffectColor()));
@@ -1910,7 +1913,7 @@ BOOL LLToolDragAndDrop::isInventoryGiveAcceptable(LLInventoryItem* item)
 	if(item->getPermissions().allowCopyBy(gAgent.getID())) copyable = TRUE;
 	
 	// <edit>
-	/*LLVOAvatar* my_avatar = gAgent.getAvatarObject();
+	/*LLVOAvatar* my_avatar = gAgentAvatarp;
 	if(!my_avatar)
 	{
 		return FALSE;
@@ -1969,7 +1972,7 @@ BOOL LLToolDragAndDrop::isInventoryGroupGiveAcceptable(LLInventoryItem* item)
 		return FALSE;
 	}
 
-	LLVOAvatar* my_avatar = gAgent.getAvatarObject();
+	LLVOAvatar* my_avatar = gAgentAvatarp;
 	if(!my_avatar)
 	{
 		return FALSE;
@@ -2030,7 +2033,7 @@ EAcceptance LLToolDragAndDrop::willObjectAcceptInventory(LLViewerObject* obj, LL
 	switch(item->getType())
 	{
 	case LLAssetType::AT_OBJECT:
-		my_avatar = gAgent.getAvatarObject();
+		my_avatar = gAgentAvatarp;
 		if(my_avatar && my_avatar->isWearingAttachment(item->getUUID()))
 		{
 				worn = TRUE;
@@ -2068,7 +2071,7 @@ EAcceptance LLToolDragAndDrop::willObjectAcceptInventory(LLViewerObject* obj, LL
 		}
 		else if ( (gRlvHandler.hasBehaviour(RLV_BHVR_UNSIT)) || (gRlvHandler.hasBehaviour(RLV_BHVR_SITTP)) )
 		{
-			LLVOAvatar* pAvatar = gAgent.getAvatarObject();
+			LLVOAvatar* pAvatar = gAgentAvatarp;
 			if ( (pAvatar) && (pAvatar->isSitting()) && (pAvatar->getRoot() == pObjRoot) )
 				return ACCEPT_NO_LOCKED;	// ... or on a linkset the avie is sitting on under @unsit=n/@sittp=n
 		}
@@ -2193,7 +2196,7 @@ EAcceptance LLToolDragAndDrop::dad3dRezAttachmentFromInv(
 	if(!item || !item->isComplete()) return ACCEPT_NO;
 
 	// must not be in the trash
-	LLUUID trash_id(gInventory.findCategoryUUIDForType(LLAssetType::AT_TRASH));
+	LLUUID trash_id(gInventory.findCategoryUUIDForType(LLFolderType::FT_TRASH));
 	if( gInventory.isObjectDescendentOf( item->getUUID(), trash_id ) )
 	{
 		return ACCEPT_NO;
@@ -2201,7 +2204,7 @@ EAcceptance LLToolDragAndDrop::dad3dRezAttachmentFromInv(
 
 	// must not be already wearing it
 	// <edit>
-	//LLVOAvatar* my_avatar = gAgent.getAvatarObject();
+	//LLVOAvatar* my_avatar = gAgentAvatarp;
 	//if( !my_avatar || my_avatar->isWearingAttachment( item->getUUID() ) )
 	//{
 	//	return ACCEPT_NO;
@@ -2270,7 +2273,7 @@ EAcceptance LLToolDragAndDrop::dad3dRezObjectOnLand(
 	if(!item || !item->isComplete()) return ACCEPT_NO;
 
 	// <edit>
-	//LLVOAvatar* my_avatar = gAgent.getAvatarObject();
+	//LLVOAvatar* my_avatar = gAgentAvatarp;
 	//if( !my_avatar || my_avatar->isWearingAttachment( item->getUUID() ) )
 	//{
 	//	return ACCEPT_NO;
@@ -2304,7 +2307,7 @@ EAcceptance LLToolDragAndDrop::dad3dRezObjectOnLand(
 
 	// Check if it's in the trash.
 	LLUUID trash_id;
-	trash_id = gInventory.findCategoryUUIDForType(LLAssetType::AT_TRASH);
+	trash_id = gInventory.findCategoryUUIDForType(LLFolderType::FT_TRASH);
 	if(gInventory.isObjectDescendentOf(item->getUUID(), trash_id))
 	{
 		accept = ACCEPT_YES_SINGLE;
@@ -2346,7 +2349,7 @@ EAcceptance LLToolDragAndDrop::dad3dRezObjectOnObject(
 	locateInventory(item, cat);
 	if(!item || !item->isComplete()) return ACCEPT_NO;
 	// <edit>
-	//LLVOAvatar* my_avatar = gAgent.getAvatarObject();
+	//LLVOAvatar* my_avatar = gAgentAvatarp;
 	//if( !my_avatar || my_avatar->isWearingAttachment( item->getUUID() ) )
 	//{
 	//	return ACCEPT_NO;
@@ -2397,7 +2400,7 @@ EAcceptance LLToolDragAndDrop::dad3dRezObjectOnObject(
 
 	// Check if it's in the trash.
 	LLUUID trash_id;
-	trash_id = gInventory.findCategoryUUIDForType(LLAssetType::AT_TRASH);
+	trash_id = gInventory.findCategoryUUIDForType(LLFolderType::FT_TRASH);
 	if(gInventory.isObjectDescendentOf(item->getUUID(), trash_id))
 	{
 		accept = ACCEPT_YES_SINGLE;
@@ -2505,7 +2508,7 @@ EAcceptance LLToolDragAndDrop::dad3dTextureObject(
 		
 		// VEFFECT: SetTexture
 		LLHUDEffectSpiral *effectp = (LLHUDEffectSpiral *)LLHUDManager::getInstance()->createViewerEffect(LLHUDObject::LL_HUD_EFFECT_BEAM, TRUE);
-		effectp->setSourceObject(gAgent.getAvatarObject());
+		effectp->setSourceObject(gAgentAvatarp);
 		effectp->setTargetObject(obj);
 		effectp->setDuration(LL_HUD_DUR_SHORT);
 		effectp->setColor(LLColor4U(gAgent.getEffectColor()));
@@ -2542,7 +2545,7 @@ EAcceptance LLToolDragAndDrop::dad3dWearItem(
 	if(mSource == SOURCE_AGENT || mSource == SOURCE_LIBRARY)
 	{
 		// it's in the agent inventory
-		LLUUID trash_id = gInventory.findCategoryUUIDForType(LLAssetType::AT_TRASH);
+		LLUUID trash_id = gInventory.findCategoryUUIDForType(LLFolderType::FT_TRASH);
 		if( gInventory.isObjectDescendentOf( item->getUUID(), trash_id ) )
 		{
 			return ACCEPT_NO;
@@ -2561,7 +2564,7 @@ EAcceptance LLToolDragAndDrop::dad3dWearItem(
 			// destroy clothing items.
 			if (!gAgentWearables.areWearablesLoaded()) 
 			{
-				LLNotifications::instance().add("CanNotChangeAppearanceUntilLoaded");
+				LLNotificationsUtil::add("CanNotChangeAppearanceUntilLoaded");
 				return ACCEPT_NO;
 			}
 
@@ -2604,7 +2607,7 @@ EAcceptance LLToolDragAndDrop::dad3dActivateGesture(
 	if(mSource == SOURCE_AGENT || mSource == SOURCE_LIBRARY)
 	{
 		// it's in the agent inventory
-		LLUUID trash_id = gInventory.findCategoryUUIDForType(LLAssetType::AT_TRASH);
+		LLUUID trash_id = gInventory.findCategoryUUIDForType(LLFolderType::FT_TRASH);
 		if( gInventory.isObjectDescendentOf( item->getUUID(), trash_id ) )
 		{
 			return ACCEPT_NO;
@@ -2628,7 +2631,7 @@ EAcceptance LLToolDragAndDrop::dad3dActivateGesture(
 			}
 			else
 			{
-				gGestureManager.activateGesture(item->getUUID());
+				LLGestureMgr::instance().activateGesture(item->getUUID());
 				gInventory.updateItem(item);
 				gInventory.notifyObservers();
 			}
@@ -2656,14 +2659,14 @@ EAcceptance LLToolDragAndDrop::dad3dWearCategory(
 		// destroy clothing items.
 		if (!gAgentWearables.areWearablesLoaded()) 
 		{
-			LLNotifications::instance().add("CanNotChangeAppearanceUntilLoaded");
+			LLNotificationsUtil::add("CanNotChangeAppearanceUntilLoaded");
 			return ACCEPT_NO;
 		}
 	}
 
 	if(mSource == SOURCE_AGENT)
 	{
-		LLUUID trash_id(gInventory.findCategoryUUIDForType(LLAssetType::AT_TRASH));
+		LLUUID trash_id(gInventory.findCategoryUUIDForType(LLFolderType::FT_TRASH));
 		if( gInventory.isObjectDescendentOf( category->getUUID(), trash_id ) )
 		{
 			return ACCEPT_NO;
@@ -2855,7 +2858,7 @@ EAcceptance LLToolDragAndDrop::dad3dGiveInventoryObject(
 		// cannot give away no-transfer objects
 		return ACCEPT_NO;
 	}
-	LLVOAvatar* avatar = gAgent.getAvatarObject();
+	LLVOAvatar* avatar = gAgentAvatarp;
 	if(avatar && avatar->isWearingAttachment( item->getUUID() ) )
 	{
 		// You can't give objects that are attached to you

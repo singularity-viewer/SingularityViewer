@@ -111,7 +111,7 @@ public:
 	LLMessagePollInfo(void) : mPool(LLThread::tldata().mRootPool) { }
 	apr_socket_t *mAPRSocketp;
 	apr_pollfd_t mPollFD;
-	AIAPRPool mPool;
+	LLAPRPool mPool;
 };
 
 namespace

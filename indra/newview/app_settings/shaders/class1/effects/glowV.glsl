@@ -5,7 +5,7 @@
  * $License$
  */
  
-#version 120
+
 
 uniform vec2 glowDelta;
 

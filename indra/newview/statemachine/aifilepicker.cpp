@@ -82,7 +82,7 @@ std::string AIFilePicker::get_folder(std::string const& default_path, std::strin
 {
 	AIAccess<context_map_type> wContextMap(sContextMap);
 	context_map_type::iterator iter = wContextMap->find(context);
-	if (iter != wContextMap->end())
+	if (iter != wContextMap->end() && !iter->second.empty())
 	{
 		return iter->second;
 	}
@@ -91,22 +91,37 @@ std::string AIFilePicker::get_folder(std::string const& default_path, std::strin
 		LL_DEBUGS("Plugin") << "context \"" << context << "\" not found. Returning default_path \"" << default_path << "\"." << LL_ENDL;
 		return default_path;
 	}
-	else if ((iter = wContextMap->find("savefile")) != wContextMap->end())
+	else if ((iter = wContextMap->find("savefile")) != wContextMap->end() && !iter->second.empty())
 	{
 		LL_DEBUGS("Plugin") << "context \"" << context << "\" not found and default_path empty. Returning context \"savefile\": \"" << iter->second << "\"." << LL_ENDL;
 		return iter->second;
 	}
 	else
 	{
-		LL_DEBUGS("Plugin") << "context \"" << context << "\" not found, default_path empty and context \"savefile\" not found. Returning \"$HOME\"." << LL_ENDL;
 		// This is the last resort when all else failed. Open the file chooser in directory 'home'.
-		char const* home = NULL;
 #if LL_WINDOWS
-		home = getenv("HOMEPATH");
+		char const* envname = "USERPROFILE";
 #else
-		home = getenv("HOME");
+		char const* envname = "HOME";
 #endif
-		return home ? home : "";
+		char const* home = getenv(envname);
+		if (!home || home[0] == '\0')
+		{
+#if LL_WINDOWS
+			// On windows, the filepicker window won't pop up at all if we pass an empty string.
+			home = "C:\\";
+#else
+			home = "/";
+#endif
+			LL_DEBUGS("Plugin") << "context \"" << context << "\" not found, default_path empty, context \"savefile\" not found "
+			  "and environment variable \"$" << envname << "\" empty! Returning \"" << home << "\"." << LL_ENDL;
+		}
+		else
+		{
+			LL_DEBUGS("Plugin") << "context \"" << context << "\" not found, default_path empty and context \"savefile\" not found. "
+			  "Returning environment variable \"$" << envname << "\" (" << home << ")." << LL_ENDL;
+		}
+		return home;
 	}
 }
 

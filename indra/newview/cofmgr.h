@@ -28,7 +28,7 @@ class LLCOFMgr : public LLSingleton<LLCOFMgr>
 public:
 	void                checkCOF();
 	void                fetchCOF();
-	static const LLUUID getCOF() { return gInventory.findCategoryUUIDForType(LLAssetType::AT_CURRENT_OUTFIT); }
+	static const LLUUID getCOF() { return gInventory.findCategoryUUIDForType(LLFolderType::FT_CURRENT_OUTFIT); }
 	static void         getDescendentsOfAssetType(const LLUUID& idCat, LLInventoryModel::item_array_t& items, 
 	                                              LLAssetType::EType typeAsset, bool fFollowFolderLinks);
 	bool                isLinkInCOF(const LLUUID& idItem);

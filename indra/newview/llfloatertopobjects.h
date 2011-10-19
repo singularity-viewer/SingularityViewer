@@ -56,6 +56,11 @@ public:
 
 	static void setMode(U32 mode)		{ if (sInstance) sInstance->mCurrentMode = mode; }
 
+	void onProfile(void* data);
+	void onKick(void* data);
+	void onTP(void* data);
+	void onLagWarning(void* data);
+
 private:
 	LLFloaterTopObjects();
 	~LLFloaterTopObjects();
@@ -64,6 +69,7 @@ private:
 
 	static void onCommitObjectsList(LLUICtrl* ctrl, void* data);
 	static void onDoubleClickObjectsList(void* data);
+	 void lookAtAvatar();
 	static void onClickShowBeacon(void* data);
 
 	void doToObjects(int action, bool all);
@@ -73,6 +79,11 @@ private:
 	static void onDisableAll(void* data);
 	static void onDisableSelected(void* data);
 
+	static void onProfileBtn(void* data);
+	static void onKickBtn(void* data);
+	static void onTPBtn(void* data);
+	static void onLagWarningBtn(void* data);
+	
 	static bool callbackReturnAll(const LLSD& notification, const LLSD& response);
 	static bool callbackDisableAll(const LLSD& notification, const LLSD& response);
 

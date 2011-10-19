@@ -128,9 +128,9 @@ public:
 	static LLView* fromXML(LLXMLNodePtr node, LLView *parent, LLUICtrlFactory *factory);
 	void initFloaterXML(LLXMLNodePtr node, LLView *parent, LLUICtrlFactory *factory, BOOL open = TRUE);
 
-	/*virtual*/ void userSetShape(const LLRect& new_rect);
+	/*virtual*/ void handleReshape(const LLRect& new_rect, bool by_user = false);
 	/*virtual*/ BOOL canSnapTo(const LLView* other_view);
-	/*virtual*/ void snappedTo(const LLView* snap_view);
+	/*virtual*/ void setSnappedTo(const LLView* snap_view);
 	/*virtual*/ void setFocus( BOOL b );
 	/*virtual*/ void setIsChrome(BOOL is_chrome);
 
@@ -297,7 +297,9 @@ private:
 	bool			mDragOnLeft;
 
 	BOOL			mButtonsEnabled[BUTTON_COUNT];
+protected:
 	LLButton*		mButtons[BUTTON_COUNT];
+private:
 	F32				mButtonScale;
 	BOOL			mAutoFocus;
 	LLHandle<LLFloater> mSnappedTo;

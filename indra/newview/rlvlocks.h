@@ -28,7 +28,7 @@
 #include "llagentwearables.h"
 #include "llviewerjointattachment.h"
 #include "llviewerobject.h"
-#include "llvoavatar.h"
+#include "llvoavatarself.h"
 #include "lleventtimer.h"
 
 #include "rlvdefines.h"
@@ -225,16 +225,16 @@ class RlvWearableLocks
 {
 public:
 	// Adds an eLock type lock (held by idRlvObj) for the wearable type
-	void addWearableTypeLock(EWearableType eType, const LLUUID& idRlvObj, ERlvLockMask eLock);
+	void addWearableTypeLock(LLWearableType::EType eType, const LLUUID& idRlvObj, ERlvLockMask eLock);
 
 	// Returns TRUE if there is at least 1 non-removable wearable currently worn on this wearable type
-	bool hasLockedWearable(EWearableType eType) const;
+	bool hasLockedWearable(LLWearableType::EType eType) const;
 	// Returns TRUE if there is at least 1 eLock type locked wearable type (RLV_LOCK_ANY = RLV_LOCK_ADD *or* RLV_LOCK_REMOVE)
 	//   - RLV_LOCK_REMOVE: specific wearable locked *or* any wearable type locked (regardless of whether it currently has wearables)
 	bool hasLockedWearableType(ERlvLockMask eLock) const;
 
 	// Removes an eLock type lock (held by idRlvObj) for the wearable type
-	void removeWearableTypeLock(EWearableType eType, const LLUUID& idRlvObj, ERlvLockMask eLock);
+	void removeWearableTypeLock(LLWearableType::EType eType, const LLUUID& idRlvObj, ERlvLockMask eLock);
 
 	// Returns TRUE if the wearable is RLV_LOCK_REMOVE locked
 	bool isLockedWearable(const LLWearable* pWearable) const;
@@ -244,9 +244,9 @@ public:
 	// NOTE: isLockedWearableType doesn't check if a worn wearable is a specific wearable lock so don't let these be called by the outside
 protected:
 	// Returns TRUE if the wearable type is eLock type locked
-	bool isLockedWearableType(EWearableType eType, ERlvLockMask eLock) const;
+	bool isLockedWearableType(LLWearableType::EType eType, ERlvLockMask eLock) const;
 	// Returns TRUE if the wearable type is eLock type locked by anything other than idRlvObj
-	bool isLockedWearableTypeExcept(EWearableType eType, ERlvLockMask eLock, const LLUUID& idRlvObj) const;
+	bool isLockedWearableTypeExcept(LLWearableType::EType eType, ERlvLockMask eLock, const LLUUID& idRlvObj) const;
 
 	/*
 	 * canWear/canRemove trivial helper functions (note that a more approriate name might be userCanWear/userCanRemove)
@@ -255,18 +255,18 @@ public:
 	// Returns whether the inventory item can be worn by the user
 	ERlvWearMask canWear(const LLViewerInventoryItem* pItem) const;
 	// Returns whether the wearable type can be worn to by the user
-	ERlvWearMask canWear(EWearableType eType) const;
+	ERlvWearMask canWear(LLWearableType::EType eType) const;
 
 	// Returns TRUE if the inventory item can be removed by the user
 	bool canRemove(const LLInventoryItem* pItem) const;
 	// Returns TRUE if the wearable type has at least one wearable that can be removed by the user
-	bool canRemove(EWearableType eType) const;
+	bool canRemove(LLWearableType::EType eType) const;
 
 	/*
 	 * Member variables
 	 */
 public:
-	typedef std::multimap<EWearableType, LLUUID> rlv_wearabletypelock_map_t;
+	typedef std::multimap<LLWearableType::EType, LLUUID> rlv_wearabletypelock_map_t;
 	// Accessors for RlvFloaterLocks
 	const rlv_wearabletypelock_map_t& getWearableTypeLocks(ERlvLockMask eLock) { return (RLV_LOCK_ADD == eLock) ? m_WearableTypeAdd : m_WearableTypeRem; }
 protected:
@@ -283,13 +283,13 @@ extern RlvWearableLocks gRlvWearableLocks;
 // Checked: 2010-03-03 (RLVa-1.1.3a) | Modified: RLVa-0.2.0d
 inline LLViewerJointAttachment* RlvAttachPtLookup::getAttachPoint(const std::string& strText)
 {
-	return (gAgent.getAvatarObject()) ? get_if_there(gAgent.getAvatarObject()->mAttachmentPoints, getAttachPointIndex(strText), (LLViewerJointAttachment*)NULL) : NULL;
+	return (gAgentAvatarp) ? get_if_there(gAgentAvatarp->mAttachmentPoints, getAttachPointIndex(strText), (LLViewerJointAttachment*)NULL) : NULL;
 }
 
 // Checked: 2010-03-03 (RLVa-1.1.3a) | Modified: RLVa-1.0.1b
 inline LLViewerJointAttachment* RlvAttachPtLookup::getAttachPoint(const LLInventoryItem* pItem)
 {
-	return (gAgent.getAvatarObject()) ? get_if_there(gAgent.getAvatarObject()->mAttachmentPoints, getAttachPointIndex(pItem), (LLViewerJointAttachment*)NULL) : NULL;
+	return (gAgentAvatarp) ? get_if_there(gAgentAvatarp->mAttachmentPoints, getAttachPointIndex(pItem), (LLViewerJointAttachment*)NULL) : NULL;
 }
 
 // Checked: 2010-03-03 (RLVa-1.2.0a) | Modified: RLVa-1.2.0a
@@ -341,7 +341,7 @@ inline ERlvWearMask RlvAttachmentLocks::canAttach(const LLViewerJointAttachment*
 inline bool RlvAttachmentLocks::canDetach(const LLInventoryItem* pItem) const
 {
 	const LLViewerObject* pAttachObj = 
-		((pItem) && (gAgent.getAvatarObject())) ? gAgent.getAvatarObject()->getWornAttachment(pItem->getLinkedUUID()) : NULL;
+		((pItem) && (gAgentAvatarp)) ? gAgentAvatarp->getWornAttachment(pItem->getLinkedUUID()) : NULL;
 	return (pAttachObj) && (!isLockedAttachment(pAttachObj));
 }
 
@@ -415,7 +415,7 @@ inline ERlvWearMask RlvWearableLocks::canWear(const LLViewerInventoryItem* pItem
 }
 
 // Checked: 2010-05-14 (RLVa-1.2.0g) | Modified: RLVa-1.2.0g
-inline ERlvWearMask RlvWearableLocks::canWear(EWearableType eType) const
+inline ERlvWearMask RlvWearableLocks::canWear(LLWearableType::EType eType) const
 {
 	// The specified wearable type can be worn on if:
 	//   - the wearable type itself isn't RLV_LOCK_ADD locked => RLV_WEAR_ADD
@@ -447,7 +447,7 @@ inline bool RlvWearableLocks::isLockedWearable(const LLWearable* pWearable) cons
 }
 
 // Checked: 2010-03-19 (RLVa-1.2.0c) | Added: RLVa-1.2.0a
-inline bool RlvWearableLocks::isLockedWearableType(EWearableType eType, ERlvLockMask eLock) const
+inline bool RlvWearableLocks::isLockedWearableType(LLWearableType::EType eType, ERlvLockMask eLock) const
 {
 	return
 		( (eLock & RLV_LOCK_REMOVE) && (m_WearableTypeRem.find(eType) != m_WearableTypeRem.end()) ) ||

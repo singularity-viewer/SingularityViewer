@@ -2,83 +2,70 @@
  * @file llagentaccess_test.cpp
  * @brief LLAgentAccess tests
  *
- * $LicenseInfo:firstyear=2001&license=viewergpl$
- * 
- * Copyright (c) 2001-2009, Linden Research, Inc.
- * 
+ * $LicenseInfo:firstyear=2001&license=viewerlgpl$
  * Second Life Viewer Source Code
- * The source code in this file ("Source Code") is provided by Linden Lab
- * to you under the terms of the GNU General Public License, version 2.0
- * ("GPL"), unless you have obtained a separate licensing agreement
- * ("Other License"), formally executed by you and Linden Lab.  Terms of
- * the GPL can be found in doc/GPL-license.txt in this distribution, or
- * online at http://secondlifegrid.net/programs/open_source/licensing/gplv2
+ * Copyright (C) 2010, Linden Research, Inc.
  * 
- * There are special exceptions to the terms and conditions of the GPL as
- * it is applied to this Source Code. View the full text of the exception
- * in the file doc/FLOSS-exception.txt in this software distribution, or
- * online at
- * http://secondlifegrid.net/programs/open_source/licensing/flossexception
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation;
+ * version 2.1 of the License only.
  * 
- * By copying, modifying or distributing this software, you acknowledge
- * that you have read and understood your obligations described above,
- * and agree to abide by those obligations.
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
  * 
- * ALL LINDEN LAB SOURCE CODE IS PROVIDED "AS IS." LINDEN LAB MAKES NO
- * WARRANTIES, EXPRESS, IMPLIED OR OTHERWISE, REGARDING ITS ACCURACY,
- * COMPLETENESS OR PERFORMANCE.
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * 
+ * Linden Research, Inc., 945 Battery Street, San Francisco, CA  94111  USA
  * $/LicenseInfo$
  */
+
+#include "linden_common.h"
 #include "../test/lltut.h"
 
 #include "../llagentaccess.h"
 
-#include "llcontrolgroupreader.h"
+#include "llcontrol.h"
 #include "indra_constants.h"
 
 #include <iostream>
 
-class LLControlGroupReader_Test : public LLControlGroupReader
-{
-public:
-	LLControlGroupReader_Test() : test_preferred_maturity(SIM_ACCESS_PG) {}
-	
-	virtual std::string getString(const std::string& name) const
-	{
-		return "";
-	}
-	virtual std::string	getText(const std::string& name)
-	{
-		return "";
-	}
-	virtual BOOL getBOOL(const std::string& name)
-	{
-		return false;
-	}
-	virtual S32	getS32(const std::string& name)
-	{
-		return 0;
-	}
-	virtual F32 getF32(const std::string& name)
-	{
-		return 0;
-	}
-	virtual U32	getU32(const std::string& name)
-	{
-		return test_preferred_maturity;
-	}
-	
-	//--------------------------------------
-	// Everything from here down is test code and not part of the interface
-	void setPreferredMaturity(U32 m)
-	{
-		test_preferred_maturity = m;
-	}
-private:
-	U32 test_preferred_maturity;
-	
-};
+//----------------------------------------------------------------------------
+// Implementation of enough of LLControlGroup to support the tests:
 
+static U32 test_preferred_maturity = SIM_ACCESS_PG;
+
+LLControlGroup::LLControlGroup(const std::string& name)
+	: LLInstanceTracker<LLControlGroup, std::string>(name)
+{
+}
+
+LLControlGroup::~LLControlGroup()
+{
+}
+
+// Implementation of just the LLControlGroup methods we requre
+BOOL LLControlGroup::declareU32(const std::string& name, U32 initial_val, const std::string& comment, BOOL persist)
+{
+	test_preferred_maturity = initial_val;
+	return true;
+}
+
+void LLControlGroup::setU32(const std::string& name, U32 val)
+{
+	test_preferred_maturity = val;
+}
+
+U32 LLControlGroup::getU32(const std::string& name)
+{
+	return test_preferred_maturity;
+}
+//----------------------------------------------------------------------------
+	
 namespace tut
 {
     struct agentaccess
@@ -87,25 +74,26 @@ namespace tut
     
 	typedef test_group<agentaccess> agentaccess_t;
 	typedef agentaccess_t::object agentaccess_object_t;
-	tut::agentaccess_t tut_agentaccess("agentaccess");
+	tut::agentaccess_t tut_agentaccess("LLAgentAccess");
 
 	template<> template<>
 	void agentaccess_object_t::test<1>()
 	{
-		LLControlGroupReader_Test cgr;
+		LLControlGroup cgr("test");
+		cgr.declareU32("PreferredMaturity", SIM_ACCESS_PG, "declared_for_test", FALSE);
 		LLAgentAccess aa(cgr);
 		
-		cgr.setPreferredMaturity(SIM_ACCESS_PG);
+		cgr.setU32("PreferredMaturity", SIM_ACCESS_PG);
 		ensure("1 prefersPG",     aa.prefersPG());
 		ensure("1 prefersMature", !aa.prefersMature());
 		ensure("1 prefersAdult",  !aa.prefersAdult());
 		
-		cgr.setPreferredMaturity(SIM_ACCESS_MATURE);
+		cgr.setU32("PreferredMaturity", SIM_ACCESS_MATURE);
 		ensure("2 prefersPG",     !aa.prefersPG());
 		ensure("2 prefersMature", aa.prefersMature());
 		ensure("2 prefersAdult",  !aa.prefersAdult());
 		
-		cgr.setPreferredMaturity(SIM_ACCESS_ADULT);
+		cgr.setU32("PreferredMaturity", SIM_ACCESS_ADULT);
 		ensure("3 prefersPG",     !aa.prefersPG());
 		ensure("3 prefersMature", aa.prefersMature());
 		ensure("3 prefersAdult",  aa.prefersAdult());
@@ -114,7 +102,8 @@ namespace tut
 	template<> template<>
 	void agentaccess_object_t::test<2>()
 	{
-		LLControlGroupReader_Test cgr;
+		LLControlGroup cgr("test");
+		cgr.declareU32("PreferredMaturity", SIM_ACCESS_PG, "declared_for_test", FALSE);
 		LLAgentAccess aa(cgr);
 		
 		// make sure default is PG
@@ -163,7 +152,8 @@ namespace tut
 	template<> template<>
 	void agentaccess_object_t::test<3>()
 	{
-		LLControlGroupReader_Test cgr;
+		LLControlGroup cgr("test");
+		cgr.declareU32("PreferredMaturity", SIM_ACCESS_PG, "declared_for_test", FALSE);
 		LLAgentAccess aa(cgr);
 		
 		ensure("starts normal", !aa.isGodlike());
@@ -186,7 +176,8 @@ namespace tut
 	template<> template<>
 	void agentaccess_object_t::test<4>()
 	{
-		LLControlGroupReader_Test cgr;
+		LLControlGroup cgr("test");
+		cgr.declareU32("PreferredMaturity", SIM_ACCESS_PG, "declared_for_test", FALSE);
 		LLAgentAccess aa(cgr);
 		
 		ensure("1 pg to start", aa.wantsPGOnly());
@@ -211,12 +202,12 @@ namespace tut
 		ensure("2 mature pref pg", !aa.canAccessMature());
 		ensure("3 mature pref pg", !aa.canAccessAdult());
 		
-		cgr.setPreferredMaturity(SIM_ACCESS_MATURE);
+		cgr.setU32("PreferredMaturity", SIM_ACCESS_MATURE);
 		ensure("1 mature", !aa.wantsPGOnly());
 		ensure("2 mature", aa.canAccessMature());
 		ensure("3 mature", !aa.canAccessAdult());
 		
-		cgr.setPreferredMaturity(SIM_ACCESS_PG);
+		cgr.setU32("PreferredMaturity", SIM_ACCESS_PG);
 		ensure("1 mature pref pg", aa.wantsPGOnly());
 		ensure("2 mature pref pg", !aa.canAccessMature());
 		ensure("3 mature pref pg", !aa.canAccessAdult());
@@ -226,14 +217,14 @@ namespace tut
 		ensure("2 adult pref pg", !aa.canAccessMature());
 		ensure("3 adult pref pg", !aa.canAccessAdult());
 
-		cgr.setPreferredMaturity(SIM_ACCESS_ADULT);
+		cgr.setU32("PreferredMaturity", SIM_ACCESS_ADULT);
 		ensure("1 adult", !aa.wantsPGOnly());
 		ensure("2 adult", aa.canAccessMature());
 		ensure("3 adult", aa.canAccessAdult());
 
 		// make sure that even if pref is high, if access is low we block access
 		// this shouldn't occur in real life but we want to be safe
-		cgr.setPreferredMaturity(SIM_ACCESS_ADULT);
+		cgr.setU32("PreferredMaturity", SIM_ACCESS_ADULT);
 		aa.setMaturity('P');
 		ensure("1 pref adult, actual pg", aa.wantsPGOnly());
 		ensure("2 pref adult, actual pg", !aa.canAccessMature());
@@ -244,7 +235,8 @@ namespace tut
 	template<> template<>
 	void agentaccess_object_t::test<5>()
 	{
-		LLControlGroupReader_Test cgr;
+		LLControlGroup cgr("test");
+		cgr.declareU32("PreferredMaturity", SIM_ACCESS_PG, "declared_for_test", FALSE);
 		LLAgentAccess aa(cgr);
 		
 		ensure("1 transition starts false", !aa.isInTransition());
@@ -252,6 +244,22 @@ namespace tut
 		ensure("2 transition now true", aa.isInTransition());
 	}
 
+	/*
+	template<> template<>
+	void agentaccess_object_t::test<6>()
+	{
+		LLControlGroup cgr("test");
+		cgr.declareU32("PreferredMaturity", SIM_ACCESS_PG, "declared_for_test", FALSE);
+		LLAgentAccess aa(cgr);
+		
+		cgr.setU32("PreferredMaturity", SIM_ACCESS_ADULT);
+		aa.setMaturity('M');
+		ensure("1 preferred maturity pegged to M when maturity is M", cgr.getU32("PreferredMaturity") == SIM_ACCESS_MATURE);
+		
+		aa.setMaturity('P');
+		ensure("1 preferred maturity pegged to P when maturity is P", cgr.getU32("PreferredMaturity") == SIM_ACCESS_PG);
+	}
+	*/
 }
 
 

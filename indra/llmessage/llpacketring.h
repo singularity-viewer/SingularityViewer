@@ -36,11 +36,10 @@
 
 #include <queue>
 
-#include "llpacketbuffer.h"
 #include "llhost.h"
-#include "net.h"
+#include "llpacketbuffer.h"
 #include "llthrottle.h"
-
+#include "net.h"
 
 class LLPacketRing
 {

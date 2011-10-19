@@ -37,7 +37,8 @@
 #include "llfloater.h"
 #include "llfloaterland.h"
 #include "lllineeditor.h"
-#include "llnotify.h"
+#include "llnotifications.h"
+#include "llnotificationsutil.h"
 #include "llparcel.h"
 #include "llselectmgr.h"
 #include "lltexturectrl.h"
@@ -448,7 +449,7 @@ void LLFloaterSellLandUI::doShowObjects(void *userdata)
 
 	send_parcel_select_objects(parcel->getLocalID(), RT_SELL);
 
-	LLNotifications::instance().add("TransferObjectsHighlighted",
+	LLNotificationsUtil::add("TransferObjectsHighlighted",
 						LLSD(), LLSD(),
 						&LLFloaterSellLandUI::callbackHighlightTransferable);
 }
@@ -483,7 +484,7 @@ void LLFloaterSellLandUI::doSellLand(void *userdata)
 		&& (sale_price == 0) 
 		&& sell_to_anyone)
 	{
-		LLNotifications::instance().add("SalePriceRestriction");
+		LLNotificationsUtil::add("SalePriceRestriction");
 		return;
 	}
 
@@ -516,7 +517,7 @@ void LLFloaterSellLandUI::doSellLand(void *userdata)
 
 bool LLFloaterSellLandUI::onConfirmSale(const LLSD& notification, const LLSD& response)
 {
-	S32 option = LLNotification::getSelectedOption(notification, response);
+	S32 option = LLNotificationsUtil::getSelectedOption(notification, response);
 	if (option != 0)
 	{
 		return false;

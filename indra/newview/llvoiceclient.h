@@ -461,7 +461,7 @@ static	void updatePosition(void);
 		void removeObserver(LLFriendObserver* observer);
 		
 		void lookupName(const LLUUID &id);
-		static void onAvatarNameLookup(const LLUUID& id, const std::string& first, const std::string& last, BOOL is_group, void* user_data);
+		static void onAvatarNameLookup(const LLUUID& id, const std::string& full_name);
 		void avatarNameResolved(const LLUUID &id, const std::string &name);
 		
 		typedef std::vector<std::string> deviceList;

@@ -76,7 +76,7 @@ protected:
 	LLFloaterGroupInfo(const std::string& name, const LLRect &rect, const std::string& title, const LLUUID& group_id = LLUUID::null, const std::string& tab_name = std::string());
 
 private:
-	static void callbackLoadGroupName(const LLUUID& id, const std::string& first, const std::string& last, BOOL is_group, void* data);
+	static void callbackLoadGroupName(const LLUUID& id, const std::string& full_name, bool is_group);
 	static std::map<LLUUID, LLFloaterGroupInfo*> sInstances;
 
 	LLUUID			mGroupID;

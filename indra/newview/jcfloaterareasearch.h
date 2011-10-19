@@ -61,7 +61,6 @@ public:
 	static void results();
 	static void toggle();
 	static JCFloaterAreaSearch* getInstance() { return sInstance; }
-	static void callbackLoadOwnerName(const LLUUID& id, const std::string& first, const std::string& last, BOOL is_group, void* data);
 	static void processObjectPropertiesFamily(LLMessageSystem* msg, void** user_data);
 
 private:

@@ -84,7 +84,7 @@ public:
 		// A root category is a user's root inventory category. We
 		// decided to expose it visually, so it seems logical to fold
 		// it into the asset types.
-		AT_ROOT_CATEGORY = 9,
+		//AT_ROOT_CATEGORY = 9,
 
 		// The LSL is the brand spanking new scripting language. We've
 		// split it into a text and bytecode representation.
@@ -101,15 +101,15 @@ public:
 		// This asset type is meant to only be used as a marker for a
 		// category preferred type. Using this, we can throw things in
 		// the trash before completely deleting.
-		AT_TRASH = 14,
+		//AT_TRASH = 14,
 
 		// This is a marker for a folder meant for snapshots. No
 		// actual assets will be snapshots, though if there were, you
 		// could interpret them as textures.
-		AT_SNAPSHOT_CATEGORY = 15,
+		//AT_SNAPSHOT_CATEGORY = 15,
 
 		// This is used to stuff lost&found items into
-		AT_LOST_AND_FOUND = 16,
+		//AT_LOST_AND_FOUND = 16,
 
 		// uncompressed sound
 		AT_SOUND_WAV = 17,
@@ -131,20 +131,24 @@ public:
 		// simstate file
 		AT_SIMSTATE = 22,
 
-		AT_FAVORITE = 23,
+		//AT_FAVORITE = 23,
 
 		// Inventory symbolic link
 		AT_LINK = 24,
 
 		// Inventory folder link
 		AT_LINK_FOLDER = 25,
-
+	
 		AT_CURRENT_OUTFIT = 46,
 
 		AT_OUTFIT = 47,
 
 		AT_MY_OUTFITS = 48,
 
+		AT_MESH = 49,
+		    // Mesh data in our proprietary SLM format
+
+		AT_COUNT = 50,
 		// +*********************************************+
 		// |  TO ADD AN ELEMENT TO THIS ENUM:            |
 		// +*********************************************+
@@ -153,8 +157,6 @@ public:
 		// | 3. ADD TO LLAssetType::mAssetTypeNames      |
 		// | 4. ADD TO LLAssetType::mAssetTypeHumanNames |
 		// +*********************************************+
-
-		AT_COUNT = 49,
 
 		AT_NONE = -1
 	};
@@ -169,12 +171,7 @@ public:
 	static EType 				lookupHumanReadable(const std::string& readable_name);
 	static const char*			lookupHumanReadable(EType asset_type);
 
-	static EDragAndDropType 	lookupDragAndDropType( EType );
-
-	// Generate a good default description. You may want to add a verb
-	// or agent name after this depending on your application.
-	static void generateDescriptionFor(LLAssetType::EType type,
-									   std::string& desc);
+	//NOTE: LLAssetType::lookupDragAndDropType & LLAssetType::generateDescriptionFor moved to newview/llviewerassettype.h
 
 	static EType 				getType(const std::string& desc_name);
 	static const std::string&	getDesc(EType asset_type);

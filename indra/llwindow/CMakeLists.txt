@@ -33,18 +33,23 @@ include_directories(
 
 set(llwindow_SOURCE_FILES
     llkeyboard.cpp
+    llkeyboardheadless.cpp
     llwindowheadless.cpp
+    llwindowcallbacks.cpp
     )
 
-set(llwindows_HEADER_FILES
+set(llwindow_HEADER_FILES
     CMakeLists.txt
 
     llkeyboard.h
+    llkeyboardheadless.h
     llwindowheadless.h
+    llwindowcallbacks.h
     )
 
 set(viewer_SOURCE_FILES
     llwindow.cpp
+    llmousehandler.cpp
     )
 
 set(viewer_HEADER_FILES
@@ -55,10 +60,13 @@ set(viewer_HEADER_FILES
 
 # Libraries on which this library depends, needed for Linux builds
 # Sort by high-level to low-level
-set(llwindow_LINK_LIBRARIES
-    ${UI_LIBRARIES}     # for GTK
-    ${SDL_LIBRARY}
-    )
+if (LINUX AND VIEWER)
+  set(llwindow_LINK_LIBRARIES
+      ${UI_LIBRARIES}     # for GTK
+      ${SDL_LIBRARY}
+      fontconfig          # For FCInit and other FC* functions.
+      )
+endif (LINUX AND VIEWER)
 
 if (DARWIN)
   list(APPEND llwindow_SOURCE_FILES
@@ -81,7 +89,7 @@ if (DARWIN)
       )
 endif (DARWIN)
 
-if (LINUX)
+if (LINUX AND VIEWER)
   list(APPEND viewer_SOURCE_FILES 
        llkeyboardsdl.cpp 
        llwindowsdl.cpp
@@ -90,21 +98,24 @@ if (LINUX)
        llkeyboardsdl.h
        llwindowsdl.h
        )
-endif (LINUX)
+endif (LINUX AND VIEWER)
 
 if (WINDOWS)
   list(APPEND llwindow_SOURCE_FILES
        llwindowwin32.cpp
        lldxhardware.cpp
        llkeyboardwin32.cpp
+       lldragdropwin32.cpp
        )
   list(APPEND llwindow_HEADER_FILES
        llwindowwin32.h
        lldxhardware.h
        llkeyboardwin32.h
+       lldragdropwin32.h
        )
   list(APPEND llwindow_LINK_LIBRARIES
        comdlg32     # Common Dialogs for ChooseColor
+       ole32
        )
 endif (WINDOWS)
 
@@ -141,8 +152,7 @@ if (SERVER AND NOT WINDOWS AND NOT DARWIN)
     ${llwindow_SOURCE_FILES}
     ${server_SOURCE_FILES}
     )
-  add_dependencies(llwindowheadless prepare)
-  # *TODO: This should probably have target_link_libraries
+  target_link_libraries (llwindowheadless ${llwindow_LINK_LIBRARIES})
 endif (SERVER AND NOT WINDOWS AND NOT DARWIN)
 
 if (llwindow_HEADER_FILES)

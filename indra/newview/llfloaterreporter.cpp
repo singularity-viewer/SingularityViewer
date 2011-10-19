@@ -43,6 +43,7 @@
 #include "llfontgl.h"
 #include "llgl.h"			// for renderer
 #include "llinventory.h"
+#include "llnotificationsutil.h"
 #include "llimagej2c.h"
 #include "llstring.h"
 #include "llsys.h"
@@ -232,10 +233,10 @@ void LLFloaterReporter::processRegionInfo(LLMessageSystem* msg)
 	{
 		if ( gEmailToEstateOwner )
 		{
-			LLNotifications::instance().add("HelpReportAbuseEmailEO");
+			LLNotificationsUtil::add("HelpReportAbuseEmailEO");
 		}
 		else
-			LLNotifications::instance().add("HelpReportAbuseEmailLL");
+			LLNotificationsUtil::add("HelpReportAbuseEmailLL");
 	};
 }
 
@@ -443,7 +444,7 @@ void LLFloaterReporter::onClickSend(void *userdata)
 					category_value == IP_CONTENT_REMOVAL ||
 					category_value == IP_PERMISSONS_EXPLOIT)
 				{
-					LLNotifications::instance().add("HelpReportAbuseContainsCopyright");
+					LLNotificationsUtil::add("HelpReportAbuseContainsCopyright");
 					self->mCopyrightWarningSeen = TRUE;
 					return;
 				}
@@ -452,7 +453,7 @@ void LLFloaterReporter::onClickSend(void *userdata)
 			{
 				// IP_CONTENT_REMOVAL *always* shows the dialog - 
 				// ergo you can never send that abuse report type.
-				LLNotifications::instance().add("HelpReportAbuseContainsCopyright");
+				LLNotificationsUtil::add("HelpReportAbuseContainsCopyright");
 				return;
 			}
 		}
@@ -561,7 +562,7 @@ void LLFloaterReporter::showFromMenu(EReportType report_type)
 
 		if (report_type == BUG_REPORT)
 		{
- 			LLNotifications::instance().add("HelpReportBug");
+ 			LLNotificationsUtil::add("HelpReportBug");
 		}
 		else
 		{
@@ -653,11 +654,11 @@ bool LLFloaterReporter::validateReport()
 	{
 		if ( mReportType != BUG_REPORT )
 		{
-			LLNotifications::instance().add("HelpReportAbuseSelectCategory");
+			LLNotificationsUtil::add("HelpReportAbuseSelectCategory");
 		}
 		else
 		{
-			LLNotifications::instance().add("HelpReportBugSelectCategory");
+			LLNotificationsUtil::add("HelpReportAbuseAbuserNameEmpty");
 		}
 		return false;
 	}
@@ -666,13 +667,13 @@ bool LLFloaterReporter::validateReport()
 	{
 	  if ( childGetText("abuser_name_edit").empty() )
 	  {
-		  LLNotifications::instance().add("HelpReportAbuseAbuserNameEmpty");
+		  LLNotificationsUtil::add("HelpReportAbuseAbuserLocationEmpty");
 		  return false;
 	  };
   
 	  if ( childGetText("abuse_location_edit").empty() )
 	  {
-		  LLNotifications::instance().add("HelpReportAbuseAbuserLocationEmpty");
+		  LLNotificationsUtil::add("HelpReportAbuseAbuserLocationEmpty");
 		  return false;
 	  };
 	};
@@ -681,11 +682,11 @@ bool LLFloaterReporter::validateReport()
 	{
 		if ( mReportType != BUG_REPORT )
 		{
-			LLNotifications::instance().add("HelpReportAbuseSummaryEmpty");
+			LLNotificationsUtil::add("HelpReportAbuseSummaryEmpty");
 		}
 		else
 		{
-			LLNotifications::instance().add("HelpReportBugSummaryEmpty");
+			LLNotificationsUtil::add("HelpReportBugSummaryEmpty");
 		}
 		return false;
 	};
@@ -694,11 +695,11 @@ bool LLFloaterReporter::validateReport()
 	{
 		if ( mReportType != BUG_REPORT )
 		{
-			LLNotifications::instance().add("HelpReportAbuseDetailsEmpty");
+			LLNotificationsUtil::add("HelpReportAbuseDetailsEmpty");
 		}
 		else
 		{
-			LLNotifications::instance().add("HelpReportBugDetailsEmpty");
+			LLNotificationsUtil::add("HelpReportBugDetailsEmpty");
 		}
 		return false;
 	};
@@ -937,12 +938,12 @@ void LLFloaterReporter::takeScreenshot()
 	if (BUG_REPORT == mReportType)
 	{
 		mResourceDatap->mAssetInfo.mType = LLAssetType::AT_TEXTURE;
-		mResourceDatap->mPreferredLocation = LLAssetType::EType(-1);
+		mResourceDatap->mPreferredLocation = LLFolderType::EType(-1);
 	}
 	else if (COMPLAINT_REPORT == mReportType)
 	{
 		mResourceDatap->mAssetInfo.mType = LLAssetType::AT_TEXTURE;
-		mResourceDatap->mPreferredLocation = LLAssetType::EType(-2);
+		mResourceDatap->mPreferredLocation = LLFolderType::EType(-2);
 	}
 	else
 	{
@@ -1001,7 +1002,7 @@ void LLFloaterReporter::uploadDoneCallback(const LLUUID &uuid, void *user_data, 
 	{
 		LLSD args;
 		args["REASON"] = std::string(LLAssetStorage::getErrorString(result));
-		LLNotifications::instance().add("ErrorUploadingReportScreenshot", args);
+		LLNotificationsUtil::add("ErrorUploadingReportScreenshot", args);
 
 		std::string err_msg("There was a problem uploading a report screenshot");
 		err_msg += " due to the following reason: " + args["REASON"].asString();

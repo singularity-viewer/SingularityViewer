@@ -54,28 +54,20 @@ LLCalc* LLCalc::sInstance = NULL;
 
 LLCalc::LLCalc() : mLastErrorPos(0)
 {
-//	mUserVariables = new calc_map_t;
-	mVariables = new calc_map_t;
-	mConstants = new calc_map_t;
-		
 	// Init table of constants
-	(*mConstants)["PI"] = F_PI;
-	(*mConstants)["TWO_PI"] = F_TWO_PI;
-	(*mConstants)["PI_BY_TWO"] = F_PI_BY_TWO;
-	(*mConstants)["SQRT2"] = F_SQRT2;
-	(*mConstants)["DEG_TO_RAD"] = DEG_TO_RAD;
-	(*mConstants)["RAD_TO_DEG"] = RAD_TO_DEG;
-	(*mConstants)["GRAVITY"] = GRAVITY;
-	(*mConstants)["ALMOST_ZERO"] = F_ALMOST_ZERO;
-	(*mConstants)["ALMOST_ONE"] = F_ALMOST_ONE;
-	(*mConstants)["THE_ANSWER"] = 42;
+	mConstants["PI"] = F_PI;
+	mConstants["TWO_PI"] = F_TWO_PI;
+	mConstants["PI_BY_TWO"] = F_PI_BY_TWO;
+	mConstants["SQRT_TWO_PI"] = F_SQRT_TWO_PI;
+	mConstants["SQRT2"] = F_SQRT2;
+	mConstants["SQRT3"] = F_SQRT3;
+	mConstants["DEG_TO_RAD"] = DEG_TO_RAD;
+	mConstants["RAD_TO_DEG"] = RAD_TO_DEG;
+	mConstants["GRAVITY"] = GRAVITY;
 }
 
 LLCalc::~LLCalc()
 {
-	delete mConstants;
-	delete mVariables;
-//	delete mUserVariables;	
 }
 
 //static
@@ -94,17 +86,17 @@ LLCalc* LLCalc::getInstance()
 
 void LLCalc::setVar(const std::string& name, const F32& value)
 {
-	(*mVariables)[name] = value;
+	mVariables[name] = value;
 }
 
 void LLCalc::clearVar(const std::string& name)
 {
-	mVariables->erase(name);
+	mVariables.erase(name);
 }
 
 void LLCalc::clearAllVariables()
 {
-	mVariables->clear();
+	mVariables.clear();
 }
 
 /*
@@ -123,7 +115,7 @@ bool LLCalc::evalString(const std::string& expression, F32& result)
 	std::string expr_upper = expression;
 	LLStringUtil::toUpper(expr_upper);
 	
-	LLCalcParser calc(result, mConstants, mVariables);
+	LLCalcParser calc(result, &mConstants, &mVariables);
 
 	mLastErrorPos = 0;
 	std::string::iterator start = expr_upper.begin();

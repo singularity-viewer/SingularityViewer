@@ -36,7 +36,7 @@
 #include <map>
 
 #include "llvolume.h"
-#include "llmemory.h"
+#include "llpointer.h"
 #include "llthread.h"
 
 class LLVolumeParams;
@@ -59,6 +59,7 @@ public:
 	static S32 getDetailFromTan(const F32 tan_angle);
 	static void getDetailProximity(const F32 tan_angle, F32 &to_lower, F32& to_higher);
 	static F32 getVolumeScaleFromDetail(const S32 detail);
+	static S32 getVolumeDetailFromScale(F32 scale);
 
 	LLVolume* refLOD(const S32 detail);
 	BOOL derefLOD(LLVolume *volumep);
@@ -92,8 +93,8 @@ public:
 	// whatever calls getVolume() never owns the LLVolume* and
 	// cannot keep references for long since it may be deleted
 	// later.  For best results hold it in an LLPointer<LLVolume>.
-	LLVolume *refVolume(const LLVolumeParams &volume_params, const S32 detail);
-	void unrefVolume(LLVolume *volumep);
+	virtual LLVolume *refVolume(const LLVolumeParams &volume_params, const S32 detail);
+	virtual void unrefVolume(LLVolume *volumep);
 
 	void dump();
 

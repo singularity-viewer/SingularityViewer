@@ -749,6 +749,7 @@ class CygwinSetup(WindowsSetup):
 setup_platform = {
     'darwin': DarwinSetup,
     'linux2': LinuxSetup,
+    'linux3': LinuxSetup,
     'win32' : WindowsSetup,
     'cygwin' : CygwinSetup
     }

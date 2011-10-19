@@ -86,13 +86,13 @@ LLFloaterGesture::LLFloaterGesture()
 	sInstance = this;
 
 	sObserver = new LLFloaterGestureObserver;
-	gGestureManager.addObserver(sObserver);
+	LLGestureMgr::instance().addObserver(sObserver);
 }
 
 // virtual
 LLFloaterGesture::~LLFloaterGesture()
 {
-	gGestureManager.removeObserver(sObserver);
+	LLGestureMgr::instance().removeObserver(sObserver);
 	delete sObserver;
 	sObserver = NULL;
 
@@ -223,8 +223,8 @@ void LLFloaterGesture::buildGestureList()
 
 	list->operateOnAll(LLCtrlListInterface::OP_DELETE);
 
-	LLGestureManager::item_map_t::iterator it;
-	for (it = gGestureManager.mActive.begin(); it != gGestureManager.mActive.end(); ++it)
+	LLGestureMgr::item_map_t::const_iterator it;
+	for (it = LLGestureMgr::instance().getActiveGestures().begin(); it != LLGestureMgr::instance().getActiveGestures().end(); ++it)
 	{
 		const LLUUID& item_id = (*it).first;
 		LLMultiGesture* gesture = (*it).second;
@@ -344,13 +344,13 @@ void LLFloaterGesture::onClickPlay(void* data)
 	if (!list) return;
 	const LLUUID& item_id = list->getCurrentID();
 
-	if (gGestureManager.isGesturePlaying(item_id))
+	if (LLGestureMgr::instance().isGesturePlaying(item_id))
 	{
-		gGestureManager.stopGesture(item_id);
+		LLGestureMgr::instance().stopGesture(item_id);
 	}
 	else
 	{
-		gGestureManager.playGesture(item_id);
+		LLGestureMgr::instance().playGesture(item_id);
 	}
 }
 
@@ -411,7 +411,7 @@ void LLFloaterGesture::onCommitList(LLUICtrl* ctrl, void* data)
 	const LLUUID& item_id = self->childGetValue("gesture_list").asUUID();
 
 	self->mSelectedID = item_id;
-	if (gGestureManager.isGesturePlaying(item_id))
+	if (LLGestureMgr::instance().isGesturePlaying(item_id))
 	{
 		self->childSetVisible("play_btn", false);
 		self->childSetVisible("stop_btn", true);

@@ -73,9 +73,6 @@
 #include "rlvhandler.h"
 // [/RLVa:KB]
 
-
-extern BOOL gDebugSelect;
-
 // Returns true if you got at least one object
 void LLToolSelectRect::handleRectangleSelection(S32 x, S32 y, MASK mask)
 {
@@ -613,7 +610,7 @@ void LLViewerParcelMgr::renderOneSegment(F32 x1, F32 y1, F32 x2, F32 y2, F32 hei
 		return;
 	// HACK: At edge of last region of world, we need to make sure the region
 	// resolves correctly so we can get a height value.
-	const F32 BORDER = REGION_WIDTH_METERS - 0.1f;
+	const F32 BORDER = regionp->getWidth() - 0.1f;
 
 	F32 clamped_x1 = x1;
 	F32 clamped_y1 = y1;
@@ -776,7 +773,7 @@ void LLViewerParcelMgr::renderCollisionSegments(U8* segments, BOOL use_pass, LLV
 	F32 pos_y = pos.mV[VY];
 
 	LLGLSUIDefault gls_ui;
-	LLGLDepthTest gls_depth(GL_TRUE);
+	LLGLDepthTest gls_depth(GL_TRUE, GL_FALSE);
 	LLGLDisable cull(GL_CULL_FACE);
 	
 	if (mCollisionBanned == BA_BANNED)
@@ -819,12 +816,6 @@ void LLViewerParcelMgr::renderCollisionSegments(U8* segments, BOOL use_pass, LLV
 				x2 = x1 + PARCEL_GRID_STEP_METERS;
 				y2 = y1;
 
-				if (gRenderForSelect)
-				{
-					LLColor4U color((U8)(GL_NAME_PARCEL_WALL >> 16), (U8)(GL_NAME_PARCEL_WALL >> 8), (U8)GL_NAME_PARCEL_WALL);
-					gGL.color4ubv(color.mV);
-				}
-				else
 				{
 					dy = (pos_y - y1) + DIST_OFFSET;
 					
@@ -865,12 +856,6 @@ void LLViewerParcelMgr::renderCollisionSegments(U8* segments, BOOL use_pass, LLV
 				x2 = x1;
 				y2 = y1 + PARCEL_GRID_STEP_METERS;
 
-				if (gRenderForSelect)
-				{
-					LLColor4U color((U8)(GL_NAME_PARCEL_WALL >> 16), (U8)(GL_NAME_PARCEL_WALL >> 8), (U8)GL_NAME_PARCEL_WALL);
-					gGL.color4ubv(color.mV);
-				}
-				else
 				{					
 					dx = (pos_x - x1) + DIST_OFFSET;
 		

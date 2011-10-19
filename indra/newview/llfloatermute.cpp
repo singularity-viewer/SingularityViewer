@@ -39,6 +39,7 @@
 #include "llerror.h"
 #include "llstring.h"
 #include "message.h"
+#include "llnotificationsutil.h"
 
 // project include
 #include "llagent.h"
@@ -349,6 +350,6 @@ void LLFloaterMute::callbackMuteByName(const std::string& text, void* data)
 	BOOL success = LLMuteList::getInstance()->add(mute);
 	if (!success)
 	{
-		LLNotifications::instance().add("MuteByNameFailed");
+		LLNotificationsUtil::add("MuteByNameFailed");
 	}
 }

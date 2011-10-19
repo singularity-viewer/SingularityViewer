@@ -37,6 +37,7 @@
 #include <deque>
 
 #include "apr_base64.h"
+#include <boost/regex.hpp>
 
 extern "C"
 {
@@ -734,6 +735,7 @@ void LLSDXMLParser::Impl::endElementHandler(const XML_Char* name)
 		case ELEMENT_INTEGER:
 			{
 				S32 i;
+				// sscanf okay here with different locales - ints don't change for different locale settings like floats do.
 				if ( sscanf(mCurrentContent.c_str(), "%d", &i ) == 1 )
 				{	// See if sscanf works - it's faster
 					value = i;
@@ -747,15 +749,19 @@ void LLSDXMLParser::Impl::endElementHandler(const XML_Char* name)
 		
 		case ELEMENT_REAL:
 			{
-				F64 r;
-				if ( sscanf(mCurrentContent.c_str(), "%lf", &r ) == 1 )
-				{	// See if sscanf works - it's faster
-					value = r;
-				}
-				else
-				{
-					value = LLSD(mCurrentContent).asReal();
-				}
+				value = LLSD(mCurrentContent).asReal();
+				// removed since this breaks when locale has decimal separator that isn't '.'
+				// investigated changing local to something compatible each time but deemed higher
+				// risk that just using LLSD.asReal() each time.
+				//F64 r;
+				//if ( sscanf(mCurrentContent.c_str(), "%lf", &r ) == 1 )
+				//{	// See if sscanf works - it's faster
+				//	value = r;
+				//}
+				//else
+				//{
+				//	value = LLSD(mCurrentContent).asReal();
+				//}
 			}
 			break;
 		
@@ -777,10 +783,17 @@ void LLSDXMLParser::Impl::endElementHandler(const XML_Char* name)
 		
 		case ELEMENT_BINARY:
 		{
-			S32 len = apr_base64_decode_len(mCurrentContent.c_str());
+			// Regex is expensive, but only fix for whitespace in base64,
+			// created by python and other non-linden systems - DEV-39358
+			// Fortunately we have very little binary passing now,
+			// so performance impact shold be negligible. + poppy 2009-09-04
+			boost::regex r;
+			r.assign("\\s");
+			std::string stripped = boost::regex_replace(mCurrentContent, r, "");
+			S32 len = apr_base64_decode_len(stripped.c_str());
 			std::vector<U8> data;
 			data.resize(len);
-			len = apr_base64_decode_binary(&data[0], mCurrentContent.c_str());
+			len = apr_base64_decode_binary(&data[0], stripped.c_str());
 			data.resize(len);
 			value = data;
 			break;

@@ -29,7 +29,7 @@
 	</text>
 	<slider bottom_delta="-25" can_edit_text="true"
 	     decimal_digits="0" enabled="true" follows="left|top" height="15"
-	     increment="64" initial_val="1024" left_delta="0" max_val="9984" min_val="64"
+	     increment="64" initial_val="1024" left_delta="0" max_val="2048" min_val="64"
 	     mouse_opaque="true" name="cache_size" show_text="true" width="180" />
 	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
 	     bottom_delta="4" drop_shadow_visible="true" enabled="true"

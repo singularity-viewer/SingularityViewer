@@ -43,6 +43,7 @@
 #include "message.h"
 #include "llviewermediafocus.h"
 #include "llviewerparcelmediaautoplay.h"
+#include "llnotificationsutil.h"
 #include "llviewerwindow.h"
 #include "llfirstuse.h"
 #include "llpluginclassmedia.h"
@@ -120,7 +121,7 @@ void LLViewerParcelMedia::update(LLParcel* parcel)
 			// First use warning
 			if(	! mediaUrl.empty() && gSavedSettings.getWarning("FirstStreamingVideo") )
 			{
-				LLNotifications::instance().add("ParcelCanPlayMedia", LLSD(), LLSD(),
+				LLNotificationsUtil::add("ParcelCanPlayMedia", LLSD(), LLSD(),
 					boost::bind(callback_play_media, _1, _2, parcel));
 				return;
 
@@ -176,7 +177,7 @@ void LLViewerParcelMedia::update(LLParcel* parcel)
 				{
 					gSavedSettings.setWarning("QuickTimeInstalled", FALSE);
 
-					LLNotifications::instance().add("NoQuickTime" );
+					LLNotificationsUtil::add("NoQuickTime" );
 				};
 			}
 		}
@@ -560,6 +561,47 @@ void LLViewerParcelMedia::handleMediaEvent(LLPluginClassMedia* self, EMediaEvent
 			LL_DEBUGS("Media") <<  "Media event:  MEDIA_EVENT_NAME_CHANGED" << LL_ENDL;
 		};
 		break;
+
+		case MEDIA_EVENT_NAVIGATE_ERROR_PAGE:
+		{
+			LL_DEBUGS("Media") <<  "Media event:  MEDIA_EVENT_NAVIGATE_ERROR_PAGE" << LL_ENDL;
+		};
+		break;
+
+		case MEDIA_EVENT_CLOSE_REQUEST:
+		{
+			LL_DEBUGS("Media") <<  "Media event:  MEDIA_EVENT_CLOSE_REQUEST" << LL_ENDL;
+		};
+		break;
+
+		case MEDIA_EVENT_PICK_FILE_REQUEST:
+		{
+			LL_DEBUGS("Media") <<  "Media event:  MEDIA_EVENT_PICK_FILE_REQUEST" << LL_ENDL;
+		};
+		break;
+
+		case MEDIA_EVENT_GEOMETRY_CHANGE:
+		{
+			LL_DEBUGS("Media") <<  "Media event:  MEDIA_EVENT_GEOMETRY_CHANGE" << LL_ENDL;
+		};
+		break;
+			
+		case MEDIA_EVENT_AUTH_REQUEST:
+		{
+			LL_DEBUGS("Media") <<  "Media event:  MEDIA_EVENT_AUTH_REQUEST" << LL_ENDL;
+		};
+		break;
+
+		case MEDIA_EVENT_LINK_HOVERED:
+		{
+			LL_DEBUGS("Media") <<  "Media event:  MEDIA_EVENT_LINK_HOVERED" << LL_ENDL;
+		};
+		break;
+		
+		default:
+		{
+			LL_WARNS("Media") <<  "Media event:  unknown event type" << LL_ENDL;
+		};
 	};
 }
 
@@ -777,7 +819,7 @@ void LLViewerParcelMedia::filterMedia(LLParcel* parcel, U32 type)
 
 	if (media_action == "deny")
 	{
-		LLNotifications::instance().add("MediaBlocked", args);
+		LLNotificationsUtil::add("MediaBlocked", args);
 		if (type == 1)
 		{
 			LLViewerParcelMedia::stopStreamingMusic();
@@ -800,7 +842,7 @@ void LLViewerParcelMedia::filterMedia(LLParcel* parcel, U32 type)
 		{
 			args["TYPE"] = "audio";
 		}
-		LLNotifications::instance().add("MediaAlert", args, LLSD(), boost::bind(callback_media_alert, _1, _2, parcel, type, domain));
+		LLNotificationsUtil::add("MediaAlert", args, LLSD(), boost::bind(callback_media_alert, _1, _2, parcel, type, domain));
 	}
 }
 
@@ -838,7 +880,7 @@ void callback_media_alert(const LLSD &notification, const LLSD &response, LLParc
 			}
 			LLViewerParcelMedia::saveDomainFilterList();
 			args["LISTED"] = "whitelisted";
-			LLNotifications::instance().add("MediaListed", args);
+			LLNotificationsUtil::add("MediaListed", args);
 		}
 		if (type == 0)
 		{
@@ -862,7 +904,7 @@ void callback_media_alert(const LLSD &notification, const LLSD &response, LLParc
 		}
 		if (option == 1) // Deny
 		{
-			LLNotifications::instance().add("MediaBlocked", args);
+			LLNotificationsUtil::add("MediaBlocked", args);
 		}
 		else // Blacklist
 		{
@@ -877,7 +919,7 @@ void callback_media_alert(const LLSD &notification, const LLSD &response, LLParc
 			}
 			LLViewerParcelMedia::saveDomainFilterList();
 			args["LISTED"] = "blacklisted";
-			LLNotifications::instance().add("MediaListed", args);
+			LLNotificationsUtil::add("MediaListed", args);
 		}
 	}
 
@@ -928,7 +970,7 @@ void LLViewerParcelMedia::clearDomainFilterList()
 	sAllowedMedia.clear();
 	sDeniedMedia.clear();
 	saveDomainFilterList();
-	LLNotifications::instance().add("MediaFiltersCleared");
+	LLNotificationsUtil::add("MediaFiltersCleared");
 	SLFloaterMediaFilter::setDirty();
 }
 

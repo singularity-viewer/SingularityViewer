@@ -32,7 +32,7 @@
 
 #include "llviewerprecompiledheaders.h"
 #include "llviewerpluginmanager.h"
-#include "llnotifications.h"
+#include "llnotificationsutil.h"
 
 void LLViewerPluginManager::destroyPlugin()
 {
@@ -61,6 +61,6 @@ void LLViewerPluginManager::send_plugin_failure_warning(std::string const& plugi
 	LL_WARNS("Plugin") << "plugin intialization failed for plugin: " << plugin_basename << LL_ENDL;
 	LLSD args;
 	args["MIME_TYPE"] = plugin_basename;	// FIXME: Use different notification.
-	LLNotifications::instance().add("NoPlugin", args);
+	LLNotificationsUtil::add("NoPlugin", args);
 }
 

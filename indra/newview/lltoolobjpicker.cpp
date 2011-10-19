@@ -47,6 +47,7 @@
 #include "llviewermenu.h"
 #include "llviewercamera.h"
 #include "llviewerwindow.h"
+#include "llwindow.h"
 #include "lldrawable.h"
 
 

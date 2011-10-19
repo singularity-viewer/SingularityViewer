@@ -1,18 +1,26 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <panel border="true" bottom="-371" height="300" left="280" mouse_opaque="true"
      name="groups" width="350">
-	<scroll_list background_visible="true" bottom="45" column_padding="5" draw_border="true"
-	     draw_heading="false" draw_stripes="true" enabled="true"
+	<scroll_list background_visible="true" bottom="45" column_padding="0" draw_border="true"
+	     draw_heading="true" draw_stripes="true" enabled="true"
 	     follows="left|top|right|bottom" left="10" mouse_opaque="true"
 	     multi_select="false" name="group list" tab_stop="true" top="-10"
 	     width="240">
-		<column label="" name="name" width="248" />
+		<column dynamicwidth="true" label="Name" name="name" tool_tip="Name" />
+    <!--<column label="Active" name="is_active_group"
+		    tool_tip="Group is set as active" width="40" />-->
+    <column image_overlay="ff_visible_online.tga" name="is_listed_group"
+		    tool_tip="Group is visible in profile." width="20" />
+    <column image_overlay="icn_chat_overlay.tga" name="is_chattable_group"
+		    tool_tip="Receive group chat" width="20" />
+    <column image_overlay="smicon_warn.tga" name="is_notice_group"
+        tool_tip="Receive group notices" width="20" />
 	</scroll_list>
 	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
 	     bottom="22" drop_shadow_visible="true" enabled="true" follows="left|bottom"
 	     font="SansSerifSmall" h_pad="0" halign="left" height="16" left="12"
 	     mouse_opaque="false" name="groupdesc" v_pad="0" width="248">
-		Your currently active group is displayed in bold.
+		Your currently active group is displayed in italics.
 	</text>
 	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
 	     bottom="5" drop_shadow_visible="true" enabled="true" follows="left|bottom"

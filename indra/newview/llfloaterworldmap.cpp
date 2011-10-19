@@ -43,6 +43,7 @@
 #include "llagent.h"
 #include "llagentcamera.h"
 #include "llviewerwindow.h"
+#include "llwindow.h"
 #include "llbutton.h"
 #include "llcallingcard.h"
 #include "llcolorscheme.h"
@@ -52,6 +53,7 @@
 #include "llfirstuse.h"
 #include "llfocusmgr.h"
 #include "lllandmarklist.h"
+#include "llnotificationsutil.h"
 #include "lllineeditor.h"
 #include "llpreviewlandmark.h"
 #include "llregionhandle.h"
@@ -310,7 +312,7 @@ void LLFloaterWorldMap::show(void*, BOOL center_on_target)
 		LLFirstUse::useMap();
 
 		// Start speculative download of landmarks
-		LLUUID landmark_folder_id = gInventory.findCategoryUUIDForType(LLAssetType::AT_LANDMARK);
+		LLUUID landmark_folder_id = gInventory.findCategoryUUIDForType(LLFolderType::FT_LANDMARK);
 		gInventory.startBackgroundFetch(landmark_folder_id);
 
 		gFloaterWorldMap->childSetFocus("location", TRUE);
@@ -502,17 +504,26 @@ void LLFloaterWorldMap::draw()
 	getDragHandle()->setMouseOpaque(TRUE);
 
 	//RN: snaps to zoom value because interpolation caused jitter in the text rendering
-	if (!mZoomTimer.getStarted() && mCurZoomVal != (F32)childGetValue("zoom slider").asReal())
+	F32 interp = 1.f;
+	if (!mZoomTimer.getStarted())
 	{
-		mZoomTimer.start();
+		mCurZoomValInterpolationStart = mCurZoomVal;
+		if (mCurZoomVal < (F32)childGetValue("zoom slider").asReal())
+		{
+			mZoomTimer.start();
+		}
 	}
-	F32 interp = mZoomTimer.getElapsedTimeF32() / MAP_ZOOM_TIME;
-	if (interp > 1.f)
+	if (mZoomTimer.getStarted())
+	{
+	    interp = mZoomTimer.getElapsedTimeF32() / MAP_ZOOM_TIME;
+	}
+	if (interp >= 1.f)
 	{
 		interp = 1.f;
 		mZoomTimer.stop();
 	}
-	mCurZoomVal = lerp(mCurZoomVal, (F32)childGetValue("zoom slider").asReal(), interp);
+	// Interpolate between mCurZoomValInterpolationStart and "zoom slider".
+	mCurZoomVal = lerp(mCurZoomValInterpolationStart, (F32)childGetValue("zoom slider").asReal(), interp);
 	F32 map_scale = 256.f*pow(2.f, mCurZoomVal);
 	LLWorldMapView::setScale( map_scale );
 
@@ -640,10 +651,11 @@ void LLFloaterWorldMap::trackLocation(const LLVector3d& pos_global)
 		return;
 	}
 
-	std::string sim_name;
-	LLWorldMap::getInstance()->simNameFromPosGlobal( pos_global, sim_name );
-	F32 region_x = (F32)fmod( pos_global.mdV[VX], (F64)REGION_WIDTH_METERS );
-	F32 region_y = (F32)fmod( pos_global.mdV[VY], (F64)REGION_WIDTH_METERS );
+	std::string sim_name = sim_info->getName();
+	U32 locX, locY;
+	from_region_handle(sim_info->getHandle(), &locX, &locY);
+	F32 region_x = pos_global.mdV[VX] - locX;
+	F32 region_y = pos_global.mdV[VY] - locY;
 	std::string full_name = llformat("%s (%d, %d, %d)", 
 //								  sim_name.c_str(), 
 // [RLVa:KB] - Alternate: Snowglobe-1.2.4 | Checked: 2009-07-04 (RLVa-1.0.0a)
@@ -917,7 +929,7 @@ void LLFloaterWorldMap::buildLandmarkIDLists()
 	LLInventoryModel::cat_array_t cats;
 	LLInventoryModel::item_array_t items;
 	LLIsType is_landmark(LLAssetType::AT_LANDMARK);
-	gInventory.collectDescendentsIf(gAgent.getInventoryRootID(),
+	gInventory.collectDescendentsIf(gInventory.getRootFolderID(),
 									cats,
 									items,
 									LLInventoryModel::EXCLUDE_TRASH,
@@ -1331,7 +1343,7 @@ void LLFloaterWorldMap::onCopySLURL(void* data)
 	LLSD args;
 	args["SLURL"] = self->mSLURL;
 
-	LLNotifications::instance().add("CopySLURL", args);
+	LLNotificationsUtil::add("CopySLURL", args);
 }
 
 void LLFloaterWorldMap::onCheckEvents(LLUICtrl*, void* data)

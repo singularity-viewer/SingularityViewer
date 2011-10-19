@@ -109,6 +109,7 @@ const U64 GP_LAND_ALLOW_FLY		= 0x1 << 24;	// Bypass Fly Restriction
 const U64 GP_LAND_ALLOW_CREATE	= 0x1 << 25;	// Bypass Create/Edit Objects Restriction
 const U64 GP_LAND_ALLOW_LANDMARK	= 0x1 << 26;	// Bypass Landmark Restriction
 const U64 GP_LAND_ALLOW_SET_HOME	= 0x1 << 28;	// Bypass Set Home Point Restriction
+const U64 GP_LAND_ALLOW_HOLD_EVENT	= 0x1LL << 41;	// Allowed to hold events on group-owned land
 
 // Parcel Access
 const U64 GP_LAND_MANAGE_ALLOWED	= 0x1 << 29;	// Manage Allowed List

@@ -5,7 +5,7 @@
  * $License$
  */
  
-#version 120
+
 
 vec4 applyWaterFog(vec4 color)
 {

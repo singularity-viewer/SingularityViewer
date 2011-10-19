@@ -11,8 +11,8 @@
 		You are the only user in this session.
 	</string>
 	<string name="offline_message">
-		[FIRST] [LAST] is offline.
-	</string>
+    [NAME] is offline.
+  </string>
 	<string name="invite_message">
 		Click the [BUTTON NAME] button to accept/connect to this voice chat.
 	</string>

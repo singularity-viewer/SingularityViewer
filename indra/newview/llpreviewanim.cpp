@@ -37,7 +37,7 @@
 #include "llresmgr.h"
 #include "llinventory.h"
 #include "llinventoryview.h"
-#include "llvoavatar.h"
+#include "llvoavatarself.h"
 #include "llagent.h"          // gAgent
 #include "llkeyframemotion.h"
 #include "statemachine/aifilepicker.h"
@@ -76,7 +76,7 @@ LLPreviewAnim::LLPreviewAnim(const std::string& name, const LLRect& rect, const 
 	// preload the animation
 	if(item)
 	{
-		gAgent.getAvatarObject()->createMotion(item->getAssetUUID());
+		gAgentAvatarp->createMotion(item->getAssetUUID());
 	}
 	
 	switch ( activate ) 
@@ -132,7 +132,7 @@ void LLPreviewAnim::playAnim( void *userdata )
 			self->mPauseRequest = NULL;
 			gAgent.sendAnimationRequest(itemID, ANIM_REQUEST_START);
 			
-			LLVOAvatar* avatar = gAgent.getAvatarObject();
+			LLVOAvatar* avatar = gAgentAvatarp;
 			LLMotion*   motion = avatar->findMotion(itemID);
 			
 			if (motion)
@@ -142,7 +142,7 @@ void LLPreviewAnim::playAnim( void *userdata )
 		}
 		else
 		{
-			gAgent.getAvatarObject()->stopMotion(itemID);
+			gAgentAvatarp->stopMotion(itemID);
 			gAgent.sendAnimationRequest(itemID, ANIM_REQUEST_STOP);
 		}
 	}
@@ -167,9 +167,9 @@ void LLPreviewAnim::auditionAnim( void *userdata )
 		if (self->childGetValue("Anim audition btn").asBoolean() ) 
 		{
 			self->mPauseRequest = NULL;
-			gAgent.getAvatarObject()->startMotion(item->getAssetUUID());
+			gAgentAvatarp->startMotion(item->getAssetUUID());
 			
-			LLVOAvatar* avatar = gAgent.getAvatarObject();
+			LLVOAvatar* avatar = gAgentAvatarp;
 			LLMotion*   motion = avatar->findMotion(itemID);
 			
 			if (motion)
@@ -179,7 +179,7 @@ void LLPreviewAnim::auditionAnim( void *userdata )
 		}
 		else
 		{
-			gAgent.getAvatarObject()->stopMotion(itemID);
+			gAgentAvatarp->stopMotion(itemID);
 			gAgent.sendAnimationRequest(itemID, ANIM_REQUEST_STOP);
 		}
 	}
@@ -400,7 +400,7 @@ void LLPreviewAnim::gotAssetForSave(LLVFS *vfs,
 // static
 void LLPreviewAnim::gotAssetForSave_continued(char* buffer, S32 size, AIFilePicker* filepicker)
 {
-	if (!filepicker->hasFilename())
+	if (filepicker->hasFilename())
 	{
 		std::string filename = filepicker->getFilename();
 		std::ofstream export_file(filename.c_str(), std::ofstream::binary);
@@ -428,10 +428,10 @@ void LLPreviewAnim::onClose(bool app_quitting)
 
 	if(item)
 	{
-		gAgent.getAvatarObject()->stopMotion(item->getAssetUUID());
+		gAgentAvatarp->stopMotion(item->getAssetUUID());
 		gAgent.sendAnimationRequest(item->getAssetUUID(), ANIM_REQUEST_STOP);
 					
-		LLVOAvatar* avatar = gAgent.getAvatarObject();
+		LLVOAvatar* avatar = gAgentAvatarp;
 		LLMotion*   motion = avatar->findMotion(item->getAssetUUID());
 		
 		if (motion)

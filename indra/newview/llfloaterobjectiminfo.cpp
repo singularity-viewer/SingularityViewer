@@ -68,7 +68,7 @@ public:
 	static void onClickOwner(void* data);
 	static void onClickMute(void* data);
 
-	static void nameCallback(const LLUUID& id, const std::string& first, const std::string& last, BOOL is_group, void* data);
+	void nameCallback(const LLUUID& id, const std::string& full_name, bool is_group);
 
 private:
 	LLUUID mObjectID;
@@ -127,7 +127,7 @@ void LLFloaterObjectIMInfo::update(const LLUUID& object_id, const std::string& n
 	mOwnerID = owner_id;
 	mOwnerIsGroup = owner_is_group;
 
-	if (gCacheName) gCacheName->get(owner_id,owner_is_group,nameCallback,this);
+	if (gCacheName) gCacheName->get(owner_id,owner_is_group,boost::bind(&LLFloaterObjectIMInfo::nameCallback,this,_1,_2,_3));
 }
 
 //static 
@@ -178,23 +178,17 @@ void LLFloaterObjectIMInfo::onClickMute(void* data)
 }
 
 //static 
-void LLFloaterObjectIMInfo::nameCallback(const LLUUID& id, const std::string& first, const std::string& last, BOOL is_group, void* data)
+void LLFloaterObjectIMInfo::nameCallback(const LLUUID& id, const std::string& full_name, bool is_group)
 {
-	LLFloaterObjectIMInfo* self = (LLFloaterObjectIMInfo*)data;
-	self->mOwnerName = first;
-	if (!last.empty())
-	{
-		self->mOwnerName += " " + last;
-	}
-
+	mOwnerName = full_name;
 // [RLVa:KB] - Version: 1.23.4 | Checked: 2009-07-08 (RLVa-1.0.0e) | Added: RLVa-0.2.0g
 	if ( (!is_group) && (gRlvHandler.hasBehaviour(RLV_BHVR_SHOWNAMES)) && (RlvUtil::isNearbyAgent(id)) )
 	{
-		self->mOwnerName = RlvStrings::getAnonym(self->mOwnerName);
+		mOwnerName = RlvStrings::getAnonym(mOwnerName);
 	}
 // [/RLVa:KB]
 
-	self->childSetText("OwnerName",self->mOwnerName);
+	childSetText("OwnerName", mOwnerName);
 }
 
 ////////////////////////////////////////////////////////////////////////////

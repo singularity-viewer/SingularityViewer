@@ -92,7 +92,7 @@ F32 LLCamera::getMaxView() const
 
 // ---------------- LLCamera::setFoo() member functions ----------------
 
-void LLCamera::setUserClipPlane(LLPlane const& plane)
+void LLCamera::setUserClipPlane(const LLPlane& plane)
 {
 	mPlaneCount = 7;
 	mAgentPlanes[6] = plane;
@@ -168,166 +168,91 @@ size_t LLCamera::readFrustumFromBuffer(const char *buffer)
 
 // ---------------- test methods  ---------------- 
 
-S32 LLCamera::AABBInFrustum(const LLVector3 &center, const LLVector3& radius) 
+S32 LLCamera::AABBInFrustum(const LLVector4a &center, const LLVector4a& radius) 
 {
-	static const LLVector3 scaler[] = {
-		LLVector3(-1,-1,-1),
-		LLVector3( 1,-1,-1),
-		LLVector3(-1, 1,-1),
-		LLVector3( 1, 1,-1),
-		LLVector3(-1,-1, 1),
-		LLVector3( 1,-1, 1),
-		LLVector3(-1, 1, 1),
-		LLVector3( 1, 1, 1)
+	static const LLVector4a scaler[] = {
+		LLVector4a(-1,-1,-1),
+		LLVector4a( 1,-1,-1),
+		LLVector4a(-1, 1,-1),
+		LLVector4a( 1, 1,-1),
+		LLVector4a(-1,-1, 1),
+		LLVector4a( 1,-1, 1),
+		LLVector4a(-1, 1, 1),
+		LLVector4a( 1, 1, 1)
 	};
 
 	U8 mask = 0;
-	S32 result = 2;
-
-	/*if (radius.magVecSquared() > mFrustumCornerDist * mFrustumCornerDist)
-	{ //box is larger than frustum, check frustum quads against box planes
-
-		static const LLVector3 dir[] = 
-		{
-			LLVector3(1, 0, 0),
-			LLVector3(-1, 0, 0),
-			LLVector3(0, 1, 0),
-			LLVector3(0, -1, 0),
-			LLVector3(0, 0, 1),
-			LLVector3(0, 0, -1)
-		};
-
-		U32 quads[] = 
-		{
-			0, 1, 2, 3,
-			0, 1, 5, 4,
-			2, 3, 7, 6,
-			3, 0, 7, 4,
-			1, 2, 6, 4,
-			4, 5, 6, 7
-		};
-
-		result = 0;
-
-		BOOL total_inside = TRUE;
-		for (U32 i = 0; i < 6; i++)
-		{ 
-			LLVector3 p = center + radius.scaledVec(dir[i]);
-			F32 d = -p*dir[i];
-
-			for (U32 j = 0; j <	6; j++)
-			{ //for each quad
-				F32 dist = mAgentFrustum[quads[j*4+0]]*dir[i] + d;
-				if (dist > 0)
-				{ //at least one frustum point is outside the AABB
-					total_inside = FALSE;
-					for (U32 k = 1; k < 4; k++)
-					{ //for each other point on quad
-						if ( mAgentFrustum[quads[j*4+k]]*dir[i]+d  <= 0.f)
-						{ //quad is straddling some plane of AABB
-							return 1;
-						}
-					}
-				}
-				else
-				{
-					for (U32 k = 1; k < 4; k++)
-					{
-						if (mAgentFrustum[quads[j*4+k]]*dir[i]+d > 0.f)
-						{
-							return 1;
-						}
-					}
-				}
-			}
-		}
-
-		if (total_inside)
-		{
-			result = 1;
-		}
-	}
-	else*/
+	bool result = false;
+	LLVector4a rscale, maxp, minp;
+	LLSimdScalar d;
+	for (U32 i = 0; i < mPlaneCount; i++)
 	{
-		for (U32 i = 0; i < mPlaneCount; i++)
+		mask = mPlaneMask[i];
+		if (mask != 0xff)
 		{
-			mask = mPlaneMask[i];
-			if (mask == 0xff)
-			{
-				continue;
-			}
-			LLPlane p = mAgentPlanes[i];
-			LLVector3 n = LLVector3(p);
-			float d = p.mV[3];
-			LLVector3 rscale = radius.scaledVec(scaler[mask]);
-
-			LLVector3 minp = center - rscale;
-			LLVector3 maxp = center + rscale;
-
-			if (n * minp > -d) 
+			const LLPlane& p(mAgentPlanes[i]);
+			p.getAt<3>(d);
+			rscale.setMul(radius, scaler[mask]);
+			minp.setSub(center, rscale);
+			d = -d;
+			if (p.dot3(minp).getF32() > d) 
 			{
 				return 0;
 			}
-		
-			if (n * maxp > -d)
+			
+			if(!result)
 			{
-				result = 1;
+				maxp.setAdd(center, rscale);
+				result = (p.dot3(maxp).getF32() > d);
 			}
 		}
 	}
 
-	
-	return result;
+	return result?1:2;
 }
 
-S32 LLCamera::AABBInFrustumNoFarClip(const LLVector3 &center, const LLVector3& radius) 
+
+S32 LLCamera::AABBInFrustumNoFarClip(const LLVector4a& center, const LLVector4a& radius) 
 {
-	static const LLVector3 scaler[] = {
-		LLVector3(-1,-1,-1),
-		LLVector3( 1,-1,-1),
-		LLVector3(-1, 1,-1),
-		LLVector3( 1, 1,-1),
-		LLVector3(-1,-1, 1),
-		LLVector3( 1,-1, 1),
-		LLVector3(-1, 1, 1),
-		LLVector3( 1, 1, 1)
+	static const LLVector4a scaler[] = {
+		LLVector4a(-1,-1,-1),
+		LLVector4a( 1,-1,-1),
+		LLVector4a(-1, 1,-1),
+		LLVector4a( 1, 1,-1),
+		LLVector4a(-1,-1, 1),
+		LLVector4a( 1,-1, 1),
+		LLVector4a(-1, 1, 1),
+		LLVector4a( 1, 1, 1)
 	};
 
 	U8 mask = 0;
-	S32 result = 2;
-
+	bool result = false;
+	LLVector4a rscale, maxp, minp;
+	LLSimdScalar d;
 	for (U32 i = 0; i < mPlaneCount; i++)
 	{
-		if (i == 5)
-		{
-			continue;
-		}
-
 		mask = mPlaneMask[i];
-		if (mask == 0xff)
+		if ((i != 5) && (mask != 0xff))
 		{
-			continue;
-		}
-		LLPlane p = mAgentPlanes[i];
-		LLVector3 n = LLVector3(p);
-		float d = p.mV[3];
-		LLVector3 rscale = radius.scaledVec(scaler[mask]);
-
-		LLVector3 minp = center - rscale;
-		LLVector3 maxp = center + rscale;
-
-		if (n * minp > -d) 
-		{
-			return 0;
-		}
-	
-		if (n * maxp > -d)
-		{
-			result = 1;
+			const LLPlane& p(mAgentPlanes[i]);
+			p.getAt<3>(d);
+			rscale.setMul(radius, scaler[mask]);
+			minp.setSub(center, rscale);
+			d = -d;
+			if (p.dot3(minp).getF32() > d) 
+			{
+				return 0;
+			}
+			
+			if(!result)
+			{
+				maxp.setAdd(center, rscale);
+				result = (p.dot3(maxp).getF32() > d);
+			}
 		}
 	}
 
-	return result;
+	return result?1:2;
 }
 
 int LLCamera::sphereInFrustumQuick(const LLVector3 &sphere_center, const F32 radius) 
@@ -715,9 +640,10 @@ void LLCamera::calculateWorldFrustumPlanes()
 	F32 d;
 	LLVector3 center = mOrigin - mXAxis*mNearPlane;
 	mWorldPlanePos = center;
+	LLVector3 pnorm;	
 	for (int p=0; p<4; p++)
 	{
-		LLVector3 pnorm = LLVector3(mLocalPlanes[p]);
+		mLocalPlanes[p].getVector3(pnorm);
 		LLVector3 norm = rotateToAbsolute(pnorm);
 		norm.normVec();
 		d = -(center * norm);
@@ -727,13 +653,15 @@ void LLCamera::calculateWorldFrustumPlanes()
 	LLVector3 zaxis(0, 0, 1.0f);
 	F32 yaw = getYaw();
 	{
-		LLVector3 tnorm = LLVector3(mLocalPlanes[PLANE_LEFT]);
+		LLVector3 tnorm;
+		mLocalPlanes[PLANE_LEFT].getVector3(tnorm);
 		tnorm.rotVec(yaw, zaxis);
 		d = -(mOrigin * tnorm);
 		mHorizPlanes[HORIZ_PLANE_LEFT] = LLPlane(tnorm, d);
 	}
 	{
-		LLVector3 tnorm = LLVector3(mLocalPlanes[PLANE_RIGHT]);
+		LLVector3 tnorm;
+		mLocalPlanes[PLANE_RIGHT].getVector3(tnorm);
 		tnorm.rotVec(yaw, zaxis);
 		d = -(mOrigin * tnorm);
 		mHorizPlanes[HORIZ_PLANE_RIGHT] = LLPlane(tnorm, d);

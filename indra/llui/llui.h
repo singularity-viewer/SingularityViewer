@@ -39,6 +39,7 @@
 #include "llcontrol.h"
 #include "llrect.h"
 #include "llcoord.h"
+#include "llglslshader.h"
 //#include "llhtmlhelp.h"
 #include "llgl.h"			// *TODO: break this dependency
 #include <stack>

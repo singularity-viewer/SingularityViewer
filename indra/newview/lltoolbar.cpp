@@ -126,7 +126,6 @@ LLToolBar::LLToolBar()
 BOOL LLToolBar::postBuild()
 {
 	childSetCommitCallback("communicate_btn", onClickCommunicate, this);
-	childSetControlName("communicate_btn", "ShowCommunicate");
 
 	childSetAction("chat_btn", onClickChat, this);
 	childSetControlName("chat_btn", "ChatVisible");
@@ -135,7 +134,7 @@ BOOL LLToolBar::postBuild()
 	childSetControlName("appearance_btn", "");
 
 	childSetAction("radar_list_btn", onClickRadarList, this);
-	childSetControlName("radar_list_btn", "RadarListBtnState");
+	childSetControlName("radar_list_btn", "ShowRadar");
 
 	childSetAction("fly_btn", onClickFly, this);
 	childSetControlName("fly_btn", "FlyBtnState");
@@ -144,7 +143,7 @@ BOOL LLToolBar::postBuild()
 	childSetControlName("sit_btn", "SitBtnState");
 
 	childSetAction("snapshot_btn", onClickSnapshot, this);
-	childSetControlName("snapshot_btn", "");
+	childSetControlName("snapshot_btn", "SnapshotBtnState");
 
 	childSetAction("directory_btn", onClickDirectory, this);
 	childSetControlName("directory_btn", "ShowDirectory");
@@ -294,14 +293,14 @@ void LLToolBar::refresh()
 	setVisible(show && !mouselook);
 
 	BOOL sitting = FALSE;
-	if (gAgent.getAvatarObject())
+	if (gAgentAvatarp)
 	{
-		sitting = gAgent.getAvatarObject()->isSitting();
+		sitting = gAgentAvatarp->isSitting();
 	}
 
 	childSetEnabled("fly_btn", (gAgent.canFly() || gAgent.getFlying() || gSavedSettings.getBOOL("AscentFlyAlwaysEnabled")) && !sitting );
 
-	childSetEnabled("build_btn", (LLViewerParcelMgr::getInstance()->agentCanBuild() || gSavedSettings.getBOOL("AscentBuildAlwaysEnabled")) );
+	childSetEnabled("build_btn", (LLViewerParcelMgr::getInstance()->allowAgentBuild() || gSavedSettings.getBOOL("AscentBuildAlwaysEnabled")) );
 
 	// Check to see if we're in build mode
 	BOOL build_mode = LLToolMgr::getInstance()->inEdit();
@@ -478,11 +477,6 @@ void LLToolBar::onClickAppearance(void*)
 void LLToolBar::onClickRadarList(void*)
 {
 	LLFloaterAvatarList::toggle(0);
-	bool vis = false;
-	if(LLFloaterAvatarList::getInstance())
-	{
-		vis = (bool)LLFloaterAvatarList::getInstance()->getVisible();
-	}
 }
 
 

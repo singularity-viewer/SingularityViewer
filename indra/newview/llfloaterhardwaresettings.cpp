@@ -35,6 +35,7 @@
 #include "llfloaterhardwaresettings.h"
 #include "llfloaterpreference.h"
 #include "llviewerwindow.h"
+#include "llwindow.h"
 #include "llviewercontrol.h"
 #include "llviewertexturelist.h"
 #include "llfeaturemanager.h"

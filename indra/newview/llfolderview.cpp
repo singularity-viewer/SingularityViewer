@@ -60,7 +60,7 @@
 #include "llviewermenu.h"
 #include "lluictrlfactory.h"
 #include "llviewerwindow.h"
-#include "llvoavatar.h"
+#include "llvoavatarself.h"
 #include "llfloaterproperties.h"
 
 // RN: HACK
@@ -736,11 +736,11 @@ BOOL LLFolderViewItem::handleHover( S32 x, S32 y, MASK mask )
 
 				// *TODO: push this into listener and remove
 				// dependency on llagent
-				if(mListener && gInventory.isObjectDescendentOf(mListener->getUUID(), gAgent.getInventoryRootID()))
+				if(mListener && gInventory.isObjectDescendentOf(mListener->getUUID(), gInventory.getRootFolderID()))
 				{
 					src = LLToolDragAndDrop::SOURCE_AGENT;
 				}
-				else if (mListener && gInventory.isObjectDescendentOf(mListener->getUUID(), gInventoryLibraryRoot))
+				else if (mListener && gInventory.isObjectDescendentOf(mListener->getUUID(), gInventory.getLibraryRootFolderID()))
 				{
 					src = LLToolDragAndDrop::SOURCE_LIBRARY;
 				}
@@ -1796,7 +1796,7 @@ bool LLFolderViewFolder::isTrash() const
 {
 	if (mAmTrash == LLFolderViewFolder::UNKNOWN)
 	{
-		mAmTrash = mListener->getUUID() == gInventory.findCategoryUUIDForType(LLAssetType::AT_TRASH, false) ? LLFolderViewFolder::TRASH : LLFolderViewFolder::NOT_TRASH;
+		mAmTrash = mListener->getUUID() == gInventory.findCategoryUUIDForType(LLFolderType::FT_TRASH, false) ? LLFolderViewFolder::TRASH : LLFolderViewFolder::NOT_TRASH;
 	}
 	return mAmTrash == LLFolderViewFolder::TRASH;
 }
@@ -2793,7 +2793,7 @@ U32 LLFolderView::getSearchType() const
 BOOL LLFolderView::addFolder( LLFolderViewFolder* folder)
 {
 	// enforce sort order of My Inventory followed by Library
-	if (folder->getListener()->getUUID() == gInventoryLibraryRoot)
+	if (folder->getListener()->getUUID() == gInventory.getLibraryRootFolderID())
 	{
 		mFolders.push_back(folder);
 	}
@@ -3203,7 +3203,7 @@ void LLFolderView::sanitizeSelection()
 		else
 		{
 			// nothing selected to start with, so pick "My Inventory" as best guess
-			new_selection = getItemByID(gAgent.getInventoryRootID());
+			new_selection = getItemByID(gInventory.getRootFolderID());
 		}
 
 		if (new_selection)
@@ -4690,7 +4690,7 @@ BOOL LLInventoryFilter::check(LLFolderViewItem* item)
 	BOOL passed = (0x1 << listener->getInventoryType() & mFilterOps.mFilterTypes || listener->getInventoryType() == LLInventoryType::IT_NONE)
 					&& (mFilterSubString.size() == 0 || mSubStringMatchOffset != std::string::npos)
 					&& (mFilterWorn == false || gAgentWearables.isWearingItem(item_id) ||
-						(gAgent.getAvatarObject() && gAgent.getAvatarObject()->isWearingAttachment(item_id)))
+						(gAgentAvatarp && gAgentAvatarp->isWearingAttachment(item_id)))
 					&& ((listener->getPermissionMask() & mFilterOps.mPermissions) == mFilterOps.mPermissions)
 					&& (listener->getCreationDate() >= earliest && listener->getCreationDate() <= mFilterOps.mMaxDate);
 	return passed;

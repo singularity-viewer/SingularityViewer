@@ -34,15 +34,19 @@
 #include "indra_constants.h"
 
 #include "llwindowheadless.h"
+#include "llkeyboardheadless.h"
 
 //
 // LLWindowHeadless
 //
-LLWindowHeadless::LLWindowHeadless(const std::string& title, const std::string& name, S32 x, S32 y, S32 width, S32 height,
-							 U32 flags,  BOOL fullscreen, BOOL clearBg,
+LLWindowHeadless::LLWindowHeadless(LLWindowCallbacks* callbacks, const std::string& title, const std::string& name, S32 x, S32 y, S32 width, S32 height,
+							 U32 flags,  BOOL fullscreen, BOOL clear_background,
 							 BOOL disable_vsync, BOOL use_gl, BOOL ignore_pixel_depth)
-	: LLWindow(fullscreen, flags)
+	: LLWindow(callbacks, fullscreen, flags)
 {
+	// Initialize a headless keyboard.
+	gKeyboard = new LLKeyboardHeadless();
+	gKeyboard->setCallbacks(callbacks);
 }
 
 

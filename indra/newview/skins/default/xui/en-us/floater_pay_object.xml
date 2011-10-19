@@ -19,7 +19,7 @@
 	     bottom="-25" drop_shadow_visible="true" enabled="true" follows="left|top"
 	     font="SansSerif" h_pad="0" halign="left" height="18" left="85"
 	     mouse_opaque="true" name="payee_name" v_pad="0" width="210">
-		[FIRST] [LAST]
+		[NAME]
 	</text>
 	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
 	     bottom="-50" drop_shadow_visible="true" enabled="true" follows="left|top"

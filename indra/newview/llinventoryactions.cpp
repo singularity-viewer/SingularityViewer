@@ -43,10 +43,12 @@
 #include "llagent.h"
 #include "llcallingcard.h"
 #include "llcheckboxctrl.h"		// for radio buttons
+#include "llnotificationsutil.h"
 #include "llradiogroup.h"
 #include "llspinctrl.h"
 #include "lltextbox.h"
 #include "llui.h"
+
 
 #include "llviewercontrol.h"
 #include "llfirstuse.h"
@@ -77,7 +79,7 @@
 #include "llviewerinventory.h"
 #include "llviewerobjectlist.h"
 #include "llviewerwindow.h"
-#include "llvoavatar.h"
+#include "llvoavatarself.h"
 #include "llwearable.h"
 #include "llwearablelist.h"
 #include "llviewermessage.h" 
@@ -289,7 +291,7 @@ class LLEmptyTrash : public inventory_panel_listener_t
 	{
 		LLInventoryModel* model = mPtr->getModel();
 		if(!model) return false;
-		LLNotifications::instance().add("ConfirmEmptyTrash", LLSD(), LLSD(), boost::bind(&LLEmptyTrash::callback_empty_trash, this, _1, _2));
+		LLNotificationsUtil::add("ConfirmEmptyTrash", LLSD(), LLSD(), boost::bind(&LLEmptyTrash::callback_empty_trash, this, _1, _2));
 		return true;
 	}
 
@@ -299,7 +301,7 @@ class LLEmptyTrash : public inventory_panel_listener_t
 		if (option == 0) // YES
 		{
 			LLInventoryModel* model = mPtr->getModel();
-			LLUUID trash_id = model->findCategoryUUIDForType(LLAssetType::AT_TRASH);
+			LLUUID trash_id = model->findCategoryUUIDForType(LLFolderType::FT_TRASH);
 			model->purgeDescendentsOf(trash_id);
 			model->notifyObservers();
 		}
@@ -313,7 +315,7 @@ class LLEmptyLostAndFound : public inventory_panel_listener_t
 	{
 		LLInventoryModel* model = mPtr->getModel();
 		if(!model) return false;
-		LLNotifications::instance().add("ConfirmEmptyLostAndFound", LLSD(), LLSD(), boost::bind(&LLEmptyLostAndFound::callback_empty_lost_and_found, this, _1, _2));
+		LLNotificationsUtil::add("ConfirmEmptyLostAndFound", LLSD(), LLSD(), boost::bind(&LLEmptyLostAndFound::callback_empty_lost_and_found, this, _1, _2));
 		return true;
 	}
 
@@ -323,7 +325,7 @@ class LLEmptyLostAndFound : public inventory_panel_listener_t
 		if (option == 0) // YES
 		{
 			LLInventoryModel* model = mPtr->getModel();
-			LLUUID lost_and_found_id = model->findCategoryUUIDForType(LLAssetType::AT_LOST_AND_FOUND);
+			LLUUID lost_and_found_id = model->findCategoryUUIDForType(LLFolderType::FT_LOST_AND_FOUND);
 			model->purgeDescendentsOf(lost_and_found_id);
 			model->notifyObservers();
 		}
@@ -337,7 +339,7 @@ class LLEmptyTrashFloater : public inventory_listener_t
 	{
 		LLInventoryModel* model = mPtr->getPanel()->getModel();
 		if(!model) return false;
-		LLUUID trash_id = model->findCategoryUUIDForType(LLAssetType::AT_TRASH);
+		LLUUID trash_id = model->findCategoryUUIDForType(LLFolderType::FT_TRASH);
 		model->purgeDescendentsOf(trash_id);
 		model->notifyObservers();
 		return true;
@@ -351,19 +353,19 @@ void do_create(LLInventoryModel *model, LLInventoryPanel *ptr, std::string type,
 		LLUUID category;
 		if (self)
 		{
-			category = model->createNewCategory(self->getUUID(), LLAssetType::AT_NONE, LLStringUtil::null);
+			category = model->createNewCategory(self->getUUID(), LLFolderType::FT_NONE, LLStringUtil::null);
 		}
 		else
 		{
-			category = model->createNewCategory(gAgent.getInventoryRootID(),
-												LLAssetType::AT_NONE, LLStringUtil::null);
+			category = model->createNewCategory(gInventory.getRootFolderID(),
+												LLFolderType::FT_NONE, LLStringUtil::null);
 		}
 		model->notifyObservers();
 		ptr->setSelection(category, TRUE);
 	}
 	else if ("lsl" == type)
 	{
-		LLUUID parent_id = self ? self->getUUID() : model->findCategoryUUIDForType(LLAssetType::AT_LSL_TEXT);
+		LLUUID parent_id = self ? self->getUUID() : model->findCategoryUUIDForType(LLFolderType::FT_LSL_TEXT);
 		ptr->createNewItem(NEW_LSL_NAME,
 							parent_id,
 							LLAssetType::AT_LSL_TEXT,
@@ -372,7 +374,7 @@ void do_create(LLInventoryModel *model, LLInventoryPanel *ptr, std::string type,
 	}
 	else if ("notecard" == type)
 	{
-		LLUUID parent_id = self ? self->getUUID() : model->findCategoryUUIDForType(LLAssetType::AT_NOTECARD);
+		LLUUID parent_id = self ? self->getUUID() : model->findCategoryUUIDForType(LLFolderType::FT_NOTECARD);
 		ptr->createNewItem(NEW_NOTECARD_NAME,
 							parent_id,
 							LLAssetType::AT_NOTECARD,
@@ -381,92 +383,22 @@ void do_create(LLInventoryModel *model, LLInventoryPanel *ptr, std::string type,
 	}
 	else if ("gesture" == type)
 	{
-		LLUUID parent_id = self ? self->getUUID() : model->findCategoryUUIDForType(LLAssetType::AT_GESTURE);
+		LLUUID parent_id = self ? self->getUUID() : model->findCategoryUUIDForType(LLFolderType::FT_GESTURE);
 		ptr->createNewItem(NEW_GESTURE_NAME,
 							parent_id,
 							LLAssetType::AT_GESTURE,
 							LLInventoryType::IT_GESTURE,
 							PERM_ALL);
 	}
-	else if ("shirt" == type)
+	else
 	{
-		LLUUID parent_id = self ? self->getUUID() : gInventory.findCategoryUUIDForType(LLAssetType::AT_CLOTHING);
-		LLFolderBridge::createWearable(parent_id, WT_SHIRT);
-	}
-	else if ("pants" == type)
-	{
-		LLUUID parent_id = self ? self->getUUID() : gInventory.findCategoryUUIDForType(LLAssetType::AT_CLOTHING);
-		LLFolderBridge::createWearable(parent_id, WT_PANTS);
-	}
-	else if ("shoes" == type)
-	{
-		LLUUID parent_id = self ? self->getUUID() : gInventory.findCategoryUUIDForType(LLAssetType::AT_CLOTHING);
-		LLFolderBridge::createWearable(parent_id, WT_SHOES);
-	}
-	else if ("socks" == type)
-	{
-		LLUUID parent_id = self ? self->getUUID() : gInventory.findCategoryUUIDForType(LLAssetType::AT_CLOTHING);
-		LLFolderBridge::createWearable(parent_id, WT_SOCKS);
-	}
-	else if ("jacket" == type)
-	{
-		LLUUID parent_id = self ? self->getUUID() : gInventory.findCategoryUUIDForType(LLAssetType::AT_CLOTHING);
-		LLFolderBridge::createWearable(parent_id, WT_JACKET);
-	}
-	else if ("skirt" == type)
-	{
-		LLUUID parent_id = self ? self->getUUID() : gInventory.findCategoryUUIDForType(LLAssetType::AT_CLOTHING);
-		LLFolderBridge::createWearable(parent_id, WT_SKIRT);
-	}
-	else if ("gloves" == type)
-	{
-		LLUUID parent_id = self ? self->getUUID() : gInventory.findCategoryUUIDForType(LLAssetType::AT_CLOTHING);
-		LLFolderBridge::createWearable(parent_id, WT_GLOVES);
-	}
-	else if ("undershirt" == type)
-	{
-		LLUUID parent_id = self ? self->getUUID() : gInventory.findCategoryUUIDForType(LLAssetType::AT_CLOTHING);
-		LLFolderBridge::createWearable(parent_id, WT_UNDERSHIRT);
-	}
-	else if ("underpants" == type)
-	{
-		LLUUID parent_id = self ? self->getUUID() : gInventory.findCategoryUUIDForType(LLAssetType::AT_CLOTHING);
-		LLFolderBridge::createWearable(parent_id, WT_UNDERPANTS);
-	}
-	else if ("alpha" == type)
-	{
-		LLUUID parent_id = self ? self->getUUID() : gInventory.findCategoryUUIDForType(LLAssetType::AT_CLOTHING);
-		LLFolderBridge::createWearable(parent_id, WT_ALPHA);
-	}
-	else if ("tattoo" == type)
-	{
-		LLUUID parent_id = self ? self->getUUID() : gInventory.findCategoryUUIDForType(LLAssetType::AT_CLOTHING);
-		LLFolderBridge::createWearable(parent_id, WT_TATTOO);
-	}
-	else if ("shape" == type)
-	{
-		LLUUID parent_id = self ? self->getUUID() : gInventory.findCategoryUUIDForType(LLAssetType::AT_BODYPART);
-		LLFolderBridge::createWearable(parent_id, WT_SHAPE);
-	}
-	else if ("skin" == type)
-	{
-		LLUUID parent_id = self ? self->getUUID() : gInventory.findCategoryUUIDForType(LLAssetType::AT_BODYPART);
-		LLFolderBridge::createWearable(parent_id, WT_SKIN);
-	}
-	else if ("hair" == type)
-	{
-		LLUUID parent_id = self ? self->getUUID() : gInventory.findCategoryUUIDForType(LLAssetType::AT_BODYPART);
-		LLFolderBridge::createWearable(parent_id, WT_HAIR);
-	}
-	else if ("eyes" == type)
-	{
-		LLUUID parent_id = self ? self->getUUID() : gInventory.findCategoryUUIDForType(LLAssetType::AT_BODYPART);
-		LLFolderBridge::createWearable(parent_id, WT_EYES);
-	}
-	else if ("physics" == type)
-	{
-		LLUUID parent_id = self ? self->getUUID() : gInventory.findCategoryUUIDForType(LLAssetType::AT_CLOTHING);
-		LLFolderBridge::createWearable(parent_id, WT_PHYSICS);
+		LLWearableType::EType wear_type = LLWearableType::typeNameToType(type);
+		if(wear_type != LLWearableType::WT_NONE)
+		{
+				LLFolderType::EType folder_type = LLFolderType::assetTypeToFolderType(LLWearableType::getAssetType(wear_type));
+				LLUUID parent_id = self ? self->getUUID() : gInventory.findCategoryUUIDForType(folder_type);
+				LLFolderBridge::createWearable(parent_id, wear_type);
+		}
 	}
 	ptr->getRootFolder()->setNeedsAutoRename(TRUE);	
 }
@@ -728,7 +660,7 @@ class LLAttachObject : public inventory_panel_listener_t
 		LLUUID id = *selected_items.begin();
 
 		std::string joint_name = userdata.asString();
-		LLVOAvatar *avatarp = gAgent.getAvatarObject();
+		LLVOAvatar *avatarp = gAgentAvatarp;
 		LLViewerJointAttachment* attachmentp = NULL;
 		for (LLVOAvatar::attachment_map_t::iterator iter = avatarp->mAttachmentPoints.begin(); 
 			 iter != avatarp->mAttachmentPoints.end(); )
@@ -747,7 +679,7 @@ class LLAttachObject : public inventory_panel_listener_t
 		}
 		LLViewerInventoryItem* item = (LLViewerInventoryItem*)gInventory.getItem(id);
 
-		if(item && gInventory.isObjectDescendentOf(id, gAgent.getInventoryRootID()))
+		if(item && gInventory.isObjectDescendentOf(id, gInventory.getRootFolderID()))
 		{
 			rez_attachment(item, attachmentp);
 		}

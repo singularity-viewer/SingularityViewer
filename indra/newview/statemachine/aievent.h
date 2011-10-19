@@ -56,7 +56,7 @@ class AIEvent {
 	 *
 	 * This may be called for already unregistered events.
 	 * This should be called from the destructor of a statemachine for any event it registers,
-	 * as well as when it doesn't need the event anymore (in the case on non- one shot events).
+	 * as well as when it doesn't need the event anymore (in the case of non- one shot events).
 	 *
 	 * @param event the event we want to no longer be notified off.
 	 * @param statemachine the statemachine.

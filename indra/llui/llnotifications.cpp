@@ -1344,7 +1344,7 @@ bool LLNotifications::loadTemplates()
 		if (!sound.empty())
 		{
 			// TODO: test for bad sound effect name / missing effect
-			pTemplate->mSoundEffect = LLUUID(LLUI::sConfigGroup->getString(sound.c_str()));
+			pTemplate->mSoundEffect = LLUUID(LLUI::sConfigGroup->findString(sound.c_str()));
 		}
 
 		for (LLXMLNodePtr child = item->getFirstChild();

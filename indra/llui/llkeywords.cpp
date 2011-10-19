@@ -344,7 +344,10 @@ void LLKeywords::findSegments(std::vector<LLTextSegment *>* seg_list, const LLWS
 					
 					if( cur_delimiter->getType() == LLKeywordToken::TWO_SIDED_DELIMITER )
 					{
-						while( *cur && !cur_delimiter->isHead(cur))
+						LLWString str = cur_delimiter->getToken();
+						std::reverse(str.begin(),str.end());	//Flip the delim around (/* changes to */)
+						LLKeywordToken reverse_delimiter(cur_delimiter->getType(),cur_delimiter->getColor(),str,cur_delimiter->getToolTip());
+						while( *cur && !reverse_delimiter.isHead(cur))
 						{
 							// Check for an escape sequence.
 							if (*cur == '\\')
@@ -358,7 +361,7 @@ void LLKeywords::findSegments(std::vector<LLTextSegment *>* seg_list, const LLWS
 									cur++;
 								}
 								// Is the next character the end delimiter?
-								if (cur_delimiter->isHead(cur))
+								if (reverse_delimiter.isHead(cur))
 								{
 									// Is there was an odd number of backslashes, then this delimiter
 									// does not end the sequence.

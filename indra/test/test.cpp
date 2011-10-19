@@ -43,7 +43,7 @@
 #include "linden_common.h"
 #include "llerrorcontrol.h"
 #include "lltut.h"
-#include "aiaprpool.h"
+#include "llaprpool.h"
 
 #include "apr_getopt.h"
 
@@ -250,7 +250,7 @@ int main(int argc, char **argv)
 	ctype_workaround();
 #endif
 
-	AIAPRPool pool;
+	LLAPRPool pool;
 	pool.create();
 	apr_getopt_t* os = NULL;
 	if(APR_SUCCESS != apr_getopt_init(&os, pool(), argc, argv))

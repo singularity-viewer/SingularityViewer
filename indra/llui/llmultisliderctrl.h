@@ -112,8 +112,8 @@ public:
 	void			setLabelColor(const LLColor4& c)			{ mTextEnabledColor = c; }
 	void			setDisabledLabelColor(const LLColor4& c)	{ mTextDisabledColor = c; }
 
-	void			setSliderMouseDownCallback(	void (*slider_mousedown_callback)(LLUICtrl* caller, void* userdata) );
-	void			setSliderMouseUpCallback(	void (*slider_mouseup_callback)(LLUICtrl* caller, void* userdata) );
+	boost::signals2::connection setSliderMouseDownCallback( const commit_signal_t::slot_type& cb );
+	boost::signals2::connection setSliderMouseUpCallback( const commit_signal_t::slot_type& cb );
 
 	virtual void	onTabInto();
 
@@ -124,10 +124,8 @@ public:
 	virtual std::string 	getControlName() const;
 	
 	static void		onSliderCommit(LLUICtrl* caller, void* userdata);
-	static void		onSliderMouseDown(LLUICtrl* caller,void* userdata);
-	static void		onSliderMouseUp(LLUICtrl* caller,void* userdata);
-
-	static void		onEditorCommit(LLUICtrl* caller, void* userdata);
+	
+	static void		onEditorCommit(LLUICtrl* ctrl, void* userdata);
 	static void		onEditorGainFocus(LLFocusableElement* caller, void *userdata);
 	static void		onEditorChangeFocus(LLUICtrl* caller, S32 direction, void *userdata);
 
@@ -151,9 +149,6 @@ private:
 
 	LLColor4		mTextEnabledColor;
 	LLColor4		mTextDisabledColor;
-
-	void			(*mSliderMouseUpCallback)( LLUICtrl* ctrl, void* userdata );
-	void			(*mSliderMouseDownCallback)( LLUICtrl* ctrl, void* userdata );
 };
 
 #endif  // LL_MULTI_SLIDERCTRL_H

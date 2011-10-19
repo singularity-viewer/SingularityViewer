@@ -40,7 +40,9 @@
 #include "llhost.h"
 #include "llgltypes.h"
 #include "llrender.h"
-//#include "llmetricperformancetester.h"
+#if 0
+#include "llmetricperformancetester.h"
+#endif
 
 #include <map>
 #include <list>
@@ -336,7 +338,6 @@ public:
 	static BOOL sFreezeImageScalingDown ;//do not scale down image res if set.
 	static F32  sCurrentTime ;
 	//static BOOL sUseTextureAtlas ;
-	static BOOL sDontLoadVolumeTextures ;
 
 	static LLPointer<LLViewerTexture> sNullImagep; // Null texture for non-textured objects.
 };
@@ -474,7 +475,7 @@ public:
 	S32         getCachedRawImageLevel() const {return mCachedRawDiscardLevel;}
 	BOOL        isCachedRawImageReady() const {return mCachedRawImageReady ;}
 	BOOL        isRawImageValid()const { return mIsRawImageValid ; }	
-	void        forceToSaveRawImage(S32 desired_discard = 0) ;
+	void        forceToSaveRawImage(S32 desired_discard = 0, F32 kept_time = 0.f) ;
 	/*virtual*/ void setCachedRawImage(S32 discard_level, LLImageRaw* imageraw) ;
 	void        destroySavedRawImage() ;
 	LLImageRaw* getSavedRawImage() ;
@@ -560,6 +561,7 @@ protected:
 	S32 mSavedRawDiscardLevel;
 	S32 mDesiredSavedRawDiscardLevel;
 	F32 mLastReferencedSavedRawImageTime ;
+	F32 mKeptSavedRawImageTime ;
 
 	//a small version of the copy of the raw image (<= 64 * 64)
 	LLPointer<LLImageRaw> mCachedRawImage;
@@ -620,14 +622,16 @@ class LLViewerMediaTexture : public LLViewerTexture
 {
 #if NEW_MEDIA_TEXTURE
 protected:
-	*virtual*/ ~LLViewerMediaTexture() ;
+	/*virtual*/ ~LLViewerMediaTexture() ;
 
 public:
 	LLViewerMediaTexture(const LLUUID& id, BOOL usemipmaps = TRUE, LLImageGL* gl_image = NULL) ;
 
-	/*virtual*/* S8 getType() const;
-#endif
+	/*virtual*/ S8 getType() const;
+#endif //NEW_MEDIA_TEXTURE
+#if !NEW_MEDIA_TEXTURE
 public:
+#endif //!NEW_MEDIA_TEXTURE
 	void reinit(BOOL usemipmaps = TRUE);	
 
 	BOOL  getUseMipMaps() {return mUseMipMaps ; }
@@ -642,7 +646,7 @@ public:
 	void invalidateMediaImpl() ;
 
 	void addMediaToFace(LLFace* facep) ;
-	void removeMediaFromFace(LLFace* facep) ;*/
+	void removeMediaFromFace(LLFace* facep) ;
 
 	/*virtual*/ void addFace(LLFace* facep) ;
 	/*virtual*/ void removeFace(LLFace* facep) ; 
@@ -678,7 +682,7 @@ public:
 private:
 	typedef std::map< LLUUID, LLPointer<LLViewerMediaTexture> > media_map_t ;
 	static media_map_t sMediaMap ;	
-#endif
+#endif //NEW_MEDIA_TEXTURE
 };
 
 //just an interface class, do not create instance from this class.
@@ -690,7 +694,9 @@ private:
 
 public:
     //texture pipeline tester
-	//static LLTexturePipelineTester* sTesterp ;
+#if 0
+	static LLTexturePipelineTester* sTesterp ;
+#endif
 
 	//returns NULL if tex is not a LLViewerFetchedTexture nor derived from LLViewerFetchedTexture.
 	static LLViewerFetchedTexture*    staticCastToFetchedTexture(LLTexture* tex, BOOL report_error = FALSE) ;
@@ -708,7 +714,7 @@ public:
 	//"get-texture" will create a new texture if the texture does not exist.
 	//
 	static LLViewerMediaTexture*      getMediaTexture(const LLUUID& id, BOOL usemipmaps = TRUE, LLImageGL* gl_image = NULL) ;
-#endif	
+#endif //NEW_MEDIA_TEXTURE
 
 	static LLPointer<LLViewerTexture> getLocalTexture(BOOL usemipmaps = TRUE, BOOL generate_gl_tex = TRUE);
 	static LLPointer<LLViewerTexture> getLocalTexture(const LLUUID& id, BOOL usemipmaps, BOOL generate_gl_tex = TRUE) ;
@@ -839,8 +845,8 @@ private:
 		S32 mInstantPerformanceListCounter ;
 	};
 
-	/*virtual*/ LLMetricPerformanceTester::LLTestSession* loadTestSession(LLSD* log) ;
+	/*virtual*/ LLMetricPerformanceTesterWithSession::LLTestSession* loadTestSession(LLSD* log) ;
 	/*virtual*/ void compareTestSessions(std::ofstream* os) ;
 };
-#endif //0
+#endif
 #endif

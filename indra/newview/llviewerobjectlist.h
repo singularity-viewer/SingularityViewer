@@ -44,6 +44,7 @@
 #include "llviewerobject.h"
 #include "llvoavatar.h"
 
+class LLCamera;
 class LLNetMap;
 class LLDebugBeacon;
 
@@ -94,8 +95,30 @@ public:
 	void updateApparentAngles(LLAgent &agent);
 	void update(LLAgent &agent, LLWorld &world);
 
-	void shiftObjects(const LLVector3 &offset);
+#if MESH_ENABLED
+	void fetchObjectCosts();
+	void fetchPhysicsFlags();
 
+	void updateObjectCost(LLViewerObject* object);
+	void updateObjectCost(const LLUUID& object_id, F32 object_cost, F32 link_cost, F32 physics_cost, F32 link_physics_cost);
+	void onObjectCostFetchFailure(const LLUUID& object_id);
+
+	void updatePhysicsFlags(const LLViewerObject* object);
+	void onPhysicsFlagsFetchFailure(const LLUUID& object_id);
+	void updatePhysicsShapeType(const LLUUID& object_id, S32 type);
+	void updatePhysicsProperties(const LLUUID& object_id,
+									F32 density,
+									F32 friction,
+									F32 restitution,
+									F32 gravity_multiplier);
+
+#endif //MESH_ENABLED
+	
+	void shiftObjects(const LLVector3 &offset);
+	void repartitionObjects();
+
+	bool hasMapObjectInRegion(LLViewerRegion* regionp) ;
+	void clearAllMapObjectsInRegion(LLViewerRegion* regionp) ;
 	void renderObjectsForMap(LLNetMap &netmap);
 	void renderObjectBounds(const LLVector3 &center);
 
@@ -112,9 +135,7 @@ public:
 	void updateAvatarVisibility();
 
 	// Selection related stuff
-	void renderObjectsForSelect(LLCamera &camera, const LLRect& screen_rect, BOOL pick_parcel_wall = FALSE, BOOL render_transparent = TRUE);
 	void generatePickList(LLCamera &camera);
-	void renderPickList(const LLRect& screen_rect, BOOL pick_parcel_wall, BOOL render_transparent);
 
 	LLViewerObject *getSelectedObject(const U32 object_id);
 
@@ -153,17 +174,6 @@ public:
 
 	U32	mCurBin; // Current bin we're working on...
 
-	//////////////////////
-	//
-	// Statistics data
-	//
-	//
-	LLStat mNumObjectsStat;
-	LLStat mNumActiveObjectsStat;
-	LLStat mNumNewObjectsStat;
-	LLStat mNumSizeCulledStat;
-	LLStat mNumVisCulledStat;
-
 	S32 mNumNewObjects;
 
 	S32 mNumSizeCulled;
@@ -182,7 +192,7 @@ public:
 								const U32 ip,
 								const U32 port); // Requires knowledge of message system info!
 
-	static BOOL removeFromLocalIDTable(const LLViewerObject &object);
+	static BOOL removeFromLocalIDTable(const LLViewerObject* objectp);
 	// Used ONLY by the orphaned object code.
 	static U64 getIndex(const U32 local_id, const U32 ip, const U32 port);
 
@@ -191,7 +201,7 @@ public:
 	S32 mNumUnknownKills;
 	S32 mNumDeadObjects;
 	S32 mMinNumDeadObjects;
-protected:
+//protected:
 	std::vector<U64>	mOrphanParents;	// LocalID/ip,port of orphaned objects
 	std::vector<OrphanInfo> mOrphanChildren;	// UUID's of orphaned objects
 	S32 mNumOrphans;
@@ -207,6 +217,16 @@ protected:
 
 	std::map<LLUUID, LLPointer<LLViewerObject> > mUUIDObjectMap;
 	std::map<LLUUID, LLPointer<LLVOAvatar> > mUUIDAvatarMap;
+
+#if MESH_ENABLED
+	//set of objects that need to update their cost
+	std::set<LLUUID> mStaleObjectCost;
+	std::set<LLUUID> mPendingObjectCost;
+
+	//set of objects that need to update their physics flags
+	std::set<LLUUID> mStalePhysicsFlags;
+	std::set<LLUUID> mPendingPhysicsFlags;
+#endif //MESH_ENABLED
 
 	std::vector<LLDebugBeacon> mDebugBeacons;
 

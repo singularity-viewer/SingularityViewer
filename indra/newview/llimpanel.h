@@ -204,7 +204,7 @@ public:
 	// Check typing timeout timer.
 	/*virtual*/ void draw();
 	/*virtual*/ void onClose(bool app_quitting = FALSE);
-	/*virtual*/ void onVisibilityChange(BOOL new_visibility);
+	/*virtual*/ void handleVisibilityChange(BOOL new_visibility);
 
 	// add target ids to the session. 
 	// Return TRUE if successful, otherwise FALSE.

@@ -630,49 +630,59 @@ LLXMLNodePtr LLTabContainer::getXML(bool save_children) const
 // virtual
 BOOL LLTabContainer::handleDragAndDrop(S32 x, S32 y, MASK mask,	BOOL drop,	EDragAndDropType type, void* cargo_data, EAcceptance *accept, std::string	&tooltip)
 {
-	BOOL has_scroll_arrows = (getMaxScrollPos() > 0);
+	bool const has_scroll_arrows = (getMaxScrollPos() > 0);
 
-	if( mDragAndDropDelayTimer.getElapsedTimeF32() > SCROLL_DELAY_TIME )
+	LLButton* button = NULL;
+	if (has_scroll_arrows)
 	{
-		if (has_scroll_arrows)
+		// We're dragging an inventory item. Check if we're hovering over scroll arrows of this tab container.
+		if (mJumpPrevArrowBtn && mJumpPrevArrowBtn->getRect().pointInRect(x, y))
 		{
-			if (mJumpPrevArrowBtn && mJumpPrevArrowBtn->getRect().pointInRect(x, y))
+			button = mJumpPrevArrowBtn;
+		}
+		else if (mJumpNextArrowBtn && mJumpNextArrowBtn->getRect().pointInRect(x, y))
+		{
+			button = mJumpNextArrowBtn;
+		}
+		else if (mPrevArrowBtn->getRect().pointInRect(x,	y))
+		{
+			button = mPrevArrowBtn;
+		}
+		else if	(mNextArrowBtn->getRect().pointInRect(x, y))
+		{
+			button = mNextArrowBtn;
+		}
+		if (button)
+		{
+			if (mDragAndDropDelayTimer.getStarted() && mDragAndDropDelayTimer.hasExpired())
 			{
-				S32	local_x	= x	- mJumpPrevArrowBtn->getRect().mLeft;
-				S32	local_y	= y	- mJumpPrevArrowBtn->getRect().mBottom;
-				mJumpPrevArrowBtn->handleHover(local_x,	local_y, mask);
+			  // We've been hovering (another) SCROLL_DELAY_TIME seconds. Emulate a button press.
+			  button->onCommit();
+			  // Reset the timer.
+			  mDragAndDropDelayTimer.start(SCROLL_DELAY_TIME);
 			}
-			if (mJumpNextArrowBtn && mJumpNextArrowBtn->getRect().pointInRect(x, y))
+			else if (!mDragAndDropDelayTimer.getStarted())
 			{
-				S32	local_x	= x	- mJumpNextArrowBtn->getRect().mLeft;
-				S32	local_y	= y	- mJumpNextArrowBtn->getRect().mBottom;
-				mJumpNextArrowBtn->handleHover(local_x,	local_y, mask);
-			}
-			if (mPrevArrowBtn->getRect().pointInRect(x,	y))
-			{
-				S32	local_x	= x	- mPrevArrowBtn->getRect().mLeft;
-				S32	local_y	= y	- mPrevArrowBtn->getRect().mBottom;
-				mPrevArrowBtn->handleHover(local_x,	local_y, mask);
-			}
-			else if	(mNextArrowBtn->getRect().pointInRect(x, y))
-			{
-				S32	local_x	= x	- mNextArrowBtn->getRect().mLeft;
-				S32	local_y	= y	- mNextArrowBtn->getRect().mBottom;
-				mNextArrowBtn->handleHover(local_x, local_y, mask);
+			  // We just entered the arrow. Start the timer.
+			  mDragAndDropDelayTimer.start(SCROLL_DELAY_TIME);
 			}
 		}
-
-		for(tuple_list_t::iterator iter	= mTabList.begin();	iter !=	 mTabList.end(); ++iter)
+		else
 		{
-			LLTabTuple*	tuple =	*iter;
-			tuple->mButton->setVisible(	TRUE );
-			S32	local_x	= x	- tuple->mButton->getRect().mLeft;
-			S32	local_y	= y	- tuple->mButton->getRect().mBottom;
-			if (tuple->mButton->pointInView(local_x, local_y) &&  tuple->mButton->getEnabled() && !tuple->mTabPanel->getVisible())
-			{
-				tuple->mButton->onCommit();
-				mDragAndDropDelayTimer.stop();
-			}
+			// We're not on an arrow or just left it. Stop the time (in case it was running).
+			mDragAndDropDelayTimer.stop();
+		}
+	}
+
+	for(tuple_list_t::iterator iter	= mTabList.begin();	iter !=	 mTabList.end(); ++iter)
+	{
+		LLTabTuple*	tuple =	*iter;
+		tuple->mButton->setVisible(	TRUE );
+		S32	local_x	= x	- tuple->mButton->getRect().mLeft;
+		S32	local_y	= y	- tuple->mButton->getRect().mBottom;
+		if (tuple->mButton->pointInView(local_x, local_y) &&  tuple->mButton->getEnabled() && !tuple->mTabPanel->getVisible())
+		{
+			tuple->mButton->onCommit();
 		}
 	}
 
@@ -1848,6 +1858,4 @@ void LLTabContainer::commitHoveredButton(S32 x, S32 y)
 		}
 	}
 }
-
-
 

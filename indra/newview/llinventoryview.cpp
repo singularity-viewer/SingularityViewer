@@ -36,6 +36,7 @@
 
 #include "llinventoryview.h"
 #include "llinventorybridge.h"
+#include "llinventorydefines.h"
 
 #include "message.h"
 
@@ -74,6 +75,7 @@
 #include "lltooldraganddrop.h"
 #include "llviewertexturelist.h"
 #include "llviewerinventory.h"
+#include "llviewerassettype.h"
 #include "llviewerobjectlist.h"
 #include "llviewerwindow.h"
 #include "llwearablelist.h"
@@ -586,6 +588,7 @@ BOOL LLInventoryView::postBuild()
 
 	childSetAction("Inventory.ResetAll",onResetAll,this);
 	childSetAction("Inventory.ExpandAll",onExpandAll,this);
+	childSetAction("collapse_btn", onCollapseAll, this);
 
 	//panel->getFilter()->markDefault();
 	return TRUE;
@@ -1353,6 +1356,19 @@ void LLInventoryView::onExpandAll(void* userdata)
 
 
 //static
+void LLInventoryView::onCollapseAll(void* userdata)
+{
+	LLInventoryView* self = (LLInventoryView*) userdata;
+	self->mActivePanel = (LLInventoryPanel*)self->childGetVisibleTab("inventory filter tabs");
+
+	if (!self->mActivePanel)
+	{
+		return;
+	}
+	self->mActivePanel->closeAllFolders();
+}
+
+//static
 void LLInventoryView::onFilterSelected(void* userdata, bool from_click)
 {
 	LLInventoryView* self = (LLInventoryView*) userdata;
@@ -1477,52 +1493,52 @@ std::string get_item_icon_name(LLAssetType::EType asset_type,
 		}
 		switch(LLInventoryItemFlags::II_FLAGS_WEARABLES_MASK & attachment_point)
 		{
-		case WT_SHAPE:
+		case LLWearableType::WT_SHAPE:
 			idx = BODYPART_SHAPE_ICON_NAME;
 			break;
-		case WT_SKIN:
+		case LLWearableType::WT_SKIN:
 			idx = BODYPART_SKIN_ICON_NAME;
 			break;
-		case WT_HAIR:
+		case LLWearableType::WT_HAIR:
 			idx = BODYPART_HAIR_ICON_NAME;
 			break;
-		case WT_EYES:
+		case LLWearableType::WT_EYES:
 			idx = BODYPART_EYES_ICON_NAME;
 			break;
-		case WT_SHIRT:
+		case LLWearableType::WT_SHIRT:
 			idx = CLOTHING_SHIRT_ICON_NAME;
 			break;
-		case WT_PANTS:
+		case LLWearableType::WT_PANTS:
 			idx = CLOTHING_PANTS_ICON_NAME;
 			break;
-		case WT_SHOES:
+		case LLWearableType::WT_SHOES:
 			idx = CLOTHING_SHOES_ICON_NAME;
 			break;
-		case WT_SOCKS:
+		case LLWearableType::WT_SOCKS:
 			idx = CLOTHING_SOCKS_ICON_NAME;
 			break;
-		case WT_JACKET:
+		case LLWearableType::WT_JACKET:
 			idx = CLOTHING_JACKET_ICON_NAME;
 			break;
-		case WT_GLOVES:
+		case LLWearableType::WT_GLOVES:
 			idx = CLOTHING_GLOVES_ICON_NAME;
 			break;
-		case WT_UNDERSHIRT:
+		case LLWearableType::WT_UNDERSHIRT:
 			idx = CLOTHING_UNDERSHIRT_ICON_NAME;
 			break;
-		case WT_UNDERPANTS:
+		case LLWearableType::WT_UNDERPANTS:
 			idx = CLOTHING_UNDERPANTS_ICON_NAME;
 			break;
-		case WT_SKIRT:
+		case LLWearableType::WT_SKIRT:
 			idx = CLOTHING_SKIRT_ICON_NAME;
 			break;
-		case WT_ALPHA:
+		case LLWearableType::WT_ALPHA:
 			idx = CLOTHING_ALPHA_ICON_NAME;
 			break;
-		case WT_TATTOO:
+		case LLWearableType::WT_TATTOO:
 			idx = CLOTHING_TATTOO_ICON_NAME;
 			break;
-		case WT_PHYSICS:
+		case LLWearableType::WT_PHYSICS:
 			idx = CLOTHING_PHYSICS_ICON_NAME;
 			break;
 		default:
@@ -1538,6 +1554,9 @@ std::string get_item_icon_name(LLAssetType::EType asset_type,
 		break;
 	case LLAssetType::AT_GESTURE:
 		idx = GESTURE_ICON_NAME;
+		break;
+	case LLAssetType::AT_MESH:
+		idx = MESH_ICON_NAME;
 		break;
 	default:
 		break;
@@ -2065,7 +2084,7 @@ void LLInventoryPanel::closeAllFolders()
 
 void LLInventoryPanel::openDefaultFolderForType(LLAssetType::EType type)
 {
-	LLUUID category_id = mInventory->findCategoryUUIDForType(type);
+	LLUUID category_id = mInventory->findCategoryUUIDForType(LLFolderType::assetTypeToFolderType(type));
 	LLOpenFolderByID opener(category_id);
 	mFolders->applyFunctorRecursively(opener);
 }
@@ -2099,7 +2118,7 @@ void LLInventoryPanel::createNewItem(const std::string& name,
 									U32 next_owner_perm)
 {
 	std::string desc;
-	LLAssetType::generateDescriptionFor(asset_type, desc);
+	LLViewerAssetType::generateDescriptionFor(asset_type, desc);
 	next_owner_perm = (next_owner_perm) ? next_owner_perm : PERM_MOVE | PERM_TRANSFER;
 
 	

@@ -41,6 +41,7 @@
 #include "llradiogroup.h"
 #include "statemachine/aidirpicker.h"
 #include "lluictrlfactory.h"
+#include "llnotificationsutil.h"
 #include "llviewercontrol.h"
 #include "llviewerwindow.h"
 
@@ -126,7 +127,7 @@ void LLPanelNetwork::apply()
 	{
 		if (LLStartUp::getStartupState() != STATE_LOGIN_WAIT)
 		{
-			LLNotifications::instance().add("ProxyNeedRestart");
+			LLNotificationsUtil::add("ProxyNeedRestart");
 		}
 		else
 		{
@@ -145,7 +146,7 @@ void LLPanelNetwork::onClickClearCache(void*)
 {
 	// flag client cache for clearing next time the client runs
 	gSavedSettings.setBOOL("PurgeCacheOnNextStartup", TRUE);
-	LLNotifications::instance().add("CacheWillClear");
+	LLNotificationsUtil::add("CacheWillClear");
 }
 
 // static
@@ -172,7 +173,7 @@ void LLPanelNetwork::onClickSetCache_continued(void* user_data, AIDirPicker* dir
 	if (!dir_name.empty() && dir_name != cur_name)
 	{
 		self->childSetText("cache_location", dir_name);
-		LLNotifications::instance().add("CacheWillBeMoved");
+		LLNotificationsUtil::add("CacheWillBeMoved");
 		gSavedSettings.setString("NewCacheLocation", dir_name);
 	}
 	else
@@ -192,7 +193,7 @@ void LLPanelNetwork::onClickResetCache(void* user_data)
 		return;
 	}
 	gSavedSettings.setString("NewCacheLocation", "");
-	LLNotifications::instance().add("CacheWillBeMoved");
+	LLNotificationsUtil::add("CacheWillBeMoved");
 	std::string cache_location = gDirUtilp->getCacheDir(false);
 	self->childSetText("cache_location", cache_location);
 }
@@ -205,7 +206,7 @@ void LLPanelNetwork::onCommitPort(LLUICtrl* ctrl, void* data)
 
   if (!self || !check) return;
   self->childSetEnabled("connection_port", check->get());
-  LLNotifications::instance().add("ChangeConnectionPort");
+  LLNotificationsUtil::add("ChangeConnectionPort");
 }
 
 // static

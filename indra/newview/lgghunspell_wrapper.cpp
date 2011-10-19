@@ -21,6 +21,7 @@
 #include "llweb.h"
 #include "llviewercontrol.h"
 #include "llviewerwindow.h"
+#include "llwindow.h"
 #include "lldiriterator.h"
 #include "llfile.h"
 #include "llhttpclient.h"

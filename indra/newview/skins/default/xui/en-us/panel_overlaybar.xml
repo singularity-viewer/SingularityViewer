@@ -38,7 +38,10 @@
 					<button bottom="1" follows="left|bottom" font="SansSerif" halign="center" height="20"
 					     label="Stand Up" label_selected="Stand Up" left="457" name="Stand Up"
 					     scale_image="true" tool_tip="Click here to stand up." width="102" />
-				</layout_panel>
+          <button bottom="1" follows="left|bottom" font="SansSerif" halign="center" height="20"
+					     label="Cancel TP" label_selected="Cancel TP" left="571" name="Cancel TP"
+					     scale_image="true" tool_tip="Click here to cancel the current teleport process." width="102" />
+        </layout_panel>
 				<layout_panel auto_resize="false" background_visible="false" border="false" bottom="0"
 				     filename="panel_chat_bar.xml" follows="left|right|bottom" left="0"
 				     min_height="24" mouse_opaque="false" name="chat_bar"

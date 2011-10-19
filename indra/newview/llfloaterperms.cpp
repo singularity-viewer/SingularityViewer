@@ -35,6 +35,7 @@
 #include "llalertdialog.h"
 #include "llcheckboxctrl.h"
 #include "llfloaterperms.h"
+#include "llnotificationsutil.h"
 #include "llviewercontrol.h"
 #include "llviewerwindow.h"
 #include "lluictrlfactory.h"
@@ -155,5 +156,5 @@ U32 LLFloaterPerms::getNextOwnerPerms(std::string prefix)
 //static
 void LLFloaterPerms::onClickHelp(void* data)
 {
-	LLNotifications::instance().add("ClickUploadHelpPermissions");
+	LLNotificationsUtil::add("ClickUploadHelpPermissions");
 }

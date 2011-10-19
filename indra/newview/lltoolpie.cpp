@@ -63,6 +63,7 @@
 #include "llviewerobject.h"
 #include "llviewerparcelmgr.h"
 #include "llviewerwindow.h"
+#include "llwindow.h"
 #include "llviewermedia.h"
 #include "llviewermediafocus.h"
 #include "llvoavatar.h"
@@ -205,7 +206,7 @@ BOOL LLToolPie::pickAndShowMenu(BOOL always_show)
 			// touch behavior down below...
 			break;
 		case CLICK_ACTION_SIT:
-			if ((gAgent.getAvatarObject() != NULL) && (!gAgent.getAvatarObject()->isSitting()) 
+			if ((gAgentAvatarp != NULL) && (!gAgentAvatarp->isSitting()) 
 				&& (!gSavedSettings.getBOOL("DisableClickSit"))) // agent not already sitting
 			{
 				handle_sit_or_stand();
@@ -316,7 +317,7 @@ BOOL LLToolPie::pickAndShowMenu(BOOL always_show)
 			}
 			object = (LLViewerObject*)object->getParent();
 		}
-		if (object && object == gAgent.getAvatarObject())
+		if (object && object == gAgentAvatarp)
 		{
 			// we left clicked on avatar, switch to focus mode
 			LLToolMgr::getInstance()->setTransientTool(LLToolCamera::getInstance());
@@ -388,6 +389,11 @@ BOOL LLToolPie::pickAndShowMenu(BOOL always_show)
 			while( object && object->isAttachment())
 			{
 				object = (LLViewerObject*)object->getParent();
+			}
+
+			if (!object)
+			{
+				return TRUE; // unexpected, but escape
 			}
 
 			// Object is an avatar, so check for mute by id.
@@ -553,9 +559,9 @@ ECursorType cursor_from_object(LLViewerObject* object)
 	switch(click_action)
 	{
 	case CLICK_ACTION_SIT:
-//		if ((gAgent.getAvatarObject() != NULL) && (!gAgent.getAvatarObject()->isSitting())) // not already sitting?
+//		if ((gAgentAvatarp != NULL) && (!gAgentAvatarp->isSitting())) // not already sitting?
 // [RLVa:KB] - Checked: 2009-12-22 (RLVa-1.1.0k) | Added: RLVa-1.1.0j
-		if ( ((gAgent.getAvatarObject() != NULL) && (!gAgent.getAvatarObject()->isSitting())) && // not already sitting?
+		if ( ((gAgentAvatarp != NULL) && (!gAgentAvatarp->isSitting())) && // not already sitting?
 			 ((!rlv_handler_t::isEnabled()) || (gRlvHandler.canSit(object, gViewerWindow->getHoverPick().mObjectOffset))) )
 // [/RLVa:KB]
 		{
@@ -659,8 +665,6 @@ BOOL LLToolPie::handleHover(S32 x, S32 y, MASK mask)
 	*/
 
 	
-	gViewerWindow->getWindow()->setCursor(UI_CURSOR_ARROW);
-
 	LLViewerObject *object = NULL;
 	LLViewerObject *parent = NULL;
 //	object = gViewerWindow->getHoverPick().getObject();
@@ -810,7 +814,7 @@ BOOL LLToolPie::handleDoubleClick(S32 x, S32 y, MASK mask)
 		if (pos_non_zero && (is_land || (is_in_world && !has_touch_handler && !has_click_action)))
 		{
 			LLVector3d pos = mPick.mPosGlobal;
-			pos.mdV[VZ] += gAgent.getAvatarObject()->getPelvisToFoot();
+			pos.mdV[VZ] += gAgentAvatarp->getPelvisToFoot();
 			gAgent.teleportViaLocationLookAt(pos);
 			return TRUE;
 		}

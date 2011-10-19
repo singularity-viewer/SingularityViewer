@@ -47,6 +47,7 @@
 #include "llfloaterurlentry.h"
 #include "llfocusmgr.h"
 #include "lllineeditor.h"
+#include "llnotificationsutil.h"
 #include "llparcel.h"
 #include "lltextbox.h"
 #include "llradiogroup.h"
@@ -74,7 +75,9 @@ LLPanelLandAudio::LLPanelLandAudio(LLParcelSelectionHandle& parcel)
 	mCheckSoundLocal(NULL),
 	mSoundHelpButton(NULL),
 	mRadioVoiceChat(NULL),
-	mMusicURLEdit(NULL)
+	mMusicURLEdit(NULL),
+	mCheckAVSoundAny(NULL),
+	mCheckAVSoundGroup(NULL)
 {
 }
 
@@ -98,6 +101,12 @@ BOOL LLPanelLandAudio::postBuild()
 
 	mMusicURLEdit = getChild<LLLineEditor>("music_url");
 	childSetCommitCallback("music_url", onCommitAny, this);
+
+	mCheckAVSoundAny = getChild<LLCheckBoxCtrl>("all av sound check");
+	childSetCommitCallback("all av sound check", onCommitAny, this);
+
+	mCheckAVSoundGroup = getChild<LLCheckBoxCtrl>("group av sound check");
+	childSetCommitCallback("group av sound check", onCommitAny, this);
 
 	return TRUE;
 }
@@ -139,6 +148,13 @@ void LLPanelLandAudio::refresh()
 
 		LLViewerRegion* region = LLViewerParcelMgr::getInstance()->getSelectionRegion();
 		mRadioVoiceChat->setEnabled( region && region->isVoiceEnabled() && can_change_media );
+	
+		BOOL can_change_av_sounds = LLViewerParcelMgr::isParcelModifiableByAgent(parcel, GP_LAND_OPTIONS) && parcel->getHaveNewParcelLimitData();
+		mCheckAVSoundAny->set(parcel->getAllowAnyAVSounds());
+		mCheckAVSoundAny->setEnabled(can_change_av_sounds);
+
+		mCheckAVSoundGroup->set(parcel->getAllowGroupAVSounds() || parcel->getAllowAnyAVSounds());	// On if "Everyone" is on
+		mCheckAVSoundGroup->setEnabled(can_change_av_sounds && !parcel->getAllowAnyAVSounds());		// Enabled if "Everyone" is off
 	}
 }
 // static
@@ -177,6 +193,13 @@ void LLPanelLandAudio::onCommitAny(LLUICtrl*, void *userdata)
 		break;
 	}
 
+	BOOL any_av_sound		= self->mCheckAVSoundAny->get();
+	BOOL group_av_sound		= TRUE;		// If set to "Everyone" then group is checked as well
+	if (!any_av_sound)
+	{	// If "Everyone" is off, use the value from the checkbox
+		group_av_sound = self->mCheckAVSoundGroup->get();
+	}
+
 	// Remove leading/trailing whitespace (common when copying/pasting)
 	LLStringUtil::trim(music_url);
 
@@ -185,6 +208,8 @@ void LLPanelLandAudio::onCommitAny(LLUICtrl*, void *userdata)
 	parcel->setParcelFlag(PF_USE_ESTATE_VOICE_CHAN, voice_estate_chan);
 	parcel->setParcelFlag(PF_SOUND_LOCAL, sound_local);
 	parcel->setMusicURL(music_url);
+	parcel->setAllowAnyAVSounds(any_av_sound);
+	parcel->setAllowGroupAVSounds(group_av_sound);
 
 	// Send current parcel data upstream to server
 	LLViewerParcelMgr::getInstance()->sendParcelPropertiesUpdate( parcel );
@@ -197,5 +222,5 @@ void LLPanelLandAudio::onCommitAny(LLUICtrl*, void *userdata)
 // static 
 void LLPanelLandAudio::onClickSoundHelp(void*)
 { 
-	LLNotifications::instance().add("ClickSoundHelpLand");
+	LLNotificationsUtil::add("ClickSoundHelpLand");
 } 

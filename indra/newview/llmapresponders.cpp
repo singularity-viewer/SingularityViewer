@@ -120,6 +120,8 @@ void LLMapLayerResponder::result(const LLSD& result)
 		
 			S32 x_regions = map_block["X"];
 			S32 y_regions = map_block["Y"];
+			S32 x_size = map_block["SizeX"];
+			S32 y_size = map_block["SizeY"];
 			std::string name = map_block["Name"];
 			S32 access = map_block["Access"];
 			S32 region_flags = map_block["RegionFlags"];
@@ -165,6 +167,7 @@ void LLMapLayerResponder::result(const LLSD& result)
 				siminfo->setRegionFlags( region_flags );
 				siminfo->setWaterHeight( (F32) water_height );
 				siminfo->setMapImageID( image_id, agent_flags );
+				siminfo->setSize((U16)x_size, (U16)y_size);
 				if (use_web_map_tiles)
 				{
 					siminfo->mCurrentImage = LLWorldMap::loadObjectsTile((U32)x_regions, (U32)y_regions);

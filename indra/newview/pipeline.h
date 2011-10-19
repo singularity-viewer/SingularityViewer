@@ -91,8 +91,11 @@ public:
 	void resetVertexBuffers();
 	void resizeScreenTexture();
 	void releaseGLBuffers();
+	void releaseScreenBuffers();
 	void createGLBuffers();
+
 	void allocateScreenBuffer(U32 resX, U32 resY);
+	bool allocateScreenBuffer(U32 resX, U32 resY, U32 samples);
 
 	void resetVertexBuffers(LLDrawable* drawable);
 	void setUseVBO(BOOL use_vbo);
@@ -135,6 +138,7 @@ public:
 	void		markGLRebuild(LLGLUpdate* glu);
 	void		markRebuild(LLSpatialGroup* group, BOOL priority = FALSE);
 	void        markRebuild(LLDrawable *drawablep, LLDrawable::EDrawableFlags flag = LLDrawable::REBUILD_ALL, BOOL priority = FALSE);
+	void		markPartitionMove(LLDrawable* drawablep);
 		
 	//get the object between start and end that's closest to start.
 	LLViewerObject* lineSegmentIntersectInWorld(const LLVector3& start, const LLVector3& end,
@@ -188,6 +192,7 @@ public:
 	void updateCull(LLCamera& camera, LLCullResult& result, S32 water_clip = 0, LLPlane* plane = NULL);  //if water_clip is 0, ignore water plane, 1, cull to above plane, -1, cull to below plane
 	void createObjects(F32 max_dtime);
 	void createObject(LLViewerObject* vobj);
+	void processPartitionQ();
 	void updateGeom(F32 max_dtime);
 	void updateGL();
 	void rebuildPriorityGroups();
@@ -195,6 +200,7 @@ public:
 
 	//calculate pixel area of given box from vantage point of given camera
 	static F32 calcPixelArea(LLVector3 center, LLVector3 size, LLCamera& camera);
+	static F32 calcPixelArea(const LLVector4a& center, const LLVector4a& size, LLCamera &camera);
 
 	void stateSort(LLCamera& camera, LLCullResult& result);
 	void stateSort(LLSpatialGroup* group, LLCamera& camera);
@@ -234,7 +240,6 @@ public:
 	void renderHighlights();
 	void renderDebug();
 
-	void renderForSelect(std::set<LLViewerObject*>& objects, BOOL render_transparent, const LLRect& screen_rect);
 	void rebuildPools(); // Rebuild pools
 
 	void findReferences(LLDrawable *drawablep);	// Find the lists which have references to this object
@@ -438,7 +443,6 @@ public:
 	S32						 mMeanBatchSize;
 	S32						 mTrianglesDrawn;
 	S32						 mNumVisibleNodes;
-	LLStat                   mTrianglesDrawnStat;
 	S32						 mVerticesRelit;
 
 	S32						 mLightingChanges;
@@ -593,6 +597,9 @@ protected:
 	LLDrawable::drawable_list_t 	mBuildQ2; // non-priority
 	LLSpatialGroup::sg_vector_t		mGroupQ1; //priority
 	LLSpatialGroup::sg_vector_t		mGroupQ2; // non-priority
+
+	LLDrawable::drawable_list_t		mPartitionQ; //drawables that need to update their spatial partition radius 
+
 	bool mGroupQ2Locked;
 	bool mGroupQ1Locked;
 
@@ -675,7 +682,6 @@ void render_bbox(const LLVector3 &min, const LLVector3 &max);
 void render_hud_elements();
 
 extern LLPipeline gPipeline;
-extern BOOL gRenderForSelect;
 extern BOOL gDebugPipeline;
 extern const LLMatrix4* gGLLastMatrix;
 

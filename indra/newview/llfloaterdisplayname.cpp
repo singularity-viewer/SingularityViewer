@@ -29,7 +29,7 @@
 #include "llviewerprecompiledheaders.h"
 #include "llfloater.h"
 
-#include "llnotifications.h"
+#include "llnotificationsutil.h"
 #include "llviewerdisplayname.h"
 
 #include "llnotify.h"
@@ -152,7 +152,7 @@ void LLFloaterDisplayName::onCacheSetName(bool success,
 		// to percolate.
 		LLSD args;
 		args["DISPLAY_NAME"] = content["display_name"];
-		LLNotifications::instance().add("SetDisplayNameSuccess", args);
+		LLNotificationsUtil::add("SetDisplayNameSuccess", args);
 		
 		// Re-fetch my name, as it may have been sanitized by the service
 		//LLAvatarNameCache::get(getAvatarId(),
@@ -180,12 +180,12 @@ void LLFloaterDisplayName::onCacheSetName(bool success,
 	{
 		LLSD args;
 		args["MESSAGE"] = error_desc[lang_code].asString();
-		LLNotifications::instance().add("GenericAlert", args);
+		LLNotificationsUtil::add("GenericAlert", args);
 		return;
 	}
 
 	// No specific error, throw a generic one
-	LLNotifications::instance().add("SetDisplayNameFailedGeneric");
+	LLNotificationsUtil::add("SetDisplayNameFailedGeneric");
 }
 
 void LLFloaterDisplayName::onCancel(void* data)
@@ -204,7 +204,7 @@ void LLFloaterDisplayName::onReset(void* data)
 	}	
 	else
 	{
-		LLNotifications::instance().add("SetDisplayNameFailedGeneric");
+		LLNotificationsUtil::add("SetDisplayNameFailedGeneric");
 	}
 	
 	self->setVisible(false);
@@ -219,7 +219,7 @@ void LLFloaterDisplayName::onSave(void* data)
 
 	if (display_name_utf8.compare(display_name_confirm))
 	{
-		LLNotifications::instance().add("SetDisplayNameMismatch");
+		LLNotificationsUtil::add("SetDisplayNameMismatch");
 		return;
 	}
 
@@ -229,7 +229,7 @@ void LLFloaterDisplayName::onSave(void* data)
 	{
 		LLSD args;
 		args["LENGTH"] = llformat("%d", DISPLAY_NAME_MAX_LENGTH);
-		LLNotifications::instance().add("SetDisplayNameFailedLength", args);
+		LLNotificationsUtil::add("SetDisplayNameFailedLength", args);
 		return;
 	}
 	
@@ -240,7 +240,7 @@ void LLFloaterDisplayName::onSave(void* data)
 	}
 	else
 	{
-		LLNotifications::instance().add("SetDisplayNameFailedGeneric");
+		LLNotificationsUtil::add("SetDisplayNameFailedGeneric");
 	}
 
 	self->setVisible(false);

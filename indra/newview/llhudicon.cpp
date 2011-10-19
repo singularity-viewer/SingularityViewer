@@ -39,6 +39,7 @@
 
 #include "llviewerobject.h"
 #include "lldrawable.h"
+#include "llvector4a.h"
 #include "llviewercamera.h"
 #include "llviewertexture.h"
 #include "llviewerwindow.h"
@@ -145,9 +146,9 @@ void LLHUDIcon::renderIcon(BOOL for_select)
 		alpha_factor *= clamp_rescale(time_elapsed, MAX_VISIBLE_TIME - FADE_OUT_TIME, MAX_VISIBLE_TIME, 1.f, 0.f);
 	}
 
-	F32 image_aspect = (F32)mImagep->getFullWidth() / (F32)mImagep->getFullHeight();
-	LLVector3 x_scale = image_aspect * (F32)gViewerWindow->getWindowHeight() * mScale * scale_factor * x_pixel_vec;
-	LLVector3 y_scale = (F32)gViewerWindow->getWindowHeight() * mScale * scale_factor * y_pixel_vec;
+	F32 image_aspect = (F32)mImagep->getFullWidth() / (F32)mImagep->getFullHeight() ;
+	LLVector3 x_scale = image_aspect * (F32)gViewerWindow->getWindowHeightScaled() * mScale * scale_factor * x_pixel_vec;
+	LLVector3 y_scale = (F32)gViewerWindow->getWindowHeightScaled() * mScale * scale_factor * y_pixel_vec;
 
 	LLVector3 lower_left = icon_position - (x_scale * 0.5f);
 	LLVector3 lower_right = icon_position + (x_scale * 0.5f);
@@ -207,17 +208,12 @@ void LLHUDIcon::render()
 	renderIcon(FALSE);
 }
 
-void LLHUDIcon::renderForSelect()
-{
-	renderIcon(TRUE);
-}
-
 BOOL LLHUDIcon::lineSegmentIntersect(const LLVector3& start, const LLVector3& end, LLVector3* intersection)
 {
 	if (mHidden)
 		return FALSE;
 
-	if (mSourceObject.isNull() || mImagep.isNull())
+	if (mSourceObject.isNull() || mImagep.isNull() || mSourceObject->mDrawable.isNull())
 	{
 		markDead();
 		return FALSE;
@@ -262,25 +258,46 @@ BOOL LLHUDIcon::lineSegmentIntersect(const LLVector3& start, const LLVector3& en
 		return FALSE;
 	}
 	
-	F32 image_aspect = (F32)mImagep->getFullWidth() / (F32)mImagep->getFullHeight();
-	LLVector3 x_scale = image_aspect * (F32)gViewerWindow->getWindowHeight() * mScale * scale_factor * x_pixel_vec;
-	LLVector3 y_scale = (F32)gViewerWindow->getWindowHeight() * mScale * scale_factor * y_pixel_vec;
+	F32 image_aspect = (F32)mImagep->getFullWidth() / (F32)mImagep->getFullHeight() ;
+	LLVector3 x_scale = image_aspect * (F32)gViewerWindow->getWindowHeightScaled() * mScale * scale_factor * x_pixel_vec;
+	LLVector3 y_scale = (F32)gViewerWindow->getWindowHeightScaled() * mScale * scale_factor * y_pixel_vec;
 
-	LLVector3 lower_left = icon_position - (x_scale * 0.5f);
-	LLVector3 lower_right = icon_position + (x_scale * 0.5f);
-	LLVector3 upper_left = icon_position - (x_scale * 0.5f) + y_scale;
-	LLVector3 upper_right = icon_position + (x_scale * 0.5f) + y_scale;
+	LLVector4a x_scalea;
+	LLVector4a icon_positiona;
+	LLVector4a y_scalea;
 
-	
-	F32 t = 0.f;
-	LLVector3 dir = end-start;
+	x_scalea.load3(x_scale.mV);
+	x_scalea.mul(0.5f);
+	y_scalea.load3(y_scale.mV);
 
-	if (LLTriangleRayIntersect(upper_right, upper_left, lower_right, start, dir, NULL, NULL, &t, FALSE) ||
-		LLTriangleRayIntersect(upper_left, lower_left, lower_right, start, dir, NULL, NULL, &t, FALSE))
+	icon_positiona.load3(icon_position.mV);
+
+	LLVector4a lower_left;
+	lower_left.setSub(icon_positiona, x_scalea);
+	LLVector4a lower_right;
+	lower_right.setAdd(icon_positiona, x_scalea);
+	LLVector4a upper_left;
+	upper_left.setAdd(lower_left, y_scalea);
+	LLVector4a upper_right;
+	upper_right.setAdd(lower_right, y_scalea);
+
+	LLVector4a enda;
+	enda.load3(end.mV);
+	LLVector4a starta;
+	starta.load3(start.mV);
+	LLVector4a dir;
+	dir.setSub(enda, starta);
+
+	F32 a,b,t;
+
+	if (LLTriangleRayIntersect(upper_right, upper_left, lower_right, starta, dir, a,b,t) ||
+		LLTriangleRayIntersect(upper_left, lower_left, lower_right, starta, dir, a,b,t))
 	{
 		if (intersection)
 		{
-			*intersection = start + dir*t;
+			dir.mul(t);
+			starta.add(dir);
+			*intersection = LLVector3(starta.getF32ptr());
 		}
 		return TRUE;
 	}
@@ -331,6 +348,7 @@ LLHUDIcon* LLHUDIcon::lineSegmentIntersectAll(const LLVector3& start, const LLVe
 	for(icon_it = sIconInstances.begin(); icon_it != sIconInstances.end(); ++icon_it)
 	{
 		LLHUDIcon* icon = *icon_it;
+		llassert(icon);
 		if (icon->lineSegmentIntersect(start, local_end, &position))
 		{
 			ret = icon;

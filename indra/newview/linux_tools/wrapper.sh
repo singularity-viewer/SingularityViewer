@@ -68,6 +68,13 @@ if [ "$GTK_IM_MODULE" = "scim" ]; then
     export GTK_IM_MODULE=xim
 fi
 
+# Work around for a crash bug when restarting OpenGL after a change in the
+# graphic settings (anti-aliasing, VBO, FSAA, full screen mode, UI scale).
+# When you enable this work around, you can change the settings without
+# crashing, but you will have to restart the viewer after changing them
+# because the display still gets corrupted.
+export LL_OPENGL_RESTART_CRASH_BUG=x
+
 ## - Automatically work around the ATI mouse cursor crash bug:
 ## (this workaround is disabled as most fglrx users do not see the bug)
 #if lsmod | grep fglrx &>/dev/null ; then
@@ -109,10 +116,13 @@ fi
 
 export VIEWER_BINARY='singularity-do-not-run-directly'
 BINARY_TYPE=$(expr match "$(file -b bin/$VIEWER_BINARY)" '\(.*executable\)')
+QPP=qt4/plugins/imageformats/
 if [ "${BINARY_TYPE}" == "ELF 64-bit LSB executable" ]; then
-	export SL_ENV='LD_LIBRARY_PATH="`pwd`"/lib64:"`pwd`"/lib32:"${LD_LIBRARY_PATH}"'
+    QTPLUGINS=/usr/lib64/$QPP:/lib64/$QPP:/usr/local/lib64/$QPP
+	export SL_ENV='LD_LIBRARY_PATH="`pwd`"/lib64:"`pwd`"/lib32:$QTPLUGINS:"${LD_LIBRARY_PATH}"'
 else
-	export SL_ENV='LD_LIBRARY_PATH="`pwd`"/lib:"${LD_LIBRARY_PATH}"'
+    QTPLUGINS=/usr/lib/$QPP:/lib/$QPP:/usr/local/lib/$QPP
+	export SL_ENV='LD_LIBRARY_PATH="`pwd`"/lib:$QTPLUGINS:"${LD_LIBRARY_PATH}"'
 fi
 
 export SL_CMD='$LL_WRAPPER bin/$VIEWER_BINARY'

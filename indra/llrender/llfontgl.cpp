@@ -275,7 +275,7 @@ void LLFontGL::destroyAllGL()
 		else
 		{
 		sFontRegistry->destroyGL();
-	}
+		}
 	}
 }
 

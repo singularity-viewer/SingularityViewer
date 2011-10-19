@@ -75,8 +75,9 @@ LLDebugView::LLDebugView(const std::string& name, const LLRect &rect)
 	mFrameStatView->setVisible(FALSE);			// start invisible
 	addChild(mFrameStatView);
 
-	r.set(25, rect.getHeight() - 50, (S32) (gViewerWindow->getVirtualWindowRect().getWidth() * 0.75f), 
-  									 (S32) (gViewerWindow->getVirtualWindowRect().getHeight() * 0.75f));
+	r.setLeftTopAndSize(25, rect.getHeight() - 50,
+						(S32) (gViewerWindow->getVirtualWindowRect().getWidth() * 0.75f), 
+  						(S32) (gViewerWindow->getVirtualWindowRect().getHeight() * 0.75f));
 	mFastTimerView = new LLFastTimerView("fast timers", r);
 	mFastTimerView->setFollowsTop();
 	mFastTimerView->setFollowsLeft();

@@ -118,24 +118,17 @@ CMD_SCRIPT(key2name)
 {
 	struct CCacheNameResponder
 	{
-		const std::string mIdent;
-		const int mChannel;
-		const LLUUID mSourceID;
-		CCacheNameResponder(const std::string &ident,const int chan,const LLUUID &source) :
-			mIdent(ident),mChannel(chan),mSourceID(source) {}
-		static void Handler(const LLUUID &id, const std::string &firstname, const std::string &lastname, BOOL group, void *pData)
+		static void Handler(const std::string &fullname, const std::string &ident, const S32 channel, const LLUUID &callerid)
 		{
-			CCacheNameResponder *pResponder	= (CCacheNameResponder*)pData;
-			std::string out_str = "key2namereply|"+pResponder->mIdent+"|"+firstname+" "+lastname;
-			SHCommandHandler::send_chat_to_object(out_str, pResponder->mChannel, pResponder->mSourceID);
-			delete pResponder;
+			std::string out_str = "key2namereply|"+ident+"|"+fullname;
+			SHCommandHandler::send_chat_to_object(out_str, channel, callerid);
 		}
 	};
 	//args[1] = identifier
 	//args[2] = av id
 	//args[3] = chan
 	//args[4] = group
-	gCacheName->get(args[2],args[4],&CCacheNameResponder::Handler, new CCacheNameResponder(args[1],args[3],callerid));
+	gCacheName->get(args[2],args[4],boost::bind(&CCacheNameResponder::Handler,_2,args[1].asString(),args[3].asInteger(),callerid));
 	return;
 }
 

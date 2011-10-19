@@ -12,34 +12,34 @@
   >
 	<button bottom="-45" left="-160" font="SansSerif" halign="center" height="20" label="Dump IDs to Console"
 	     label_selected="Dump" mouse_opaque="true" name="Dump" scale_image="TRUE" width="150" />
-
+  <!-- The names of the following must match the definitions in llvoavatardefines.cpp -->
   <texture_picker bottom="-130" height="111" label="Hair Baked" left="4" name="hair-baked" width="96" />
-  <texture_picker bottom_delta="0" height="111" label="Hair" left_delta="99" name="hair" width="96" />
+  <texture_picker bottom_delta="0" height="111" label="Hair" left_delta="99" name="hair_grain" width="96" />
   <texture_picker bottom_delta="0" height="111" label="Eyes Baked" left_delta="99" name="eyes-baked" width="96" />
-  <texture_picker bottom_delta="0" height="111" label="Eyes" left_delta="99" name="iris" width="96" />
+  <texture_picker bottom_delta="0" height="111" label="Eyes" left_delta="99" name="eyes_iris" width="96" />
 
   <texture_picker bottom_delta="-110" height="111" label="Head Baked" left="4" name="head-baked" width="96" />
-  <texture_picker bottom_delta="0" height="111" label="Makeup" left_delta="99" name="head bodypaint" width="96" />
+  <texture_picker bottom_delta="0" height="111" label="Makeup" left_delta="99" name="head_bodypaint" width="96" />
   <texture_picker bottom_delta="0" height="111" label="Head Tattoo" left_delta="99" name="head_tattoo" width="96" />
   <texture_picker bottom_delta="0" height="111" label="Upper Tattoo" left_delta="99" name="upper_tattoo" width="96" />
   <texture_picker bottom_delta="0" height="111" label="Lower Tattoo" left_delta="99" name="lower_tattoo" width="96" />
 
   <texture_picker bottom_delta="-110" height="111" label="Upper Baked" left="4" name="upper-baked" width="96" />
-  <texture_picker bottom_delta="0" height="111" label="Upper Skin" left_delta="99" name="upper bodypaint" width="96" />
-  <texture_picker bottom_delta="0" height="111" label="Undershirt" left_delta="99" name="undershirt" width="96" />
-  <texture_picker bottom_delta="0" height="111" label="Shirt" left_delta="99" name="shirt" width="96" />
-  <texture_picker bottom_delta="0" height="111" label="Upper Jacket" left_delta="99" name="upper jacket" width="96" />
-  <texture_picker bottom_delta="0" height="111" label="Gloves" left_delta="99" name="gloves" width="96" />
+  <texture_picker bottom_delta="0" height="111" label="Upper Skin" left_delta="99" name="upper_bodypaint" width="96" />
+  <texture_picker bottom_delta="0" height="111" label="Undershirt" left_delta="99" name="upper_undershirt" width="96" />
+  <texture_picker bottom_delta="0" height="111" label="Shirt" left_delta="99" name="upper_shirt" width="96" />
+  <texture_picker bottom_delta="0" height="111" label="Upper Jacket" left_delta="99" name="upper_jacket" width="96" />
+  <texture_picker bottom_delta="0" height="111" label="Gloves" left_delta="99" name="upper_gloves" width="96" />
 
   <texture_picker bottom_delta="-110" height="111" label="Lower Baked" left="4" name="lower-baked" width="96" />
-  <texture_picker bottom_delta="0" height="111" label="Lower Skin" left_delta="99" name="lower bodypaint" width="96" />
-  <texture_picker bottom_delta="0" height="111" label="Underpants" left_delta="99" name="underpants" width="96" />
-  <texture_picker bottom_delta="0" height="111" label="Pants" left_delta="99" name="pants" width="96" />
-  <texture_picker bottom_delta="0" height="111" label="Lower Jacket" left_delta="99" name="lower jacket" width="96" />
-  <texture_picker bottom_delta="0" height="111" label="Socks" left_delta="99" name="socks" width="96" />
+  <texture_picker bottom_delta="0" height="111" label="Lower Skin" left_delta="99" name="lower_bodypaint" width="96" />
+  <texture_picker bottom_delta="0" height="111" label="Underpants" left_delta="99" name="lower_underpants" width="96" />
+  <texture_picker bottom_delta="0" height="111" label="Pants" left_delta="99" name="lower_pants" width="96" />
+  <texture_picker bottom_delta="0" height="111" label="Lower Jacket" left_delta="99" name="lower_jacket" width="96" />
+  <texture_picker bottom_delta="0" height="111" label="Socks" left_delta="99" name="lower_socks" width="96" />
 
   <texture_picker bottom_delta="-110" height="111" label="Skirt Baked" left="4" name="skirt-baked" width="96" />
   <texture_picker bottom_delta="0" height="111" label="Skirt" left_delta="99" name="skirt" width="96" />
-  <texture_picker bottom_delta="0" height="111" label="Shoes" left_delta="99" name="shoes" width="96" />
+  <texture_picker bottom_delta="0" height="111" label="Shoes" left_delta="99" name="lower_shoes" width="96" />
 
 </floater>

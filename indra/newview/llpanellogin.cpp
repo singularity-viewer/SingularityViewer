@@ -56,6 +56,7 @@
 #include "llfloaterpreference.h"
 #include "llfocusmgr.h"
 #include "lllineeditor.h"
+#include "llnotificationsutil.h"
 #include "llstartup.h"
 #include "lltextbox.h"
 #include "llui.h"
@@ -109,7 +110,12 @@ static bool nameSplit(const std::string& full, std::string& first, std::string& 
 		return false;
 	first = fragments[0];
 	if (fragments.size() == 1)
-		last = "resident";
+	{
+		if (gHippoGridManager->getConnectedGrid()->isSecondLife())
+			last = "resident";
+		else
+			last = "";
+	}
 	else
 		last = fragments[1];
 	return (fragments.size() <= 2);
@@ -744,7 +750,7 @@ void LLPanelLogin::giveFocus()
 	if( sInstance )
 	{
 		// Grab focus and move cursor to first blank input field
-		std::string first = sInstance->childGetText("name_combo");
+		std::string first = sInstance->getChild<LLComboBox>("name_combo")->getTextEntry();
 		std::string pass = sInstance->childGetText("password_edit");
 
 		BOOL have_first = !first.empty();
@@ -849,6 +855,7 @@ void LLPanelLogin::setFields(const LLSavedLoginEntry& entry, bool takeFocus)
 	std::string fullname = nameJoin(entry.getFirstName(), entry.getLastName()); 
 	LLComboBox* login_combo = sInstance->getChild<LLComboBox>("name_combo");
 	login_combo->setTextEntry(fullname);
+	login_combo->resetTextDirty();
 	//sInstance->childSetText("name_combo", fullname);
 
 	std::string grid = entry.getGrid();
@@ -991,7 +998,7 @@ void LLPanelLogin::updateGridCombo()
 	}
 	HippoGridManager::GridIterator it, end = gHippoGridManager->endGrid();
 	for (it = gHippoGridManager->beginGrid(); it != end; ++it) {
-		const std::string &grid = it->second->getGridNick();
+		const std::string &grid = it->second->getGridName();
 		if (grid != defaultGrid) {
 			grids->add(grid);
 			if (grid == currentGrid) selectIndex = i;
@@ -1073,7 +1080,6 @@ void LLPanelLogin::loadLoginPage()
 	}
 
 	// Grid
-	oStr << "&grid=" << LLWeb::curlEscape(LLViewerLogin::getInstance()->getGridLabel());
 
 	if (gHippoGridManager->getConnectedGrid()->isSecondLife()) {
 		// find second life grid from login URI
@@ -1091,6 +1097,11 @@ void LLPanelLogin::loadLoginPage()
 			}
 		}
 	}
+	else
+	{
+		oStr << "&grid=" << LLWeb::curlEscape(LLViewerLogin::getInstance()->getGridLabel());
+	}
+		
 	
 	gViewerWindow->setMenuBackgroundColor(false, !LLViewerLogin::getInstance()->isInProductionGrid());
 	gLoginMenuBarView->setBackgroundColor(gMenuBarView->getBackgroundColor());
@@ -1301,9 +1312,9 @@ void LLPanelLogin::onClickConnect(void *)
 		else
 		{
 			if (gHippoGridManager->getConnectedGrid()->getRegisterUrl().empty()) {
-				LLNotifications::instance().add("MustHaveAccountToLogInNoLinks");
+				LLNotificationsUtil::add("MustHaveAccountToLogInNoLinks");
 			} else {
-				LLNotifications::instance().add("MustHaveAccountToLogIn", LLSD(), LLSD(),
+				LLNotificationsUtil::add("MustHaveAccountToLogIn", LLSD(), LLSD(),
 												LLPanelLogin::newAccountAlertCallback);
 			}
 		}
@@ -1397,7 +1408,7 @@ void LLPanelLogin::onPassKey(LLLineEditor* caller, void* user_data)
 {
 	if (gKeyboard->getKeyDown(KEY_CAPSLOCK) && sCapslockDidNotification == FALSE)
 	{
-		LLNotifications::instance().add("CapsKeyOn");
+		LLNotificationsUtil::add("CapsKeyOn");
 		sCapslockDidNotification = TRUE;
 	}
 }
@@ -1428,16 +1439,10 @@ void LLPanelLogin::onLoginComboLostFocus(LLFocusableElement* fe, void*)
 	if (sInstance)
 	{
 		LLComboBox* combo = sInstance->getChild<LLComboBox>("name_combo");
-		if(fe == combo)
+		if(fe == combo && combo->isTextDirty())
 		{
-			if (combo->isTextDirty())
-			{
-				clearPassword();
-			}
-			else
-			{
-				onSelectLoginEntry(combo, NULL);
-			}
+			clearPassword();
+			combo->resetTextDirty();
 		}
 	}
 }

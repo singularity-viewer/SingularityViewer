@@ -127,6 +127,11 @@ static struct ft_display_info ft_display_table[] =
 	{ LLFastTimer::FTM_UPDATE_TEXTURES,		"  Textures",		&LLColor4::pink2, 0 },
 	{ LLFastTimer::FTM_GEO_UPDATE,			"  Geo Update",	&LLColor4::blue3, 1 },
 	{ LLFastTimer::FTM_UPDATE_PRIMITIVES,	"   Volumes",		&LLColor4::blue4, 0 },
+#if MESH_ENABLED
+	{ LLFastTimer::FTM_UPDATE_RIGGED_VOLUME,"    Rigged",		&LLColor4::red3, 0 },
+	{ LLFastTimer::FTM_SKIN_RIGGED,			"     Skin",		&LLColor4::green1, 0 },
+	{ LLFastTimer::FTM_RIGGED_OCTREE,		"     Octree",		&LLColor4::green5, 0 },
+#endif //MESH_ENABLED
 	{ LLFastTimer::FTM_GEN_VOLUME,			"    Gen Volume",	&LLColor4::yellow3, 0 },
 	{ LLFastTimer::FTM_GEN_FLEX,			"    Flexible",	&LLColor4::yellow4, 0 },
 	{ LLFastTimer::FTM_GEN_TRIANGLES,		"    Triangles",	&LLColor4::yellow5, 0 },
@@ -155,6 +160,12 @@ static struct ft_display_info ft_display_table[] =
 	{ LLFastTimer::FTM_STATESORT,			"  State Sort",	&LLColor4::orange1, 1 },
 	{ LLFastTimer::FTM_STATESORT_DRAWABLE,	"   Drawable",		&LLColor4::orange2, 0 },
 	{ LLFastTimer::FTM_STATESORT_POSTSORT,	"   Post Sort",	&LLColor4::orange3, 0 },
+#if MESH_ENABLED
+	{ LLFastTimer::FTM_MESH_UPDATE,			"    Mesh Update",  &LLColor4::orange4, 0 },
+	{ LLFastTimer::FTM_MESH_LOCK1,			"     Lock 1",		&LLColor4::orange5, 0 },
+	{ LLFastTimer::FTM_MESH_LOCK2,			"     Lock 2",		&LLColor4::orange6, 0 },
+	{ LLFastTimer::FTM_LOAD_MESH_LOD,		"     Load LOD",	&LLColor4::yellow3, 0 },
+#endif //MESH_ENABLED
 	{ LLFastTimer::FTM_REBUILD_OCCLUSION_VB,"    Occlusion",		&LLColor4::cyan5, 0 },
 	{ LLFastTimer::FTM_REBUILD_VBO,			"    VBO Rebuild",	&LLColor4::red4, 0 },
 	{ LLFastTimer::FTM_REBUILD_VOLUME_VB,	"     Volume",		&LLColor4::blue1, 0 },
@@ -233,7 +244,7 @@ static const int FTV_DISPLAY_NUM  = LL_ARRAY_SIZE(ft_display_table);
 S32 ft_display_idx[FTV_DISPLAY_NUM]; // line of table entry for display purposes (for collapse)
 
 LLFastTimerView::LLFastTimerView(const std::string& name, const LLRect& rect)
-	:	LLFloater(name, rect, std::string("Fast Timers"))
+ : LLFloater(name, rect, std::string(), FALSE, 1, 1, FALSE, FALSE, TRUE)
 {
 	setVisible(FALSE);
 	mDisplayMode = 0;
@@ -320,6 +331,15 @@ S32 LLFastTimerView::getLegendIndex(S32 y)
 
 BOOL LLFastTimerView::handleMouseDown(S32 x, S32 y, MASK mask)
 {
+	{
+		S32 local_x = x - mButtons[BUTTON_CLOSE]->getRect().mLeft;
+		S32 local_y = y - mButtons[BUTTON_CLOSE]->getRect().mBottom;
+		if (mButtons[BUTTON_CLOSE]->getVisible() &&
+			mButtons[BUTTON_CLOSE]->pointInView(local_x, local_y))
+		{
+			return LLFloater::handleMouseDown(x, y, mask);
+		}
+	}
 	if (x < mBarRect.mLeft) 
 	{
 		S32 legend_index = getLegendIndex(y);
@@ -381,6 +401,15 @@ BOOL LLFastTimerView::handleMouseDown(S32 x, S32 y, MASK mask)
 
 BOOL LLFastTimerView::handleMouseUp(S32 x, S32 y, MASK mask)
 {
+	{
+		S32 local_x = x - mButtons[BUTTON_CLOSE]->getRect().mLeft;
+		S32 local_y = y - mButtons[BUTTON_CLOSE]->getRect().mBottom;
+		if (mButtons[BUTTON_CLOSE]->getVisible() &&
+			mButtons[BUTTON_CLOSE]->pointInView(local_x, local_y))
+		{
+			return LLFloater::handleMouseUp(x, y, mask);
+		}
+	}
 	return FALSE;
 }
 
@@ -429,6 +458,18 @@ BOOL LLFastTimerView::handleScrollWheel(S32 x, S32 y, S32 clicks)
 	return TRUE;
 }
 
+void LLFastTimerView::onClose(bool app_quitting)
+{
+	if (app_quitting)
+	{
+		LLFloater::close(app_quitting);
+	}
+	else
+	{
+		setVisible(FALSE);
+	}
+}
+
 void LLFastTimerView::draw()
 {
 	LLFastTimer t(LLFastTimer::FTM_RENDER_TIMER);
@@ -442,8 +483,9 @@ void LLFastTimerView::draw()
 	S32 height = (S32) (gViewerWindow->getVirtualWindowRect().getHeight()*0.75f);
 	S32 width = (S32) (gViewerWindow->getVirtualWindowRect().getWidth() * 0.75f);
 	
-	// HACK: casting away const. Should use setRect or some helper function instead.
-		const_cast<LLRect&>(getRect()).setLeftTopAndSize(getRect().mLeft, getRect().mTop, width, height);
+	LLRect new_rect;
+	new_rect.setLeftTopAndSize(getRect().mLeft, getRect().mTop, width, height);
+	setRect(new_rect);
 
 	S32 left, top, right, bottom;
 	S32 x, y, barw, barh, dx, dy;
@@ -591,11 +633,14 @@ void LLFastTimerView::draw()
 		left = x; right = x + texth;
 		top = y; bottom = y - texth;
 		S32 scale_offset = 0;
-		if (i == mHoverIndex)
+		if (y > 3 * texth)
 		{
-			scale_offset = llfloor(sinf(mHighlightTimer.getElapsedTimeF32() * 6.f) * 2.f);
+			if (i == mHoverIndex)
+			{
+				scale_offset = llfloor(sinf(mHighlightTimer.getElapsedTimeF32() * 6.f) * 2.f);
+			}
+			gl_rect_2d(left - scale_offset, top + scale_offset, right + scale_offset, bottom - scale_offset, *ft_display_table[i].color);
 		}
-		gl_rect_2d(left - scale_offset, top + scale_offset, right + scale_offset, bottom - scale_offset, *ft_display_table[i].color);
 
 		int tidx = ft_display_table[i].timer;
 		F32 ms = 0;
@@ -625,7 +670,7 @@ void LLFastTimerView::draw()
 		dx = (texth+4) + level*8;
 
 		LLColor4 color = disabled > 1 ? LLColor4::grey : LLColor4::white;
-		if (level > 0)
+		if (level > 0 && y > 3 * texth)
 		{
 			S32 line_start_y = (top + bottom) / 2;
 			S32 line_end_y = line_start_y + ((texth + 2) * (display_line[i] - display_line[parent])) - (texth / 2);
@@ -647,13 +692,16 @@ void LLFastTimerView::draw()
 			next_parent = ft_display_table[next_parent].parent;
 		}
 
-		if (is_child_of_hover_item)
+		if (y > 3 * texth)
 		{
-			LLFontGL::getFontMonospace()->renderUTF8(tdesc, 0, x, y, color, LLFontGL::LEFT, LLFontGL::TOP, LLFontGL::BOLD);
-		}
-		else
-		{
-			LLFontGL::getFontMonospace()->renderUTF8(tdesc, 0, x, y, color, LLFontGL::LEFT, LLFontGL::TOP);
+			if (is_child_of_hover_item)
+			{
+				LLFontGL::getFontMonospace()->renderUTF8(tdesc, 0, x, y, color, LLFontGL::LEFT, LLFontGL::TOP, LLFontGL::BOLD);
+			}
+			else
+			{
+				LLFontGL::getFontMonospace()->renderUTF8(tdesc, 0, x, y, color, LLFontGL::LEFT, LLFontGL::TOP);
+			}
 		}
 		y -= (texth + 2);
 
@@ -661,6 +709,11 @@ void LLFastTimerView::draw()
 		if (textw > legendwidth)
 			legendwidth = textw;
 	}
+	if (y <= 3 * texth)
+	{
+		LLFontGL::getFontMonospace()->renderUTF8("<list truncated>", 0, 3 * texth, 2 * texth, LLColor4::white, LLFontGL::LEFT, LLFontGL::TOP, LLFontGL::BOLD);
+	}
+
 	for (S32 i=cur_line; i<FTV_DISPLAY_NUM; i++)
 	{
 		ft_display_idx[i] = -1;

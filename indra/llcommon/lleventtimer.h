@@ -56,11 +56,6 @@ public:
 protected:
 	LLTimer mEventTimer;
 	F32 mPeriod;
-
-//private:
-	//list of active timers
-//	static std::list<LLEventTimer*> sActiveList; // TODO should this be a vector
 };
-
 
 #endif //LL_EVENTTIMER_H

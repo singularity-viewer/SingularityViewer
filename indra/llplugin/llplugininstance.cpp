@@ -32,11 +32,15 @@
  * 
  * @endcond
  */
+#if LL_LINUX && defined(LL_STANDALONE)
+#include <dlfcn.h>
+#include <apr_portable.h>
+#endif
 
 #include "linden_common.h"
 
 #include "llplugininstance.h"
-#include "aiaprpool.h"
+#include "llaprpool.h"
 
 /** Virtual destructor. */
 LLPluginInstanceMessageListener::~LLPluginInstanceMessageListener()
@@ -83,16 +87,25 @@ int LLPluginInstance::load(std::string &plugin_file)
 {
 	pluginInitFunction init_function = NULL;
 	
+#if LL_LINUX && defined(LL_STANDALONE)
+    void *dso_handle = dlopen(plugin_file.c_str(), RTLD_NOW | RTLD_GLOBAL);
+    int result = (!dso_handle)?APR_EDSOOPEN:apr_os_dso_handle_put(&mDSOHandle,
+            dso_handle, AIAPRRootPool::get()());
+#else
 	int result = apr_dso_load(&mDSOHandle,
 					  plugin_file.c_str(),
-					  AIAPRRootPool::get()());
+					  LLAPRRootPool::get()());
+#endif
 	if(result != APR_SUCCESS)
 	{
 		char buf[1024];
 		apr_dso_error(mDSOHandle, buf, sizeof(buf));
 
+#if LL_LINUX && defined(LL_STANDALONE)
+		LL_WARNS("Plugin") << "plugin load " << plugin_file << " failed with error " << result << " , additional info string: " << buf << LL_ENDL;
+#else
 		LL_WARNS("Plugin") << "apr_dso_load of " << plugin_file << " failed with error " << result << " , additional info string: " << buf << LL_ENDL;
-		
+#endif
 	}
 	
 	if(result == APR_SUCCESS)

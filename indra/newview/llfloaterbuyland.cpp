@@ -47,7 +47,7 @@
 #include "llframetimer.h"
 #include "lliconctrl.h"
 #include "lllineeditor.h"
-#include "llnotify.h"
+#include "llnotificationsutil.h"
 #include "llparcel.h"
 #include "llstatusbar.h"
 #include "lltextbox.h"
@@ -200,8 +200,7 @@ private:
 	};
 };
 
-static void cacheNameUpdateRefreshesBuyLand(const LLUUID&,
-	const std::string&, const std::string&, BOOL, void* data)
+static void cacheNameUpdateRefreshesBuyLand(const LLUUID& id, const std::string& full_name, bool is_group)
 {
 	LLFloaterBuyLandUI* ui = LLFloaterBuyLandUI::soleInstance(false);
 	if (ui)
@@ -216,7 +215,7 @@ void LLFloaterBuyLand::buyLand(
 {
 	if(is_for_group && !gAgent.hasPowerInActiveGroup(GP_LAND_DEED))
 	{
-		LLNotifications::instance().add("OnlyOfficerCanBuyLand");
+		LLNotificationsUtil::add("OnlyOfficerCanBuyLand");
 		return;
 	}
 
@@ -335,9 +334,8 @@ LLFloaterBuyLandUI::LLFloaterBuyLandUI()
 
 LLFloaterBuyLandUI::~LLFloaterBuyLandUI()
 {
+	LLViewerParcelMgr::getInstance()->deleteParcelBuy(&mParcelBuyInfo);
 	delete mTransaction;
-
-	LLViewerParcelMgr::getInstance()->deleteParcelBuy(mParcelBuyInfo);
 	
 	if (sInstance == this)
 	{
@@ -495,10 +493,18 @@ void LLFloaterBuyLandUI::updateParcelInfo()
 			return;
 		}
 
-		if (!authorizedBuyer.isNull()  &&  buyer != authorizedBuyer)
+		if (!authorizedBuyer.isNull() && buyer != authorizedBuyer)
 		{
-			mCannotBuyReason = getString("set_to_sell_to_other");
-			return;
+			// Maybe the parcel is set for sale to a group we are in.
+			bool authorized_group =
+				gAgent.hasPowerInGroup(authorizedBuyer,GP_LAND_DEED)
+				&& gAgent.hasPowerInGroup(authorizedBuyer,GP_LAND_SET_SALE_INFO);
+
+			if (!authorized_group)
+			{
+				mCannotBuyReason = getString("set_to_sell_to_other");
+				return;
+			}
 		}
 	}
 	else
@@ -808,7 +814,7 @@ void LLFloaterBuyLandUI::sendBuyLand()
 	if (mParcelBuyInfo)
 	{
 		LLViewerParcelMgr::getInstance()->sendParcelBuy(mParcelBuyInfo);
-		LLViewerParcelMgr::getInstance()->deleteParcelBuy(mParcelBuyInfo);
+		LLViewerParcelMgr::getInstance()->deleteParcelBuy(&mParcelBuyInfo);
 		mBought = true;
 	}
 }
@@ -985,7 +991,7 @@ BOOL LLFloaterBuyLandUI::canClose()
 	if (!can_close)
 	{
 		// explain to user why they can't do this, see DEV-9605
-		LLNotifications::instance().add("CannotCloseFloaterBuyLand");
+		LLNotificationsUtil::add("CannotCloseFloaterBuyLand");
 	}
 	return can_close;
 }

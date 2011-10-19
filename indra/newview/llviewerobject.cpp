@@ -45,6 +45,7 @@
 #include "llfontgl.h"
 #include "llframetimer.h"
 #include "llinventory.h"
+#include "llinventorydefines.h"
 #include "llmaterialtable.h"
 #include "llmutelist.h"
 #include "llnamevalue.h"
@@ -66,6 +67,7 @@
 #include "lldrawable.h"
 #include "llface.h"
 #include "llfloaterproperties.h"
+#include "llfloatertools.h"
 #include "llfollowcam.h"
 #include "llselectmgr.h"
 #include "llrendersphere.h"
@@ -77,9 +79,10 @@
 #include "llviewerparceloverlay.h"
 #include "llviewerpartsource.h"
 #include "llviewerregion.h"
+#include "llviewerstats.h"
 #include "llviewertextureanim.h"
 #include "llviewerwindow.h" // For getSpinAxis
-#include "llvoavatar.h"
+#include "llvoavatarself.h"
 #include "llvoclouds.h"
 #include "llvograss.h"
 #include "llvoground.h"
@@ -105,8 +108,8 @@
 
 //#define DEBUG_UPDATE_TYPE
 
-BOOL gVelocityInterpolate = TRUE;
-BOOL gPingInterpolate = TRUE; 
+BOOL		LLViewerObject::sVelocityInterpolate = TRUE;
+BOOL		LLViewerObject::sPingInterpolate = TRUE; 
 
 U32			LLViewerObject::sNumZombieObjects = 0;
 S32			LLViewerObject::sNumObjects = 0;
@@ -116,6 +119,10 @@ LLColor4	LLViewerObject::sNoEditSelectColor(	1.0f, 0.f, 0.f, 0.3f);	// Can't edi
 S32			LLViewerObject::sAxisArrowLength(50);
 BOOL		LLViewerObject::sPulseEnabled(FALSE);
 BOOL		LLViewerObject::sUseSharedDrawables(FALSE); // TRUE
+
+// sMaxUpdateInterpolationTime must be greater than sPhaseOutUpdateInterpolationTime
+F64			LLViewerObject::sMaxUpdateInterpolationTime = 3.0;		// For motion interpolation: after X seconds with no updates, don't predict object motion
+F64			LLViewerObject::sPhaseOutUpdateInterpolationTime = 2.0;	// For motion interpolation: after Y seconds with no updates, taper off motion prediction
 
 // static
 LLViewerObject *LLViewerObject::createObject(const LLUUID &id, const LLPCode pcode, LLViewerRegion *regionp)
@@ -128,7 +135,28 @@ LLViewerObject *LLViewerObject::createObject(const LLUUID &id, const LLPCode pco
 	case LL_PCODE_VOLUME:
 	  res = new LLVOVolume(id, pcode, regionp); break;
 	case LL_PCODE_LEGACY_AVATAR:
-	  res = new LLVOAvatar(id, pcode, regionp); break;
+	{
+		if (id == gAgentID)
+		{
+			if (!gAgentAvatarp)
+			{
+				gAgentAvatarp = new LLVOAvatarSelf(id, pcode, regionp);
+				gAgentAvatarp->initInstance();
+			}
+			else 
+			{
+				gAgentAvatarp->updateRegion(regionp);
+			}
+			res = gAgentAvatarp;
+		}
+		else
+		{
+			LLVOAvatar *avatar = new LLVOAvatar(id, pcode, regionp); 
+			avatar->initInstance();
+			res = avatar;
+		}
+		break;
+	}
 	case LL_PCODE_LEGACY_GRASS:
 	  res = new LLVOGrass(id, pcode, regionp); break;
 	case LL_PCODE_LEGACY_PART_SYS:
@@ -150,9 +178,9 @@ LLViewerObject *LLViewerObject::createObject(const LLUUID &id, const LLPCode pco
 	case LL_VO_SKY:
 	  res = new LLVOSky(id, pcode, regionp); break;
 	case LL_VO_VOID_WATER:
-	  res = new LLVOVoidWater(id, pcode, regionp); break;
+		res = new LLVOVoidWater(id, pcode, regionp); break;
 	case LL_VO_WATER:
-	  res = new LLVOWater(id, pcode, regionp); break;
+		res = new LLVOWater(id, pcode, regionp); break;
 	case LL_VO_GROUND:
 	  res = new LLVOGround(id, pcode, regionp); break;
 	case LL_VO_PART_GROUP:
@@ -178,6 +206,13 @@ LLViewerObject::LLViewerObject(const LLUUID &id, const LLPCode pcode, LLViewerRe
 	mGLName(0),
 	mbCanSelect(TRUE),
 	mFlags(0),
+#if MESH_ENABLED
+	mPhysicsShapeType(0),
+	mPhysicsGravity(0),
+	mPhysicsFriction(0),
+	mPhysicsDensity(0),
+	mPhysicsRestitution(0),
+#endif //MESH_ENABLED
 	mDrawable(),
 	mCreateSelected(FALSE),
 	mRenderMedia(FALSE),
@@ -210,6 +245,14 @@ LLViewerObject::LLViewerObject(const LLUUID &id, const LLPCode pcode, LLViewerRe
 	mState(0),
 	mMedia(NULL),
 	mClickAction(0),
+#if MESH_ENABLED
+	mObjectCost(0),
+	mLinksetCost(0),
+	mPhysicsCost(0),
+	mLinksetPhysicsCost(0.f),
+	mCostStale(true),
+	mPhysicsShapeUnknown(true),
+#endif //MESH_ENABLED
 	mAttachmentItemID(LLUUID::null),
 	mLastUpdateType(OUT_UNKNOWN),
 	mLastUpdateCached(FALSE)
@@ -374,7 +417,7 @@ void LLViewerObject::markDead()
 			if (isAgentAvatarValid())
 			{
 				// stop motions associated with this object
-				gAgent.getAvatarObject()->stopMotionFromSource(mID);
+				gAgentAvatarp->stopMotionFromSource(mID);
 			}
 		}
 
@@ -649,14 +692,13 @@ BOOL LLViewerObject::setDrawableParent(LLDrawable* parentp)
 	}
 
 	BOOL ret = mDrawable->mXform.setParent(parentp ? &parentp->mXform : NULL);
-	if (!ret)
+	if(!ret)
 	{
 		return FALSE ;
 	}
 	LLDrawable* old_parent = mDrawable->mParent;
-
 	mDrawable->mParent = parentp; 
-	
+
 	gPipeline.markRebuild(mDrawable, LLDrawable::REBUILD_VOLUME, TRUE);
 	if(	(old_parent != parentp && old_parent)
 		|| (parentp && parentp->isActive()))
@@ -698,6 +740,42 @@ void LLViewerObject::hideExtraDisplayItems( BOOL hidden )
 	}
 }
 
+U32 LLViewerObject::checkMediaURL(const std::string &media_url)
+{
+    U32 retval = (U32)0x0;
+	if (!mMedia && !media_url.empty())
+	{
+		retval |= MEDIA_URL_ADDED;
+		mMedia = new LLViewerObjectMedia;
+		mMedia->mMediaURL = media_url;
+		mMedia->mMediaType = LLViewerObject::MEDIA_SET;
+		mMedia->mPassedWhitelist = FALSE;
+	}
+	else if (mMedia)
+	{
+		if (media_url.empty())
+		{
+			retval |= MEDIA_URL_REMOVED;
+			delete mMedia;
+			mMedia = NULL;
+        }
+        else if (mMedia->mMediaURL != media_url) // <-- This is an optimization.  If they are equal don't bother with below's test.
+        {
+            /*if (! (LLTextureEntry::getAgentIDFromMediaVersionString(media_url) == gAgent.getID() &&
+                   LLTextureEntry::getVersionFromMediaVersionString(media_url) == 
+                        LLTextureEntry::getVersionFromMediaVersionString(mMedia->mMediaURL) + 1))
+			*/
+            {
+                // If the media URL is different and WE were not the one who
+                // changed it, mark dirty.
+                retval |= MEDIA_URL_UPDATED;
+            }
+            mMedia->mMediaURL = media_url;
+            mMedia->mPassedWhitelist = FALSE;
+        }
+    }
+    return retval;
+}
 
 U32 LLViewerObject::processUpdateMessage(LLMessageSystem *mesgsys,
 					 void **user_data,
@@ -792,6 +870,14 @@ U32 LLViewerObject::processUpdateMessage(LLMessageSystem *mesgsys,
 #ifdef DEBUG_UPDATE_TYPE
 				llinfos << "Full:" << getID() << llendl;
 #endif
+#if MESH_ENABLED
+				//clear cost and linkset cost
+				mCostStale = true;
+				if (isSelected())
+				{
+					gFloaterTools->dirty();
+				}
+#endif //MESH_ENABLED
 				LLUUID audio_uuid;
 				LLUUID owner_id;	// only valid if audio_uuid or particle system is not null
 				F32    gain;
@@ -836,6 +922,7 @@ U32 LLViewerObject::processUpdateMessage(LLMessageSystem *mesgsys,
 					htonmemcpy(collision_plane.mV, &data[count], MVT_LLVector4, sizeof(LLVector4));
 					((LLVOAvatar*)this)->setFootPlane(collision_plane);
 					count += sizeof(LLVector4);
+					// fall through
 				case 60:
 					this_update_precision = 32;
 					// this is a terse update
@@ -875,6 +962,7 @@ U32 LLViewerObject::processUpdateMessage(LLMessageSystem *mesgsys,
 					htonmemcpy(collision_plane.mV, &data[count], MVT_LLVector4, sizeof(LLVector4));
 					((LLVOAvatar*)this)->setFootPlane(collision_plane);
 					count += sizeof(LLVector4);
+					// fall through
 				case 32:
 					this_update_precision = 16;
 					test_pos_parent.quantize16(-0.5f*size, 1.5f*size, MIN_HEIGHT, MAX_HEIGHT);
@@ -1066,35 +1154,8 @@ U32 LLViewerObject::processUpdateMessage(LLMessageSystem *mesgsys,
 
 				std::string media_url;
 				mesgsys->getStringFast(_PREHASH_ObjectData, _PREHASH_MediaURL, media_url, block_num);
-				//if (!media_url.empty())
-				//{
-				//	llinfos << "WEBONPRIM media_url " << media_url << llendl;
-				//}
-				if (!mMedia && !media_url.empty())
-				{
-					retval |= MEDIA_URL_ADDED;
-					mMedia = new LLViewerObjectMedia;
-					mMedia->mMediaURL = media_url;
-					mMedia->mMediaType = LLViewerObject::MEDIA_TYPE_WEB_PAGE;
-					mMedia->mPassedWhitelist = FALSE;
-				}
-				else if (mMedia)
-				{
-					if (media_url.empty())
-					{
-						retval |= MEDIA_URL_REMOVED;
-						delete mMedia;
-						mMedia = NULL;
-					}
-					else if (mMedia->mMediaURL != media_url)
-					{
-						// We just added or changed a web page.
-						retval |= MEDIA_URL_UPDATED;
-						mMedia->mMediaURL = media_url;
-						mMedia->mPassedWhitelist = FALSE;
-					}
-				}
-
+                retval |= checkMediaURL(media_url);
+                
 				//
 				// Unpack particle system data
 				//
@@ -1180,6 +1241,7 @@ U32 LLViewerObject::processUpdateMessage(LLMessageSystem *mesgsys,
 					htonmemcpy(collision_plane.mV, &data[count], MVT_LLVector4, sizeof(LLVector4));
 					((LLVOAvatar*)this)->setFootPlane(collision_plane);
 					count += sizeof(LLVector4);
+					// fall through
 				case 60:
 					// this is a terse 32 update
 					// pos
@@ -1219,6 +1281,7 @@ U32 LLViewerObject::processUpdateMessage(LLMessageSystem *mesgsys,
 					htonmemcpy(collision_plane.mV, &data[count], MVT_LLVector4, sizeof(LLVector4));
 					((LLVOAvatar*)this)->setFootPlane(collision_plane);
 					count += sizeof(LLVector4);
+					// fall through
 				case 32:
 					// this is a terse 16 update
 					this_update_precision = 16;
@@ -1386,6 +1449,15 @@ U32 LLViewerObject::processUpdateMessage(LLMessageSystem *mesgsys,
 #ifdef DEBUG_UPDATE_TYPE
 				llinfos << "CompFull:" << getID() << llendl;
 #endif
+
+#if MESH_ENABLED
+				mCostStale = true;
+
+				if (isSelected())
+				{
+					gFloaterTools->dirty();
+				}
+#endif //MESH_ENABLED
 				dp->unpackU32(crc, "CRC");
 				mTotalCRC = crc;
 				dp->unpackU8(material, "Material");
@@ -1483,31 +1555,12 @@ U32 LLViewerObject::processUpdateMessage(LLMessageSystem *mesgsys,
 					mText = NULL;
 				}
 
+                std::string media_url;
 				if (value & 0x200)
 				{
-					std::string media_url;
 					dp->unpackString(media_url, "MediaURL");
-					if (!mMedia)
-					{
-						retval |= MEDIA_URL_ADDED;
-						mMedia = new LLViewerObjectMedia;
-						mMedia->mMediaURL = media_url;
-						mMedia->mMediaType = LLViewerObject::MEDIA_TYPE_WEB_PAGE;
-						mMedia->mPassedWhitelist = FALSE;
-					}
-					else if (mMedia->mMediaURL != media_url)
-					{
-						retval |= MEDIA_URL_UPDATED;
-						mMedia->mMediaURL = media_url;
-						mMedia->mPassedWhitelist = FALSE;
-					}
 				}
-				else if (mMedia)
-				{
-					retval |= MEDIA_URL_REMOVED;
-					delete mMedia;
-					mMedia = NULL;
-				}
+                retval |= checkMediaURL(media_url);
 
 				//
 				// Unpack particle system data
@@ -1863,9 +1916,9 @@ U32 LLViewerObject::processUpdateMessage(LLMessageSystem *mesgsys,
 		}
 	}
 
-	new_rot.normalize();
+	new_rot.normQuat();
 
-	if (gPingInterpolate)
+	if (sPingInterpolate)
 	{ 
 		LLCircuitData *cdp = gMessageSystem->mCircuitInfo.findCircuit(mesgsys->getSender());
 		if (cdp)
@@ -1937,6 +1990,12 @@ U32 LLViewerObject::processUpdateMessage(LLMessageSystem *mesgsys,
 			LLVOAvatar *avatar = (LLVOAvatar*)mParent;
 
 			avatar->clampAttachmentPositions();
+		}
+		
+		// If we're snapping the position by more than 0.5m, update LLViewerStats::mAgentPositionSnaps
+		if ( asAvatar() && asAvatar()->isSelf() && (mag_sqr > 0.25f) )
+		{
+			LLViewerStats::getInstance()->mAgentPositionSnaps.push( diff.length() );
 		}
 	}
 
@@ -2028,7 +2087,7 @@ U32 LLViewerObject::processUpdateMessage(LLMessageSystem *mesgsys,
 
 //	U32 ping_delay = mesgsys->mCircuitInfo.getPingDelay();
 	mLastInterpUpdateSecs = LLFrameTimer::getElapsedSeconds();
-	mLastMessageUpdateSecs = LLFrameTimer::getElapsedSeconds();
+	mLastMessageUpdateSecs = mLastInterpUpdateSecs;
 	if (mDrawable.notNull())
 	{
 		// Don't clear invisibility flag on update if still orphaned!
@@ -2065,7 +2124,7 @@ BOOL LLViewerObject::idleUpdate(LLAgent &agent, LLWorld &world, const F64 &time)
 
 	// CRO - don't velocity interp linked objects!
 	// Leviathan - but DO velocity interp joints
-	if (!mStatic && gVelocityInterpolate && !isSelected())
+	if (!mStatic && sVelocityInterpolate && !isSelected())
 	{
 		// calculate dt from last update
 		F32 dt_raw = (F32)(time - mLastInterpUpdateSecs);
@@ -2155,46 +2214,168 @@ BOOL LLViewerObject::idleUpdate(LLAgent &agent, LLWorld &world, const F64 &time)
 			return TRUE;
 		}
 		else
-		{
-			// linear motion
-			// PHYSICS_TIMESTEP is used below to correct for the fact that the velocity in object
-			// updates represents the average velocity of the last timestep, rather than the final velocity.
-			// the time dilation above should guarantee that dt is never less than PHYSICS_TIMESTEP, theoretically
-			// 
-			// There is a problem here if dt is negative. . .
-
-			// *TODO: should also wrap linear accel/velocity in check
-			// to see if object is selected, instead of explicitly
-			// zeroing it out	
-			LLVector3 accel = getAcceleration();
-			LLVector3 vel 	= getVelocity();
-			
-			if (!(accel.isExactlyZero() && vel.isExactlyZero()))
-			{
-				LLVector3 pos 	= (vel + (0.5f * (dt-PHYSICS_TIMESTEP)) * accel) * dt;	
-			
-				// region local  
-				setPositionRegion(pos + getPositionRegion());
-				setVelocity(vel + accel*dt);	
-				
-				// for objects that are spinning but not translating, make sure to flag them as having moved
-				setChanged(MOVED | SILHOUETTE);
-			}
-			
-			mLastInterpUpdateSecs = time;
+		{	// Move object based on it's velocity and rotation
+			interpolateLinearMotion(time, dt);
 		}
-	}
-
-	if (gNoRender)
-	{
-		// Skip drawable stuff if not rendering.
-		return TRUE;
 	}
 
 	updateDrawable(FALSE);
 
 	return TRUE;
 }
+
+
+// Move an object due to idle-time viewer side updates by iterpolating motion
+void LLViewerObject::interpolateLinearMotion(const F64 & time, const F32 & dt)
+{
+	// linear motion
+	// PHYSICS_TIMESTEP is used below to correct for the fact that the velocity in object
+	// updates represents the average velocity of the last timestep, rather than the final velocity.
+	// the time dilation above should guarantee that dt is never less than PHYSICS_TIMESTEP, theoretically
+	// 
+	// *TODO: should also wrap linear accel/velocity in check
+	// to see if object is selected, instead of explicitly
+	// zeroing it out	
+
+	F64 time_since_last_update = time - mLastMessageUpdateSecs;
+	if (time_since_last_update <= 0.0 || dt <= 0.f)
+	{
+		return;
+	}
+
+	LLVector3 accel = getAcceleration();
+	LLVector3 vel 	= getVelocity();
+	
+	if (sMaxUpdateInterpolationTime <= 0.0)
+	{	// Old code path ... unbounded, simple interpolation
+		if (!(accel.isExactlyZero() && vel.isExactlyZero()))
+		{
+			LLVector3 pos   = (vel + (0.5f * (dt-PHYSICS_TIMESTEP)) * accel) * dt;  
+		
+			// region local  
+			setPositionRegion(pos + getPositionRegion());
+			setVelocity(vel + accel*dt);	
+			
+			// for objects that are spinning but not translating, make sure to flag them as having moved
+			setChanged(MOVED | SILHOUETTE);
+		}
+	}
+	else if (!accel.isExactlyZero() || !vel.isExactlyZero())		// object is moving
+	{	// Object is moving, and hasn't been too long since we got an update from the server
+		
+		// Calculate predicted position and velocity
+		LLVector3 new_pos = (vel + (0.5f * (dt-PHYSICS_TIMESTEP)) * accel) * dt;	
+		LLVector3 new_v = accel * dt;
+
+		if (time_since_last_update > sPhaseOutUpdateInterpolationTime &&
+			sPhaseOutUpdateInterpolationTime > 0.0)
+		{	// Haven't seen a viewer update in a while, check to see if the ciruit is still active
+			if (mRegionp)
+			{	// The simulator will NOT send updates if the object continues normally on the path
+				// predicted by the velocity and the acceleration (often gravity) sent to the viewer
+				// So check to see if the circuit is blocked, which means the sim is likely in a long lag
+				LLCircuitData *cdp = gMessageSystem->mCircuitInfo.findCircuit( mRegionp->getHost() );
+				if (cdp)
+				{
+					// Find out how many seconds since last packet arrived on the circuit
+					F64 time_since_last_packet = LLMessageSystem::getMessageTimeSeconds() - cdp->getLastPacketInTime();
+
+					if (!cdp->isAlive() ||		// Circuit is dead or blocked
+						 cdp->isBlocked() ||	// or doesn't seem to be getting any packets
+						 (time_since_last_packet > sPhaseOutUpdateInterpolationTime))
+					{
+						// Start to reduce motion interpolation since we haven't seen a server update in a while
+						F64 time_since_last_interpolation = time - mLastInterpUpdateSecs;
+						F64 phase_out = 1.0;
+						if (time_since_last_update > sMaxUpdateInterpolationTime)
+						{	// Past the time limit, so stop the object
+							phase_out = 0.0;
+							//llinfos << "Motion phase out to zero" << llendl;
+
+							// Kill angular motion as well.  Note - not adding this due to paranoia
+							// about stopping rotation for llTargetOmega objects and not having it restart
+							// setAngularVelocity(LLVector3::zero);
+						}
+						else if (mLastInterpUpdateSecs - mLastMessageUpdateSecs > sPhaseOutUpdateInterpolationTime)
+						{	// Last update was already phased out a bit
+							phase_out = (sMaxUpdateInterpolationTime - time_since_last_update) / 
+										(sMaxUpdateInterpolationTime - time_since_last_interpolation);
+							//llinfos << "Continuing motion phase out of " << (F32) phase_out << llendl;
+						}
+						else
+						{	// Phase out from full value
+							phase_out = (sMaxUpdateInterpolationTime - time_since_last_update) / 
+										(sMaxUpdateInterpolationTime - sPhaseOutUpdateInterpolationTime);
+							//llinfos << "Starting motion phase out of " << (F32) phase_out << llendl;
+						}
+						phase_out = llclamp(phase_out, 0.0, 1.0);
+
+						new_pos = new_pos * ((F32) phase_out);
+						new_v = new_v * ((F32) phase_out);
+					}
+				}
+			}
+		}
+
+		new_pos = new_pos + getPositionRegion();
+		new_v = new_v + vel;
+
+
+		// Clamp interpolated position to minimum underground and maximum region height
+		LLVector3d new_pos_global = mRegionp->getPosGlobalFromRegion(new_pos);
+		F32 min_height;
+		if (isAvatar())
+		{	// Make a better guess about AVs not going underground
+			min_height = LLWorld::getInstance()->resolveLandHeightGlobal(new_pos_global);
+			min_height += (0.5f * getScale().mV[VZ]);
+		}
+		else
+		{	// This will put the object underground, but we can't tell if it will stop 
+			// at ground level or not
+			min_height = LLWorld::getInstance()->getMinAllowedZ(this, new_pos_global);
+		}
+
+		new_pos.mV[VZ] = llmax(min_height, new_pos.mV[VZ]);
+		new_pos.mV[VZ] = llmin(LLWorld::getInstance()->getRegionMaxHeight(), new_pos.mV[VZ]);
+
+		// Check to see if it's going off the region
+		LLVector3 temp(new_pos);
+		if (temp.clamp(0.f, mRegionp->getWidth()))
+		{	// Going off this region, so see if we might end up on another region
+			LLVector3d old_pos_global = mRegionp->getPosGlobalFromRegion(getPositionRegion());
+			new_pos_global = mRegionp->getPosGlobalFromRegion(new_pos);		// Re-fetch in case it got clipped above
+
+			// Clip the positions to known regions
+			LLVector3d clip_pos_global = LLWorld::getInstance()->clipToVisibleRegions(old_pos_global, new_pos_global);
+			if (clip_pos_global != new_pos_global)
+			{	// Was clipped, so this means we hit a edge where there is no region to enter
+				
+				//llinfos << "Hit empty region edge, clipped predicted position to " << mRegionp->getPosRegionFromGlobal(clip_pos_global)
+				//	<< " from " << new_pos << llendl;
+				new_pos = mRegionp->getPosRegionFromGlobal(clip_pos_global);
+				
+				// Stop motion and get server update for bouncing on the edge
+				new_v.clear();
+				setAcceleration(LLVector3::zero);
+			}
+			else
+			{	// Let predicted movement cross into another region
+				//llinfos << "Predicting region crossing to " << new_pos << llendl;
+			}
+		}
+
+		// Set new position and velocity
+		setPositionRegion(new_pos);
+		setVelocity(new_v);	
+		
+		// for objects that are spinning but not translating, make sure to flag them as having moved
+		setChanged(MOVED | SILHOUETTE);
+	}		
+
+	// Update the last time we did anything
+	mLastInterpUpdateSecs = time;
+}
+
 
 
 BOOL LLViewerObject::setData(const U8 *datap, const U32 data_size)
@@ -2894,6 +3075,8 @@ void LLViewerObject::setScale(const LLVector3 &scale, BOOL damped)
 		{
 			if (!mOnMap)
 			{
+				llassert_always(LLWorld::getInstance()->getRegionFromHandle(getRegion()->getHandle()));
+
 				gObjectList.addToMap(this);
 				mOnMap = TRUE;
 			}
@@ -2909,22 +3092,130 @@ void LLViewerObject::setScale(const LLVector3 &scale, BOOL damped)
 	}
 }
 
-void LLViewerObject::updateSpatialExtents(LLVector3& newMin, LLVector3 &newMax)
+#if MESH_ENABLED
+void LLViewerObject::setObjectCost(F32 cost)
 {
-	LLVector3 center = getRenderPosition();
-	LLVector3 size = getScale();
-	newMin.setVec(center-size);
-	newMax.setVec(center+size);
-	if(mDrawable.notNull())
-		mDrawable->setPositionGroup((newMin + newMax) * 0.5f);
+	mObjectCost = cost;
+	mCostStale = false;
+
+	if (isSelected())
+	{
+		gFloaterTools->dirty();
+	}
+}
+
+void LLViewerObject::setLinksetCost(F32 cost)
+{
+	mLinksetCost = cost;
+	mCostStale = false;
+	
+	if (isSelected())
+	{
+		gFloaterTools->dirty();
+	}
+}
+
+void LLViewerObject::setPhysicsCost(F32 cost)
+{
+	mPhysicsCost = cost;
+	mCostStale = false;
+
+	if (isSelected())
+	{
+		gFloaterTools->dirty();
+	}
+}
+
+void LLViewerObject::setLinksetPhysicsCost(F32 cost)
+{
+	mLinksetPhysicsCost = cost;
+	mCostStale = false;
+	
+	if (isSelected())
+	{
+		gFloaterTools->dirty();
+	}
+}
+
+
+F32 LLViewerObject::getObjectCost()
+{
+	if (mCostStale)
+	{
+		gObjectList.updateObjectCost(this);
+	}
+	
+	return mObjectCost;
+}
+
+F32 LLViewerObject::getLinksetCost()
+{
+	if (mCostStale)
+	{
+		gObjectList.updateObjectCost(this);
+	}
+
+	return mLinksetCost;
+}
+
+F32 LLViewerObject::getPhysicsCost()
+{
+	if (mCostStale)
+	{
+		gObjectList.updateObjectCost(this);
+	}
+	
+	return mPhysicsCost;
+}
+
+F32 LLViewerObject::getLinksetPhysicsCost()
+{
+	if (mCostStale)
+	{
+		gObjectList.updateObjectCost(this);
+	}
+
+	return mLinksetPhysicsCost;
+}
+
+F32 LLViewerObject::getStreamingCost(S32* bytes, S32* visible_bytes, F32* unscaled_value) const
+{
+	return 0.f;
+}
+
+U32 LLViewerObject::getTriangleCount() const
+{
+	return 0;
+}
+
+U32 LLViewerObject::getHighLODTriangleCount()
+{
+	return 0;
+}
+#endif //MESH_ENABLED
+
+void LLViewerObject::updateSpatialExtents(LLVector4a& newMin, LLVector4a &newMax)
+{
+	if(mDrawable.isNull())
+		return;
+	LLVector4a center;
+	center.load3(getRenderPosition().mV);
+	LLVector4a size;
+	size.load3(getScale().mV);
+	newMin.setSub(center, size);
+	newMax.setAdd(center, size);
+	
+	mDrawable->setPositionGroup(center);
 }
 
 F32 LLViewerObject::getBinRadius()
 {
 	if (mDrawable.notNull())
 	{
-		const LLVector3* ext = mDrawable->getSpatialExtents();
-		return (ext[1]-ext[0]).magVec();
+		const LLVector4a* ext = mDrawable->getSpatialExtents();
+		LLVector4a diff;
+		diff.setSub(ext[1], ext[0]);
+		return diff.getLength3().getF32();
 	}
 	
 	return getScale().magVec();
@@ -2990,7 +3281,12 @@ void LLViewerObject::boostTexturePriority(BOOL boost_children /* = TRUE */)
  		getTEImage(i)->setBoostLevel(LLViewerTexture::BOOST_SELECTED);
 	}
 
-	if (isSculpted())
+
+	if (isSculpted()
+#if MESH_ENABLED
+	&& !isMesh()
+#endif //MESH_ENABLED
+	)
 	{
 		LLSculptParams *sculpt_params = (LLSculptParams *)getParameterEntry(LLNetworkData::PARAMS_SCULPT);
 		LLUUID sculpt_id = sculpt_params->getSculptTexture();
@@ -3230,6 +3526,16 @@ const LLVector3 LLViewerObject::getPositionEdit() const
 
 const LLVector3 LLViewerObject::getRenderPosition() const
 {
+#if MESH_ENABLED
+	if (mDrawable.notNull() && mDrawable->isState(LLDrawable::RIGGED))
+	{
+		LLVOAvatar* avatar = getAvatar();
+		if (avatar)
+		{
+			return avatar->getPositionAgent();
+		}
+	}
+#endif //MESH_ENABLED
 	if (mDrawable.isNull() || mDrawable->getGeneration() < 0)
 	{
 		return getPositionAgent();
@@ -3248,6 +3554,12 @@ const LLVector3 LLViewerObject::getPivotPositionAgent() const
 const LLQuaternion LLViewerObject::getRenderRotation() const
 {
 	LLQuaternion ret;
+#if MESH_ENABLED
+	if (mDrawable.notNull() && mDrawable->isState(LLDrawable::RIGGED))
+	{
+		return ret;
+	}
+#endif //MESH_ENABLED
 	if (mDrawable.isNull() || mDrawable->isStatic())
 	{
 		ret = getRotationEdit();
@@ -3516,12 +3828,21 @@ BOOL LLViewerObject::lineSegmentBoundingBox(const LLVector3& start, const LLVect
 		return FALSE;
 	}
 
-	const LLVector3* ext = mDrawable->getSpatialExtents();
+	const LLVector4a* ext = mDrawable->getSpatialExtents();
 
-	LLVector3 center = (ext[1]+ext[0])*0.5f;
-	LLVector3 size = (ext[1]-ext[0])*0.5f;
+	//VECTORIZE THIS
+	LLVector4a center;
+	center.setAdd(ext[1], ext[0]);
+	center.mul(0.5f);
+	LLVector4a size;
+	size.setSub(ext[1], ext[0]);
+	size.mul(0.5f);
 
-	return LLLineSegmentBoxIntersect(start, end, center, size);
+	LLVector4a starta, enda;
+	starta.load3(start.mV);
+	enda.load3(end.mV);
+
+	return LLLineSegmentBoxIntersect(starta, enda, center, size);
 }
 
 U8 LLViewerObject::getMediaType() const
@@ -3532,7 +3853,7 @@ U8 LLViewerObject::getMediaType() const
 	}
 	else
 	{
-		return LLViewerObject::MEDIA_TYPE_NONE;
+		return LLViewerObject::MEDIA_NONE;
 	}
 }
 
@@ -3742,7 +4063,7 @@ void LLViewerObject::sendTEUpdate() const
 		msg->addString("MediaURL", NULL);
 	}
 
-	// JAMESDEBUG TODO send media type
+	// TODO send media type
 
 	packTEMessage(msg);
 
@@ -3753,7 +4074,7 @@ void LLViewerObject::sendTEUpdate() const
 void LLViewerObject::setTE(const U8 te, const LLTextureEntry &texture_entry)
 {
 	LLPrimitive::setTE(te, texture_entry);
-// JAMESDEBUG This doesn't work, don't get any textures.
+//  This doesn't work, don't get any textures.
 //	if (mDrawable.notNull() && mDrawable->isVisible())
 //	{
 		const LLUUID& image_id = getTE(te)->getID();
@@ -3927,7 +4248,7 @@ S32 LLViewerObject::setTEFullbright(const U8 te, const U8 fullbright)
 
 S32 LLViewerObject::setTEMediaFlags(const U8 te, const U8 media_flags)
 {
-	// JAMESDEBUG this might need work for media type
+	// this might need work for media type
 	S32 retval = 0;
 	const LLTextureEntry *tep = getTE(te);
 	if (!tep)
@@ -4264,6 +4585,11 @@ void LLViewerObject::updateText()
 	}
 }
 
+LLVOAvatar* LLViewerObject::asAvatar()
+{
+	return NULL;
+}
+
 BOOL LLViewerObject::isParticleSource() const
 {
 	return !mPartSourcep.isNull() && !mPartSourcep->isDead();
@@ -4543,6 +4869,12 @@ void LLViewerObject::adjustAudioGain(const F32 gain)
 
 bool LLViewerObject::unpackParameterEntry(U16 param_type, LLDataPacker *dp)
 {
+#if MESH_ENABLED
+	if (LLNetworkData::PARAMS_MESH == param_type)
+	{
+		param_type = LLNetworkData::PARAMS_SCULPT;
+	}
+#endif //MESH_ENABLED
 	ExtraParameter* param = getExtraParameterEntryCreate(param_type);
 	if (param)
 	{
@@ -4584,7 +4916,7 @@ LLViewerObject::ExtraParameter* LLViewerObject::createNewParameterEntry(U16 para
 	  }
 	  default:
 	  {
-		  llinfos << "Unknown param type." << llendl;
+		  llinfos << "Unknown param type. (" << llformat("0x%2x",param_type) << ")" << llendl;
 		  break;
 	  }
 	};
@@ -5015,7 +5347,7 @@ bool LLViewerObject::specialHoverCursor() const
 			|| (mClickAction != 0);
 }
 
-void LLViewerObject::updateFlags()
+void LLViewerObject::updateFlags(BOOL physics_changed)
 {
 	LLViewerRegion* regionp = getRegion();
 	if(!regionp) return;
@@ -5028,6 +5360,17 @@ void LLViewerObject::updateFlags()
 	gMessageSystem->addBOOL("IsTemporary", flagTemporaryOnRez() );
 	gMessageSystem->addBOOL("IsPhantom", flagPhantom() );
 	gMessageSystem->addBOOL("CastsShadows", flagCastShadows() );
+#if MESH_ENABLED
+	if (physics_changed)
+	{
+		gMessageSystem->nextBlock("ExtraPhysics");
+		gMessageSystem->addU8("PhysicsShapeType", getPhysicsShapeType() );
+		gMessageSystem->addF32("Density", getPhysicsDensity() );
+		gMessageSystem->addF32("Friction", getPhysicsFriction() );
+		gMessageSystem->addF32("Restitution", getPhysicsRestitution() );
+		gMessageSystem->addF32("GravityMultiplier", getPhysicsGravity() );
+	}
+#endif //MESH_ENABLED
 	gMessageSystem->sendReliable( regionp->getHost() );
 }
 
@@ -5059,6 +5402,46 @@ BOOL LLViewerObject::setFlags(U32 flags, BOOL state)
 	}
 	return setit;
 }
+
+#if MESH_ENABLED
+void LLViewerObject::setPhysicsShapeType(U8 type)
+{
+	mPhysicsShapeUnknown = false;
+	mPhysicsShapeType = type;
+	mCostStale = true;
+}
+
+void LLViewerObject::setPhysicsGravity(F32 gravity)
+{
+	mPhysicsGravity = gravity;
+}
+
+void LLViewerObject::setPhysicsFriction(F32 friction)
+{
+	mPhysicsFriction = friction;
+}
+
+void LLViewerObject::setPhysicsDensity(F32 density)
+{
+	mPhysicsDensity = density;
+}
+
+void LLViewerObject::setPhysicsRestitution(F32 restitution)
+{
+	mPhysicsRestitution = restitution;
+}
+
+U8 LLViewerObject::getPhysicsShapeType() const
+{ 
+	if (mPhysicsShapeUnknown)
+	{
+		mPhysicsShapeUnknown = false;
+		gObjectList.updatePhysicsFlags(this);
+	}
+
+	return mPhysicsShapeType; 
+}
+#endif //MESH_ENABLED
 
 void LLViewerObject::applyAngularVelocity(F32 dt)
 {
@@ -5283,11 +5666,22 @@ std::string LLViewerObject::getAttachmentPointName()
 	S32 point = getAttachmentPoint();
 	if((point > 0) && (point < 39))
 	{
-		return gAgent.getAvatarObject()->mAttachmentPoints[point]->getName();
+		return gAgentAvatarp->mAttachmentPoints[point]->getName();
 	}
 	return llformat("unsupported point %d", point);
 }
 // </edit>
+
+const LLUUID &LLViewerObject::getAttachmentItemID() const
+{
+	return mAttachmentItemID;
+}
+
+void LLViewerObject::setAttachmentItemID(const LLUUID &id)
+{
+	mAttachmentItemID = id;
+}
+
 EObjectUpdateType LLViewerObject::getLastUpdateType() const
 {
 	return mLastUpdateType;
@@ -5324,3 +5718,76 @@ const LLUUID &LLViewerObject::extractAttachmentItemID()
 	return getAttachmentItemID();
 }
 
+//virtual
+LLVOAvatar* LLViewerObject::getAvatar() const
+{
+	if (isAttachment())
+	{
+		LLViewerObject* vobj = (LLViewerObject*) getParent();
+
+		while (vobj && !vobj->asAvatar())
+		{
+			vobj = (LLViewerObject*) vobj->getParent();
+		}
+
+		return (LLVOAvatar*) vobj;
+	}
+
+	return NULL;
+}
+
+#if MESH_ENABLED
+class ObjectPhysicsProperties : public LLHTTPNode
+{
+public:
+	virtual void post(
+		ResponsePtr responder,
+		const LLSD& context,
+		const LLSD& input) const
+	{
+		LLSD object_data = input["body"]["ObjectData"];
+		S32 num_entries = object_data.size();
+		
+		for ( S32 i = 0; i < num_entries; i++ )
+		{
+			LLSD& curr_object_data = object_data[i];
+			U32 local_id = curr_object_data["LocalID"].asInteger();
+
+			// Iterate through nodes at end, since it can be on both the regular AND hover list
+			struct f : public LLSelectedNodeFunctor
+			{
+				U32 mID;
+				f(const U32& id) : mID(id) {}
+				virtual bool apply(LLSelectNode* node)
+				{
+					return (node->getObject() && node->getObject()->mLocalID == mID );
+				}
+			} func(local_id);
+
+			LLSelectNode* node = LLSelectMgr::getInstance()->getSelection()->getFirstNode(&func);
+
+			if (node)
+			{
+				// The LLSD message builder doesn't know how to handle U8, so we need to send as S8 and cast
+				U8 type = (U8)curr_object_data["PhysicsShapeType"].asInteger();
+				F32 density = (F32)curr_object_data["Density"].asReal();
+				F32 friction = (F32)curr_object_data["Friction"].asReal();
+				F32 restitution = (F32)curr_object_data["Restitution"].asReal();
+				F32 gravity = (F32)curr_object_data["GravityMultiplier"].asReal();
+
+				node->getObject()->setPhysicsShapeType(type);
+				node->getObject()->setPhysicsGravity(gravity);
+				node->getObject()->setPhysicsFriction(friction);
+				node->getObject()->setPhysicsDensity(density);
+				node->getObject()->setPhysicsRestitution(restitution);
+			}	
+		}
+		
+		dialog_refresh_all();
+	};
+};
+
+LLHTTPRegistration<ObjectPhysicsProperties>
+	gHTTPRegistrationObjectPhysicsProperties("/message/ObjectPhysicsProperties");
+
+#endif //MESH_ENABLED

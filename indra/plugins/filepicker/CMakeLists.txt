@@ -63,12 +63,21 @@ else (WINDOWS)
   set(WINDOWS_API_LIBRARIES "")
 endif (WINDOWS)
 
+if (DARWIN)
+  include(CMakeFindFrameworks)
+  find_library(APPKIT_LIBRARY AppKit)
+  find_library(CARBON_LIBRARY Carbon)
+  find_library(IOKIT_LIBRARY IOKit)
+  set(OSX_FILE_LIBRARIES ${APPKIT_LIBRARY} ${CARBON_LIBRARY} ${IOKIT_LIBRARY})
+endif (DARWIN)
+
 target_link_libraries(basic_plugin_filepicker
   ${LLPLUGIN_LIBRARIES}
   ${LLCOMMON_LIBRARIES}
   ${BASIC_PLUGIN_BASE_LIBRARIES}
   ${UI_LIBRARIES}
   ${WINDOWS_API_LIBRARIES}
+  ${OSX_FILE_LIBRARIES}
 )
 
 add_dependencies(basic_plugin_filepicker

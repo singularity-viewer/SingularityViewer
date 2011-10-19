@@ -140,7 +140,7 @@ void LLViewerGesture::doTrigger( BOOL send_chat )
 
 	bool handled = !cmd_line_chat(mOutputString, CHAT_TYPE_NORMAL);
 #if SHY_MOD //Command handler
-	handled = handled || SHCommandHandler::handleCommand(true, mOutputString, gAgentID, gAgent.getAvatarObject());
+	handled = handled || SHCommandHandler::handleCommand(true, mOutputString, gAgentID, gAgentAvatarp);
 #endif //shy_mod
 	if (!handled && send_chat && !mOutputString.empty())
 	{

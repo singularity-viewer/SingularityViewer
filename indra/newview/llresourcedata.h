@@ -39,7 +39,7 @@
 struct LLResourceData
 {
 	LLAssetInfo mAssetInfo;
-	LLAssetType::EType mPreferredLocation;
+	LLFolderType::EType mPreferredLocation;
 	LLInventoryType::EType mInventoryType;
 	U32 mNextOwnerPerm;
 	S32 mExpectedUploadCost;

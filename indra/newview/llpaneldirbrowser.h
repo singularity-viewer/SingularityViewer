@@ -57,7 +57,7 @@ public:
 	// Use to get periodic updates.
 	virtual void draw();
 
-	virtual void onVisibilityChange(BOOL curVisibilityIn);
+	virtual void handleVisibilityChange(BOOL curVisibilityIn);
 
 	// Redo your search for the prev/next page of results
 	virtual void prevPage();

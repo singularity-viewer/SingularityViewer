@@ -53,7 +53,7 @@ public:
 
 	/*virtual*/void open();		/*Flawfinder: ignore*/
 	/*virtual*/void tabOpen(LLFloater* opened_floater, bool from_click);
-	/*virtual*/ void userSetShape(const LLRect& new_rect);
+	/*virtual*/ void handleReshape(const LLRect& new_rect, bool by_user = false);
 
 	static LLMultiPreview* getAutoOpenInstance(const LLUUID& id);
 	static void setAutoOpenInstance(LLMultiPreview* previewp, const LLUUID& id);
@@ -110,7 +110,7 @@ public:
 	void				addKeepDiscardButtons();
 	static void			onKeepBtn(void* data);
 	static void			onDiscardBtn(void* data);
-	/*virtual*/ void	userSetShape(const LLRect& new_rect);
+	/*virtual*/ void	handleReshape(const LLRect& new_rect, bool by_user = false);
 
 	void userResized() { mUserResized = TRUE; };
 

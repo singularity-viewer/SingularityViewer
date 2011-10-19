@@ -179,7 +179,7 @@ void LLHoverView::pickCallback(const LLPickInfo& pick_info)
 	{
 		gHoverView->setHoverActive(TRUE);
 		gHoverView->mHoverLandGlobal = pick_info.mPosGlobal;
-		LLViewerParcelMgr::getInstance()->requestHoverParcelProperties( gHoverView->mHoverLandGlobal );
+		LLViewerParcelMgr::getInstance()->setHoverParcel( gHoverView->mHoverLandGlobal );
 	}
 	else
 	{

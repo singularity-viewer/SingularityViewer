@@ -147,7 +147,7 @@ void LLDrawPoolTerrain::beginRenderPass( S32 pass )
 void LLDrawPoolTerrain::endRenderPass( S32 pass )
 {
 	LLFastTimer t(LLFastTimer::FTM_RENDER_TERRAIN);
-	LLFacePool::endRenderPass(pass);
+	//LLFacePool::endRenderPass(pass);
 
 	if (mVertexShaderLevel > 1 && sShader->mShaderLevel > 0) {
 		sShader->unbind();
@@ -220,8 +220,10 @@ void LLDrawPoolTerrain::render(S32 pass)
 		{ //use fullbright shader for highlighting
 			LLGLSLShader* old_shader = sShader;
 			sShader->unbind();
-			sShader = &gObjectFullbrightProgram;
+			sShader = &gObjectFullbrightNonIndexedProgram;
 			sShader->bind();
+			LLGLEnable polyOffset(GL_POLYGON_OFFSET_FILL);
+			glPolygonOffset(-1.0f, -1.0f);
 			renderOwnership();
 			sShader = old_shader;
 			sShader->bind();
@@ -901,28 +903,6 @@ void LLDrawPoolTerrain::renderOwnership()
 	glMatrixMode(GL_TEXTURE);
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
-}
-
-
-void LLDrawPoolTerrain::renderForSelect()
-{
-	if (mDrawFace.empty())
-	{
-		return;
-	}
-
-	
-	gGL.getTexUnit(0)->unbind(LLTexUnit::TT_TEXTURE);
-
-	for (std::vector<LLFace*>::iterator iter = mDrawFace.begin();
-		 iter != mDrawFace.end(); iter++)
-	{
-		LLFace *facep = *iter;
-		if (!facep->getDrawable()->isDead() && (facep->getDrawable()->getVObj()->mGLName))
-		{
-			facep->renderForSelect(LLVertexBuffer::MAP_VERTEX);
-		}
-	}
 }
 
 void LLDrawPoolTerrain::dirtyTextures(const std::set<LLViewerFetchedTexture*>& textures)

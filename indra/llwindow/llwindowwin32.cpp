@@ -36,11 +36,25 @@
 
 #include "llwindowwin32.h"
 
+// LLWindow library includes
+#include "llkeyboardwin32.h"
+#include "lldragdropwin32.h"
+#include "llpreeditor.h"
+#include "llwindowcallbacks.h"
+
+// Linden library includes
+#include "llerror.h"
+#include "llgl.h"
+#include "llstring.h"
+#include "lldir.h"
+
+// System includes
 #include <commdlg.h>
 #include <WinUser.h>
 #include <mapi.h>
 #include <process.h>	// for _spawn
 #include <shellapi.h>
+#include <fstream>
 #include <Imm.h>
 
 // Require DirectInput version 8
@@ -48,16 +62,6 @@
 
 #include <dinput.h>
 #include <Dbt.h.>
-
-#include "llkeyboardwin32.h"
-#include "llerror.h"
-#include "llgl.h"
-#include "llstring.h"
-#include "lldir.h"
-
-#include "indra_constants.h"
-
-#include "llpreeditor.h"
 
 #include "llfasttimer.h"
 
@@ -360,13 +364,14 @@ LLWinImm::~LLWinImm()
 }
 
 
-LLWindowWin32::LLWindowWin32(const std::string& title, const std::string& name, S32 x, S32 y, S32 width,
+LLWindowWin32::LLWindowWin32(LLWindowCallbacks* callbacks,
+							 const std::string& title, const std::string& name, S32 x, S32 y, S32 width,
 							 S32 height, U32 flags, 
 							 BOOL fullscreen, BOOL clearBg,
 							 BOOL disable_vsync, BOOL use_gl,
 							 BOOL ignore_pixel_depth,
 							 U32 fsaa_samples)
-	: LLWindow(fullscreen, flags)
+	: LLWindow(callbacks, fullscreen, flags)
 {
 	mFSAASamples = fsaa_samples;
 	mIconResource = gIconResource;
@@ -375,11 +380,18 @@ LLWindowWin32::LLWindowWin32(const std::string& title, const std::string& name, 
 	mMousePositionModified = FALSE;
 	mInputProcessingPaused = FALSE;
 	mPreeditor = NULL;
+	mKeyCharCode = 0;
+	mKeyScanCode = 0;
+	mKeyVirtualKey = 0;
 	mhDC = NULL;
 	mhRC = NULL;
 
 	// Initialize the keyboard
 	gKeyboard = new LLKeyboardWin32();
+	gKeyboard->setCallbacks(callbacks);
+
+	// Initialize the Drag and Drop functionality
+	mDragDrop = new LLDragDropWin32;
 
 	// Initialize (boot strap) the Language text input management,
 	// based on the system's (user's) default settings.
@@ -494,6 +506,8 @@ LLWindowWin32::LLWindowWin32(const std::string& title, const std::string& name, 
 	//-----------------------------------------------------------------------
 
 	DEVMODE dev_mode;
+	::ZeroMemory(&dev_mode, sizeof(DEVMODE));
+	dev_mode.dmSize = sizeof(DEVMODE);
 	DWORD current_refresh;
 	if (EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &dev_mode))
 	{
@@ -538,7 +552,26 @@ LLWindowWin32::LLWindowWin32(const std::string& title, const std::string& name, 
 		if (closest_refresh == 0)
 		{
 			LL_WARNS("Window") << "Couldn't find display mode " << width << " by " << height << " at " << BITS_PER_PIXEL << " bits per pixel" << LL_ENDL;
-			success = FALSE;
+
+			if (!EnumDisplaySettings(NULL, ENUM_CURRENT_SETTINGS, &dev_mode))
+			{
+				success = FALSE;
+			}
+			else
+			{
+				if (dev_mode.dmBitsPerPel == BITS_PER_PIXEL)
+				{
+					LL_WARNS("Window") << "Current BBP is OK falling back to that" << LL_ENDL;
+					window_rect.right=width=dev_mode.dmPelsWidth;
+					window_rect.bottom=height=dev_mode.dmPelsHeight;
+					success = TRUE;
+				}
+				else
+				{
+					LL_WARNS("Window") << "Current BBP is BAD" << LL_ENDL;
+					success = FALSE;
+				}
+			}
 		}
 
 		// If we found a good resolution, use it.
@@ -614,6 +647,8 @@ LLWindowWin32::LLWindowWin32(const std::string& title, const std::string& name, 
 
 LLWindowWin32::~LLWindowWin32()
 {
+	delete mDragDrop;
+
 	delete [] mWindowTitle;
 	mWindowTitle = NULL;
 
@@ -663,6 +698,8 @@ void LLWindowWin32::close()
 	{
 		return;
 	}
+
+	mDragDrop->reset();
 
 	// Make sure cursor is visible and we haven't mangled the clipping state.
 	setMouseClipping(FALSE);
@@ -842,6 +879,8 @@ BOOL LLWindowWin32::switchContext(BOOL fullscreen, const LLCoordScreen &size, BO
 {
 	GLuint	pixel_format;
 	DEVMODE dev_mode;
+	::ZeroMemory(&dev_mode, sizeof(DEVMODE));
+	dev_mode.dmSize = sizeof(DEVMODE);
 	DWORD	current_refresh;
 	DWORD	dw_ex_style;
 	DWORD	dw_style;
@@ -1139,8 +1178,39 @@ BOOL LLWindowWin32::switchContext(BOOL fullscreen, const LLCoordScreen &size, BO
 
 		// First we try and get a 32 bit depth pixel format
 		BOOL result = wglChoosePixelFormatARB(mhDC, attrib_list, NULL, 256, pixel_formats, &num_formats);
+		
+		while(!result && mFSAASamples > 0) 
+		{
+			llwarns << "FSAASamples: " << mFSAASamples << " not supported." << llendl ;
+
+			mFSAASamples /= 2 ; //try to decrease sample pixel number until to disable anti-aliasing
+			if(mFSAASamples < 2)
+			{
+				mFSAASamples = 0 ;
+			}
+
+			if (mFSAASamples > 0)
+			{
+				attrib_list[end_attrib + 3] = mFSAASamples;
+			}
+			else
+			{
+				cur_attrib = end_attrib ;
+				end_attrib = 0 ;
+				attrib_list[cur_attrib++] = 0 ; //end
+			}
+			result = wglChoosePixelFormatARB(mhDC, attrib_list, NULL, 256, pixel_formats, &num_formats);
+
+			if(result)
+			{
+				llwarns << "Only support FSAASamples: " << mFSAASamples << llendl ;
+			}
+		}
+
 		if (!result)
 		{
+			llwarns << "mFSAASamples: " << mFSAASamples << llendl ;
+
 			close();
 			show_window_creation_error("Error after wglChoosePixelFormatARB 32-bit");
 			return FALSE;
@@ -1368,6 +1438,11 @@ BOOL LLWindowWin32::switchContext(BOOL fullscreen, const LLCoordScreen &size, BO
 	}
 
 	SetWindowLong(mWindowHandle, GWL_USERDATA, (U32)this);
+
+	// register this window as handling drag/drop events from the OS
+	DragAcceptFiles( mWindowHandle, TRUE );
+
+	mDragDrop->init( mWindowHandle );
 	
 	//register joystick timer callback
 	SetTimer( mWindowHandle, 0, 1000 / 30, NULL ); // 30 fps timer
@@ -1876,6 +1951,10 @@ LRESULT CALLBACK LLWindowWin32::mainWindowProc(HWND h_wnd, UINT u_msg, WPARAM w_
 			// allow system keys, such as ALT-F4 to be processed by Windows
 			eat_keystroke = FALSE;
 		case WM_KEYDOWN:
+			window_imp->mKeyCharCode = 0; // don't know until wm_char comes in next
+			window_imp->mKeyScanCode = ( l_param >> 16 ) & 0xff;
+			window_imp->mKeyVirtualKey = w_param;
+
 			window_imp->mCallbacks->handlePingWatchdog(window_imp, "Main:WM_KEYDOWN");
 			{
 				if (gDebugWindowProc)
@@ -1895,6 +1974,9 @@ LRESULT CALLBACK LLWindowWin32::mainWindowProc(HWND h_wnd, UINT u_msg, WPARAM w_
 			eat_keystroke = FALSE;
 		case WM_KEYUP:
 		{
+			window_imp->mKeyScanCode = ( l_param >> 16 ) & 0xff;
+			window_imp->mKeyVirtualKey = w_param;
+
 			window_imp->mCallbacks->handlePingWatchdog(window_imp, "Main:WM_KEYUP");
 			LLFastTimer t2(LLFastTimer::FTM_KEYHANDLER);
 
@@ -1980,6 +2062,8 @@ LRESULT CALLBACK LLWindowWin32::mainWindowProc(HWND h_wnd, UINT u_msg, WPARAM w_
 			break;
 
 		case WM_CHAR:
+			window_imp->mKeyCharCode = w_param;
+
 			// Should really use WM_UNICHAR eventually, but it requires a specific Windows version and I need
 			// to figure out how that works. - Doug
 			//
@@ -2232,7 +2316,27 @@ LRESULT CALLBACK LLWindowWin32::mainWindowProc(HWND h_wnd, UINT u_msg, WPARAM w_
 				window_imp->mCallbacks->handlePingWatchdog(window_imp, "Main:WM_MOUSEWHEEL");
 				static short z_delta = 0;
 
-				z_delta += HIWORD(w_param);
+				RECT	client_rect;
+
+				// eat scroll events that occur outside our window, since we use mouse position to direct scroll
+				// instead of keyboard focus
+				// NOTE: mouse_coord is in *window* coordinates for scroll events
+				POINT mouse_coord = {(S32)(S16)LOWORD(l_param), (S32)(S16)HIWORD(l_param)};
+
+				if (ScreenToClient(window_imp->mWindowHandle, &mouse_coord)
+					&& GetClientRect(window_imp->mWindowHandle, &client_rect))
+				{
+					// we have a valid mouse point and client rect
+					if (mouse_coord.x < client_rect.left || client_rect.right < mouse_coord.x
+						|| mouse_coord.y < client_rect.top || client_rect.bottom < mouse_coord.y)
+					{
+						// mouse is outside of client rect, so don't do anything
+						return 0;
+					}
+				}
+
+				S16 incoming_z_delta = HIWORD(w_param);
+				z_delta += incoming_z_delta;
 				// cout << "z_delta " << z_delta << endl;
 
 				// current mouse wheels report changes in increments of zDelta (+120, -120)
@@ -2352,11 +2456,15 @@ LRESULT CALLBACK LLWindowWin32::mainWindowProc(HWND h_wnd, UINT u_msg, WPARAM w_
 			return 0;
 
 		case WM_COPYDATA:
-			window_imp->mCallbacks->handlePingWatchdog(window_imp, "Main:WM_COPYDATA");
-			// received a URL
-			PCOPYDATASTRUCT myCDS = (PCOPYDATASTRUCT) l_param;
-			window_imp->mCallbacks->handleDataCopy(window_imp, myCDS->dwData, myCDS->lpData);
+			{
+				window_imp->mCallbacks->handlePingWatchdog(window_imp, "Main:WM_COPYDATA");
+				// received a URL
+				PCOPYDATASTRUCT myCDS = (PCOPYDATASTRUCT) l_param;
+				window_imp->mCallbacks->handleDataCopy(window_imp, myCDS->dwData, myCDS->lpData);
+			};
 			return 0;			
+
+			break;
 		}
 
 	window_imp->mCallbacks->handlePauseWatchdog(window_imp);	
@@ -2661,6 +2769,8 @@ LLWindow::LLWindowResolution* LLWindowWin32::getSupportedResolutions(S32 &num_re
 	{
 		mSupportedResolutions = new LLWindowResolution[MAX_NUM_RESOLUTIONS];
 		DEVMODE dev_mode;
+		::ZeroMemory(&dev_mode, sizeof(DEVMODE));
+		dev_mode.dmSize = sizeof(DEVMODE);
 
 		mNumSupportedResolutions = 0;
 		for (S32 mode_num = 0; mNumSupportedResolutions < MAX_NUM_RESOLUTIONS; mode_num++)
@@ -2736,7 +2846,8 @@ F32 LLWindowWin32::getPixelAspectRatio()
 BOOL LLWindowWin32::setDisplayResolution(S32 width, S32 height, S32 bits, S32 refresh)
 {
 	DEVMODE dev_mode;
-	dev_mode.dmSize = sizeof(dev_mode);
+	::ZeroMemory(&dev_mode, sizeof(DEVMODE));
+	dev_mode.dmSize = sizeof(DEVMODE);
 	BOOL success = FALSE;
 
 	// Don't change anything if we don't have to
@@ -2942,7 +3053,7 @@ void LLWindowWin32::ShellEx(const std::string& command )
 }
 
 
-void LLWindowWin32::spawnWebBrowser(const std::string& escaped_url )
+void LLWindowWin32::spawnWebBrowser(const std::string& escaped_url, bool async)
 {
 	bool found = false;
 	S32 i;
@@ -2972,16 +3083,36 @@ void LLWindowWin32::spawnWebBrowser(const std::string& escaped_url )
 
 	// let the OS decide what to use to open the URL
 	SHELLEXECUTEINFO sei = { sizeof( sei ) };
-	sei.fMask = SEE_MASK_FLAG_DDEWAIT;
+	if (async)
+	{
+		sei.fMask = SEE_MASK_ASYNCOK;
+	}
+	
+	else
+	{
+		sei.fMask = SEE_MASK_FLAG_DDEWAIT;
+	}
 	sei.nShow = SW_SHOWNORMAL;
 	sei.lpVerb = L"open";
 	sei.lpFile = url_utf16.c_str();
 	ShellExecuteEx( &sei );
-
 }
 
+/*
+	Make the raw keyboard data available - used to poke through to LLQtWebKit so
+	that Qt/Webkit has access to the virtual keycodes etc. that it needs
+*/
+LLSD LLWindowWin32::getNativeKeyData()
+{
+	LLSD result = LLSD::emptyMap();
 
-BOOL LLWindowWin32::dialog_color_picker ( F32 *r, F32 *g, F32 *b )
+	result["scan_code"] = (S32)mKeyScanCode;
+	result["virtual_key"] = (S32)mKeyVirtualKey;
+
+	return result;
+}
+
+BOOL LLWindowWin32::dialogColorPicker( F32 *r, F32 *g, F32 *b )
 {
 	BOOL retval = FALSE;
 
@@ -3475,6 +3606,13 @@ static LLWString find_context(const LLWString & wtext, S32 focus, S32 focus_leng
 	return wtext.substr(start, end - start);
 }
 
+// final stage of handling drop requests - both from WM_DROPFILES message
+// for files and via IDropTarget interface requests.
+LLWindowCallbacks::DragNDropResult LLWindowWin32::completeDragNDropRequest( const LLCoordGL gl_coord, const MASK mask, LLWindowCallbacks::DragNDropAction action, const std::string url )
+{
+	return mCallbacks->handleDragNDrop( this, gl_coord, mask, action, url );
+}
+
 // Handle WM_IME_REQUEST message.
 // If it handled the message, returns TRUE.  Otherwise, FALSE.
 // When it handled the message, the value to be returned from
@@ -3508,7 +3646,7 @@ BOOL LLWindowWin32::handleImeRequests(U32 request, U32 param, LRESULT *result)
 				// WCHARs, i.e., UTF-16 encoding units, so we can't simply pass the
 				// number to getPreeditLocation.  
 
-				const LLWString & wtext = mPreeditor->getWText();
+				const LLWString & wtext = mPreeditor->getPreeditString();
 				S32 preedit, preedit_length;
 				mPreeditor->getPreeditRange(&preedit, &preedit_length);
 				LLCoordGL caret_coord;
@@ -3535,7 +3673,7 @@ BOOL LLWindowWin32::handleImeRequests(U32 request, U32 param, LRESULT *result)
 			case IMR_RECONVERTSTRING:
 			{
 				mPreeditor->resetPreedit();
-				const LLWString & wtext = mPreeditor->getWText();
+				const LLWString & wtext = mPreeditor->getPreeditString();
 				S32 select, select_length;
 				mPreeditor->getSelectionRange(&select, &select_length);
 
@@ -3577,7 +3715,7 @@ BOOL LLWindowWin32::handleImeRequests(U32 request, U32 param, LRESULT *result)
 			}
 			case IMR_DOCUMENTFEED:
 			{
-				const LLWString & wtext = mPreeditor->getWText();
+				const LLWString & wtext = mPreeditor->getPreeditString();
 				S32 preedit, preedit_length;
 				mPreeditor->getPreeditRange(&preedit, &preedit_length);
 				

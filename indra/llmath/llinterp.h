@@ -38,6 +38,7 @@
 // So, let's define _USE_MATH_DEFINES before including math.h
 	#define _USE_MATH_DEFINES
 #endif
+
 #include "math.h"
 
 // Class from which different types of interpolators can be derived

@@ -165,9 +165,7 @@ void LLFloaterAvatarTextures::refresh()
 // static
 void LLFloaterAvatarTextures::onClickDump(void* data)
 {
-// <edit>
-//#if !LL_RELEASE_FOR_DOWNLOAD
-// </edit>
+#if !LL_RELEASE_FOR_DOWNLOAD
 	LLFloaterAvatarTextures* self = (LLFloaterAvatarTextures*)data;
 	LLVOAvatar* avatarp = find_avatar(self->mID);
 	if (!avatarp) return;
@@ -179,7 +177,5 @@ void LLFloaterAvatarTextures::onClickDump(void* data)
 
 		llinfos << "Avatar TE " << i << " id " << te->getID() << llendl;
 	}
-// <edit>
-//#endif
-// </edit>
+#endif
 }

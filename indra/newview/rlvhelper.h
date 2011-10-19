@@ -121,7 +121,7 @@ public:
 	virtual LLViewerInventoryCategory* getSharedFolder() const			{ return NULL; }
 	virtual const std::string&         getString() const				{ return LLStringUtil::null; }
 	virtual const LLUUID&              getUUID() const					{ return LLUUID::null; }
-	virtual EWearableType              getWearableType() const			{ return WT_INVALID; }
+	virtual LLWearableType::EType      getWearableType() const			{ return LLWearableType::WT_INVALID; }
 };
 
 class RlvCommandOptionGeneric : public RlvCommandOption
@@ -131,7 +131,7 @@ public:
 	RlvCommandOptionGeneric(LLViewerJointAttachment* pAttachPt) : m_fEmpty(false)	{ m_varOption = pAttachPt; }
 	RlvCommandOptionGeneric(LLViewerInventoryCategory* pFolder) : m_fEmpty(false)	{ m_varOption = pFolder; }
 	RlvCommandOptionGeneric(const LLUUID& idOption) : m_fEmpty(false)				{ m_varOption = idOption; }
-	RlvCommandOptionGeneric(EWearableType wtType) : m_fEmpty(false)			{ m_varOption = wtType; }
+	RlvCommandOptionGeneric(LLWearableType::EType wtType) : m_fEmpty(false)			{ m_varOption = wtType; }
 	/*virtual*/ ~RlvCommandOptionGeneric() {}
 
 public:
@@ -142,7 +142,7 @@ public:
 	/*virtual*/ bool isString() const				{ return (!isEmpty()) && (typeid(std::string) == m_varOption.type()); }
 	/*virtual*/ bool isUUID() const					{ return (!isEmpty()) && (typeid(LLUUID) == m_varOption.type()); }
 	/*virtual*/ bool isValid() const				{ return true; } // This doesn't really have any significance for the generic class
-	/*virtual*/ bool isWearableType() const			{ return (!isEmpty()) && (typeid(EWearableType) == m_varOption.type()); }
+	/*virtual*/ bool isWearableType() const			{ return (!isEmpty()) && (typeid(LLWearableType::EType) == m_varOption.type()); }
 
 	/*virtual*/ LLViewerJointAttachment*   getAttachmentPoint() const
 		{ return (isAttachmentPoint()) ? boost::get<LLViewerJointAttachment*>(m_varOption) : RlvCommandOption::getAttachmentPoint(); }
@@ -154,12 +154,12 @@ public:
 		{ return (isString()) ? boost::get<std::string>(m_varOption) : RlvCommandOption::getString(); }
 	/*virtual*/ const LLUUID&              getUUID() const
 		{ return (isUUID()) ? boost::get<LLUUID>(m_varOption) : RlvCommandOption::getUUID(); }
-	/*virtual*/ EWearableType              getWearableType() const
-		{ return (isWearableType()) ? boost::get<EWearableType>(m_varOption) : RlvCommandOption::getWearableType(); }
+	/*virtual*/ LLWearableType::EType       getWearableType() const
+		{ return (isWearableType()) ? boost::get<LLWearableType::EType>(m_varOption) : RlvCommandOption::getWearableType(); }
 
 protected:
 	bool m_fEmpty;
-	boost::variant<LLViewerJointAttachment*, ERlvAttachGroupType, LLViewerInventoryCategory*, std::string, LLUUID, EWearableType> m_varOption;
+	boost::variant<LLViewerJointAttachment*, ERlvAttachGroupType, LLViewerInventoryCategory*, std::string, LLUUID, LLWearableType::EType> m_varOption;
 };
 
 class RlvCommandOptionGetPath : public RlvCommandOption
@@ -245,9 +245,9 @@ public:
 
 	// Wearables
 	static bool isForceRemovable(const LLWearable* pWearable, bool fCheckComposite = true, const LLUUID& idExcept = LLUUID::null);
-	static bool isForceRemovable(EWearableType wtType, bool fCheckComposite = true, const LLUUID& idExcept = LLUUID::null);
+	static bool isForceRemovable(LLWearableType::EType wtType, bool fCheckComposite = true, const LLUUID& idExcept = LLUUID::null);
 	void forceRemove(const LLWearable* pWearable);
-	void forceRemove(EWearableType wtType);
+	void forceRemove(LLWearableType::EType wtType);
 
 public:
 	void done();
@@ -290,8 +290,8 @@ protected:
 	}
 
 protected:
-	typedef std::pair<EWearableType, LLInventoryModel::item_array_t> addwearable_pair_t;
-	typedef std::map<EWearableType, LLInventoryModel::item_array_t> addwearables_map_t;
+	typedef std::pair<LLWearableType::EType, LLInventoryModel::item_array_t> addwearable_pair_t;
+	typedef std::map<LLWearableType::EType, LLInventoryModel::item_array_t> addwearables_map_t;
 	addwearables_map_t               m_addWearables;
 	typedef std::pair<S32, LLInventoryModel::item_array_t> addattachment_pair_t;
 	typedef std::map<S32, LLInventoryModel::item_array_t> addattachments_map_t;

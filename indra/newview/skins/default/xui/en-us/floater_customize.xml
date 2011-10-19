@@ -1326,6 +1326,8 @@ scratch and wear it.
       <button bottom="-273" follows="left|top" font="SansSerifSmall" halign="center"
 			     height="16" label="Advanced Parameters" label_selected="Advanced Parameters" left="8"
 			     mouse_opaque="true" name="Advanced Parameters" scale_image="true" width="82" />
+      <button name="Take Off" label="Take Off" label_selected="Take Off"
+           follows="left|top" width="82" height="20" left="8" bottom="-375"/>
       
       <text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
 			     bottom="-24" drop_shadow_visible="true" follows="left|top|right"

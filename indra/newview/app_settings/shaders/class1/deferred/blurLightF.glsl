@@ -1,11 +1,11 @@
 /** 
  * @file blurLightF.glsl
  *
- * Copyright (c) 2007-$CurrentYear$, Linden Research, Inc.
- * $License$
+ * $LicenseInfo:firstyear=2007&license=viewerlgpl$
+ * $/LicenseInfo$
  */
  
-#version 120
+
 
 #extension GL_ARB_texture_rectangle : enable
 
@@ -26,7 +26,7 @@ uniform vec2 screen_res;
 
 vec4 getPosition(vec2 pos_screen)
 {
-	float depth = texture2DRect(depthMap, pos_screen.xy).a;
+	float depth = texture2DRect(depthMap, pos_screen.xy).r;
 	vec2 sc = pos_screen.xy*2.0;
 	sc /= screen_res;
 	sc -= vec2(1.0,1.0);
@@ -39,7 +39,7 @@ vec4 getPosition(vec2 pos_screen)
 
 void main() 
 {
-        vec2 tc = vary_fragcoord.xy;
+    vec2 tc = vary_fragcoord.xy;
 	vec3 norm = texture2DRect(normalMap, tc).xyz;
 	norm = vec3((norm.xy-0.5)*2.0,norm.z); // unpack norm
 	vec3 pos = getPosition(tc).xyz;
@@ -55,8 +55,7 @@ void main()
 	float pointplanedist_tolerance_pow2 = pos.z*pos.z*0.00005;
 
 	// perturb sampling origin slightly in screen-space to hide edge-ghosting artifacts where smoothing radius is quite large
-	//This causes some pretty nasty artifacting, so disabling for now.
-	//tc += ( (mod(tc.x+tc.y,2) - 0.5) * kern[1].z * dlt * 0.5 );
+	tc += ( (mod(tc.x+tc.y,2) - 0.5) * kern[1].z * dlt * 0.5 );
 
 	for (int i = 1; i < 4; i++)
 	{

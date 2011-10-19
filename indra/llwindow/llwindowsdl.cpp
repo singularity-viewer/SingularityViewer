@@ -36,6 +36,8 @@
 #include "linden_common.h"
 
 #include "llwindowsdl.h"
+
+#include "llwindowcallbacks.h"
 #include "llkeyboardsdl.h"
 #include "llerror.h"
 #include "llgl.h"
@@ -188,16 +190,19 @@ Display* LLWindowSDL::get_SDL_Display(void)
 #endif // LL_X11
 
 
-LLWindowSDL::LLWindowSDL(const std::string& title, S32 x, S32 y, S32 width,
+LLWindowSDL::LLWindowSDL(LLWindowCallbacks* callbacks,
+			 const std::string& title, S32 x, S32 y, S32 width,
 			 S32 height, U32 flags,
 			 BOOL fullscreen, BOOL clearBg,
 			 BOOL disable_vsync, BOOL use_gl,
 			 BOOL ignore_pixel_depth, U32 fsaa_samples)
-	: LLWindow(fullscreen, flags), Lock_Display(NULL),
+	: LLWindow(callbacks, fullscreen, flags),
+	  Lock_Display(NULL),
 	  Unlock_Display(NULL), mGamma(1.0f)
 {
 	// Initialize the keyboard
 	gKeyboard = new LLKeyboardSDL();
+	gKeyboard->setCallbacks(callbacks);
 	// Note that we can't set up key-repeat until after SDL has init'd video
 
 	// Ignore use_gl for now, only used for drones on PC
@@ -249,6 +254,10 @@ LLWindowSDL::LLWindowSDL(const std::string& title, S32 x, S32 y, S32 width,
 #if LL_X11
 	mFlashing = FALSE;
 #endif // LL_X11
+
+	mKeyScanCode = 0;
+	mKeyVirtualKey = 0;
+	mKeyModifiers = KMOD_NONE;
 }
 
 static SDL_Surface *Load_BMP_Resource(const char *basename)
@@ -445,12 +454,18 @@ BOOL LLWindowSDL::createContext(int x, int y, int width, int height, int bits, B
 		<< int(r_sdl_version->minor) << "."
 		<< int(r_sdl_version->patch) << llendl;
 
-	const SDL_VideoInfo *videoInfo = SDL_GetVideoInfo( );
-	if (!videoInfo)
+	const SDL_VideoInfo *video_info = SDL_GetVideoInfo( );
+	if (!video_info)
 	{
 		llinfos << "SDL_GetVideoInfo() failed! " << SDL_GetError() << llendl;
 		setupFailure("SDL_GetVideoInfo() failed, Window creation error", "Error", OSMB_OK);
 		return FALSE;
+	}
+
+	if (video_info->current_h > 0)
+	{
+		mOriginalAspectRatio = (float)video_info->current_w / (float)video_info->current_h;
+		llinfos << "Original aspect ratio was " << video_info->current_w << ":" << video_info->current_h << "=" << mOriginalAspectRatio << llendl;
 	}
 
 	SDL_EnableUNICODE(1);
@@ -653,7 +668,7 @@ BOOL LLWindowSDL::createContext(int x, int y, int width, int height, int bits, B
 		// fallback to letting SDL detect VRAM.
 		// note: I've not seen SDL's detection ever actually find
 		// VRAM != 0, but if SDL *does* detect it then that's a bonus.
-		gGLManager.mVRAM = videoInfo->video_mem / 1024;
+		gGLManager.mVRAM = video_info->video_mem / 1024;
 		if (gGLManager.mVRAM != 0)
 		{
 			llinfos << "SDL detected " << gGLManager.mVRAM << "MB VRAM." << llendl;
@@ -986,7 +1001,10 @@ BOOL LLWindowSDL::setSize(const LLCoordScreen size)
 void LLWindowSDL::swapBuffers()
 {
 	if (mWindow)
+	{	
+		glFinish();
 		SDL_GL_SwapBuffers();
+	}
 }
 
 U32 LLWindowSDL::getFSAASamples()
@@ -1282,6 +1300,49 @@ BOOL LLWindowSDL::copyTextToClipboard(const LLWString &text)
 	return FALSE; // failure
 }
 
+
+BOOL LLWindowSDL::isPrimaryTextAvailable()
+{
+	if (ll_try_gtk_init())
+	{
+		GtkClipboard * const clipboard =
+			gtk_clipboard_get(GDK_SELECTION_PRIMARY);
+		return gtk_clipboard_wait_is_text_available(clipboard) ?
+			TRUE : FALSE;
+	}
+	return FALSE; // failure
+}
+
+BOOL LLWindowSDL::pasteTextFromPrimary(LLWString &text)
+{
+	if (ll_try_gtk_init())
+	{
+		GtkClipboard * const clipboard =
+			gtk_clipboard_get(GDK_SELECTION_PRIMARY);
+		gchar * const data = gtk_clipboard_wait_for_text(clipboard);
+		if (data)
+		{
+			text = LLWString(utf8str_to_wstring(data));
+			g_free(data);
+			return TRUE;
+		}
+	}
+	return FALSE; // failure
+}
+
+BOOL LLWindowSDL::copyTextToPrimary(const LLWString &text)
+{
+	if (ll_try_gtk_init())
+	{
+		const std::string utf8 = wstring_to_utf8str(text);
+		GtkClipboard * const clipboard =
+			gtk_clipboard_get(GDK_SELECTION_PRIMARY);
+		gtk_clipboard_set_text(clipboard, utf8.c_str(), utf8.length());
+		return TRUE;
+	}
+	return FALSE; // failure
+}
+
 #else
 
 BOOL LLWindowSDL::isClipboardTextAvailable()
@@ -1298,6 +1359,22 @@ BOOL LLWindowSDL::copyTextToClipboard(const LLWString &s)
 {
 	return FALSE;  // unsupported
 }
+
+BOOL LLWindowSDL::isPrimaryTextAvailable()
+{
+	return FALSE; // unsupported
+}
+
+BOOL LLWindowSDL::pasteTextFromPrimary(LLWString &dst)
+{
+	return FALSE; // unsupported
+}
+
+BOOL LLWindowSDL::copyTextToPrimary(const LLWString &s)
+{
+	return FALSE; // unsupported
+}
+
 #endif // LL_GTK
 
 LLWindow::LLWindowResolution* LLWindowSDL::getSupportedResolutions(S32 &num_resolutions)
@@ -1534,6 +1611,76 @@ U32 LLWindowSDL::SDLCheckGrabbyKeys(SDLKey keysym, BOOL gain)
 	return mGrabbyKeyFlags;
 }
 
+
+void check_vm_bloat()
+{
+#if LL_LINUX
+	// watch our own VM and RSS sizes, warn if we bloated rapidly
+	FILE *fp = fopen("/proc/self/stat", "r");
+	if (fp)
+	{
+		static long long last_vm_size = 0;
+		static long long last_rss_size = 0;
+		const long long significant_vm_difference = 250 * 1024*1024;
+		const long long significant_rss_difference = 50 * 1024*1024;
+
+		ssize_t res;
+		size_t dummy;
+		char *ptr;
+		for (int i=0; i<22; ++i) // parse past the values we don't want
+		{
+			ptr = NULL;
+			res = getdelim(&ptr, &dummy, ' ', fp);
+			free(ptr);
+		}
+		// 23rd space-delimited entry is vsize
+		ptr = NULL;
+		res = getdelim(&ptr, &dummy, ' ', fp);
+		llassert(ptr);
+		long long this_vm_size = atoll(ptr);
+		free(ptr);
+		// 24th space-delimited entry is RSS
+		ptr = NULL;
+		res = getdelim(&ptr, &dummy, ' ', fp);
+		llassert(ptr);
+		long long this_rss_size = getpagesize() * atoll(ptr);
+		free(ptr);
+
+		llinfos << "VM SIZE IS NOW " << (this_vm_size/(1024*1024)) << " MB, RSS SIZE IS NOW " << (this_rss_size/(1024*1024)) << " MB" << llendl;
+
+		if (llabs(last_vm_size - this_vm_size) >
+		    significant_vm_difference)
+		{
+			if (this_vm_size > last_vm_size)
+			{
+				llwarns << "VM size grew by " << (this_vm_size - last_vm_size)/(1024*1024) << " MB in last frame" << llendl;
+			}
+			else
+			{
+				llinfos << "VM size shrank by " << (last_vm_size - this_vm_size)/(1024*1024) << " MB in last frame" << llendl;
+			}
+		}
+
+		if (llabs(last_rss_size - this_rss_size) >
+		    significant_rss_difference)
+		{
+			if (this_rss_size > last_rss_size)
+			{
+				llwarns << "RSS size grew by " << (this_rss_size - last_rss_size)/(1024*1024) << " MB in last frame" << llendl;
+			}
+			else
+			{
+				llinfos << "RSS size shrank by " << (last_rss_size - this_rss_size)/(1024*1024) << " MB in last frame" << llendl;
+			}
+		}
+
+		last_rss_size = this_rss_size;
+		last_vm_size = this_vm_size;
+
+		fclose(fp);
+	}
+#endif // LL_LINUX
+}
 // virtual
 void LLWindowSDL::processMiscNativeEvents()
 {
@@ -1558,13 +1705,19 @@ void LLWindowSDL::processMiscNativeEvents()
 	    pump_timer.setTimerExpirySec(1.0f / 15.0f);
 	    do {
 		     // Always do at least one non-blocking pump
-		    gtk_main_iteration_do(0);
+		    gtk_main_iteration_do(FALSE);
 	    } while (gtk_events_pending() &&
 		     !pump_timer.hasExpired());
 
 	    setlocale(LC_ALL, saved_locale.c_str() );
     }
 #endif // LL_GTK
+
+    // hack - doesn't belong here - but this is just for debugging
+    if (getenv("LL_DEBUG_BLOAT"))
+    {
+	    check_vm_bloat();
+    }
 }
 
 void LLWindowSDL::gatherInput()
@@ -1592,6 +1745,9 @@ void LLWindowSDL::gatherInput()
             }
 
             case SDL_KEYDOWN:
+		    mKeyScanCode = event.key.keysym.scancode;
+		    mKeyVirtualKey = event.key.keysym.unicode;
+		    mKeyModifiers = event.key.keysym.mod;
                 gKeyboard->handleKeyDown(event.key.keysym.sym, event.key.keysym.mod);
 		// part of the fix for SL-13243
 		if (SDLCheckGrabbyKeys(event.key.keysym.sym, TRUE) != 0)
@@ -1605,8 +1761,12 @@ void LLWindowSDL::gatherInput()
                 break;
 
             case SDL_KEYUP:
-		if (SDLCheckGrabbyKeys(event.key.keysym.sym, FALSE) == 0)
-			SDLReallyCaptureInput(FALSE); // part of the fix for SL-13243
+		    mKeyScanCode = event.key.keysym.scancode;
+		    mKeyVirtualKey = event.key.keysym.unicode;
+		    mKeyModifiers = event.key.keysym.mod;
+
+		    if (SDLCheckGrabbyKeys(event.key.keysym.sym, FALSE) == 0)
+			    SDLReallyCaptureInput(FALSE); // part of the fix for SL-13243
 
 		gKeyboard->handleKeyUp(event.key.keysym.sym, event.key.keysym.mod);
                 break;
@@ -1922,14 +2082,14 @@ void LLWindowSDL::initCursors()
 	mSDLCursors[UI_CURSOR_TOOLPAN] = makeSDLCursorFromBMP("lltoolpan.BMP",7,5);
 	mSDLCursors[UI_CURSOR_TOOLZOOMIN] = makeSDLCursorFromBMP("lltoolzoomin.BMP",7,5);
 	mSDLCursors[UI_CURSOR_TOOLPICKOBJECT3] = makeSDLCursorFromBMP("toolpickobject3.BMP",0,0);
-	mSDLCursors[UI_CURSOR_TOOLSIT] = makeSDLCursorFromBMP("toolsit.BMP",0,0);
-	mSDLCursors[UI_CURSOR_TOOLBUY] = makeSDLCursorFromBMP("toolbuy.BMP",0,0);
-	mSDLCursors[UI_CURSOR_TOOLPAY] = makeSDLCursorFromBMP("toolpay.BMP",0,0);
-	mSDLCursors[UI_CURSOR_TOOLOPEN] = makeSDLCursorFromBMP("toolopen.BMP",0,0);
 	mSDLCursors[UI_CURSOR_TOOLPLAY] = makeSDLCursorFromBMP("toolplay.BMP",0,0);
 	mSDLCursors[UI_CURSOR_TOOLPAUSE] = makeSDLCursorFromBMP("toolpause.BMP",0,0);
 	mSDLCursors[UI_CURSOR_TOOLMEDIAOPEN] = makeSDLCursorFromBMP("toolmediaopen.BMP",0,0);
 	mSDLCursors[UI_CURSOR_PIPETTE] = makeSDLCursorFromBMP("lltoolpipette.BMP",2,28);
+	mSDLCursors[UI_CURSOR_TOOLSIT] = makeSDLCursorFromBMP("toolsit.BMP",0,0);
+	mSDLCursors[UI_CURSOR_TOOLBUY] = makeSDLCursorFromBMP("toolbuy.BMP",0,0);
+	mSDLCursors[UI_CURSOR_TOOLOPEN] = makeSDLCursorFromBMP("toolopen.BMP",0,0);
+	mSDLCursors[UI_CURSOR_TOOLPAY] = makeSDLCursorFromBMP("toolpay.BMP",0,0);
 
 	if (getenv("LL_ATI_MOUSE_CURSOR_BUG") != NULL) {
 		llinfos << "Disabling cursor updating due to LL_ATI_MOUSE_CURSOR_BUG" << llendl;
@@ -2169,7 +2329,40 @@ static void color_changed_callback(GtkWidget *widget,
 	gtk_color_selection_get_current_color(colorsel, colorp);
 }
 
-BOOL LLWindowSDL::dialog_color_picker ( F32 *r, F32 *g, F32 *b)
+
+/*
+        Make the raw keyboard data available - used to poke through to LLQtWebKit so
+        that Qt/Webkit has access to the virtual keycodes etc. that it needs
+*/
+LLSD LLWindowSDL::getNativeKeyData()
+{
+        LLSD result = LLSD::emptyMap();
+
+	U32 modifiers = 0; // pretend-native modifiers... oh what a tangled web we weave!
+
+	// we go through so many levels of device abstraction that I can't really guess
+	// what a plugin under GDK under Qt under SL under SDL under X11 considers
+	// a 'native' modifier mask.  this has been sort of reverse-engineered... they *appear*
+	// to match GDK consts, but that may be co-incidence.
+	modifiers |= (mKeyModifiers & KMOD_LSHIFT) ? 0x0001 : 0;
+	modifiers |= (mKeyModifiers & KMOD_RSHIFT) ? 0x0001 : 0;// munge these into the same shift
+	modifiers |= (mKeyModifiers & KMOD_CAPS)   ? 0x0002 : 0;
+	modifiers |= (mKeyModifiers & KMOD_LCTRL)  ? 0x0004 : 0;
+	modifiers |= (mKeyModifiers & KMOD_RCTRL)  ? 0x0004 : 0;// munge these into the same ctrl
+	modifiers |= (mKeyModifiers & KMOD_LALT)   ? 0x0008 : 0;// untested
+	modifiers |= (mKeyModifiers & KMOD_RALT)   ? 0x0008 : 0;// untested
+	// *todo: test ALTs - I don't have a case for testing these.  Do you?
+	// *todo: NUM? - I don't care enough right now (and it's not a GDK modifier).
+
+        result["scan_code"] = (S32)mKeyScanCode;
+        result["virtual_key"] = (S32)mKeyVirtualKey;
+	result["modifiers"] = (S32)modifiers;
+
+        return result;
+}
+
+
+BOOL LLWindowSDL::dialogColorPicker( F32 *r, F32 *g, F32 *b)
 {
 	BOOL rtn = FALSE;
 
@@ -2247,7 +2440,7 @@ S32 OSMessageBoxSDL(const std::string& text, const std::string& caption, U32 typ
 	return 0;
 }
 
-BOOL LLWindowSDL::dialog_color_picker ( F32 *r, F32 *g, F32 *b)
+BOOL LLWindowSDL::dialogColorPicker( F32 *r, F32 *g, F32 *b)
 {
 	return (FALSE);
 }
@@ -2288,7 +2481,7 @@ void exec_cmd(const std::string& cmd, const std::string& arg)
 
 // Open a URL with the user's default web browser.
 // Must begin with protocol identifier.
-void LLWindowSDL::spawnWebBrowser(const std::string& escaped_url)
+void LLWindowSDL::spawnWebBrowser(const std::string& escaped_url, bool async)
 {
 	llinfos << "spawn_web_browser: " << escaped_url << llendl;
 	
@@ -2304,8 +2497,10 @@ void LLWindowSDL::spawnWebBrowser(const std::string& escaped_url)
 # endif // LL_X11
 
 	std::string cmd, arg;
-	cmd  = gDirUtilp->getAppRODataDir().c_str();
-	cmd += gDirUtilp->getDirDelimiter().c_str();
+	cmd  = gDirUtilp->getAppRODataDir();
+	cmd += gDirUtilp->getDirDelimiter();
+	cmd += "etc";
+	cmd += gDirUtilp->getDirDelimiter();
 	cmd += "launch_url.sh";
 	arg = escaped_url;
 	exec_cmd(cmd, arg);
@@ -2364,6 +2559,7 @@ std::vector<std::string> LLWindowSDL::getDynamicFallbackFontList()
 	// Use libfontconfig to find us a nice ordered list of fallback fonts
 	// specific to this system.
 	std::string final_fallback("/usr/share/fonts/truetype/kochi/kochi-gothic.ttf");
+	const int max_font_count_cutoff = 40; // fonts are expensive in the current system, don't enumerate an arbitrary number of them
 	// Our 'ideal' font properties which define the sorting results.
 	// slant=0 means Roman, index=0 means the first face in a font file
 	// (the one we actually use), weight=80 means medium weight,
@@ -2379,7 +2575,6 @@ std::vector<std::string> LLWindowSDL::getDynamicFallbackFontList()
 	std::vector<std::string> rtns;
 	FcFontSet *fs = NULL;
 	FcPattern *sortpat = NULL;
-	int font_count = 0;
 
 	llinfos << "Getting system font list from FontConfig..." << llendl;
 
@@ -2423,12 +2618,13 @@ std::vector<std::string> LLWindowSDL::getDynamicFallbackFontList()
 		FcPatternDestroy(sortpat);
 	}
 
+	int found_font_count = 0;
 	if (fs)
 	{
 		// Get the full pathnames to the fonts, where available,
 		// which is what we really want.
-		int i;
-		for (i=0; i<fs->nfont; ++i)
+		found_font_count = fs->nfont;
+		for (int i=0; i<fs->nfont; ++i)
 		{
 			FcChar8 *filename;
 			if (FcResultMatch == FcPatternGetString(fs->fonts[i],
@@ -2437,7 +2633,8 @@ std::vector<std::string> LLWindowSDL::getDynamicFallbackFontList()
 			    && filename)
 			{
 				rtns.push_back(std::string((const char*)filename));
-				++font_count;
+				if (rtns.size() >= max_font_count_cutoff)
+					break; // hit limit
 			}
 		}
 		FcFontSetDestroy (fs);
@@ -2450,7 +2647,7 @@ std::vector<std::string> LLWindowSDL::getDynamicFallbackFontList()
 	{
 		lldebugs << "  file: " << *it << llendl;
 	}
-	llinfos << "Using " << font_count << " system font(s)." << llendl;
+	llinfos << "Using " << rtns.size() << "/" << found_font_count << " system fonts." << llendl;
 
 	rtns.push_back(final_fallback);
 	return rtns;

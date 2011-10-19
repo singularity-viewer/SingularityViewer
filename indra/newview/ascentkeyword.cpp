@@ -39,9 +39,9 @@
 
 BOOL AscentKeyword::hasKeyword(std::string msg,int source)
 {
-	static const LLCachedControl<bool> mKeywordsOn("KeywordsOn", false, gSavedPerAccountSettings);
-	static const LLCachedControl<bool> mKeywordsInChat("KeywordsInChat", false, gSavedPerAccountSettings);
-	static const LLCachedControl<bool> mKeywordsInIM("KeywordsInIM", false, gSavedPerAccountSettings);
+	static const LLCachedControl<bool> mKeywordsOn(gSavedPerAccountSettings,"KeywordsOn", false);
+	static const LLCachedControl<bool> mKeywordsInChat(gSavedPerAccountSettings,"KeywordsInChat", false);
+	static const LLCachedControl<bool> mKeywordsInIM(gSavedPerAccountSettings, "KeywordsInIM", false);
 
 	if (mKeywordsOn)
     {
@@ -61,9 +61,9 @@ BOOL AscentKeyword::hasKeyword(std::string msg,int source)
 
 bool AscentKeyword::containsKeyWord(std::string source)
 {
-	static const LLCachedControl<std::string> mKeywordsList("KeywordsList", "", gSavedPerAccountSettings);
-	static const LLCachedControl<bool> mKeywordsPlaySound("KeywordsPlaySound", false, gSavedPerAccountSettings);
-	static const LLCachedControl<std::string> mKeywordsSound("KeywordsSound", "", gSavedPerAccountSettings);
+	static const LLCachedControl<std::string> mKeywordsList(gSavedPerAccountSettings, "KeywordsList", "");
+	static const LLCachedControl<bool> mKeywordsPlaySound(gSavedPerAccountSettings, "KeywordsPlaySound", false);
+	static const LLCachedControl<std::string> mKeywordsSound(gSavedPerAccountSettings, "KeywordsSound", "");
 
     std::string s = mKeywordsList;
 	LLStringUtil::toLower(s);

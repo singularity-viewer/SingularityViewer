@@ -34,13 +34,6 @@
 
 #include "llpacketring.h"
 
-// linden library includes
-#include "llerror.h"
-#include "lltimer.h"
-#include "timing.h"
-#include "llrand.h"
-#include "u64.h"
-
 #include "llsocks5.h"
 
 #if LL_WINDOWS
@@ -50,9 +43,16 @@
 	#include <netinet/in.h>
 #endif
 
+// linden library includes
+#include "llerror.h"
+#include "lltimer.h"
+#include "llrand.h"
+#include "message.h"
+#include "timing.h"
+#include "u64.h"
 //<edit>
 #include "llmessagelog.h"
-#include "message.h"
+
 //</edit>
 
 

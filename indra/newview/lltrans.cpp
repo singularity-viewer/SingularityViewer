@@ -36,6 +36,7 @@
 #include "llxmlnode.h"
 #include "lluictrlfactory.h"
 #include "llalertdialog.h"
+#include "llnotificationsutil.h"
 
 #include <map>
 
@@ -93,7 +94,7 @@ std::string LLTrans::getString(const std::string &xml_desc, const LLStringUtil::
 		LLSD args;
 		args["STRING_NAME"] = xml_desc;
 		LL_WARNS_ONCE("configuration") << "Missing String in strings.xml: [" << xml_desc << "]" << LL_ENDL;
-		LLNotifications::instance().add("MissingString", args);
+		LLNotificationsUtil::add("MissingString", args);
 		
 		return xml_desc;
 	}

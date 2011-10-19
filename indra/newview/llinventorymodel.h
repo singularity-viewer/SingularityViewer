@@ -34,6 +34,7 @@
 #define LL_LLINVENTORYMODEL_H
 
 #include "llassettype.h"
+#include "llfoldertype.h"
 #include "lldarray.h"
 #include "lluuid.h"
 #include "llpermissionsflags.h"
@@ -130,6 +131,7 @@ public:
 public:
 	LLInventoryModel();
 	~LLInventoryModel();
+	void cleanupInventory();
 //<edit>
 //protected:
 //</edit>
@@ -144,6 +146,23 @@ public:
 private:
 	bool mIsAgentInvUsable; // used to handle an invalid inventory state
 
+	//--------------------------------------------------------------------
+	// Root Folders
+	//--------------------------------------------------------------------
+public:
+	// The following are set during login with data from the server
+	void setRootFolderID(const LLUUID& id);
+	void setLibraryOwnerID(const LLUUID& id);
+	void setLibraryRootFolderID(const LLUUID& id);
+
+	const LLUUID &getRootFolderID() const;
+	const LLUUID &getLibraryOwnerID() const;
+	const LLUUID &getLibraryRootFolderID() const;
+private:
+	LLUUID mRootFolderID;
+	LLUUID mLibraryRootFolderID;
+	LLUUID mLibraryOwnerID;	
+	
 	//--------------------------------------------------------------------
 	// Structure
 	//--------------------------------------------------------------------
@@ -243,9 +262,9 @@ public:
 	//    NOTE: If create_folder is true, this will create a new inventory category 
 	//    on the fly if one does not exist. *NOTE: if find_in_library is true it 
 	//    will search in the user's library folder instead of "My Inventory"
-	const LLUUID findCategoryUUIDForType(LLAssetType::EType preferred_type, 
-										 bool create_folder = true 
-										 /*,bool find_in_library = false*/);
+	const LLUUID findCategoryUUIDForType(LLFolderType::EType preferred_type, 
+										 bool create_folder = true, 
+										 bool find_in_library = false);
 	
 	// Get whatever special folder this object is a child of, if any.
 	const LLViewerInventoryCategory *getFirstNondefaultParent(const LLUUID& obj_id) const;
@@ -324,6 +343,7 @@ public:
 	// consistent internal state. No cache accounting, observer
 	// notification, or server update is performed.
 	void deleteObject(const LLUUID& id);
+	void removeItem(const LLUUID& item_id);
 	
 	// Delete a particular inventory object by ID, and delete it from
 	// the server. Also updates linked items.
@@ -372,9 +392,9 @@ public:
 	// Returns the UUID of the new category. If you want to use the default 
 	// name based on type, pass in a NULL to the 'name' parameter.
 	LLUUID createNewCategory(const LLUUID& parent_id,
-							 LLAssetType::EType preferred_type,
+							 LLFolderType::EType preferred_type,
 							 const std::string& name);
-							 
+
 	// Internal methods that add inventory and make sure that all of
 	// the internal data structures are consistent. These methods
 	// should be passed pointers of newly created objects, and the
@@ -445,10 +465,13 @@ public:
  **/
 
 public:
-	// Call to explicitly update everyone on a new state.  The optional argument
-	// 'service_name' is used by Agent Inventory Service [DEV-20328]
-	void notifyObservers(const std::string service_name="");
+	// Called by the idle loop.  Only updates if new state is detected.  Call 
+	// notifyObservers() manually to update regardless of whether state change 
+	// has been indicated.
+	void idleNotifyObservers();
 
+	// Call to explicitly update everyone on a new state.
+	void notifyObservers();
 	// Allows outsiders to tell the inventory if something has
 	// been changed 'under the hood', but outside the control of the
 	// inventory. The next notify will include that notification.
@@ -458,6 +481,9 @@ protected:
 	// Updates all linked items pointing to this id.
 	void addChangedMaskForLinks(const LLUUID& object_id, U32 mask);
 private:
+	// Flag set when notifyObservers is being called, to look for bugs
+	// where it's called recursively.
+	BOOL mIsNotifyObservers;
 	// Variables used to track what has changed since the last notify.
 	U32 mModifyMask;
 	changed_items_t mChangedItemIDs;
@@ -482,28 +508,6 @@ public:
 	static bool isEverythingFetched();
 	static void backgroundFetch(void*); // background fetch idle function
 	static void incrBulkFetch(S16 fetching) {  sBulkFetchCount+=fetching; if (sBulkFetchCount<0) sBulkFetchCount=0; }
-protected:
-
-	// Internal methods which add inventory and make sure that all of
-	// the internal data structures are consistent. These methods
-	// should be passed pointers of newly created objects, and the
-	// instance will take over the memory management from there.
-// <edit>
-
-	// Internal method which looks for a category with the specified
-	// preferred type. Returns LLUUID::null if not found
- 	LLUUID findCatUUID(LLAssetType::EType preferred_type);
-
-	// Empty the entire contents
-
-	// Given the current state of the inventory items, figure out the
-	// clone information. *FIX: This is sub-optimal, since we can
-	// insert this information snurgically, but this makes sure the
-	// implementation works before we worry about optimization.
-	//void recalculateCloneInformation();
-
-	// file import/export.
-// <edit>
 /**                    Notifications
  **                                                                            **
  *******************************************************************************/

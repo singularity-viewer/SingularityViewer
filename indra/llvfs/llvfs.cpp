@@ -2098,8 +2098,7 @@ void LLVFS::dumpFiles()
 			std::string filename = id.asString() + extension;
 			llinfos << " Writing " << filename << llendl;
 			
-			LLAPRFile outfile;
-			outfile.open(filename, LL_APR_WB, LLAPRFile::local);
+			LLAPRFile outfile(filename, LL_APR_WB);
 			outfile.write(&buffer[0], size);
 			outfile.close();
 

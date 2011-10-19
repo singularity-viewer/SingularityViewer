@@ -210,7 +210,16 @@ private:
 	public:
 		/*virtual*/ bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata);
 	};
-
+	class mmsetunmark : public LLMemberListener<LLNetMap> //moymod
+	{
+	public:
+		/*virtual*/ bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata);
+	};
+	class mmenableunmark : public LLMemberListener<LLNetMap> //moymod
+	{
+	public:
+		/*virtual*/ bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata);
+	};
 
 
 

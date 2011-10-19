@@ -48,7 +48,7 @@
 #include "lltoolmgr.h"
 #include "lltoolmorph.h"
 #include "llviewercamera.h"
-#include "llvoavatar.h"
+#include "llvoavatarself.h"
 #include "llviewerwindow.h"
 #include "pipeline.h"
 
@@ -91,7 +91,7 @@ void	LLMorphView::initialize()
 	mCameraYaw = 0.f;
 	mCameraDist = -1.f;
 
-	LLVOAvatar *avatarp = gAgent.getAvatarObject();
+	LLVOAvatar *avatarp = gAgentAvatarp;
 	if (!avatarp || avatarp->isDead())
 	{
 		gAgentCamera.changeCameraToDefault();
@@ -113,7 +113,7 @@ void	LLMorphView::shutdown()
 {
 	LLVOAvatar::onCustomizeEnd();
 
-	LLVOAvatar *avatarp = gAgent.getAvatarObject();
+	LLVOAvatar *avatarp = gAgentAvatarp;
 	if(avatarp && !avatarp->isDead())
 	{
 		avatarp->startMotion( ANIM_AGENT_BODY_NOISE );
@@ -166,10 +166,10 @@ void LLMorphView::updateCamera()
 {
 	if (!mCameraTargetJoint)
 	{
-		setCameraTargetJoint(gAgent.getAvatarObject()->getJoint("mHead"));
+		setCameraTargetJoint(gAgentAvatarp->getJoint("mHead"));
 	}
 	
-	LLVOAvatar* avatar = gAgent.getAvatarObject();
+	LLVOAvatar* avatar = gAgentAvatarp;
 	if( !avatar )
 	{
 		return;

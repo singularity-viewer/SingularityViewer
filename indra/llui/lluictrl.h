@@ -43,6 +43,9 @@ class LLUICtrl
 : public LLView
 {
 public:
+	typedef boost::signals2::signal<void (LLUICtrl* ctrl, const LLSD& param)> commit_signal_t;
+	typedef boost::signals2::signal<bool (LLUICtrl* ctrl, const LLSD& param), boost_boolean_combiner> enable_signal_t;
+
 	typedef void (*LLUICtrlCallback)(LLUICtrl* ctrl, void* userdata);
 	typedef BOOL (*LLUICtrlValidate)(LLUICtrl* ctrl, void* userdata);
 
@@ -111,6 +114,12 @@ public:
 
 	LLUICtrl*		getParentUICtrl() const;
 
+	//Start using these!
+	boost::signals2::connection setCommitCallback( const commit_signal_t::slot_type& cb );
+	boost::signals2::connection setValidateCallback( const enable_signal_t::slot_type& cb );
+
+	// *TODO: Deprecate; for backwards compatability only:
+	//Keeping userdata around with legacy setCommitCallback because it's used ALL OVER THE PLACE.
 	void*			getCallbackUserData() const								{ return mCallbackUserData; }
 	void			setCallbackUserData( void* data )						{ mCallbackUserData = data; }
 	
@@ -132,6 +141,8 @@ public:
 
 protected:
 
+	commit_signal_t*		mCommitSignal;
+	enable_signal_t*		mValidateSignal;
 	void			(*mCommitCallback)( LLUICtrl* ctrl, void* userdata );
 	void			(*mLostTopCallback)( LLUICtrl* ctrl, void* userdata );
 	BOOL			(*mValidateCallback)( LLUICtrl* ctrl, void* userdata );

@@ -15,11 +15,11 @@ include_directories(
     )
 
 set(llcommon_SOURCE_FILES
-	aiaprpool.cpp
 	imageids.cpp
 	indra_constants.cpp
     llapp.cpp
     llapr.cpp
+    llaprpool.cpp
     llassettype.cpp
 	llavatarname.cpp
     llbase32.cpp
@@ -39,6 +39,7 @@ set(llcommon_SOURCE_FILES
     llfile.cpp
     llfindlocale.cpp
     llfixedbuffer.cpp
+    llfoldertype.cpp
     llformat.cpp
     llframetimer.cpp
     llheartbeat.cpp
@@ -57,12 +58,15 @@ set(llcommon_SOURCE_FILES
     llprocessor.cpp
     llqueuedthread.cpp
     llrand.cpp
+    llrefcount.cpp
     llrun.cpp
+    llscopedvolatileaprpool.h
     llsd.cpp
     llsdserialize.cpp
     llsdserialize_xml.cpp
     llsdutil.cpp
     llsecondlifeurls.cpp
+    llsingleton.cpp
     llstat.cpp
     llstacktrace.cpp
     llstreamtools.cpp
@@ -70,6 +74,7 @@ set(llcommon_SOURCE_FILES
     llstringtable.cpp
     llsys.cpp
     llthread.cpp
+    llthreadsafequeue.cpp
     lltimer.cpp
     lluri.cpp
     lluuid.cpp
@@ -84,7 +89,6 @@ set(llcommon_SOURCE_FILES
 set(llcommon_HEADER_FILES
     CMakeLists.txt
 
-    aiaprpool.h
     aithreadsafe.h
     bitpack.h
     ctype_workaround.h
@@ -93,10 +97,12 @@ set(llcommon_HEADER_FILES
     indra_constants.h
     linden_common.h
     linked_lists.h
+    llaccountingcost.h
     llagentconstants.h
     llavatarname.h
     llapp.h
     llapr.h
+    llaprpool.h
     llassettype.h
     llassoclist.h
     llavatarconstants.h
@@ -133,6 +139,7 @@ set(llcommon_HEADER_FILES
     llfile.h
     llfindlocale.h
     llfixedbuffer.h
+    llfoldertype.h
     llformat.h
     llframetimer.h
     llhash.h
@@ -157,6 +164,7 @@ set(llcommon_HEADER_FILES
     llmortician.h
     llnametable.h
     lloptioninterface.h
+    llpointer.h
     llpreprocessor.h
     llpriqueuemap.h
     llprocesslauncher.h
@@ -165,14 +173,17 @@ set(llcommon_HEADER_FILES
     llptrskipmap.h
     llqueuedthread.h
     llrand.h
+    llrefcount.h
     llrun.h
-    llscopedvolatileaprpool.h
+    llrefcount.h
+    llsafehandle.h
     llsd.h
     llsdserialize.h
     llsdserialize_xml.h
     llsdutil.h
     llsecondlifeurls.h
     llsimplehash.h
+    llsingleton.h
     llskiplist.h
     llskipmap.h
     llstack.h
@@ -186,7 +197,9 @@ set(llcommon_HEADER_FILES
     llstringtable.h
     llsys.h
     llthread.h
+    llthreadsafequeue.h
     lltimer.h
+    lltreeiterators.h
     lluri.h
     lluuid.h
     lluuidhashmap.h
@@ -203,6 +216,7 @@ set(llcommon_HEADER_FILES
     stdenums.h
     stdtypes.h
     string_table.h
+    stringize.h
     timer.h
     timing.h
     u64.h
@@ -222,7 +236,9 @@ target_link_libraries(
     ${EXPAT_LIBRARIES}
     ${ZLIB_LIBRARIES}
     ${WINDOWS_LIBRARIES}
+    ${BOOST_REGEX_LIBRARY}
     ${CWDEBUG_LIBRARIES}
+    ${CORESERVICES_LIBRARY}
     )
 
 if (LINUX)

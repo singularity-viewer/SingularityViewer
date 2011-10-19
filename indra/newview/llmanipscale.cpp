@@ -58,11 +58,16 @@
 #include "llui.h"
 #include "llviewercamera.h"
 #include "llviewerobject.h"
+#include "llviewerregion.h"
 #include "llviewerwindow.h"
+#include "llwindow.h"
 #include "llhudrender.h"
 #include "llworld.h"
 #include "v2math.h"
 #include "llvoavatar.h"
+#if MESH_ENABLED
+#include "llmeshrepository.h"
+#endif //MESH_ENABLED
 
 
 const F32 MAX_MANIP_SELECT_DISTANCE_SQUARED = 11.f * 11.f;
@@ -91,6 +96,25 @@ const LLManip::EManipPart MANIPULATOR_IDS[NUM_MANIPULATORS] =
 };
 
 
+F32 get_default_max_prim_scale(bool is_flora) 
+{
+	// a bit of a hack, but if it's foilage, we don't want to use the
+	// new larger scale which would result in giant trees and grass
+#if MESH_ENABLED
+	if (gMeshRepo.meshRezEnabled() &&
+		!is_flora)
+	{
+		return DEFAULT_MAX_PRIM_SCALE;
+	}
+	else
+	{	
+		return DEFAULT_MAX_PRIM_SCALE_NO_MESH;
+	}
+#endif //MESH_ENABLED
+#if !MESH_ENABLED
+	return DEFAULT_MAX_PRIM_SCALE;
+#endif //!MESH_ENABLED
+}
 
 // static
 void LLManipScale::setUniform(BOOL b)
@@ -493,8 +517,9 @@ void LLManipScale::highlightManipulators(S32 x, S32 y)
 			mProjectedManipulators.insert(projManipulator);
 		}
 
-		F32 half_width = (F32)gViewerWindow->getWindowWidth() / 2.f;
-		F32 half_height = (F32)gViewerWindow->getWindowHeight() / 2.f;
+		LLRect world_view_rect = gViewerWindow->getWorldViewRectScaled();
+		F32 half_width = (F32)world_view_rect.getWidth() / 2.f;
+		F32 half_height = (F32)world_view_rect.getHeight() / 2.f;
 		LLVector2 manip2d;
 		LLVector2 mousePos((F32)x - half_width, (F32)y - half_height);
 		LLVector2 delta;
@@ -953,8 +978,8 @@ void LLManipScale::dragCorner( S32 x, S32 y )
 		mInSnapRegime = FALSE;
 	}
 
-	F32 max_scale_factor = DEFAULT_MAX_PRIM_SCALE / MIN_PRIM_SCALE;
-	F32 min_scale_factor = MIN_PRIM_SCALE / DEFAULT_MAX_PRIM_SCALE;
+	F32 max_scale_factor = get_default_max_prim_scale() / MIN_PRIM_SCALE;
+	F32 min_scale_factor = MIN_PRIM_SCALE / get_default_max_prim_scale();
 
 	// find max and min scale factors that will make biggest object hit max absolute scale and smallest object hit min absolute scale
 	for (LLObjectSelection::iterator iter = mObjectSelection->begin();
@@ -966,7 +991,7 @@ void LLManipScale::dragCorner( S32 x, S32 y )
 		{
 			const LLVector3& scale = selectNode->mSavedScale;
 
-			F32 cur_max_scale_factor = llmin( DEFAULT_MAX_PRIM_SCALE / scale.mV[VX], DEFAULT_MAX_PRIM_SCALE / scale.mV[VY], DEFAULT_MAX_PRIM_SCALE / scale.mV[VZ] );
+			F32 cur_max_scale_factor = llmin( get_default_max_prim_scale(LLPickInfo::isFlora(cur)) / scale.mV[VX], get_default_max_prim_scale(LLPickInfo::isFlora(cur)) / scale.mV[VY], get_default_max_prim_scale(LLPickInfo::isFlora(cur)) / scale.mV[VZ] );
 			max_scale_factor = llmin( max_scale_factor, cur_max_scale_factor );
 
 			F32 cur_min_scale_factor = llmax( MIN_PRIM_SCALE / scale.mV[VX], MIN_PRIM_SCALE / scale.mV[VY], MIN_PRIM_SCALE / scale.mV[VZ] );
@@ -1263,7 +1288,7 @@ void LLManipScale::stretchFace( const LLVector3& drag_start_agent, const LLVecto
 
 			F32 denom = axis * dir_local;
 			F32 desired_delta_size	= is_approx_zero(denom) ? 0.f : (delta_local_mag / denom);  // in meters
-			F32 desired_scale		= llclamp(selectNode->mSavedScale.mV[axis_index] + desired_delta_size, MIN_PRIM_SCALE, DEFAULT_MAX_PRIM_SCALE);
+			F32 desired_scale		= llclamp(selectNode->mSavedScale.mV[axis_index] + desired_delta_size, MIN_PRIM_SCALE, get_default_max_prim_scale(LLPickInfo::isFlora(cur)));
 			// propagate scale constraint back to position offset
 			desired_delta_size		= desired_scale - selectNode->mSavedScale.mV[axis_index]; // propagate constraint back to position
 
@@ -1368,7 +1393,7 @@ void LLManipScale::updateSnapGuides(const LLBBox& bbox)
 	else
 	{
 		F32 object_distance = dist_vec(mScaleCenter, LLViewerCamera::getInstance()->getOrigin());
-		mSnapRegimeOffset = (SNAP_GUIDE_SCREEN_OFFSET * gViewerWindow->getWindowWidth() * object_distance) / LLViewerCamera::getInstance()->getPixelMeterRatio();
+		mSnapRegimeOffset = (SNAP_GUIDE_SCREEN_OFFSET * gViewerWindow->getWorldViewWidthRaw() * object_distance) / LLViewerCamera::getInstance()->getPixelMeterRatio();
 	}
 	LLVector3 cam_at_axis;
 	F32 snap_guide_length;
@@ -1381,7 +1406,7 @@ void LLManipScale::updateSnapGuides(const LLBBox& bbox)
 	{
 		cam_at_axis = LLViewerCamera::getInstance()->getAtAxis();
 		F32 manipulator_distance = dist_vec(box_corner_agent, LLViewerCamera::getInstance()->getOrigin());
-		snap_guide_length = (SNAP_GUIDE_SCREEN_LENGTH * gViewerWindow->getWindowWidth() * manipulator_distance) / LLViewerCamera::getInstance()->getPixelMeterRatio();
+		snap_guide_length = (SNAP_GUIDE_SCREEN_LENGTH * gViewerWindow->getWorldViewWidthRaw() * manipulator_distance) / LLViewerCamera::getInstance()->getPixelMeterRatio();
 	}
 	
 	mSnapGuideLength = snap_guide_length / llmax(0.1f, (llmin(mSnapGuideDir1 * cam_at_axis, mSnapGuideDir2 * cam_at_axis)));
@@ -1964,7 +1989,7 @@ F32		LLManipScale::partToMaxScale( S32 part, const LLBBox &bbox ) const
 			max_extent = bbox_extents.mV[i];
 		}
 	}
-	max_scale_factor = bbox_extents.magVec() * DEFAULT_MAX_PRIM_SCALE / max_extent;
+	max_scale_factor = bbox_extents.magVec() * get_default_max_prim_scale() / max_extent;
 
 	if (getUniform())
 	{
@@ -1979,7 +2004,7 @@ F32		LLManipScale::partToMinScale( S32 part, const LLBBox &bbox ) const
 {
 	LLVector3 bbox_extents = unitVectorToLocalBBoxExtent( partToUnitVector( part ), bbox );
 	bbox_extents.abs();
-	F32 min_extent = DEFAULT_MAX_PRIM_SCALE;
+	F32 min_extent = get_default_max_prim_scale();
 	for (U32 i = VX; i <= VZ; i++)
 	{
 		if (bbox_extents.mV[i] > 0.f && bbox_extents.mV[i] < min_extent)

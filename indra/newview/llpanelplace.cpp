@@ -47,6 +47,7 @@
 #include "llbutton.h"
 #include "llfloaterworldmap.h"
 #include "lllineeditor.h"
+#include "llnotificationsutil.h"
 #include "lluiconstants.h"
 #include "lltextbox.h"
 #include "llviewertexteditor.h"
@@ -460,7 +461,7 @@ void LLPanelPlace::onClickAuction(void* data)
 	LLSD payload;
 	payload["auction_id"] = self->mAuctionID;
 
-	LLNotifications::instance().add("GoToAuctionPage", LLSD(), payload, callbackAuctionWebPage);
+	LLNotificationsUtil::add("GoToAuctionPage", LLSD(), payload, callbackAuctionWebPage);
 }
 
 // static

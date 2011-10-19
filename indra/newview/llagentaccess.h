@@ -36,18 +36,19 @@
 #include "stdtypes.h"
 
 // forward declaration so that we don't have to include the whole class
-class LLControlGroupReader;
+class LLControlGroup;
 
 class LLAgentAccess
 {
 public:
-	LLAgentAccess(LLControlGroupReader& savedSettings);
+	LLAgentAccess(LLControlGroup& savedSettings);
 	
 	bool getAdminOverride() const;
 	void setAdminOverride(bool b);
 
 	void setGodLevel(U8 god_level);
 	bool isGodlike() const;
+	bool isGodlikeWithoutAdminMenuFakery() const;
 	U8 getGodLevel() const;
 	
 	
@@ -71,6 +72,7 @@ public:
 	
 	void setTransition();	// sets the transition bit, which defaults to false
 	bool isInTransition() const;
+	bool canSetMaturity(S32 maturity);
 	
 private:
 	U8 mAccess;	// SIM_ACCESS_MATURE etc
@@ -84,9 +86,7 @@ private:
 	// all of the code that depends on it.
 	bool mAOTransition;
 	
-	// we want this to be const but the getters for it aren't, so we're 
-	// overriding it for now
-	/* const */ LLControlGroupReader& mSavedSettings;
+	LLControlGroup& mSavedSettings;
 };
 
 #endif // LL_LLAGENTACCESS_H

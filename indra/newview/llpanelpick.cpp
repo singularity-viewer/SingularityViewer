@@ -59,6 +59,7 @@
 #include "llfloaterworldmap.h"
 #include "llviewerregion.h"
 #include "llviewerwindow.h"
+#include "llnotificationsutil.h"
 
 // [RLVa:KB]
 #include "rlvhandler.h"
@@ -596,7 +597,7 @@ void LLPanelPick::onClickSet(void* data)
 	// is the location and nothing else
 	if ( gAgent.getRegion ()->getName () != self->mSimName )
 	{
-		LLNotifications::instance().add("SetPickLocation");
+		LLNotificationsUtil::add("SetPickLocation");
 	};
 
 	self->mLocationEditor->setText(location_text);

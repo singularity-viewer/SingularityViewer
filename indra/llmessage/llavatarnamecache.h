@@ -85,9 +85,10 @@ namespace LLAvatarNameCache
 	void setForceDisplayNames(bool force);
 // [/RLVa:KB]
 
-	bool isRequestPending(const LLUUID& agent_id);
-
 	void erase(const LLUUID& agent_id);
+
+    /// Provide some fallback for agents that return errors
+	void handleAgentError(const LLUUID& agent_id);
 
 	// Force a re-fetch of the most recent data, but keep the current
 	// data in cache

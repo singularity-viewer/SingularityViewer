@@ -1,28 +1,29 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <floater can_close="true" can_drag_on_left="false" can_minimize="true" can_resize="true"
-     height="350" min_height="300" min_width="450" name="top_objects"
-     title="loading..." width="550">
+     height="400" min_height="300" min_width="580" name="top_objects"
+     title="loading..." width="580">
 	<text bottom="-50" follows="left|top" font="SansSerif" height="20" left="10"
 	     name="title_text" width="400">
 		Loading...
 	</text>
-	<scroll_list bottom_delta="-150" draw_border="true" draw_heading="true"
-	     follows="left|top|bottom|right" height="150" left="10" multi_select="true"
-	     name="objects_list" width="530">
-		<column label="Score" name="score" width="55" />
-		<column label="Name" name="name" width="140"/>
-		<column label="Owner" name="owner" width="105" />
-		<column label="Location" name="location" width="130" />
-		<column label="Time" name="time" width="100" />
-        <column label="Mono Time" name="mono_time" width="55" />
-    </scroll_list>
+	<scroll_list bottom_delta="-200" draw_border="true" draw_heading="true"
+	     follows="left|top|bottom|right" height="200" left="10" multi_select="true"
+	     name="objects_list" width="560">
+		<column label="Score" name="score" width="43" />
+		<column label="Name" name="name" dynamicwidth="true" />
+		<column label="Owner" name="owner" width="100" />
+		<column label="Location" name="location" width="100" />
+		<column label="Time" name="time" width="105" />
+    <column label="Mono Time" name="mono_time" width="50" />
+	  <column label="URLs" name="URLs" width="50" />
+  </scroll_list>
 	<text bottom_delta="-30" follows="left|bottom" font="SansSerifSmall" height="20"
 	     left="10" name="id_text" width="100">
 		Object ID:
 	</text>
 	<line_editor bottom_delta="3" enabled="false"
 	     follows="left|bottom|right" font="SansSerifSmall" height="20" left="80"
-	     name="id_editor" width="350" />
+	     name="id_editor" width="385" />
 	<button bottom_delta="0" follows="bottom|right" height="20" label="Show Beacon"
 	     name="show_beacon_btn" right="-10" width="100" />
 	<text bottom_delta="-30" follows="left|bottom" font="SansSerifSmall" height="20"
@@ -31,7 +32,7 @@
 	</text>
 	<line_editor bottom_delta="3" enabled="true"
 	     follows="left|bottom|right" font="SansSerifSmall" height="20" left="80"
-	     name="object_name_editor" width="350" />
+	     name="object_name_editor" width="385" />
 	<button bottom_delta="0" follows="bottom|right" height="20" label="Filter"
 	     name="filter_object_btn" right="-10" width="100" />
 	<text bottom_delta="-30" follows="left|bottom" font="SansSerifSmall" height="20"
@@ -40,17 +41,26 @@
 	</text>
 	<line_editor bottom_delta="3" enabled="true"
 	     follows="left|bottom|right" font="SansSerifSmall" height="20" left="80"
-	     name="owner_name_editor" width="350" />
+	     name="owner_name_editor" width="385" />
 	<button bottom_delta="0" follows="bottom|right" height="20" label="Filter"
 	     name="filter_owner_btn" right="-10" width="100" />
 	<button bottom="35" follows="bottom|left" height="20" label="Return Selected" left="10"
-	     name="return_selected_btn" width="130" />
-	<button bottom="35" follows="bottom|left" height="20" label="Return All" left="150"
-	     name="return_all_btn" width="130" />
+	     name="return_selected_btn" width="110" />
+	<button bottom="35" follows="bottom|left" height="20" label="Return All" left="125"
+	     name="return_all_btn" width="110" />
+  <button bottom="35" follows="bottom|left" height="20" label="Lag Warning" left="240"
+	     name="lagwarning" width="110" />
+  <button bottom="35" follows="bottom|left" height="20" label="Kick" left="355"
+	     name="kick" width="110" />
 	<button bottom="10" follows="bottom|left" height="20" label="Disable Selected"
-	     left="10" name="disable_selected_btn" width="130" />
-	<button bottom="10" follows="bottom|left" height="20" label="Disable All" left="150"
-	     name="disable_all_btn" width="130" />
+	     left="10" name="disable_selected_btn" width="110" />
+	<button bottom="10" follows="bottom|left" height="20" label="Disable All" left="125"
+	     name="disable_all_btn" width="110" />
+  <button bottom="10" follows="bottom|left" height="20" label="Profile" left="240"
+	     name="profile" width="110" />  
+  <button bottom="10" follows="bottom|left" height="20" label="TP to" left="355"
+	     name="tpto" width="110" />
+
 	<button bottom="35" follows="bottom|right" height="20" label="Refresh"
 	     name="refresh_btn" right="-10" width="100" />
 	<string name="top_scripts_title">

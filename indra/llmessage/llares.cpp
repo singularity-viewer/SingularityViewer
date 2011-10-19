@@ -33,6 +33,9 @@
  */
 
 #include "linden_common.h"
+#define CARES_STATICLIB
+#include "llares.h"
+#include "llscopedvolatileaprpool.h"
 
 #include <ares_dns.h>
 #include <ares_version.h>
@@ -42,9 +45,7 @@
 #include "apr_poll.h"
 
 #include "llapr.h"
-#define CARES_STATICLIB
-#include "llares.h"
-#include "llscopedvolatileaprpool.h"
+
 
 #if defined(LL_WINDOWS)
 # define ns_c_in 1

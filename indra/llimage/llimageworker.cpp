@@ -43,6 +43,11 @@ LLImageDecodeThread::LLImageDecodeThread(bool threaded)
 {
 }
 
+//virtual 
+LLImageDecodeThread::~LLImageDecodeThread()
+{
+}
+
 // MAIN THREAD
 // virtual
 S32 LLImageDecodeThread::update(U32 max_time_ms)

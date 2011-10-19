@@ -35,21 +35,21 @@
 
 #include "llthread.h"
 
-//! Scoped volatile memory pool.
-//
-// As the AIVolatileAPRPool should never keep allocations very
-// long, it's most common use is for allocations with a lifetime
-// equal to it's scope.
-//
-// This is a convenience class that makes just a little easier to type.
-//
-class LLScopedVolatileAPRPool
+/** Scoped volatile memory pool.
+ *
+ * As the LLVolatileAPRPool should never keep allocations very
+ * long, its most common use is for allocations with a lifetime
+ * equal to it's scope.
+ *
+ * This is a convenience class that makes just a little easier to type.
+ */
+class LL_COMMON_API LLScopedVolatileAPRPool
 {
 private:
-	AIVolatileAPRPool& mPool;
+	LLVolatileAPRPool& mPool;
 	apr_pool_t* mScopedAPRpool;
 public:
-	LLScopedVolatileAPRPool() : mPool(AIThreadLocalData::tldata().mVolatileAPRPool), mScopedAPRpool(mPool.getVolatileAPRPool()) { }
+	LLScopedVolatileAPRPool() : mPool(LLThreadLocalData::tldata().mVolatileAPRPool), mScopedAPRpool(mPool.getVolatileAPRPool()) { }
 	~LLScopedVolatileAPRPool() { mPool.clearVolatileAPRPool(); }
 	// Only use this to pass the pointer to a libapr-1 function that requires it.
 	operator apr_pool_t*() const { return mScopedAPRpool; }

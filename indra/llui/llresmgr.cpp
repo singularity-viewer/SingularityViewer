@@ -453,15 +453,17 @@ const std::string LLLocale::USER_LOCALE("en_US.utf8");
 const std::string LLLocale::SYSTEM_LOCALE("C");
 #endif
 
+static std::string PrevFailedLocaleString = "";
 
 LLLocale::LLLocale(const std::string& locale_string)
 {
 	mPrevLocaleString = setlocale( LC_ALL, NULL );
 	char* new_locale_string = setlocale( LC_ALL, locale_string.c_str());
-	if ( new_locale_string == NULL)
+	if ( new_locale_string == NULL && PrevFailedLocaleString != locale_string )
 	{
 		llwarns << "Failed to set locale " << locale_string.c_str() << llendl;
 		setlocale(LC_ALL, SYSTEM_LOCALE.c_str());
+		PrevFailedLocaleString = locale_string;
 	}
 	//else
 	//{

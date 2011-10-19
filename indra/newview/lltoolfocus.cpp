@@ -55,7 +55,7 @@
 #include "llviewercamera.h"
 #include "llviewerobject.h"
 #include "llviewerwindow.h"
-#include "llvoavatar.h"
+#include "llvoavatarself.h"
 #include "llmorphview.h"
 
 // Globals
@@ -171,7 +171,7 @@ void LLToolCamera::pickCallback(const LLPickInfo& pick_info)
 		BOOL good_customize_avatar_hit = FALSE;
 		if( hit_obj )
 		{
-			LLVOAvatar* avatar = gAgent.getAvatarObject();
+			LLVOAvatar* avatar = gAgentAvatarp;
 			if( hit_obj == avatar) 
 			{
 				// It's you
@@ -222,7 +222,7 @@ void LLToolCamera::pickCallback(const LLPickInfo& pick_info)
 			gAgentCamera.cameraThirdPerson() &&
 			gViewerWindow->getLeftMouseDown() && 
 			!freeze_time &&
-			(hit_obj == gAgent.getAvatarObject() || 
+			(hit_obj == gAgentAvatarp || 
 				(hit_obj && hit_obj->isAttachment() && LLVOAvatar::findAvatarFromAttachment(hit_obj)->isSelf())))
 		{
 			LLToolCamera::getInstance()->mMouseSteering = TRUE;

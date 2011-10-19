@@ -838,7 +838,11 @@ void LLKeyframeMotion::initializeConstraint(JointConstraint* constraint)
 	S32 joint_num;
 	LLVector3 source_pos = mCharacter->getVolumePos(shared_data->mSourceConstraintVolume, shared_data->mSourceConstraintOffset);
 	LLJoint* cur_joint = getJoint(shared_data->mJointStateIndices[0]);
-
+	if ( !cur_joint )
+	{
+		return;
+	}
+	
 	F32 source_pos_offset = dist_vec(source_pos, cur_joint->getWorldPosition());
 
 	constraint->mTotalLength = constraint->mJointLengths[0] = dist_vec(cur_joint->getParent()->getWorldPosition(), source_pos);
@@ -889,6 +893,10 @@ void LLKeyframeMotion::activateConstraint(JointConstraint* constraint)
 	for (joint_num = 1; joint_num < shared_data->mChainLength; joint_num++)
 	{
 		LLJoint* cur_joint = getJoint(shared_data->mJointStateIndices[joint_num]);
+		if ( !cur_joint )
+		{
+			return;
+		}
 		constraint->mPositions[joint_num] = (cur_joint->getWorldPosition() - mPelvisp->getWorldPosition()) * ~mPelvisp->getWorldRotation();
 	}
 
@@ -949,6 +957,10 @@ void LLKeyframeMotion::applyConstraint(JointConstraint* constraint, F32 time, U8
 	}
 
 	LLJoint* root_joint = getJoint(shared_data->mJointStateIndices[shared_data->mChainLength]);
+	if (! root_joint) 
+	{
+		return;
+	}
 	LLVector3 root_pos = root_joint->getWorldPosition();
 //	LLQuaternion root_rot = 
 	root_joint->getParent()->getWorldRotation();
@@ -960,6 +972,11 @@ void LLKeyframeMotion::applyConstraint(JointConstraint* constraint, F32 time, U8
 	for (joint_num = 0; joint_num <= shared_data->mChainLength; joint_num++)
 	{
 		LLJoint* cur_joint = getJoint(shared_data->mJointStateIndices[joint_num]);
+		if (!cur_joint)
+		{
+			return;
+		}
+		
 		if (joint_mask[cur_joint->getJointNum()] >= (0xff >> (7 - getPriority())))
 		{
 			// skip constraint
@@ -1050,7 +1067,14 @@ void LLKeyframeMotion::applyConstraint(JointConstraint* constraint, F32 time, U8
 
 	if (shared_data->mChainLength)
 	{
-		LLQuaternion end_rot = getJoint(shared_data->mJointStateIndices[0])->getWorldRotation();
+		LLJoint* end_joint = getJoint(shared_data->mJointStateIndices[0]);
+		
+		if (!end_joint)
+		{
+			return;
+		}
+		
+		LLQuaternion end_rot = end_joint->getWorldRotation();
 
 		// slam start and end of chain to the proper positions (rest of chain stays put)
 		positions[0] = lerp(keyframe_source_pos, target_pos, weight);
@@ -1059,7 +1083,14 @@ void LLKeyframeMotion::applyConstraint(JointConstraint* constraint, F32 time, U8
 		// grab keyframe-specified positions of joints	
 		for (joint_num = 1; joint_num < shared_data->mChainLength; joint_num++)
 		{
-			LLVector3 kinematic_position = getJoint(shared_data->mJointStateIndices[joint_num])->getWorldPosition() + 
+			LLJoint* cur_joint = getJoint(shared_data->mJointStateIndices[joint_num]);
+			
+			if (!cur_joint)
+			{
+				return;
+			}
+			
+			LLVector3 kinematic_position = cur_joint->getWorldPosition() + 
 				(source_to_target * constraint->mJointLengthFractions[joint_num]);
 
 			// convert intermediate joint positions to world coordinates
@@ -1105,7 +1136,17 @@ void LLKeyframeMotion::applyConstraint(JointConstraint* constraint, F32 time, U8
 		for (joint_num = shared_data->mChainLength; joint_num > 0; joint_num--)
 		{
 			LLJoint* cur_joint = getJoint(shared_data->mJointStateIndices[joint_num]);
+			
+			if (!cur_joint)
+			{
+				return;
+			}
 			LLJoint* child_joint = getJoint(shared_data->mJointStateIndices[joint_num - 1]);
+			if (!child_joint)
+			{
+				return;
+			}
+			
 			LLQuaternion parent_rot = cur_joint->getParent()->getWorldRotation();
 
 			LLQuaternion cur_rot = cur_joint->getWorldRotation();
@@ -1139,7 +1180,6 @@ void LLKeyframeMotion::applyConstraint(JointConstraint* constraint, F32 time, U8
 			cur_joint->setRotation(target_rot);
 		}
 
-		LLJoint* end_joint = getJoint(shared_data->mJointStateIndices[0]);
 		LLQuaternion end_local_rot = end_rot * ~end_joint->getParent()->getWorldRotation();
 
 		if (weight == 1.f)
@@ -1162,12 +1202,18 @@ void LLKeyframeMotion::applyConstraint(JointConstraint* constraint, F32 time, U8
 			constraint->mPositions[joint_num] = new_pos;
 		}
 		constraint->mFixupDistanceRMS *= 1.f / (constraint->mTotalLength * (F32)(shared_data->mChainLength - 1));
-		constraint->mFixupDistanceRMS = fsqrtf(constraint->mFixupDistanceRMS);
+		constraint->mFixupDistanceRMS = (F32) sqrt(constraint->mFixupDistanceRMS);
 
 		//reset old joint rots
 		for (joint_num = 0; joint_num <= shared_data->mChainLength; joint_num++)
 		{
-			getJoint(shared_data->mJointStateIndices[joint_num])->setRotation(old_rots[joint_num]);
+			LLJoint* cur_joint = getJoint(shared_data->mJointStateIndices[joint_num]);
+			if (!cur_joint)
+			{
+				return;
+			}
+
+			cur_joint->setRotation(old_rots[joint_num]);
 		}
 	}
 	// simple positional constraint (pelvis only)
@@ -1816,7 +1862,15 @@ BOOL LLKeyframeMotion::deserialize(LLDataPacker& dp)
 				constraintp->mJointStateIndices[i] = -1;
 				for (U32 j = 0; j < mJointMotionList->getNumJointMotions(); j++)
 				{
-					if(getJoint(j) == joint)
+					LLJoint* constraint_joint = getJoint(j);
+					
+					if ( !constraint_joint )
+					{
+						llwarns << "Invalid joint " << j << llendl;
+						return FALSE;
+					}
+					
+					if(constraint_joint == joint)
 					{
 						constraintp->mJointStateIndices[i] = (S32)j;
 						break;

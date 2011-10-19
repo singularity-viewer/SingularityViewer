@@ -88,8 +88,9 @@ LLMultiSlider::LLMultiSlider(
 	mThumbCenterSelectedColor(	LLUI::sColorsGroup->getColor( "MultiSliderThumbCenterSelectedColor" ) ),
 	mDisabledThumbColor(LLUI::sColorsGroup->getColor( "MultiSliderDisabledThumbColor" ) ),
 	mTriangleColor(LLUI::sColorsGroup->getColor( "MultiSliderTriangleColor" ) ),
-	mMouseDownCallback( NULL ),
-	mMouseUpCallback( NULL )
+	mMouseDownSignal( NULL ),
+	mMouseUpSignal( NULL ),
+	mThumbWidth(MULTI_THUMB_WIDTH)
 {
 	mValue.emptyMap();
 	mCurSlider = LLStringUtil::null;
@@ -100,6 +101,13 @@ LLMultiSlider::LLMultiSlider(
 	setControlName(control_name, NULL);
 	setValue(getValue());
 }
+
+LLMultiSlider::~LLMultiSlider()
+{
+	delete mMouseDownSignal;
+	delete mMouseUpSignal;
+}
+
 
 void LLMultiSlider::setSliderValue(const std::string& name, F32 value, BOOL from_event)
 {
@@ -152,12 +160,12 @@ void LLMultiSlider::setSliderValue(const std::string& name, F32 value, BOOL from
 	
 	F32 t = (newValue - mMinValue) / (mMaxValue - mMinValue);
 
-	S32 left_edge = MULTI_THUMB_WIDTH/2;
-	S32 right_edge = getRect().getWidth() - (MULTI_THUMB_WIDTH/2);
+	S32 left_edge = mThumbWidth/2;
+	S32 right_edge = getRect().getWidth() - (mThumbWidth/2);
 
 	S32 x = left_edge + S32( t * (right_edge - left_edge) );
-	mThumbRects[name].mLeft = x - (MULTI_THUMB_WIDTH/2);
-	mThumbRects[name].mRight = x + (MULTI_THUMB_WIDTH/2);
+	mThumbRects[name].mLeft = x - (mThumbWidth/2);
+	mThumbRects[name].mRight = x + (mThumbWidth/2);
 }
 
 void LLMultiSlider::setValue(const LLSD& value)
@@ -211,7 +219,7 @@ const std::string& LLMultiSlider::addSlider(F32 val)
 	}
 
 	// add a new thumb rect
-	mThumbRects[newName.str()] = LLRect( 0, getRect().getHeight(), MULTI_THUMB_WIDTH, 0 );
+	mThumbRects[newName.str()] = LLRect( 0, getRect().getHeight(), mThumbWidth, 0 );
 
 	// add the value and set the current slider to this one
 	mValue.insert(newName.str(), initVal);
@@ -221,6 +229,30 @@ const std::string& LLMultiSlider::addSlider(F32 val)
 	setSliderValue(mCurSlider, initVal, TRUE);
 
 	return mCurSlider;
+}
+
+void LLMultiSlider::addSlider(F32 val, const std::string& name)
+{
+	F32 initVal = val;
+
+	if(mValue.size() >= mMaxNumSliders) {
+		return;
+	}
+
+	bool foundOne = findUnusedValue(initVal);
+	if(!foundOne) {
+		return;
+	}
+
+	// add a new thumb rect
+	mThumbRects[name] = LLRect( 0, getRect().getHeight(), mThumbWidth, 0 );
+
+	// add the value and set the current slider to this one
+	mValue.insert(name, initVal);
+	mCurSlider = name;
+
+	// move the slider
+	setSliderValue(mCurSlider, initVal, TRUE);
 }
 
 bool LLMultiSlider::findUnusedValue(F32& initVal)
@@ -302,8 +334,8 @@ BOOL LLMultiSlider::handleHover(S32 x, S32 y, MASK mask)
 {
 	if( gFocusMgr.getMouseCapture() == this )
 	{
-		S32 left_edge = MULTI_THUMB_WIDTH/2;
-		S32 right_edge = getRect().getWidth() - (MULTI_THUMB_WIDTH/2);
+		S32 left_edge = mThumbWidth/2;
+		S32 right_edge = getRect().getWidth() - (mThumbWidth/2);
 
 		x += mMouseOffset;
 		x = llclamp( x, left_edge, right_edge );
@@ -331,10 +363,9 @@ BOOL LLMultiSlider::handleMouseUp(S32 x, S32 y, MASK mask)
 	{
 		gFocusMgr.setMouseCapture( NULL );
 
-		if( mMouseUpCallback )
-		{
-			mMouseUpCallback( this, mCallbackUserData );
-		}
+		if (mMouseUpSignal)
+			(*mMouseUpSignal)( this, LLSD() );
+
 		handled = TRUE;
 		make_ui_sound("UISndClickRelease");
 	}
@@ -353,10 +384,8 @@ BOOL LLMultiSlider::handleMouseDown(S32 x, S32 y, MASK mask)
 	{
 		setFocus(TRUE);
 	}
-	if( mMouseDownCallback )
-	{
-		mMouseDownCallback( this, mCallbackUserData );
-	}
+	if (mMouseDownSignal)
+		(*mMouseDownSignal)( this, LLSD() );
 
 	if (MASK_CONTROL & mask) // if CTRL is modifying
 	{
@@ -379,7 +408,7 @@ BOOL LLMultiSlider::handleMouseDown(S32 x, S32 y, MASK mask)
 		// Find the offset of the actual mouse location from the center of the thumb.
 		if (mThumbRects[mCurSlider].pointInRect(x,y))
 		{
-			mMouseOffset = (mThumbRects[mCurSlider].mLeft + MULTI_THUMB_WIDTH/2) - x;
+			mMouseOffset = (mThumbRects[mCurSlider].mLeft + mThumbWidth/2) - x;
 		}
 		else
 		{
@@ -564,6 +593,18 @@ void LLMultiSlider::draw()
 	}
 
 	LLUICtrl::draw();
+}
+
+boost::signals2::connection LLMultiSlider::setMouseDownCallback( const commit_signal_t::slot_type& cb ) 
+{ 
+	if (!mMouseDownSignal) mMouseDownSignal = new commit_signal_t();
+	return mMouseDownSignal->connect(cb); 
+}
+
+boost::signals2::connection LLMultiSlider::setMouseUpCallback(	const commit_signal_t::slot_type& cb )   
+{ 
+	if (!mMouseUpSignal) mMouseUpSignal = new commit_signal_t();
+	return mMouseUpSignal->connect(cb); 
 }
 
 // virtual

@@ -39,6 +39,7 @@
 
 class LLEventInfo;
 class LLEventNotification;
+class LLMessageSystem;
 
 
 class LLEventNotifier
@@ -48,14 +49,17 @@ public:
 	virtual ~LLEventNotifier();
 
 	void update();	// Notify the user of the event if it's coming up
+	void add(LLEventInfo &event_info);	// Add a new notification for an event
+	void add(U32 eventId);
 
 	void load(const LLUserAuth::options_t& event_options);	// In the format that it comes in from LLUserAuth
-	void add(LLEventInfo &event_info);	// Add a new notification for an event
 	void remove(U32 event_id);
 
 	BOOL hasNotification(const U32 event_id);
+	void serverPushRequest(U32 event_id, bool add);
 
 	typedef std::map<U32, LLEventNotification *> en_map;
+	bool  handleResponse(U32 eventId, LLVector3d eventPos, const LLSD& notification, const LLSD& response);		
 
 protected:
 	en_map	mEventNotifications;
@@ -78,7 +82,6 @@ public:
 	time_t				getEventDate() const			{ return mEventDate; }
 	const std::string	&getEventDateStr() const		{ return mEventDateStr; }
 	LLVector3d			getEventPosGlobal() const		{ return mEventPosGlobal; }
-	bool				handleResponse(const LLSD& notification, const LLSD& payload);
 protected:
 	U32			mEventID;			// EventID for this event
 	std::string	mEventName;

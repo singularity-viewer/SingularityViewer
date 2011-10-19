@@ -50,7 +50,7 @@
 #include "lluiconstants.h"
 #include "llpanelevent.h"
 #include "llappviewer.h"
-#include "llnotify.h"
+#include "llnotificationsutil.h"
 
 BOOL gDisplayEventHack = FALSE;
 
@@ -190,7 +190,7 @@ void LLPanelDirEvents::performQueryOrDelete(U32 event_id)
 	
 	if ( !( scope & (DFQ_INC_PG | DFQ_INC_MATURE | DFQ_INC_ADULT )))
 	{
-		LLNotifications::instance().add("NoContentToSearch");
+		LLNotificationsUtil::add("NoContentToSearch");
 		return;
 	}
 	

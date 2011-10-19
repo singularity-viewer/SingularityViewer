@@ -7,14 +7,11 @@ FS			(f|F)
 %n 4000
 %p 5000
 
+%top {
+	#include "linden_common.h"
+}
+
 %{
-// We maintain a pre-generated lexer source file to simplify user builds.
-// Before committing changes to this file, manually run
-//
-//   flex -o indra_generated.l.cpp indra.l
-//
-// to update the pre-generated lexer.  Then commit all files simultaneously.
-#include "linden_common.h"
 // Deal with the fact that lex/yacc generates unreachable code
 #ifdef LL_WINDOWS
 #pragma warning (disable : 4018) // warning C4018: signed/unsigned mismatch
@@ -39,6 +36,7 @@ FS			(f|F)
 #include "llregionflags.h"
 #include "lscript_http.h"
 #include "llclickaction.h"
+#include "llmediaentry.h"
 
 void count();
 void line_comment();
@@ -155,6 +153,7 @@ extern "C" { int yyerror(const char *fmt, ...); }
 "AGENT_CROUCHING"		{ count(); yylval.ival = AGENT_CROUCHING; return(INTEGER_CONSTANT); }
 "AGENT_BUSY"			{ count(); yylval.ival = AGENT_BUSY; return(INTEGER_CONSTANT); }
 "AGENT_ALWAYS_RUN"		{ count(); yylval.ival = AGENT_ALWAYS_RUN; return(INTEGER_CONSTANT); }
+"AGENT_AUTOPILOT"		{ count(); yylval.ival = AGENT_AUTOPILOT; return(INTEGER_CONSTANT); }
 
 "CAMERA_PITCH"				{ count(); yylval.ival = FOLLOWCAM_PITCH; return(INTEGER_CONSTANT); }
 "CAMERA_FOCUS_OFFSET"		{ count(); yylval.ival = FOLLOWCAM_FOCUS_OFFSET; return (INTEGER_CONSTANT); }
@@ -237,7 +236,8 @@ extern "C" { int yyerror(const char *fmt, ...); }
 "CHANGED_OWNER"			{ count(); yylval.ival = CHANGED_OWNER; return(INTEGER_CONSTANT); }	
 "CHANGED_REGION"		{ count(); yylval.ival = CHANGED_REGION; return(INTEGER_CONSTANT); }	
 "CHANGED_TELEPORT"		{ count(); yylval.ival = CHANGED_TELEPORT; return(INTEGER_CONSTANT); }	
-"CHANGED_REGION_START"		{ count(); yylval.ival = CHANGED_REGION_START; return(INTEGER_CONSTANT); }	
+"CHANGED_REGION_START"	{ count(); yylval.ival = CHANGED_REGION_START; return(INTEGER_CONSTANT); }	
+"CHANGED_MEDIA"		    { count(); yylval.ival = CHANGED_MEDIA; return(INTEGER_CONSTANT); }	
 
 "OBJECT_UNKNOWN_DETAIL"	{ count(); yylval.ival = OBJECT_UNKNOWN_DETAIL; return(INTEGER_CONSTANT); }
 "OBJECT_NAME"			{ count(); yylval.ival = OBJECT_NAME; return(INTEGER_CONSTANT); }
@@ -248,6 +248,10 @@ extern "C" { int yyerror(const char *fmt, ...); }
 "OBJECT_OWNER"			{ count(); yylval.ival = OBJECT_OWNER; return(INTEGER_CONSTANT); }
 "OBJECT_GROUP"			{ count(); yylval.ival = OBJECT_GROUP; return(INTEGER_CONSTANT); }
 "OBJECT_CREATOR"		{ count(); yylval.ival = OBJECT_CREATOR; return(INTEGER_CONSTANT); }
+"OBJECT_RUNNING_SCRIPT_COUNT"		{ count(); yylval.ival = OBJECT_RUNNING_SCRIPT_COUNT; return(INTEGER_CONSTANT); }
+"OBJECT_TOTAL_SCRIPT_COUNT"		{ count(); yylval.ival = OBJECT_TOTAL_SCRIPT_COUNT; return(INTEGER_CONSTANT); }
+"OBJECT_SCRIPT_MEMORY"		{ count(); yylval.ival = OBJECT_SCRIPT_MEMORY; return(INTEGER_CONSTANT); }
+"OBJECT_SCRIPT_TIME"		{ count(); yylval.ival = OBJECT_SCRIPT_TIME; return(INTEGER_CONSTANT); }
 
 "TYPE_INTEGER"			{ count(); yylval.ival = LST_INTEGER; return(INTEGER_CONSTANT); }	
 "TYPE_FLOAT"			{ count(); yylval.ival = LST_FLOATINGPOINT; return(INTEGER_CONSTANT); }	
@@ -602,6 +606,8 @@ extern "C" { int yyerror(const char *fmt, ...); }
 "PARCEL_DETAILS_OWNER"	{ count(); yylval.ival = PARCEL_DETAILS_OWNER; return(INTEGER_CONSTANT); }
 "PARCEL_DETAILS_GROUP"	{ count(); yylval.ival = PARCEL_DETAILS_GROUP; return(INTEGER_CONSTANT); }
 "PARCEL_DETAILS_AREA"	{ count(); yylval.ival = PARCEL_DETAILS_AREA; return(INTEGER_CONSTANT); }
+"PARCEL_DETAILS_ID"		{ count(); yylval.ival = PARCEL_DETAILS_ID; return(INTEGER_CONSTANT); }
+"PARCEL_DETAILS_SEE_AVATARS"	{ count(); yylval.ival = PARCEL_DETAILS_SEE_AVATARS; return(INTEGER_CONSTANT); }
 
 "STRING_TRIM_HEAD"	{ count(); yylval.ival = STRING_TRIM_HEAD; return(INTEGER_CONSTANT); }
 "STRING_TRIM_TAIL"	{ count(); yylval.ival = STRING_TRIM_TAIL; return(INTEGER_CONSTANT); }
@@ -615,6 +621,7 @@ extern "C" { int yyerror(const char *fmt, ...); }
 "CLICK_ACTION_OPEN"       { count(); yylval.ival = CLICK_ACTION_OPEN; return(INTEGER_CONSTANT); }
 "CLICK_ACTION_PLAY"       { count(); yylval.ival = CLICK_ACTION_PLAY; return(INTEGER_CONSTANT); }
 "CLICK_ACTION_OPEN_MEDIA" { count(); yylval.ival = CLICK_ACTION_OPEN_MEDIA; return(INTEGER_CONSTANT); }
+"CLICK_ACTION_ZOOM"       { count(); yylval.ival = CLICK_ACTION_ZOOM; return(INTEGER_CONSTANT); }
 
 "TEXTURE_BLANK"           { yylval.sval = new char[UUID_STR_LENGTH]; strcpy(yylval.sval, "5748decc-f629-461c-9a36-a35a221fe21f"); return(STRING_CONSTANT); }
 "TEXTURE_DEFAULT"         { yylval.sval = new char[UUID_STR_LENGTH]; strcpy(yylval.sval, "89556747-24cb-43ed-920b-47caed15465f"); return(STRING_CONSTANT); }
@@ -626,6 +633,45 @@ extern "C" { int yyerror(const char *fmt, ...); }
 "TOUCH_INVALID_VECTOR"	  { count(); return(TOUCH_INVALID_VECTOR); }
 "TOUCH_INVALID_TEXCOORD"  { count(); return(TOUCH_INVALID_TEXCOORD); }
 
+"PRIM_MEDIA_ALT_IMAGE_ENABLE"        { count(); yylval.ival = LLMediaEntry::ALT_IMAGE_ENABLE_ID; return(INTEGER_CONSTANT); }
+"PRIM_MEDIA_CONTROLS"                { count(); yylval.ival = LLMediaEntry::CONTROLS_ID; return(INTEGER_CONSTANT); }
+"PRIM_MEDIA_CURRENT_URL"             { count(); yylval.ival = LLMediaEntry::CURRENT_URL_ID; return(INTEGER_CONSTANT); }
+"PRIM_MEDIA_HOME_URL"                { count(); yylval.ival = LLMediaEntry::HOME_URL_ID; return(INTEGER_CONSTANT); }
+"PRIM_MEDIA_AUTO_LOOP"               { count(); yylval.ival = LLMediaEntry::AUTO_LOOP_ID; return(INTEGER_CONSTANT); }
+"PRIM_MEDIA_AUTO_PLAY"               { count(); yylval.ival = LLMediaEntry::AUTO_PLAY_ID; return(INTEGER_CONSTANT); }
+"PRIM_MEDIA_AUTO_SCALE"              { count(); yylval.ival = LLMediaEntry::AUTO_SCALE_ID; return(INTEGER_CONSTANT); }
+"PRIM_MEDIA_AUTO_ZOOM"               { count(); yylval.ival = LLMediaEntry::AUTO_ZOOM_ID; return(INTEGER_CONSTANT); }
+"PRIM_MEDIA_FIRST_CLICK_INTERACT"    { count(); yylval.ival = LLMediaEntry::FIRST_CLICK_INTERACT_ID; return(INTEGER_CONSTANT); }
+"PRIM_MEDIA_WIDTH_PIXELS"            { count(); yylval.ival = LLMediaEntry::WIDTH_PIXELS_ID; return(INTEGER_CONSTANT); }
+"PRIM_MEDIA_HEIGHT_PIXELS"           { count(); yylval.ival = LLMediaEntry::HEIGHT_PIXELS_ID; return(INTEGER_CONSTANT); }
+"PRIM_MEDIA_WHITELIST_ENABLE"        { count(); yylval.ival = LLMediaEntry::WHITELIST_ENABLE_ID; return(INTEGER_CONSTANT); }
+"PRIM_MEDIA_WHITELIST"               { count(); yylval.ival = LLMediaEntry::WHITELIST_ID; return(INTEGER_CONSTANT); }
+"PRIM_MEDIA_PERMS_INTERACT"          { count(); yylval.ival = LLMediaEntry::PERMS_INTERACT_ID; return(INTEGER_CONSTANT); }
+"PRIM_MEDIA_PERMS_CONTROL"           { count(); yylval.ival = LLMediaEntry::PERMS_CONTROL_ID; return(INTEGER_CONSTANT); }
+"PRIM_MEDIA_PARAM_MAX"               { count(); yylval.ival = LLMediaEntry::PARAM_MAX_ID; return(INTEGER_CONSTANT); }
+
+"PRIM_MEDIA_CONTROLS_STANDARD"       { count(); yylval.ival = LLMediaEntry::STANDARD; return(INTEGER_CONSTANT); }
+"PRIM_MEDIA_CONTROLS_MINI"           { count(); yylval.ival = LLMediaEntry::MINI; return(INTEGER_CONSTANT); }
+
+"PRIM_MEDIA_PERM_NONE"               { count(); yylval.ival = LLMediaEntry::PERM_NONE; return(INTEGER_CONSTANT); }
+"PRIM_MEDIA_PERM_OWNER"              { count(); yylval.ival = LLMediaEntry::PERM_OWNER; return(INTEGER_CONSTANT); }
+"PRIM_MEDIA_PERM_GROUP"              { count(); yylval.ival = LLMediaEntry::PERM_GROUP; return(INTEGER_CONSTANT); }
+"PRIM_MEDIA_PERM_ANYONE"             { count(); yylval.ival = LLMediaEntry::PERM_ANYONE; return(INTEGER_CONSTANT); }
+
+"PRIM_MEDIA_MAX_URL_LENGTH"          { count(); yylval.ival = LLMediaEntry::MAX_URL_LENGTH; return(INTEGER_CONSTANT); }
+"PRIM_MEDIA_MAX_WHITELIST_SIZE"      { count(); yylval.ival = LLMediaEntry::MAX_WHITELIST_SIZE; return(INTEGER_CONSTANT); }
+"PRIM_MEDIA_MAX_WHITELIST_COUNT"     { count(); yylval.ival = LLMediaEntry::MAX_WHITELIST_COUNT; return(INTEGER_CONSTANT); }
+"PRIM_MEDIA_MAX_WIDTH_PIXELS"        { count(); yylval.ival = LLMediaEntry::MAX_WIDTH_PIXELS; return(INTEGER_CONSTANT); }
+"PRIM_MEDIA_MAX_HEIGHT_PIXELS"       { count(); yylval.ival = LLMediaEntry::MAX_HEIGHT_PIXELS; return(INTEGER_CONSTANT); }
+
+"STATUS_OK"                          { count(); yylval.ival = LSL_STATUS_OK; return(INTEGER_CONSTANT); }
+"STATUS_MALFORMED_PARAMS"            { count(); yylval.ival = LSL_STATUS_MALFORMED_PARAMS; return(INTEGER_CONSTANT); }
+"STATUS_TYPE_MISMATCH"               { count(); yylval.ival = LSL_STATUS_TYPE_MISMATCH; return(INTEGER_CONSTANT); }
+"STATUS_BOUNDS_ERROR"                { count(); yylval.ival = LSL_STATUS_BOUNDS_ERROR; return(INTEGER_CONSTANT); }
+"STATUS_NOT_FOUND"                   { count(); yylval.ival = LSL_STATUS_NOT_FOUND; return(INTEGER_CONSTANT); }
+"STATUS_NOT_SUPPORTED"               { count(); yylval.ival = LSL_STATUS_NOT_SUPPORTED; return(INTEGER_CONSTANT); }
+"STATUS_INTERNAL_ERROR"              { count(); yylval.ival = LSL_STATUS_INTERNAL_ERROR; return(INTEGER_CONSTANT); }
+"STATUS_WHITELIST_FAILED"            { count(); yylval.ival = LSL_STATUS_WHITELIST_FAILED; return(INTEGER_CONSTANT); }
 
 {L}({L}|{N})*		{ count(); yylval.sval = new char[strlen(yytext) + 1]; strcpy(yylval.sval, yytext); return(IDENTIFIER); }
 

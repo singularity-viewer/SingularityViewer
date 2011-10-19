@@ -246,9 +246,9 @@ BOOL LLFont::loadFace(const std::string& filename, const F32 point_size, const F
 		FT_Set_Charmap(mFTFace, mFTFace->charmaps[0]);
 	}
 
-	if (!mIsFallback)
+	if (!mIsFallback || !sOpenGLcrashOnRestart)	// because this often crashes under Linux...
 	{
-		// Add the default glyph
+		// Add the empty glyph`5
 		addGlyph(0, 0);
 	}
 
@@ -362,7 +362,7 @@ BOOL LLFont::addGlyphFromFont(const LLFont *fontp, const llwchar wch, const U32 
 	if (mFTFace == NULL)
 		return FALSE;
 
-	llassert(!mIsFallback);
+	//llassert(!mIsFallback);
 	fontp->renderGlyph(glyph_index);
 	S32 width = fontp->mFTFace->glyph->bitmap.width;
 	S32 height = fontp->mFTFace->glyph->bitmap.rows;
@@ -581,7 +581,7 @@ void LLFont::setSubImageLuminanceAlpha(const U32 x,
 {
 	LLImageRaw *image_raw = mFontBitmapCachep->getImageRaw(bitmap_num);
 
-	llassert(!mIsFallback);
+	//llassert(!mIsFallback);
 	llassert(image_raw && (image_raw->getComponents() == 2));
 
 	

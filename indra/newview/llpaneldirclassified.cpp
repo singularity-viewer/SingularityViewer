@@ -65,7 +65,7 @@
 //
 #include "llfloateravatarinfo.h"
 #include "llviewermenu.h"
-#include "llnotify.h"
+#include "llnotificationsutil.h"
 
 //-----------------------------------------------------------------------------
 // Constants
@@ -189,7 +189,7 @@ void LLPanelDirClassified::performQuery()
 	BOOL inc_adult = childGetValue("incadult").asBoolean();
 	if (!(inc_pg || inc_mature || inc_adult))
 	{
-		LLNotifications::instance().add("NoContentToSearch");
+		LLNotificationsUtil::add("NoContentToSearch");
 		return;
 	}
 

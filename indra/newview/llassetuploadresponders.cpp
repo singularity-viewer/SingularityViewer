@@ -39,6 +39,7 @@
 #include "llcompilequeue.h"
 #include "llfloaterbuycurrency.h"
 #include "llnotify.h"
+#include "llinventorydefines.h"
 #include "llinventorymodel.h"
 #include "llinventoryview.h"
 #include "llpermissionsflags.h"
@@ -59,6 +60,7 @@
 // library includes
 #include "lleconomy.h"
 #include "llfocusmgr.h"
+#include "llnotificationsutil.h"
 #include "llscrolllistctrl.h"
 #include "llsdserialize.h"
 
@@ -117,14 +119,14 @@ void LLAssetUploadResponder::error(U32 statusNum, const std::string& reason)
 			args["FILE"] = (mFileName.empty() ? mVFileID.asString() : mFileName);
 			args["REASON"] = "Error in upload request.  Please visit "
 				"http://secondlife.com/support for help fixing this problem.";
-			LLNotifications::instance().add("CannotUploadReason", args);
+			LLNotificationsUtil::add("CannotUploadReason", args);
 			break;
 		case 500:
 		default:
 			args["FILE"] = (mFileName.empty() ? mVFileID.asString() : mFileName);
 			args["REASON"] = "The server is experiencing unexpected "
 				"difficulties.";
-			LLNotifications::instance().add("CannotUploadReason", args);
+			LLNotificationsUtil::add("CannotUploadReason", args);
 			break;
 	}
 	LLUploadDialog::modalUploadFinished();
@@ -187,7 +189,7 @@ void LLAssetUploadResponder::uploadFailure(const LLSD& content)
 		LLSD args;
 		args["FILE"] = (mFileName.empty() ? mVFileID.asString() : mFileName);
 		args["REASON"] = content["message"].asString();
-		LLNotifications::instance().add("CannotUploadReason", args);
+		LLNotificationsUtil::add("CannotUploadReason", args);
 	}
 }
 
@@ -231,7 +233,7 @@ void LLNewAgentInventoryResponder::uploadComplete(const LLSD& content)
 		LLSD args;
 		args["AMOUNT"] = llformat("%d", expected_upload_cost);
 		args["CURRENCY"] = gHippoGridManager->getConnectedGrid()->getCurrencySymbol();
-		LLNotifications::instance().add("UploadPayment", args);
+		LLNotificationsUtil::add("UploadPayment", args);
 	}
 
 	// Actually add the upload to viewer inventory
@@ -334,7 +336,7 @@ void LLNewAgentInventoryResponder::uploadComplete(const LLSD& content)
 		LLAssetStorage::LLStoreAssetCallback callback = NULL;
 		void *userdata = NULL;
 		upload_new_resource(next_file, asset_name, asset_name,
-				    0, LLAssetType::AT_NONE, LLInventoryType::IT_NONE,
+				    0, LLFolderType::FT_NONE, LLInventoryType::IT_NONE,
 				    next_owner_perms, group_perms,
 				    everyone_perms, display_name,
 				    callback, expected_upload_cost, userdata);
@@ -480,10 +482,10 @@ void LLUpdateAgentInventoryResponder::uploadComplete(const LLSD& content)
 			{
 				// If this gesture is active, then we need to update the in-memory
 				// active map with the new pointer.				
-				if (gGestureManager.isGestureActive(item_id))
+				if (LLGestureMgr::instance().isGestureActive(item_id))
 				{
 					LLUUID asset_id = new_item->getAssetUUID();
-					gGestureManager.replaceGesture(item_id, asset_id);
+					LLGestureMgr::instance().replaceGesture(item_id, asset_id);
 					gInventory.notifyObservers();
 				}				
 

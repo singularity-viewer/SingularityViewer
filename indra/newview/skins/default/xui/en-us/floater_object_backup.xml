@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<floater can_close="true" can_drag_on_left="false" can_minimize="true" can_resize="false"
+     	rect_control="FloaterObjectBackuptRect"
+	height="80" width="200"	name="Import" title="Import progress" mouse_opaque="true">
+  <text height="30" left="10" name="name_label" top="-20"> Progress </text>  
+</floater>

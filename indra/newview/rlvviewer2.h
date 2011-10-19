@@ -30,18 +30,6 @@
 #include "boost/function.hpp"
 
 // ============================================================================
-// From llappearancemgr.h
-
-typedef boost::function<void ()> nullary_func_t;
-typedef boost::function<bool ()> bool_func_t;
-
-// Call a given callable once in idle loop.
-void doOnIdleOneTime(nullary_func_t callable);
-
-// Repeatedly call a callable in idle loop until it returns true.
-void doOnIdleRepeating(bool_func_t callable);
-
-// ============================================================================
 // From llinventoryobserver.h
 
 class LLInventoryFetchItemsObserver : public LLInventoryObserver

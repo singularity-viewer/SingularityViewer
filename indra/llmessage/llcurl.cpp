@@ -52,8 +52,8 @@
 #endif
 
 #include "llbufferstream.h"
-#include "llstl.h"
 #include "llsdserialize.h"
+#include "llstl.h"
 #include "llthread.h"
 #include "llsocks5.h"
 #include "lltimer.h"
@@ -81,6 +81,7 @@ static const S32 MULTI_PERFORM_CALL_REPEAT	= 5;
 static const S32 CURL_REQUEST_TIMEOUT = 30; // seconds
 static const S32 MAX_ACTIVE_REQUEST_COUNT = 100;
 
+static 
 // DEBUG //
 S32 gCurlEasyCount = 0;
 S32 gCurlMultiCount = 0;
@@ -91,6 +92,9 @@ S32 gCurlMultiCount = 0;
 std::vector<LLMutex*> LLCurl::sSSLMutex;
 std::string LLCurl::sCAPath;
 std::string LLCurl::sCAFile;
+
+bool LLCurl::sMultiThreaded = false;
+static U32 sMainThreadID = 0;
 
 void check_curl_code(CURLcode code)
 {
@@ -220,77 +224,10 @@ namespace boost
 
 //////////////////////////////////////////////////////////////////////////////
 
-
-class LLCurl::Easy
-{
-	LOG_CLASS(Easy);
-
-private:
-	Easy();
-	
-public:
-	static Easy* getEasy();
-	~Easy();
-
-	CURL* getCurlHandle() const { return mCurlEasyHandle; }
-
-	void setErrorBuffer();
-	void setCA();
-	
-	void setopt(CURLoption option, S32 value);
-	// These assume the setter does not free value!
-	void setopt(CURLoption option, void* value);
-	void setopt(CURLoption option, char* value);
-	// Copies the string so that it is gauranteed to stick around
-	void setoptString(CURLoption option, const std::string& value);
-	
-	void slist_append(const char* str);
-	void setHeaders();
-	
-	U32 report(CURLcode);
-	void getTransferInfo(LLCurl::TransferInfo* info);
-
-	void prepRequest(const std::string& url, const std::vector<std::string>& headers, ResponderPtr, bool post = false);
-	
-	const char* getErrorBuffer();
-
-	std::stringstream& getInput() { return mInput; }
-	std::stringstream& getHeaderOutput() { return mHeaderOutput; }
-	LLIOPipe::buffer_ptr_t& getOutput() { return mOutput; }
-	const LLChannelDescriptors& getChannels() { return mChannels; }
-	
-	void resetState();
-
-	static CURL* allocEasyHandle();
-	static void releaseEasyHandle(CURL* handle);
-
-private:	
-	friend class LLCurl;
-
-	CURL*				mCurlEasyHandle;
-	struct curl_slist*	mHeaders;
-	
-	std::stringstream	mRequest;
-	LLChannelDescriptors mChannels;
-	LLIOPipe::buffer_ptr_t mOutput;
-	std::stringstream	mInput;
-	std::stringstream	mHeaderOutput;
-	char				mErrorBuffer[CURL_ERROR_SIZE];
-
-	// Note: char*'s not strings since we pass pointers to curl
-	std::vector<char*>	mStrings;
-	
-	ResponderPtr		mResponder;
-
-	static std::set<CURL*> sFreeHandles;
-	static std::set<CURL*> sActiveHandles;
-	static LLMutex* sHandleMutex;
-};
-
 std::set<CURL*> LLCurl::Easy::sFreeHandles;
 std::set<CURL*> LLCurl::Easy::sActiveHandles;
 LLMutex* LLCurl::Easy::sHandleMutex = NULL;
-
+LLMutex* LLCurl::Easy::sMultiMutex = NULL;
 
 //static
 CURL* LLCurl::Easy::allocEasyHandle()
@@ -549,13 +486,13 @@ size_t curlHeaderCallback(void* data, size_t size, size_t nmemb, void* user_data
 
 void LLCurl::Easy::prepRequest(const std::string& url,
 							   const std::vector<std::string>& headers,
-							   ResponderPtr responder, bool post)
+							   ResponderPtr responder, S32 time_out, bool post)
 {
 	resetState();
 	
 	if (post) setoptString(CURLOPT_ENCODING, "");
 
-//	setopt(CURLOPT_VERBOSE, 1); // usefull for debugging
+	//setopt(CURLOPT_VERBOSE, 1); // useful for debugging
 	setopt(CURLOPT_NOSIGNAL, 1);
 
 	if (LLSocks::getInstance()->isHttpProxyEnabled())
@@ -599,7 +536,7 @@ void LLCurl::Easy::prepRequest(const std::string& url,
 	
 	//don't verify host name so urls with scrubbed host names will work (improves DNS performance)
 	setopt(CURLOPT_SSL_VERIFYHOST, 0);
-	setopt(CURLOPT_TIMEOUT, CURL_REQUEST_TIMEOUT);
+	setopt(CURLOPT_TIMEOUT, llmax(time_out, CURL_REQUEST_TIMEOUT));
 
 	setoptString(CURLOPT_URL, url);
 
@@ -620,56 +557,47 @@ void LLCurl::Easy::prepRequest(const std::string& url,
 
 ////////////////////////////////////////////////////////////////////////////
 
-class LLCurl::Multi
-{
-	LOG_CLASS(Multi);
-public:
-	
-	Multi();
-	~Multi();
-
-	Easy* allocEasy();
-	bool addEasy(Easy* easy);
-	
-	void removeEasy(Easy* easy);
-
-	S32 process();
-	S32 perform();
-	
-	CURLMsg* info_read(S32* msgs_in_queue);
-
-	S32 mQueued;
-	S32 mErrorCount;
-	
-private:
-	void easyFree(Easy*);
-	
-	CURLM* mCurlMultiHandle;
-
-	typedef std::set<Easy*> easy_active_list_t;
-	easy_active_list_t mEasyActiveList;
-	typedef std::map<CURL*, Easy*> easy_active_map_t;
-	easy_active_map_t mEasyActiveMap;
-	typedef std::set<Easy*> easy_free_list_t;
-	easy_free_list_t mEasyFreeList;
-};
-
 LLCurl::Multi::Multi()
-	: mQueued(0),
-	  mErrorCount(0)
+	: LLThread("Curl Multi"),
+	  mQueued(0),
+	  mErrorCount(0),
+	  mPerformState(PERFORM_STATE_READY)
 {
+	mQuitting = false;
+
+	mThreaded = LLCurl::sMultiThreaded && LLThread::currentID() == sMainThreadID;
+	if (mThreaded)
+	{
+		mSignal = new LLCondition;
+	}
+	else
+	{
+		mSignal = NULL;
+	}
+
 	mCurlMultiHandle = curl_multi_init();
 	if (!mCurlMultiHandle)
 	{
 		llwarns << "curl_multi_init() returned NULL! Easy handles: " << gCurlEasyCount << " Multi handles: " << gCurlMultiCount << llendl;
 		mCurlMultiHandle = curl_multi_init();
 	}
+	
 	llassert_always(mCurlMultiHandle);
 	++gCurlMultiCount;
 }
 
 LLCurl::Multi::~Multi()
 {
+	llassert(isStopped());
+
+	if (LLCurl::sMultiThreaded)
+	{
+		LLCurl::Easy::sMultiMutex->lock();
+	}
+
+	delete mSignal;
+	mSignal = NULL;
+
 	// Clean up active
 	for(easy_active_list_t::iterator iter = mEasyActiveList.begin();
 		iter != mEasyActiveList.end(); ++iter)
@@ -687,6 +615,11 @@ LLCurl::Multi::~Multi()
 
 	check_curl_multi_code(curl_multi_cleanup(mCurlMultiHandle));
 	--gCurlMultiCount;
+
+	if (LLCurl::sMultiThreaded)
+	{
+		LLCurl::Easy::sMultiMutex->unlock();
+	}
 }
 
 CURLMsg* LLCurl::Multi::info_read(S32* msgs_in_queue)
@@ -695,13 +628,49 @@ CURLMsg* LLCurl::Multi::info_read(S32* msgs_in_queue)
 	return curlmsg;
 }
 
+void LLCurl::Multi::perform()
+{
+	if (mThreaded)
+	{
+		mSignal->lock();
+		if (mPerformState == PERFORM_STATE_READY)
+		{
+			mSignal->signal();
+		}
+		mSignal->unlock();
+	}
+	else
+	{
+		doPerform();
+	}	
+}
 
-S32 LLCurl::Multi::perform()
+void LLCurl::Multi::run()
+{
+	llassert(mThreaded);
+	
+	mSignal->lock();
+	while (!mQuitting)
+	{
+		mSignal->wait();
+		mPerformState = PERFORM_STATE_PERFORMING;
+		if (!mQuitting)
+		{
+			LLMutexLock lock(LLCurl::Easy::sMultiMutex);
+			doPerform();
+		}
+	}
+	mSignal->unlock();
+}
+
+void LLCurl::Multi::doPerform()
 {
 	S32 q = 0;
+	if (mThreaded)
+		mSignal->unlock();
 	for (S32 call_count = 0;
-		 call_count < MULTI_PERFORM_CALL_REPEAT;
-		 call_count += 1)
+			call_count < MULTI_PERFORM_CALL_REPEAT;
+			call_count += 1)
 	{
 		CURLMcode code = curl_multi_perform(mCurlMultiHandle, &q);
 		if (CURLM_CALL_MULTI_PERFORM != code || q == 0)
@@ -711,14 +680,21 @@ S32 LLCurl::Multi::perform()
 		}
 	
 	}
+	if (mThreaded)
+		mSignal->lock();
 	mQueued = q;
-	return q;
+	mPerformState = PERFORM_STATE_COMPLETED;
 }
 
 S32 LLCurl::Multi::process()
 {
 	perform();
-	
+
+	if (mPerformState != PERFORM_STATE_COMPLETED)
+	{
+		return 0;
+	}
+
 	CURLMsg* msg;
 	int msgs_in_queue;
 
@@ -749,6 +725,8 @@ S32 LLCurl::Multi::process()
 			}
 		}
 	}
+
+	mPerformState = PERFORM_STATE_READY;
 	return processed;
 }
 
@@ -827,6 +805,27 @@ LLCurlRequest::LLCurlRequest() :
 LLCurlRequest::~LLCurlRequest()
 {
 	llassert_always(mThreadID == LLThread::currentID());
+
+	//stop all Multi handle background threads
+	for (curlmulti_set_t::iterator iter = mMultiSet.begin(); iter != mMultiSet.end(); ++iter)
+	{
+		LLCurl::Multi* multi = *iter;
+		if (multi->mThreaded)
+			multi->mSignal->lock();
+		multi->mQuitting = true;
+		if (multi->mThreaded)
+		{
+			while (!multi->isStopped())
+			{
+				multi->mSignal->signal();
+				multi->mSignal->unlock();
+				apr_sleep(1000);
+				multi->mSignal->lock();
+			}
+		}
+		if (multi->mThreaded)
+			multi->mSignal->unlock();
+	}
 	for_each(mMultiSet.begin(), mMultiSet.end(), DeletePointer());
 }
 
@@ -834,6 +833,10 @@ void LLCurlRequest::addMulti()
 {
 	llassert_always(mThreadID == LLThread::currentID());
 	LLCurl::Multi* multi = new LLCurl::Multi();
+	if (multi->mThreaded)
+	{
+		multi->start();
+	}
 	mMultiSet.insert(multi);
 	mActiveMulti = multi;
 	mActiveRequestCount = 0;
@@ -895,14 +898,14 @@ bool LLCurlRequest::getByteRange(const std::string& url,
 bool LLCurlRequest::post(const std::string& url,
 						 const headers_t& headers,
 						 const LLSD& data,
-						 LLCurl::ResponderPtr responder)
+						 LLCurl::ResponderPtr responder, S32 time_out)
 {
 	LLCurl::Easy* easy = allocEasy();
 	if (!easy)
 	{
 		return false;
 	}
-	easy->prepRequest(url, headers, responder);
+	easy->prepRequest(url, headers, responder, time_out);
 
 	LLSDSerialize::toXML(data, easy->getInput());
 	S32 bytes = easy->getInput().str().length();
@@ -922,14 +925,14 @@ bool LLCurlRequest::post(const std::string& url,
 bool LLCurlRequest::post(const std::string& url,
 						 const headers_t& headers,
 						 const std::string& data,
-						 LLCurl::ResponderPtr responder)
+						 LLCurl::ResponderPtr responder, S32 time_out)
 {
 	LLCurl::Easy* easy = allocEasy();
 	if (!easy)
 	{
 		return false;
 	}
-	easy->prepRequest(url, headers, responder);
+	easy->prepRequest(url, headers, responder, time_out);
 
 	easy->getInput().write(data.data(), data.size());
 	S32 bytes = easy->getInput().str().length();
@@ -963,6 +966,22 @@ S32 LLCurlRequest::process()
 		if (multi != mActiveMulti && tres == 0 && multi->mQueued == 0)
 		{
 			mMultiSet.erase(curiter);
+			if (multi->mThreaded)
+				multi->mSignal->lock();
+			multi->mQuitting = true;
+			if (multi->mThreaded)
+			{
+				while (!multi->isStopped())
+				{
+					multi->mSignal->signal();
+					multi->mSignal->unlock();
+					apr_sleep(1000);
+					multi->mSignal->unlock();
+				}
+			}
+			if (multi->mThreaded)
+				multi->mSignal->unlock();
+
 			delete multi;
 		}
 	}
@@ -980,6 +999,10 @@ S32 LLCurlRequest::getQueued()
 		curlmulti_set_t::iterator curiter = iter++;
 		LLCurl::Multi* multi = *curiter;
 		queued += multi->mQueued;
+		if (multi->mPerformState != LLCurl::Multi::PERFORM_STATE_READY)
+		{
+			++queued;
+		}
 	}
 	return queued;
 }
@@ -993,6 +1016,10 @@ LLCurlEasyRequest::LLCurlEasyRequest()
 	  mResultReturned(false)
 {
 	mMulti = new LLCurl::Multi();
+	if (mMulti->mThreaded)
+	{
+		mMulti->start();
+	}
 	mEasy = mMulti->allocEasy();
 	if (mEasy)
 	{
@@ -1003,6 +1030,21 @@ LLCurlEasyRequest::LLCurlEasyRequest()
 
 LLCurlEasyRequest::~LLCurlEasyRequest()
 {
+	if (mMulti->mThreaded)
+		mMulti->mSignal->lock();
+	mMulti->mQuitting = true;
+	if (mMulti->mThreaded)
+	{
+		while (!mMulti->isStopped())
+		{
+			mMulti->mSignal->signal();
+			mMulti->mSignal->unlock();
+			apr_sleep(1000);
+			mMulti->mSignal->lock();
+		}
+	}
+	if (mMulti->mThreaded)
+		mMulti->mSignal->unlock();
 	delete mMulti;
 }
 	
@@ -1099,14 +1141,20 @@ void LLCurlEasyRequest::requestComplete()
 	}
 }
 
-S32 LLCurlEasyRequest::perform()
+void LLCurlEasyRequest::perform()
 {
-	return mMulti->perform();
+	mMulti->perform();
 }
 
 // Usage: Call getRestult until it returns false (no more messages)
 bool LLCurlEasyRequest::getResult(CURLcode* result, LLCurl::TransferInfo* info)
 {
+	if (mMulti->mPerformState != LLCurl::Multi::PERFORM_STATE_COMPLETED)
+	{ //we're busy, try again later
+		return false;
+	}
+	mMulti->mPerformState = LLCurl::Multi::PERFORM_STATE_READY;
+
 	if (!mEasy)
 	{
 		// Special case - we failed to initialize a curl_easy (can happen if too many open files)
@@ -1191,8 +1239,10 @@ unsigned long LLCurl::ssl_thread_id(void)
 }
 #endif
 
-void LLCurl::initClass()
+void LLCurl::initClass(bool multi_threaded)
 {
+	sMainThreadID = LLThread::currentID();
+	sMultiThreaded = multi_threaded;
 	// Do not change this "unless you are familiar with and mean to control 
 	// internal operations of libcurl"
 	// - http://curl.haxx.se/libcurl/c/curl_global_init.html
@@ -1201,6 +1251,7 @@ void LLCurl::initClass()
 	check_curl_code(code);
 	
 	Easy::sHandleMutex = new LLMutex;
+	Easy::sMultiMutex = new LLMutex;
 
 #if SAFE_SSL
 	S32 mutex_count = CRYPTO_num_locks();
@@ -1222,6 +1273,8 @@ void LLCurl::cleanupClass()
 
 	delete Easy::sHandleMutex;
 	Easy::sHandleMutex = NULL;
+	delete Easy::sMultiMutex;
+	Easy::sMultiMutex = NULL;
 
 	for (std::set<CURL*>::iterator iter = Easy::sFreeHandles.begin(); iter != Easy::sFreeHandles.end(); ++iter)
 	{
@@ -1235,3 +1288,13 @@ void LLCurl::cleanupClass()
 }
 
 const unsigned int LLCurl::MAX_REDIRECTS = 5;
+
+// Provide access to LLCurl free functions outside of llcurl.cpp without polluting the global namespace.
+void LLCurlFF::check_easy_code(CURLcode code)
+{
+	check_curl_code(code);
+}
+void LLCurlFF::check_multi_code(CURLMcode code)
+{
+	check_curl_multi_code(code);
+}

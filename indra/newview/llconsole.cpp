@@ -456,6 +456,14 @@ void LLConsole::Paragraph::updateLines(F32 screen_width, LLFontGL* font, bool fo
 LLConsole::Paragraph::Paragraph (LLWString str, const LLColor4 &color, F32 add_time) 
 						: mParagraphText(str), mAddTime(add_time), mMaxWidth(-1)
 {
-	makeParagraphColorSegments(color);
+	// Only call makeParagraphColorSegments if the user logged in already (we come
+	// here before he logged in when they disabled login/logout screens).
+	// Otherwise makeParagraphColorSegments calls LLTextParser::getInstance() which
+	// causes a one-time initialization by reading highlights.xml, which fails
+	// when not logged in because it's per account.
+	if (!gDirUtilp->getLindenUserDir(true).empty())
+	{
+		makeParagraphColorSegments(color);
+	}
 }
 	

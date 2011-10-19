@@ -72,17 +72,9 @@ extern std::string gCurrentVersion;
 
 bool handleCloudSettingsChanged(const LLSD& newvalue);
 
-//NOTE: LLCachedControl moved to llxml/llcontrol.h make it easier to use in other projects.
-
-
 //A template would be a little awkward to use here.. so.. a preprocessor macro. Alas. onCommitControlSetting(gSavedSettings) etc.
 void onCommitControlSetting_gSavedSettings(LLUICtrl* ctrl, void* name);
 void onCommitControlSetting_gSavedPerAccountSettings(LLUICtrl* ctrl, void* name);
 #define onCommitControlSetting(controlgroup) onCommitControlSetting_##controlgroup
-
-//#define TEST_CACHED_CONTROL 1
-#ifdef TEST_CACHED_CONTROL
-void test_cached_control();
-#endif // TEST_CACHED_CONTROL
 
 #endif // LL_LLVIEWERCONTROL_H

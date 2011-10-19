@@ -272,7 +272,7 @@ To use spellcheck, right-click a misspelled word
         left="5" name="CmdDivisor" width="356"/>
 
       <check_box bottom_delta="-24" enabled="true" follows="left|top" font="SansSerifSmall" height="16"
-        label="Highlight messages if any of they contain the terms" left="5" mouse_opaque="true"
+        label="Highlight messages if any of them contain the terms" left="5" mouse_opaque="true"
         name="KeywordsOn" radio_style="false" width="270"/>
       <text bottom_delta="-20" follows="left|top" font="SansSerifSmall" height="20" left="12"
         name="keyword_txt1" width="512">

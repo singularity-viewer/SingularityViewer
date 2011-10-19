@@ -125,6 +125,9 @@ public:
 	// get full info
 	const LLRelationship* getBuddyInfo(const LLUUID& id) const;
 
+	// Is this person a friend/buddy/calling card holder?
+	bool isBuddy(const LLUUID& id) const;
+
 	// online status
 	void setBuddyOnline(const LLUUID& id, bool is_online);
 	bool isBuddyOnline(const LLUUID& id) const;
@@ -147,6 +150,23 @@ public:
 	void removeObserver(LLFriendObserver* observer);
 	void notifyObservers();
 
+	// Observers interested in updates of a particular avatar.
+	// On destruction these observers are NOT deleted.
+	void addParticularFriendObserver(const LLUUID& buddy_id, LLFriendObserver* observer);
+	void removeParticularFriendObserver(const LLUUID& buddy_id, LLFriendObserver* observer);
+	void notifyParticularFriendObservers(const LLUUID& buddy_id);
+
+	/**
+	 * Stores flag for change and id of object change applies to
+	 *
+	 * This allows outsiders to tell the AvatarTracker if something has
+	 * been changed 'under the hood',
+	 * and next notification will have exact avatar IDs have been changed.
+	 */
+	void addChangedMask(U32 mask, const LLUUID& referent);
+
+	const std::set<LLUUID>& getChangedIDs() { return mChangedBuddyIDs; }
+
 	// Apply the functor to every buddy. Do not actually modify the
 	// buddy list in the functor or bad things will happen.
 	void applyFunctor(LLRelationshipFunctor& f);
@@ -154,7 +174,7 @@ public:
 	static void formFriendship(const LLUUID& friend_id);
 
 	void updateFriends();
-
+	
 protected:
 	void deleteTrackingData();
 	void agentFound(const LLUUID& prey,
@@ -181,8 +201,15 @@ protected:
 
 	buddy_map_t mBuddyInfo;
 
+	typedef std::set<LLUUID> changed_buddy_t;
+	changed_buddy_t mChangedBuddyIDs;
+
 	typedef std::vector<LLFriendObserver*> observer_list_t;
 	observer_list_t mObservers;
+
+    typedef std::set<LLFriendObserver*> observer_set_t;
+    typedef std::map<LLUUID, observer_set_t> observer_map_t;
+    observer_map_t mParticularFriendObserverMap;
 
 private:
 	// do not implement
@@ -215,8 +242,7 @@ public:
 	virtual bool operator()(const LLUUID& buddy_id, LLRelationship* buddy);
 	typedef std::map<std::string, LLUUID, LLDictionaryLess> buddy_map_t;
 	buddy_map_t mMappable;
-	std::string mFirst;
-	std::string mLast;
+	std::string mFullName;
 };
 
 // collect dictionary sorted map of name -> agent_id for every online buddy
@@ -228,8 +254,7 @@ public:
 	virtual bool operator()(const LLUUID& buddy_id, LLRelationship* buddy);
 	typedef std::map<std::string, LLUUID, LLDictionaryLess> buddy_map_t;
 	buddy_map_t mOnline;
-	std::string mFirst;
-	std::string mLast;
+	std::string mFullName;
 };
 
 // collect dictionary sorted map of name -> agent_id for every buddy,
@@ -243,8 +268,7 @@ public:
 	typedef std::map<std::string, LLUUID, LLDictionaryLess> buddy_map_t;
 	buddy_map_t mOnline;
 	buddy_map_t mOffline;
-	std::string mFirst;
-	std::string mLast;
+	std::string mFullName;
 };
 
 #endif // LL_LLCALLINGCARD_H

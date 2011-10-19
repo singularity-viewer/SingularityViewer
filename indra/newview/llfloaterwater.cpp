@@ -49,6 +49,7 @@
 #include "llfloaterdaycycle.h"
 #include "llboost.h"
 #include "llmultisliderctrl.h"
+#include "llnotificationsutil.h"
 
 #include "v4math.h"
 #include "llviewerdisplay.h"
@@ -74,9 +75,9 @@ LLFloaterWater::LLFloaterWater() : LLFloater(std::string("water floater"))
 
 	if(comboBox != NULL) {
 		
-		std::map<std::string, LLWaterParamSet>::iterator mIt = 
-			LLWaterParamManager::instance()->mParamList.begin();
-		for(; mIt != LLWaterParamManager::instance()->mParamList.end(); mIt++) 
+		std::map<std::string, LLWaterParamSet>::const_iterator mIt = 
+			LLWaterParamManager::getInstance()->getPresets().begin();
+		for(; mIt != LLWaterParamManager::getInstance()->getPresets().end(); mIt++) 
 		{
 			comboBox->add(mIt->first);
 		}
@@ -123,7 +124,7 @@ void LLFloaterWater::initCallbacks(void) {
 	initHelpBtn("WaterWave1Help", "HelpWaterWave1");
 	initHelpBtn("WaterWave2Help", "HelpWaterWave2");
 
-	LLWaterParamManager * param_mgr = LLWaterParamManager::instance();
+	LLWaterParamManager * param_mgr = LLWaterParamManager::getInstance();
 
 	childSetCommitCallback("WaterFogColor", onWaterFogColorMoved, &param_mgr->mFogColor);
 
@@ -197,15 +198,15 @@ bool LLFloaterWater::newPromptCallback(const LLSD& notification, const LLSD& res
 	if(option == 0) {
 		LLComboBox* comboBox = sWaterMenu->getChild<LLComboBox>( "WaterPresetsCombo");
 
-		LLWaterParamManager * param_mgr = LLWaterParamManager::instance();
+		LLWaterParamManager * param_mgr = LLWaterParamManager::getInstance();
 
 		// add the current parameters to the list
 		// see if it's there first
-		std::map<std::string, LLWaterParamSet>::iterator mIt = 
-			param_mgr->mParamList.find(text);
+		std::map<std::string, LLWaterParamSet>::const_iterator mIt = 
+			param_mgr->getPresets().find(text);
 
 		// if not there, add a new one
-		if(mIt == param_mgr->mParamList.end()) 
+		if(mIt == param_mgr->getPresets().end()) 
 		{
 			param_mgr->addParamSet(text, param_mgr->mCurParams);
 			comboBox->add(text);
@@ -219,7 +220,7 @@ bool LLFloaterWater::newPromptCallback(const LLSD& notification, const LLSD& res
 		} 
 		else 
 		{
-			LLNotifications::instance().add("ExistsWaterPresetAlert");
+			LLNotificationsUtil::add("ExistsWaterPresetAlert");
 		}
 	}
 	return false;
@@ -229,7 +230,7 @@ void LLFloaterWater::syncMenu()
 {
 	bool err;
 
-	LLWaterParamManager * param_mgr = LLWaterParamManager::instance();
+	LLWaterParamManager * param_mgr = LLWaterParamManager::getInstance();
 
 	LLWaterParamSet & current_params = param_mgr->mCurParams;
 
@@ -315,7 +316,7 @@ void LLFloaterWater::show()
 bool LLFloaterWater::isOpen()
 {
 	if (sWaterMenu != NULL) {
-		return true;
+		return sWaterMenu->getVisible();
 	}
 	return false;
 }
@@ -337,9 +338,9 @@ void LLFloaterWater::onVector3ControlXMoved(LLUICtrl* ctrl, void* userData)
 
 	vectorControl->mX = sldrCtrl->getValueF32();
 
-	vectorControl->update(LLWaterParamManager::instance()->mCurParams);
+	vectorControl->update(LLWaterParamManager::getInstance()->mCurParams);
 
-	LLWaterParamManager::instance()->propagateParameters();
+	LLWaterParamManager::getInstance()->propagateParameters();
 }
 
 // vector control callbacks
@@ -350,9 +351,9 @@ void LLFloaterWater::onVector3ControlYMoved(LLUICtrl* ctrl, void* userData)
 
 	vectorControl->mY = sldrCtrl->getValueF32();
 
-	vectorControl->update(LLWaterParamManager::instance()->mCurParams);
+	vectorControl->update(LLWaterParamManager::getInstance()->mCurParams);
 
-	LLWaterParamManager::instance()->propagateParameters();
+	LLWaterParamManager::getInstance()->propagateParameters();
 }
 
 // vector control callbacks
@@ -363,9 +364,9 @@ void LLFloaterWater::onVector3ControlZMoved(LLUICtrl* ctrl, void* userData)
 
 	vectorControl->mZ = sldrCtrl->getValueF32();
 
-	vectorControl->update(LLWaterParamManager::instance()->mCurParams);
+	vectorControl->update(LLWaterParamManager::getInstance()->mCurParams);
 
-	LLWaterParamManager::instance()->propagateParameters();
+	LLWaterParamManager::getInstance()->propagateParameters();
 }
 
 
@@ -377,9 +378,9 @@ void LLFloaterWater::onVector2ControlXMoved(LLUICtrl* ctrl, void* userData)
 
 	vectorControl->mX = sldrCtrl->getValueF32();
 
-	vectorControl->update(LLWaterParamManager::instance()->mCurParams);
+	vectorControl->update(LLWaterParamManager::getInstance()->mCurParams);
 
-	LLWaterParamManager::instance()->propagateParameters();
+	LLWaterParamManager::getInstance()->propagateParameters();
 }
 
 // vector control callbacks
@@ -390,9 +391,9 @@ void LLFloaterWater::onVector2ControlYMoved(LLUICtrl* ctrl, void* userData)
 
 	vectorControl->mY = sldrCtrl->getValueF32();
 
-	vectorControl->update(LLWaterParamManager::instance()->mCurParams);
+	vectorControl->update(LLWaterParamManager::getInstance()->mCurParams);
 
-	LLWaterParamManager::instance()->propagateParameters();
+	LLWaterParamManager::getInstance()->propagateParameters();
 }
 
 // color control callbacks
@@ -415,9 +416,9 @@ void LLFloaterWater::onColorControlRMoved(LLUICtrl* ctrl, void* userData)
 		sWaterMenu->childSetValue(name, colorControl->mR);
 	}
 
-	colorControl->update(LLWaterParamManager::instance()->mCurParams);
+	colorControl->update(LLWaterParamManager::getInstance()->mCurParams);
 
-	LLWaterParamManager::instance()->propagateParameters();
+	LLWaterParamManager::getInstance()->propagateParameters();
 }
 
 void LLFloaterWater::onColorControlGMoved(LLUICtrl* ctrl, void* userData)
@@ -440,9 +441,9 @@ void LLFloaterWater::onColorControlGMoved(LLUICtrl* ctrl, void* userData)
 
 	}
 
-	colorControl->update(LLWaterParamManager::instance()->mCurParams);
+	colorControl->update(LLWaterParamManager::getInstance()->mCurParams);
 
-	LLWaterParamManager::instance()->propagateParameters();
+	LLWaterParamManager::getInstance()->propagateParameters();
 }
 
 void LLFloaterWater::onColorControlBMoved(LLUICtrl* ctrl, void* userData)
@@ -464,9 +465,9 @@ void LLFloaterWater::onColorControlBMoved(LLUICtrl* ctrl, void* userData)
 		sWaterMenu->childSetValue(name, colorControl->mB);
 	}
 
-	colorControl->update(LLWaterParamManager::instance()->mCurParams);
+	colorControl->update(LLWaterParamManager::getInstance()->mCurParams);
 
-	LLWaterParamManager::instance()->propagateParameters();
+	LLWaterParamManager::getInstance()->propagateParameters();
 }
 
 void LLFloaterWater::onColorControlAMoved(LLUICtrl* ctrl, void* userData)
@@ -476,9 +477,9 @@ void LLFloaterWater::onColorControlAMoved(LLUICtrl* ctrl, void* userData)
 
 	colorControl->mA = sldrCtrl->getValueF32();
 
-	colorControl->update(LLWaterParamManager::instance()->mCurParams);
+	colorControl->update(LLWaterParamManager::getInstance()->mCurParams);
 
-	LLWaterParamManager::instance()->propagateParameters();
+	LLWaterParamManager::getInstance()->propagateParameters();
 }
 
 
@@ -538,8 +539,8 @@ void LLFloaterWater::onColorControlIMoved(LLUICtrl* ctrl, void* userData)
 	}
 
 	// now update the current parameters and send them to shaders
-	colorControl->update(LLWaterParamManager::instance()->mCurParams);
-	LLWaterParamManager::instance()->propagateParameters();
+	colorControl->update(LLWaterParamManager::getInstance()->mCurParams);
+	LLWaterParamManager::getInstance()->propagateParameters();
 }
 
 void LLFloaterWater::onExpFloatControlMoved(LLUICtrl* ctrl, void* userData)
@@ -549,10 +550,10 @@ void LLFloaterWater::onExpFloatControlMoved(LLUICtrl* ctrl, void* userData)
 
 	F32 val = sldrCtrl->getValueF32();
 	expFloatControl->mExp = val;
-	LLWaterParamManager::instance()->setDensitySliderValue(val);
+	LLWaterParamManager::getInstance()->setDensitySliderValue(val);
 
-	expFloatControl->update(LLWaterParamManager::instance()->mCurParams);
-	LLWaterParamManager::instance()->propagateParameters();
+	expFloatControl->update(LLWaterParamManager::getInstance()->mCurParams);
+	LLWaterParamManager::getInstance()->propagateParameters();
 }
 
 void LLFloaterWater::onFloatControlMoved(LLUICtrl* ctrl, void* userData)
@@ -562,8 +563,8 @@ void LLFloaterWater::onFloatControlMoved(LLUICtrl* ctrl, void* userData)
 
 	floatControl->mX = sldrCtrl->getValueF32() / floatControl->mMult;
 
-	floatControl->update(LLWaterParamManager::instance()->mCurParams);
-	LLWaterParamManager::instance()->propagateParameters();
+	floatControl->update(LLWaterParamManager::getInstance()->mCurParams);
+	LLWaterParamManager::getInstance()->propagateParameters();
 }
 void LLFloaterWater::onWaterFogColorMoved(LLUICtrl* ctrl, void* userData)
 {
@@ -571,8 +572,8 @@ void LLFloaterWater::onWaterFogColorMoved(LLUICtrl* ctrl, void* userData)
 	WaterColorControl * colorControl = static_cast<WaterColorControl *>(userData);	
 	*colorControl = swatch->get();
 
-	colorControl->update(LLWaterParamManager::instance()->mCurParams);
-	LLWaterParamManager::instance()->propagateParameters();
+	colorControl->update(LLWaterParamManager::getInstance()->mCurParams);
+	LLWaterParamManager::getInstance()->propagateParameters();
 }
 
 void LLFloaterWater::onBoolToggle(LLUICtrl* ctrl, void* userData)
@@ -587,12 +588,12 @@ void LLFloaterWater::onNormalMapPicked(LLUICtrl* ctrl, void* userData)
 {
 	LLTextureCtrl* textCtrl = static_cast<LLTextureCtrl*>(ctrl);
 	LLUUID textID = textCtrl->getImageAssetID();
-	LLWaterParamManager::instance()->setNormalMapID(textID);
+	LLWaterParamManager::getInstance()->setNormalMapID(textID);
 }
 
 void LLFloaterWater::onNewPreset(void* userData)
 {
-	LLNotifications::instance().add("NewWaterPreset", LLSD(),  LLSD(), newPromptCallback);
+	LLNotificationsUtil::add("NewWaterPreset", LLSD(),  LLSD(), newPromptCallback);
 }
 
 void LLFloaterWater::onSavePreset(void* userData)
@@ -606,7 +607,7 @@ void LLFloaterWater::onSavePreset(void* userData)
 		return;
 	}
 
-	LLWaterParamManager::instance()->mCurParams.mName = 
+	LLWaterParamManager::getInstance()->mCurParams.mName = 
 		comboBox->getSelectedItemLabel();
 
 	// check to see if it's a default and shouldn't be overwritten
@@ -614,11 +615,11 @@ void LLFloaterWater::onSavePreset(void* userData)
 		comboBox->getSelectedItemLabel());
 	if(sIt != sDefaultPresets.end() && !gSavedSettings.getBOOL("WaterEditPresets")) 
 	{
-		LLNotifications::instance().add("WLNoEditDefault");
+		LLNotificationsUtil::add("WLNoEditDefault");
 		return;
 	}
 
-	LLNotifications::instance().add("WLSavePresetAlert", LLSD(), LLSD(), saveAlertCallback);
+	LLNotificationsUtil::add("WLSavePresetAlert", LLSD(), LLSD(), saveAlertCallback);
 }
 
 bool LLFloaterWater::saveAlertCallback(const LLSD& notification, const LLSD& response)
@@ -627,7 +628,7 @@ bool LLFloaterWater::saveAlertCallback(const LLSD& notification, const LLSD& res
 	// if they choose save, do it.  Otherwise, don't do anything
 	if(option == 0) 
 	{
-		LLWaterParamManager * param_mgr = LLWaterParamManager::instance();
+		LLWaterParamManager * param_mgr = LLWaterParamManager::getInstance();
 
 		param_mgr->setParamSet(
 			param_mgr->mCurParams.mName, 
@@ -650,7 +651,7 @@ void LLFloaterWater::onDeletePreset(void* userData)
 
 	LLSD args;
 	args["SKY"] = combo_box->getSelectedValue().asString();
-	LLNotifications::instance().add("WLDeletePresetAlert", args, LLSD(), deleteAlertCallback);
+	LLNotificationsUtil::add("WLDeletePresetAlert", args, LLSD(), deleteAlertCallback);
 }
 
 bool LLFloaterWater::deleteAlertCallback(const LLSD& notification, const LLSD& response)
@@ -677,11 +678,11 @@ bool LLFloaterWater::deleteAlertCallback(const LLSD& notification, const LLSD& r
 		std::set<std::string>::iterator sIt = sDefaultPresets.find(name);
 		if(sIt != sDefaultPresets.end()) 
 		{
-			LLNotifications::instance().add("WaterNoEditDefault");
+			LLNotificationsUtil::add("WaterNoEditDefault");
 			return false;
 		}
 
-		LLWaterParamManager::instance()->removeParamSet(name, true);
+		LLWaterParamManager::getInstance()->removeParamSet(name, true);
 		
 		// remove and choose another
 		S32 new_index = combo_box->getCurrentIndex();
@@ -720,7 +721,7 @@ void LLFloaterWater::onChangePresetName(LLUICtrl* ctrl, void * userData)
 		return;
 	}
 	
-	LLWaterParamManager::instance()->loadPreset(
+	LLWaterParamManager::getInstance()->loadPreset(
 		combo_box->getSelectedValue().asString());
 	sWaterMenu->syncMenu();
 }

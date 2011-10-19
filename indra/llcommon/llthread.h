@@ -33,12 +33,11 @@
 #ifndef LL_LLTHREAD_H
 #define LL_LLTHREAD_H
 
-#include "llapr.h"
 #include "llapp.h"
+#include "llapr.h"
 #include "llmemory.h"
-
 #include "apr_thread_cond.h"
-#include "aiaprpool.h"
+#include "llaprpool.h"
 
 #ifdef SHOW_ASSERT
 extern LL_COMMON_API bool is_main_thread(void);
@@ -48,24 +47,33 @@ class LLThread;
 class LLMutex;
 class LLCondition;
 
-class LL_COMMON_API AIThreadLocalData
+#if LL_WINDOWS
+#define ll_thread_local __declspec(thread)
+#else
+#define ll_thread_local __thread
+#endif
+
+class LL_COMMON_API LLThreadLocalData
 {
 private:
 	static apr_threadkey_t* sThreadLocalDataKey;
 
 public:
 	// Thread-local memory pool.
-	AIAPRRootPool mRootPool;
-	AIVolatileAPRPool mVolatileAPRPool;
+	LLAPRRootPool mRootPool;
+	LLVolatileAPRPool mVolatileAPRPool;
 
 	static void init(void);
 	static void destroy(void* thread_local_data);
 	static void create(LLThread* pthread);
-	static AIThreadLocalData& tldata(void);
+	static LLThreadLocalData& tldata(void);
 };
 
 class LL_COMMON_API LLThread
 {
+private:
+	static U32 sIDIter;
+	
 public:
 	typedef enum e_thread_status
 	{
@@ -89,7 +97,7 @@ public:
 	// Called from MAIN THREAD.
 	void pause();
 	void unpause();
-	bool isPaused() { return isStopped() || mPaused == TRUE; }
+	bool isPaused() { return isStopped() || mPaused; }
 	
 	// Cause the thread to wake up and check its condition
 	void wake();
@@ -104,10 +112,12 @@ public:
 	void start(void);
 
 	// Return thread-local data for the current thread.
-	static AIThreadLocalData& tldata(void) { return AIThreadLocalData::tldata(); }
+	static LLThreadLocalData& tldata(void) { return LLThreadLocalData::tldata(); }
+
+	U32 getID() const { return mID; }
 
 private:
-	BOOL				mPaused;
+	bool				mPaused;
 	
 	// static function passed to APR thread creation routine
 	static void *APR_THREAD_FUNC staticRun(apr_thread_t *apr_threadp, void *datap);
@@ -117,10 +127,11 @@ protected:
 	LLCondition*		mRunCondition;
 
 	apr_thread_t		*mAPRThreadp;
-	EThreadStatus		mStatus;
+	volatile EThreadStatus		mStatus;
+	U32					mID;
 
-	friend void AIThreadLocalData::create(LLThread* threadp);
-	AIThreadLocalData*  mThreadLocalData;
+	friend void LLThreadLocalData::create(LLThread* threadp);
+	LLThreadLocalData*  mThreadLocalData;
 
 	void setQuitting();
 	
@@ -148,37 +159,60 @@ protected:
 
 //============================================================================
 
+#define MUTEX_DEBUG (LL_DEBUG || LL_RELEASE_WITH_DEBUG_INFO)
+
+#ifdef MUTEX_DEBUG
+// We really shouldn't be using recursive locks. Make sure of that in debug mode.
+#define MUTEX_FLAG APR_THREAD_MUTEX_UNNESTED
+#else
+// Use the fastest platform-optimal lock behavior (can be recursive or non-recursive).
+#define MUTEX_FLAG APR_THREAD_MUTEX_DEFAULT
+#endif
+
 class LL_COMMON_API LLMutexBase
 {
 public:
-	void lock() { apr_thread_mutex_lock(mAPRMutexp); }
-	void unlock() { apr_thread_mutex_unlock(mAPRMutexp); }
+	typedef enum
+	{
+		NO_THREAD = 0xFFFFFFFF
+	} e_locking_thread;
+
+	LLMutexBase() ;
+	
+	void lock();		//blocks
+	void unlock();
 	// Returns true if lock was obtained successfully.
 	bool tryLock() { return !APR_STATUS_IS_EBUSY(apr_thread_mutex_trylock(mAPRMutexp)); }
 
-	bool isLocked(); 	// non-blocking, but does do a lock/unlock so not free
+	// non-blocking, but does do a lock/unlock so not free
+	bool isLocked() { bool is_not_locked = tryLock(); if (is_not_locked) unlock(); return !is_not_locked; }
+	// get ID of locking thread
+	U32 lockingThread() const { return mLockingThread; }
 
 protected:
 	// mAPRMutexp is initialized and uninitialized in the derived class.
 	apr_thread_mutex_t* mAPRMutexp;
+	mutable U32			mCount;
+	mutable U32			mLockingThread;
 };
 
 class LL_COMMON_API LLMutex : public LLMutexBase
 {
 public:
-	LLMutex(AIAPRPool& parent = LLThread::tldata().mRootPool) : mPool(parent)
+	LLMutex(LLAPRPool& parent = LLThread::tldata().mRootPool) : mPool(parent)
 	{
-		apr_thread_mutex_create(&mAPRMutexp, APR_THREAD_MUTEX_UNNESTED, mPool());
+		apr_thread_mutex_create(&mAPRMutexp, MUTEX_FLAG, mPool());
 	}
 	~LLMutex()
 	{
-		llassert(!isLocked()); // better not be locked!
+		//this assertion erroneously triggers whenever an LLCondition is destroyed
+		//llassert(!isLocked()); // better not be locked!
 		apr_thread_mutex_destroy(mAPRMutexp);
 		mAPRMutexp = NULL;
 	}
 
 protected:
-	AIAPRPool mPool;
+	LLAPRPool mPool;
 private:
 	// Disable copy construction, as si teh bomb!!! -SG
 	LLMutex(const LLMutex&);
@@ -194,7 +228,7 @@ class LL_COMMON_API LLMutexRootPool : public LLMutexBase
 public:
 	LLMutexRootPool(void)
 	{
-		apr_thread_mutex_create(&mAPRMutexp, APR_THREAD_MUTEX_UNNESTED, mRootPool());
+		apr_thread_mutex_create(&mAPRMutexp, MUTEX_FLAG, mRootPool());
 	}
 	~LLMutexRootPool()
 	{
@@ -208,7 +242,7 @@ public:
 	}
 
 protected:
-	AIAPRRootPool mRootPool;
+	LLAPRRootPool mRootPool;
 };
 #endif // APR_HAS_THREADS
 
@@ -216,7 +250,7 @@ protected:
 class LL_COMMON_API LLCondition : public LLMutex
 {
 public:
-	LLCondition(AIAPRPool& parent = LLThread::tldata().mRootPool);
+	LLCondition(LLAPRPool& parent = LLThread::tldata().mRootPool);
 	~LLCondition();
 	
 	void wait();		// blocks
@@ -246,7 +280,7 @@ private:
 class AIRWLock
 {
 public:
-	AIRWLock(AIAPRPool& parent = LLThread::tldata().mRootPool) :
+	AIRWLock(LLAPRPool& parent = LLThread::tldata().mRootPool) :
 		mWriterWaitingMutex(parent), mNoHoldersCondition(parent), mHoldersCount(0), mWriterIsWaiting(false) { }
 
 private:
@@ -349,6 +383,7 @@ void LLThread::unlockData()
 {
 	mRunCondition->unlock();
 }
+
 
 //============================================================================
 

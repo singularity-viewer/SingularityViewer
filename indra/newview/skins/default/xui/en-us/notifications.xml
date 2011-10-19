@@ -1,5 +1,13 @@
 <?xml version="1.0" ?><notifications>
 
+  <global name="VIEWER_NAME">
+    Singularity Viewer
+  </global>
+
+  <global name="VIEWER_SITE">
+    http://www.singularityviewer.org/
+  </global>
+  
   <global name="skipnexttime">
 
 		Don&apos;t show me this again
@@ -1888,6 +1896,15 @@ Try selecting a single parcel.
   </notification>
 
   <notification
+   icon="notifytip.tga"
+   name="DeedToGroupFail"
+   type="notifytip">
+    Deed to group failed.
+    <tag>group</tag>
+    <tag>fail</tag>
+  </notification>
+
+  <notification
    icon="alertmodal.tga"
    name="ParcelCanPlayMedia"
    type="alertmodal">
@@ -2464,7 +2481,7 @@ Deed this [AREA] m² of land to the group &apos;[GROUP_NAME]&apos;?
    name="DeedLandToGroupWithContribution"
    type="alertmodal">
 By deeding this parcel, the group will be required to have and maintain sufficient land use credits.
-The deed will include a simultaneous land contribution to the group from &apos;[FIRST_NAME] [LAST_NAME]&apos;.
+The deed will include a simultaneous land contribution to the group from &apos;[NAME]&apos;.
 The purchase price of the land is not refunded to the owner. If a deeded parcel is sold, the sale price will be divided evenly among group members.
 
 Deed this [AREA] m² of land to the group &apos;[GROUP_NAME]&apos;?
@@ -5475,7 +5492,7 @@ You cannot remove protected categories.
    icon="notifytip.tga"
    name="OfferedCard"
    type="notifytip">
-You have offered a calling card to [FIRST] [LAST]
+You have offered a calling card to [NAME]
   </notification>
 
   <notification
@@ -5712,7 +5729,7 @@ The objects you own on the selected parcel of land have been returned back to yo
    icon="notify.tga"
    name="OtherObjectsReturned"
    type="notify">
-The objects on the selected parcel of land that is owned by [FIRST] [LAST] have been returned to his or her inventory.
+The objects on the selected parcel of land that is owned by [NAME] have been returned to his or her inventory.
   </notification>
 
   <notification
@@ -6001,7 +6018,7 @@ No valid parcel could be found.
    icon="notify.tga"
    name="ObjectGiveItem"
    type="notify">
-An object named [OBJECTFROMNAME] owned by [FIRST] [LAST] has given you a [OBJECTTYPE] named [OBJECTNAME].
+An object named [OBJECTFROMNAME] owned by [NAME] has given you a [OBJECTTYPE] named [OBJECTNAME].
     <form name="form">
       <button
        index="0"
@@ -6199,7 +6216,7 @@ An object named [OBJECTFROMNAME] owned by (an unknown user) has given you a [OBJ
    icon="notify.tga"
    name="OfferCallingCard"
    type="notify">
-[FIRST] [LAST] is offering their calling card.
+[NAME] is offering their calling card.
 This will add a bookmark in your inventory so you can quickly IM this resident.
     <form name="form">
       <button
@@ -6335,7 +6352,7 @@ Grant this request?
    icon="notify.tga"
    name="ScriptDialog"
    type="notify">
-[FIRST] [LAST]&apos;s &apos;[TITLE]&apos; (ch[CHANNEL])
+[NAME]&apos;s &apos;[TITLE]&apos; (ch[CHANNEL])
 [MESSAGE]
     <form name="form">
       <button
@@ -6363,7 +6380,7 @@ Grant this request?
    icon="notify.tga"
    name="ScriptTextBoxDialog"
    type="notify">
-    [FIRST] [LAST]&apos;s &apos;[TITLE]&apos;
+    [NAME]&apos;s &apos;[TITLE]&apos;
     [MESSAGE]
     <form name="form">
       <input name="message">
@@ -6585,21 +6602,21 @@ Click Accept to join the call or Decline to decline the invitation. Click Mute t
    icon="notify.tga"
    name="AutoUnmuteByIM"
    type="notify">
-[FIRST] [LAST] was sent an instant message and has been automatically unmuted.
+[NAME] was sent an instant message and has been automatically unmuted.
   </notification>
 
   <notification
    icon="notify.tga"
    name="AutoUnmuteByMoney"
    type="notify">
-[FIRST] [LAST] was given money and has been automatically unmuted.
+[NAME] was given money and has been automatically unmuted.
   </notification>
 
   <notification
    icon="notify.tga"
    name="AutoUnmuteByInventory"
    type="notify">
-[FIRST] [LAST] was offered inventory and has been automatically unmuted.
+[NAME] was offered inventory and has been automatically unmuted.
   </notification>
 
   <notification
@@ -6941,11 +6958,11 @@ No
     For instructions, make a new template in the AO. Use the toolbar to toggle the AO on/off.
   </notification>
 
-  <notification icon="notifytip.tga" name="BlockedCards" type="notifytip">Blocked calling cards from [FIRST] [LAST] ([SOURCE])</notification>
-  <notification icon="notifytip.tga" name="BlockedDialogs" type="notifytip">Blocking all dialogs from [FIRST] [LAST]'s objects. (Origin: [SOURCE])</notification>
-  <notification icon="notifytip.tga" name="BlockedGeneralAvatar" type="notifytip">Blocked spam from avatar [FULL_NAME] ([SOURCE])</notification>
+  <notification icon="notifytip.tga" name="BlockedCards" type="notifytip">Blocked calling cards from [NAME] ([SOURCE])</notification>
+  <notification icon="notifytip.tga" name="BlockedDialogs" type="notifytip">Blocking all dialogs from [NAME]'s objects. (Origin: [SOURCE])</notification>
+  <notification icon="notifytip.tga" name="BlockedGeneralAvatar" type="notifytip">Blocked spam from avatar [NAME] ([SOURCE])</notification>
   <notification icon="notifytip.tga" name="BlockedGeneralObjects" type="notifytip">Blocked spam from objects owned by [OWNER] ([SOURCE])</notification>
-  <notification icon="notifytip.tga" name="BlockedChatterAvatar" type="notifytip">Blocked chat-spam from avatar [FULL_NAME] ([SOURCE])</notification>
+  <notification icon="notifytip.tga" name="BlockedChatterAvatar" type="notifytip">Blocked chat-spam from avatar [NAME] ([SOURCE])</notification>
   <notification icon="notifytip.tga" name="BlockedChatterObjects" type="notifytip">Blocked chat-spam from objects owned by [OWNER] ([SOURCE])</notification>
 
   <notification

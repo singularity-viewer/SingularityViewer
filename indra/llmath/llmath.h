@@ -35,10 +35,10 @@
 
 #include <cmath>
 #include <cstdlib>
-#include <complex>
+#include <vector>
 #include "lldefs.h"
-#include "llstl.h" // *TODO: Remove when LLString is gone
-#include "llstring.h" // *TODO: Remove when LLString is gone
+//#include "llstl.h" // *TODO: Remove when LLString is gone
+//#include "llstring.h" // *TODO: Remove when LLString is gone
 // lltut.h uses is_approx_equal_fraction(). This was moved to its own header
 // file in llcommon so we can use lltut.h for llcommon tests without making
 // llcommon depend on llmath.
@@ -61,32 +61,11 @@
 #endif
 
 // Single Precision Floating Point Routines
-#ifndef sqrtf
-#define sqrtf(x)	((F32)sqrt((F64)(x)))
-#endif
-#ifndef fsqrtf
-#define fsqrtf(x)	sqrtf(x)
-#endif
-
-#ifndef cosf
-#define cosf(x)		((F32)cos((F64)(x)))
-#endif
-#ifndef sinf
-#define sinf(x)		((F32)sin((F64)(x)))
-#endif
-#ifndef tanf
+// (There used to be more defined here, but they appeared to be redundant and 
+// were breaking some other includes. Removed by Falcon, reviewed by Andrew, 11/25/09)
+/*#ifndef tanf
 #define tanf(x)		((F32)tan((F64)(x)))
-#endif
-#ifndef acosf
-#define acosf(x)	((F32)acos((F64)(x)))
-#endif
-
-#ifndef powf
-#define powf(x,y)	((F32)pow((F64)(x),(F64)(y)))
-#endif
-#ifndef expf
-#define expf(x)		((F32)exp((F64)(x)))
-#endif
+#endif*/
 
 const F32	GRAVITY			= -9.8f;
 
@@ -206,7 +185,7 @@ inline S32 llfloor( F32 f )
 		}
 		return result;
 #else
-		return (S32)floorf(f);
+		return (S32)floor(f);
 #endif
 }
 
@@ -537,6 +516,12 @@ inline void ll_remove_outliers(std::vector<VEC_TYPE>& data, F32 k)
 	VEC_TYPE Q1 = data[data.size()/4];
 	VEC_TYPE Q3 = data[data.size()-data.size()/4-1];
 
+	if ((F32)(Q3-Q1) < 1.f)
+	{
+		// not enough variation to detect outliers
+		return;
+	}
+
 	VEC_TYPE min = (VEC_TYPE) ((F32) Q1-k * (F32) (Q3-Q1));
 	VEC_TYPE max = (VEC_TYPE) ((F32) Q3+k * (F32) (Q3-Q1));
 
@@ -562,4 +547,7 @@ inline void ll_remove_outliers(std::vector<VEC_TYPE>& data, F32 k)
 		data.erase(data.begin(), data.begin()+i);
 	}
 }
+
+// Include simd math header
+#include "llsimdmath.h"
 #endif

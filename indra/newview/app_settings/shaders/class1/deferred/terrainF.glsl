@@ -5,7 +5,7 @@
  * $License$
  */
  
-#version 120
+
 
 uniform sampler2D detail_0;
 uniform sampler2D detail_1;

@@ -38,7 +38,7 @@
 #include "llassetstorage.h"
 
 #include "llagent.h"
-#include "llnotify.h"
+#include "llnotificationsutil.h"
 #include "llvfile.h"
 #include "llviewerstats.h"
 
@@ -120,11 +120,11 @@ void LLLandmarkList::processGetAssetReply(
 
 		if( LL_ERR_ASSET_REQUEST_NOT_IN_DATABASE == status )
 		{
-			LLNotifications::instance().add("LandmarkMissing");
+			LLNotificationsUtil::add("LandmarkMissing");
 		}
 		else
 		{
-			LLNotifications::instance().add("UnableToLoadLandmark");
+			LLNotificationsUtil::add("UnableToLoadLandmark");
 		}
 
 		gLandmarkList.mBadList.insert(uuid);

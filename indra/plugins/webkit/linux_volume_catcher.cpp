@@ -50,8 +50,12 @@ extern "C" {
 #include <pulse/subscribe.h>
 #include <pulse/glib-mainloop.h> // There's no special reason why we want the *glib* PA mainloop, but the generic polling implementation seems broken.
 
-#include "aiaprpool.h"
+#include "llaprpool.h"
 #include "apr_dso.h"
+#ifdef LL_STANDALONE
+#include <dlfcn.h>
+#include <apr_portable.h>
+#endif
 }
 
 ////////////////////////////////////////////////////
@@ -66,7 +70,7 @@ extern "C" {
 #undef LL_PA_SYM
 
 static bool sSymsGrabbed = false;
-static AIAPRPool sSymPADSOMemoryPool;
+static LLAPRPool sSymPADSOMemoryPool;
 static apr_dso_handle_t *sSymPADSOHandleG = NULL;
 
 bool grab_pa_syms(std::string pulse_dso_name)
@@ -87,9 +91,16 @@ bool grab_pa_syms(std::string pulse_dso_name)
 	//attempt to load the shared library
 	sSymPADSOMemoryPool.create();
   
+#ifdef LL_STANDALONE
+    void *dso_handle = dlopen(pulse_dso_name.c_str(), RTLD_NOW | RTLD_GLOBAL);
+    rv = (!dso_handle)?APR_EDSOOPEN:apr_os_dso_handle_put(&sSymPADSOHandle,
+            dso_handle, sSymPADSOMemoryPool());
+	if ( APR_SUCCESS == rv )
+#else
 	if ( APR_SUCCESS == (rv = apr_dso_load(&sSymPADSOHandle,
 					       pulse_dso_name.c_str(),
 					       sSymPADSOMemoryPool()) ))
+#endif
 	{
 		INFOMSG("Found DSO: %s", pulse_dso_name.c_str());
 

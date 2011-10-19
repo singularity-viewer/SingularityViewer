@@ -34,6 +34,7 @@
 
 #include "llpanelmsgs.h"
 
+#include "llnotificationsutil.h"
 #include "llscrolllistctrl.h"
 #include "llviewerwindow.h"
 #include "llviewercontrol.h"
@@ -222,7 +223,7 @@ bool callback_reset_dialogs(const LLSD& notification, const LLSD& response, LLPa
 // static
 void LLPanelMsgs::onClickResetDialogs(void* user_data)
 {
-	LLNotifications::instance().add("ResetShowNextTimeDialogs", LLSD(), LLSD(), boost::bind(&callback_reset_dialogs, _1, _2, (LLPanelMsgs*)user_data));
+	LLNotificationsUtil::add("ResetShowNextTimeDialogs", LLSD(), LLSD(), boost::bind(&callback_reset_dialogs, _1, _2, (LLPanelMsgs*)user_data));
 }
 
 bool callback_skip_dialogs(const LLSD& notification, const LLSD& response, LLPanelMsgs* panelp)
@@ -243,5 +244,5 @@ bool callback_skip_dialogs(const LLSD& notification, const LLSD& response, LLPan
 // static
 void LLPanelMsgs::onClickSkipDialogs(void* user_data)
 {
-	LLNotifications::instance().add("SkipShowNextTimeDialogs", LLSD(), LLSD(), boost::bind(&callback_skip_dialogs, _1, _2, (LLPanelMsgs*)user_data));
+	LLNotificationsUtil::add("SkipShowNextTimeDialogs", LLSD(), LLSD(), boost::bind(&callback_skip_dialogs, _1, _2, (LLPanelMsgs*)user_data));
 }

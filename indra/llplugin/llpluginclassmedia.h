@@ -36,6 +36,7 @@
 #ifndef LL_LLPLUGINCLASSMEDIA_H
 #define LL_LLPLUGINCLASSMEDIA_H
 
+#include "llgltypes.h"
 #include "llpluginclassbasic.h"
 #include "llrect.h"
 #include "v4color.h"
@@ -79,6 +80,8 @@ public:
 	
 	void setBackgroundColor(LLColor4 color) { mBackgroundColor = color; };
 	
+	void setOwner(LLPluginClassMediaOwner *owner) { mOwner = owner; };
+	
 	// Returns true if all of the texture parameters (depth, format, size, and texture size) are set up and consistent.
 	// This will initially be false, and will also be false for some time after setSize while the resize is processed.
 	// Note that if this returns true, it is safe to use all the get() functions above without checking for invalid return values
@@ -88,27 +91,36 @@ public:
 	bool getDirty(LLRect *dirty_rect = NULL);
 	void resetDirty(void);
 	
-	enum EMouseEventType
+	typedef enum 
 	{
 		MOUSE_EVENT_DOWN,
 		MOUSE_EVENT_UP,
 		MOUSE_EVENT_MOVE,
 		MOUSE_EVENT_DOUBLE_CLICK
-	};
+	}EMouseEventType;
 	
 	void mouseEvent(EMouseEventType type, int button, int x, int y, MASK modifiers);
 
-	enum EKeyEventType
+	typedef enum 
 	{
 		KEY_EVENT_DOWN,
 		KEY_EVENT_UP,
 		KEY_EVENT_REPEAT
-	};
+	}EKeyEventType;
 	
 	bool keyEvent(EKeyEventType type, int key_code, MASK modifiers, LLSD native_key_data);
 
 	void scrollEvent(int x, int y, MASK modifiers);
-	
+
+	// Javascript <-> viewer events
+	void jsEnableObject( bool enable );
+	void jsAgentLocationEvent( double x, double y, double z );
+	void jsAgentGlobalLocationEvent( double x, double y, double z );
+	void jsAgentOrientationEvent( double angle );
+	void jsAgentLanguageEvent( const std::string& language );
+	void jsAgentRegionEvent( const std::string& region_name );
+	void jsAgentMaturityEvent( const std::string& maturity );
+		
 	// Text may be unicode (utf8 encoded)
 	bool textInput(const std::string &text, MASK modifiers, LLSD native_key_data);
 	
@@ -124,6 +136,10 @@ public:
 	void setLowPrioritySizeLimit(int size);
 	
 	F64 getCPUUsage();
+	
+	void sendPickFileResponse(const std::string &file);
+
+	void sendAuthResponse(bool ok, const std::string &username, const std::string &password);
 
 	// Valid after a MEDIA_EVENT_CURSOR_CHANGED event
 	std::string getCursorName() const { return mCursorName; };
@@ -144,7 +160,8 @@ public:
 	void	setLanguageCode(const std::string &language_code);
 	void	setPluginsEnabled(const bool enabled);
 	void	setJavascriptEnabled(const bool enabled);
-		
+	void	setTarget(const std::string &target);
+	
 	///////////////////////////////////
 	// media browser class functions
 	bool pluginSupportsMediaBrowser(void);
@@ -161,6 +178,10 @@ public:
 	void browse_back();
 	void set_status_redirect(int code, const std::string &url);
 	void setBrowserUserAgent(const std::string& user_agent);
+	void proxyWindowOpened(const std::string &target, const std::string &uuid);
+	void proxyWindowClosed(const std::string &uuid);
+	void ignore_ssl_cert_errors(bool ignore);
+	void addCertificateFilePath(const std::string& path);
 	
 	// This is valid after MEDIA_EVENT_NAVIGATE_BEGIN or MEDIA_EVENT_NAVIGATE_COMPLETE
 	std::string	getNavigateURI() const { return mNavigateURI; };
@@ -183,10 +204,32 @@ public:
 	// This is valid after MEDIA_EVENT_CLICK_LINK_HREF or MEDIA_EVENT_CLICK_LINK_NOFOLLOW
 	std::string getClickURL() const { return mClickURL; };
 
+	// This is valid after MEDIA_EVENT_CLICK_LINK_NOFOLLOW
+	std::string getClickNavType() const { return mClickNavType; };
+
 	// This is valid after MEDIA_EVENT_CLICK_LINK_HREF
 	std::string getClickTarget() const { return mClickTarget; };
 
+	// This is valid during MEDIA_EVENT_CLICK_LINK_HREF and MEDIA_EVENT_GEOMETRY_CHANGE
+	std::string getClickUUID() const { return mClickUUID; };
 
+	// This is valid after MEDIA_EVENT_NAVIGATE_ERROR_PAGE
+	S32 getStatusCode() const { return mStatusCode; };
+	
+	// These are valid during MEDIA_EVENT_GEOMETRY_CHANGE
+	S32 getGeometryX() const { return mGeometryX; };
+	S32 getGeometryY() const { return mGeometryY; };
+	S32 getGeometryWidth() const { return mGeometryWidth; };
+	S32 getGeometryHeight() const { return mGeometryHeight; };
+	
+	// These are valid during MEDIA_EVENT_AUTH_REQUEST
+	std::string	getAuthURL() const { return mAuthURL; };
+	std::string	getAuthRealm() const { return mAuthRealm; };
+
+	// These are valid during MEDIA_EVENT_LINK_HOVERED
+	std::string	getHoverText() const { return mHoverText; };
+	std::string	getHoverLink() const { return mHoverLink; };
+	
 	std::string getMediaName() const { return mMediaName; };
 	std::string getMediaDescription() const { return mMediaDescription; };
 
@@ -228,12 +271,12 @@ protected:
 
 protected:
 	LLPluginClassMediaOwner *mOwner;
-
+	
 	bool		mTextureParamsReceived;		// the mRequestedTexture* fields are only valid when this is true
 	S32 		mRequestedTextureDepth;
-	U32			mRequestedTextureInternalFormat;
-	U32			mRequestedTextureFormat;
-	U32			mRequestedTextureType;
+	LLGLenum	mRequestedTextureInternalFormat;
+	LLGLenum	mRequestedTextureFormat;
+	LLGLenum	mRequestedTextureType;
 	bool		mRequestedTextureSwapBytes;
 	bool		mRequestedTextureCoordsOpenGL;
 	
@@ -299,6 +342,8 @@ protected:
 	
 	LLColor4		mBackgroundColor;
 	
+	std::string		mTarget;
+	
 	/////////////////////////////////////////
 	// media_browser class
 	std::string		mNavigateURI;
@@ -310,7 +355,18 @@ protected:
 	int				mProgressPercent;
 	std::string		mLocation;
 	std::string		mClickURL;
+	std::string		mClickNavType;
 	std::string		mClickTarget;
+	std::string		mClickUUID;
+	S32				mGeometryX;
+	S32				mGeometryY;
+	S32				mGeometryWidth;
+	S32				mGeometryHeight;
+	S32				mStatusCode;
+	std::string		mAuthURL;
+	std::string		mAuthRealm;
+	std::string		mHoverText;
+	std::string		mHoverLink;
 	
 	/////////////////////////////////////////
 	// media_time class

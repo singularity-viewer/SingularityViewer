@@ -84,8 +84,8 @@ void LLViewerJointMesh::updateGeometryVectorized(LLFace *face, LLPolyMesh *mesh)
 	buffer->getNormalStrider(o_normals,   mesh->mFaceVertexOffset);
 
 	const F32*			weights			= mesh->getWeights();
-	const LLVector3*	coords			= mesh->getCoords();
-	const LLVector3*	normals			= mesh->getNormals();
+	const LLVector4*	coords			= mesh->getCoords();
+	const LLVector4*	normals			= mesh->getNormals();
 	for (U32 index = 0, index_end = mesh->getNumVertices(); index < index_end; ++index)
 	{
 		if( weight != weights[index])
@@ -93,8 +93,8 @@ void LLViewerJointMesh::updateGeometryVectorized(LLFace *face, LLPolyMesh *mesh)
 			S32 joint = llfloor(weight = weights[index]);
 			blend_mat.lerp(sJointMat[joint], sJointMat[joint+1], weight - joint);
 		}
-		blend_mat.multiply(coords[index], o_vertices[index]);
-		((LLV4Matrix3)blend_mat).multiply(normals[index], o_normals[index]);
+		blend_mat.multiply((const LLVector3)coords[index], o_vertices[index]);
+		((LLV4Matrix3)blend_mat).multiply((const LLVector3)normals[index], o_normals[index]);
 	}
 
 	buffer->setBuffer(0);

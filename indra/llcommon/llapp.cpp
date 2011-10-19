@@ -249,15 +249,6 @@ LLSD LLApp::getOptionData(OptionPriority level)
 	return mOptions[level];
 }
 
-void LLApp::stepFrame()
-{
-	LLFrameTimer::updateFrameTime();
-	LLFrameTimer::updateFrameCount();
-	LLEventTimer::updateClass();
-	mRunner.run();
-}
-
-
 void LLApp::setupErrorHandling()
 {
 	// Error handling is done by starting up an error handling thread, which just sleeps and
@@ -297,10 +288,13 @@ void LLApp::startErrorThread()
 	// Start the error handling thread, which is responsible for taking action
 	// when the app goes into the APP_STATUS_ERROR state
 	//
-	llinfos << "Starting error thread" << llendl;
-	mThreadErrorp = new LLErrorThread();
-	mThreadErrorp->setUserData((void *) this);
-	mThreadErrorp->start();	
+	if(!mThreadErrorp)
+	{
+		llinfos << "Starting error thread" << llendl;
+		mThreadErrorp = new LLErrorThread();
+		mThreadErrorp->setUserData((void *) this);
+		mThreadErrorp->start();
+	}
 }
 
 void LLApp::setErrorHandler(LLAppErrorHandler handler)

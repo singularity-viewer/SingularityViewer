@@ -52,7 +52,7 @@ void LLViewerLogin::getLoginURIs(std::vector<std::string>& uris) const
 
 const std::string &LLViewerLogin::getGridLabel() const
 {
-	return gHippoGridManager->getConnectedGrid()->getGridNick();
+	return gHippoGridManager->getConnectedGrid()->getGridName();
 }
 
 const std::string &LLViewerLogin::getLoginPage() const

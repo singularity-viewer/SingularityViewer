@@ -64,6 +64,9 @@ class LLFloaterMediaBrowser :
 public:
 	LLFloaterMediaBrowser(const LLSD& media_data);
 
+
+	void geometryChanged(S32 x, S32 y, S32 width, S32 height);
+	
 	/*virtual*/ BOOL postBuild();
 	/*virtual*/ void onClose(bool app_quitting);
 	/*virtual*/ void draw();
@@ -82,7 +85,6 @@ public:
 	static void onClickBack(void* user_data);
 	static void onClickForward(void* user_data);
 	static void onClickGo(void* user_data);
-	static void onClickClose(void* user_data);
 	static void onClickOpenWebBrowser(void* user_data);
 	static void onClickAssign(void* user_data);
 	static void onClickRewind(void* user_data);

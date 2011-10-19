@@ -78,6 +78,7 @@
 #include "llassetuploadresponders.h"
 #include "lleconomy.h"
 #include "llhttpclient.h"
+#include "llnotificationsutil.h"
 #include "llmemberlistener.h"
 #include "llsdserialize.h"
 #include "llstring.h"
@@ -155,16 +156,13 @@ std::string build_extensions_string(ELoadFilter filter)
 }
 
 class AIFileUpload {
-  protected:
-	AIFilePicker* mPicker;
-
   public:
-    AIFileUpload(void) : mPicker(NULL) { }
-	virtual ~AIFileUpload() { llassert(!mPicker); if (mPicker) { mPicker->abort(); mPicker = NULL; } }
+    AIFileUpload(void) { }
+	virtual ~AIFileUpload() { }
 
   public:
 	bool is_valid(std::string const& filename, ELoadFilter type);
-	void filepicker_callback(ELoadFilter type);
+	void filepicker_callback(ELoadFilter type, AIFilePicker* picker);
 	void start_filepicker(ELoadFilter type, char const* context);
 
   protected:
@@ -180,21 +178,22 @@ void AIFileUpload::start_filepicker(ELoadFilter filter, char const* context)
 		// display();
 	}
 
-	llassert(!mPicker);
-	mPicker = AIFilePicker::create();
-	mPicker->open(filter, "", context);
-	mPicker->run(boost::bind(&AIFileUpload::filepicker_callback, this, filter));
+	AIFilePicker* picker = AIFilePicker::create();
+	picker->open(filter, "", context);
+	// Note that when the call back is called then we're still in the main loop of
+	// the viewer and therefore the AIFileUpload still exists, since that is only
+	// destructed at the end of main when exiting the viewer.
+	picker->run(boost::bind(&AIFileUpload::filepicker_callback, this, filter, picker));
 }
 
-void AIFileUpload::filepicker_callback(ELoadFilter type)
+void AIFileUpload::filepicker_callback(ELoadFilter type, AIFilePicker* picker)
 {
-	if (mPicker->hasFilename())
+	if (picker->hasFilename())
 	{
-	  std::string filename = mPicker->getFilename();
+	  std::string filename = picker->getFilename();
 	  if (is_valid(filename, type))
 		handle_event(filename);
 	}
-	mPicker = NULL;
 }
 
 bool AIFileUpload::is_valid(std::string const& filename, ELoadFilter type)
@@ -209,7 +208,7 @@ bool AIFileUpload::is_valid(std::string const& filename, ELoadFilter type)
 		// No extension
 		LLSD args;
 		args["FILE"] = short_name;
-		LLNotifications::instance().add("NoFileExtension", args);
+		LLNotificationsUtil::add("NoFileExtension", args);
 		return false;
 	}
 	else
@@ -252,7 +251,7 @@ bool AIFileUpload::is_valid(std::string const& filename, ELoadFilter type)
 			LLSD args;
 			args["EXTENSION"] = ext;
 			args["VALIDS"] = valid_extensions;
-			LLNotifications::instance().add("InvalidFileExtension", args);
+			LLNotificationsUtil::add("InvalidFileExtension", args);
 			return false;
 		}
 	}//end else (non-null extension)
@@ -357,7 +356,7 @@ class LLFileUploadBulk : public view_listener_t
 		if(expected_upload_cost)
 			msg.append(llformat("\nWARNING: Each upload costs L$%d if it's not temporary.",expected_upload_cost));
 		args["MESSAGE"] = msg;
-		LLNotifications::instance().add("GenericAlertYesNoCancel", args, LLSD(), onConfirmBulkUploadTemp);
+		LLNotificationsUtil::add("GenericAlertYesNoCancel", args, LLSD(), onConfirmBulkUploadTemp);
 		return true;
 	}
 
@@ -401,7 +400,7 @@ class LLFileUploadBulk : public view_listener_t
 				S32 expected_upload_cost = LLGlobalEconomy::Singleton::getInstance()->getPriceUpload();
 				void *userdata = NULL;
 				gSavedSettings.setBOOL("TemporaryUpload", enabled);
-				upload_new_resource(filename, asset_name, asset_name, 0, LLAssetType::AT_NONE, LLInventoryType::IT_NONE,
+				upload_new_resource(filename, asset_name, asset_name, 0, LLFolderType::FT_NONE, LLInventoryType::IT_NONE,
 					LLFloaterPerms::getNextOwnerPerms(), LLFloaterPerms::getGroupPerms(), LLFloaterPerms::getEveryonePerms(),
 					display_name, callback, expected_upload_cost, userdata);
 
@@ -513,7 +512,7 @@ class LLFileMinimizeAllWindows : public view_listener_t
 };
 // </edit>
 
-class LLFileSaveTexture : public view_listener_t
+class LLFileSavePreview : public view_listener_t
 {
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
 	{
@@ -658,7 +657,7 @@ static void handle_compress_image_continued(AIFilePicker* filepicker)
 
 void upload_new_resource(const std::string& src_filename, std::string name,
 			 std::string desc, S32 compression_info,
-			 LLAssetType::EType destination_folder_type,
+			 LLFolderType::EType destination_folder_type,
 			 LLInventoryType::EType inv_type,
 			 U32 next_owner_perms,
 			 U32 group_perms,
@@ -795,7 +794,7 @@ void upload_new_resource(const std::string& src_filename, std::string name,
          {	 	
                  // read in the file header	 	
                  char buf[16384];		/* Flawfinder: ignore */ 	
-                 S32 read;		/* Flawfinder: ignore */	 	
+                 size_t readbytes;
                  S32  version;	 	
                  if (fscanf(in, "LindenResource\nversion %d\n", &version))	 	
                  {	 	
@@ -878,9 +877,9 @@ void upload_new_resource(const std::string& src_filename, std::string name,
                  LLFILE* out = LLFile::fopen(filename, "wb");		/* Flawfinder: ignore */	
                  if (out)	 	
                  {	 	
-                         while((read = fread(buf, 1, 16384, in)))		/* Flawfinder: ignore */	 	
+                         while((readbytes = fread(buf, 1, 16384, in)))		/* Flawfinder: ignore */	 	
                          {	 	
-							 if (fwrite(buf, 1, read, out) != read)
+							 if (fwrite(buf, 1, readbytes, out) != readbytes)
 							 {
 								 llwarns << "Short write" << llendl;
 							 }
@@ -937,8 +936,7 @@ void upload_new_resource(const std::string& src_filename, std::string name,
 		uuid = tid.makeAssetID(gAgent.getSecureSessionID());
 		// copy this file into the vfs for upload
 		S32 file_size;
-		LLAPRFile infile ;
-		infile.open(filename, LL_APR_RB, LLAPRFile::local, &file_size);
+		LLAPRFile infile(filename, LL_APR_RB, &file_size);
 		if (infile.getFileHandle())
 		{
 			LLVFile file(gVFS, uuid, asset_type, LLVFile::WRITE);
@@ -975,7 +973,7 @@ void upload_new_resource(const std::string& src_filename, std::string name,
 			else if(exten == "notecard") inv_type = LLInventoryType::IT_NOTECARD;
 			create_inventory_item(	gAgent.getID(),
 									gAgent.getSessionID(),
-									gInventory.findCategoryUUIDForType(asset_type),
+									gInventory.findCategoryUUIDForType(LLFolderType::assetTypeToFolderType(asset_type)),
 									LLTransactionID::tnull,
 									name,
 									uuid.asString(), // fake asset id, but in vfs
@@ -996,7 +994,7 @@ void upload_new_resource(const std::string& src_filename, std::string name,
 		llwarns << error_message << llendl;
 		LLSD args;
 		args["ERROR_MESSAGE"] = error_message;
-		LLNotifications::instance().add("ErrorMessage", args);
+		LLNotificationsUtil::add("ErrorMessage", args);
 		if(LLFile::remove(filename) == -1)
 		{
 			lldebugs << "unable to remove temp file" << llendl;
@@ -1024,7 +1022,7 @@ void temp_upload_callback(const LLUUID& uuid, void* user_data, S32 result, LLExt
 		perms->setMaskGroup(PERM_ALL);
 		perms->setMaskNext(PERM_ALL);
 		
-		LLUUID destination = gInventory.findCategoryUUIDForType(LLAssetType::AT_TEXTURE);
+		LLUUID destination = gInventory.findCategoryUUIDForType(LLFolderType::FT_TEXTURE);
 		BOOL bUseSystemInventory = (gSavedSettings.getBOOL("AscentUseSystemFolder") && gSavedSettings.getBOOL("AscentSystemTemporary"));
 		if (bUseSystemInventory)
 		{
@@ -1058,7 +1056,7 @@ void temp_upload_callback(const LLUUID& uuid, void* user_data, S32 result, LLExt
 		LLSD args;
 		args["FILE"] = LLInventoryType::lookupHumanReadable(data->mInventoryType);
 		args["REASON"] = std::string(LLAssetStorage::getErrorString(result));
-		LLNotifications::instance().add("CannotUploadReason", args);
+		LLNotificationsUtil::add("CannotUploadReason", args);
 	}
 
 	LLUploadDialog::modalUploadFinished();
@@ -1072,9 +1070,15 @@ void upload_done_callback(const LLUUID& uuid, void* user_data, S32 result, LLExt
 	//LLAssetType::EType pref_loc = data->mPreferredLocation;
 	BOOL is_balance_sufficient = TRUE;
 
+	if(!data)
+	{
+		LLUploadDialog::modalUploadFinished();
+		return;
+	}
+
 	if(result >= 0)
 	{
-		LLAssetType::EType dest_loc = (data->mPreferredLocation == LLAssetType::AT_NONE) ? data->mAssetInfo.mType : data->mPreferredLocation;
+			LLFolderType::EType dest_loc = (data->mPreferredLocation == LLFolderType::FT_NONE) ? LLFolderType::assetTypeToFolderType(data->mAssetInfo.mType) : data->mPreferredLocation;
 
 		if (LLAssetType::AT_SOUND == data->mAssetInfo.mType ||
 			LLAssetType::AT_TEXTURE == data->mAssetInfo.mType ||
@@ -1120,7 +1124,7 @@ void upload_done_callback(const LLUUID& uuid, void* user_data, S32 result, LLExt
 		{
 			// Actually add the upload to inventory
 			llinfos << "Adding " << uuid << " to inventory." << llendl;
-			LLUUID folder_id(gInventory.findCategoryUUIDForType(dest_loc));
+				const LLUUID folder_id = gInventory.findCategoryUUIDForType(dest_loc);
 			if(folder_id.notNull())
 			{
 				U32 next_owner_perms = data->mNextOwnerPerm;
@@ -1145,17 +1149,18 @@ void upload_done_callback(const LLUUID& uuid, void* user_data, S32 result, LLExt
 		LLSD args;
 		args["FILE"] = LLInventoryType::lookupHumanReadable(data->mInventoryType);
 		args["REASON"] = std::string(LLAssetStorage::getErrorString(result));
-		LLNotifications::instance().add("CannotUploadReason", args);
+		LLNotificationsUtil::add("CannotUploadReason", args);
 	}
 
 	LLUploadDialog::modalUploadFinished();
 	delete data;
+	data = NULL;
 }
 
 void upload_new_resource(const LLTransactionID &tid, LLAssetType::EType asset_type,
 			 std::string name,
 			 std::string desc, S32 compression_info,
-			 LLAssetType::EType destination_folder_type,
+			 LLFolderType::EType destination_folder_type,
 			 LLInventoryType::EType inv_type,
 			 U32 next_owner_perms,
 			 U32 group_perms,
@@ -1213,7 +1218,7 @@ void upload_new_resource(const LLTransactionID &tid, LLAssetType::EType asset_ty
 	llinfos << "Name: " << name << llendl;
 	llinfos << "Desc: " << desc << llendl;
 	llinfos << "Expected Upload Cost: " << expected_upload_cost << llendl;
-	lldebugs << "Folder: " << gInventory.findCategoryUUIDForType((destination_folder_type == LLAssetType::AT_NONE) ? asset_type : destination_folder_type) << llendl;
+	lldebugs << "Folder: " << gInventory.findCategoryUUIDForType((destination_folder_type == LLFolderType::FT_NONE) ? LLFolderType::assetTypeToFolderType(asset_type) : destination_folder_type) << llendl;
 	lldebugs << "Asset Type: " << LLAssetType::lookup(asset_type) << llendl;
 	std::string url = gAgent.getRegion()->getCapability("NewFileAgentInventory");
 	// <edit>
@@ -1224,7 +1229,7 @@ void upload_new_resource(const LLTransactionID &tid, LLAssetType::EType asset_ty
 	{
 		llinfos << "New Agent Inventory via capability" << llendl;
 		LLSD body;
-		body["folder_id"] = gInventory.findCategoryUUIDForType((destination_folder_type == LLAssetType::AT_NONE) ? asset_type : destination_folder_type);
+		body["folder_id"] = gInventory.findCategoryUUIDForType((destination_folder_type == LLFolderType::FT_NONE) ? LLFolderType::assetTypeToFolderType(asset_type) : destination_folder_type);
 		body["asset_type"] = LLAssetType::lookup(asset_type);
 		body["inventory_type"] = LLInventoryType::lookup(inv_type);
 		body["name"] = name;
@@ -1307,12 +1312,11 @@ void init_menu_file()
 	// <edit>
 	(new LLFileMinimizeAllWindows())->registerListener(gMenuHolder, "File.MinimizeAllWindows");
 	// </edit>
-	(new LLFileSaveTexture())->registerListener(gMenuHolder, "File.SaveTexture");
+	(new LLFileSavePreview())->registerListener(gMenuHolder, "File.SavePreview");
 	(new LLFileTakeSnapshot())->registerListener(gMenuHolder, "File.TakeSnapshot");
 	(new LLFileTakeSnapshotToDisk())->registerListener(gMenuHolder, "File.TakeSnapshotToDisk");
 	(new LLFileQuit())->registerListener(gMenuHolder, "File.Quit");
 	(new LLFileLogOut())->registerListener(gMenuHolder, "File.LogOut");
-	//Emerald has a second llFileSaveTexture here... Same as the original. Odd. -HgB
 	(new LLFileEnableUpload())->registerListener(gMenuHolder, "File.EnableUpload");
 	(new LLFileEnableSaveAs())->registerListener(gMenuHolder, "File.EnableSaveAs");
 }

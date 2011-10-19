@@ -37,6 +37,8 @@
 #include "llshadermgr.h"
 #include "llfile.h"
 #include "llrender.h"
+#include "llcontrol.h"
+#include "llvertexbuffer.h"
 
 #if LL_DARWIN
 #include "OpenGL/OpenGL.h"
@@ -54,6 +56,16 @@ using std::pair;
 using std::make_pair;
 using std::string;
 
+GLhandleARB LLGLSLShader::sCurBoundShader = 0;
+LLGLSLShader* LLGLSLShader::sCurBoundShaderPtr = NULL;
+bool LLGLSLShader::sNoFixedFunction = false;
+
+//UI shader -- declared here so llui_libtest will link properly
+//Singu note: Not using llui_libtest... and LLViewerShaderMgr is a part of newview. So, 
+// these are declared in newview/llviewershadermanager.cpp just like every other shader.
+//LLGLSLShader	gUIProgram(LLViewerShaderMgr::SHADER_INTERFACE);
+//LLGLSLShader	gSolidColorProgram(LLViewerShaderMgr::SHADER_INTERFACE);
+
 BOOL shouldChange(const LLVector4& v1, const LLVector4& v2)
 {
 	return v1 != v2;
@@ -63,6 +75,10 @@ LLShaderFeatures::LLShaderFeatures()
 : calculatesLighting(false), isShiny(false), isFullbright(false), hasWaterFog(false),
 hasTransport(false), hasSkinning(false), hasAtmospherics(false), isSpecular(false),
 hasGamma(false), hasLighting(false), calculatesAtmospherics(false)
+, mIndexedTextureChannels(0), disableTextureIndex(false), hasAlphaMask(false)
+#if MESH_ENABLED
+, hasObjectSkinning(false)
+#endif //MESH_ENABLED
 {
 }
 
@@ -116,6 +132,29 @@ BOOL LLGLSLShader::createShader(vector<string> * attributes,
 		glDeleteObjectARB(mProgramObject);
 	// Create program
 	mProgramObject = glCreateProgramObjectARB();
+
+	static const LLCachedControl<bool> no_texture_indexing("ShyotlUseLegacyTextureBatching",false);
+	static const LLCachedControl<bool> use_legacy_path("ShyotlUseLegacyRenderPath", false);	//Legacy does not jive with new batching.
+	if (gGLManager.mGLVersion < 3.1f || no_texture_indexing || use_legacy_path)
+	{ //force indexed texture channels to 1 if GL version is old (performance improvement for drivers with poor branching shader model support)
+		mFeatures.mIndexedTextureChannels = llmin(mFeatures.mIndexedTextureChannels, 1);
+	}
+	
+	//compile new source
+	vector< pair<string,GLenum> >::iterator fileIter = mShaderFiles.begin();
+	for ( ; fileIter != mShaderFiles.end(); fileIter++ )
+	{
+		GLhandleARB shaderhandle = LLShaderMgr::instance()->loadShaderFile((*fileIter).first, mShaderLevel, (*fileIter).second, mFeatures.mIndexedTextureChannels);
+		LL_DEBUGS("ShaderLoading") << "SHADER FILE: " << (*fileIter).first << " mShaderLevel=" << mShaderLevel << LL_ENDL;
+		if (shaderhandle > 0)
+		{
+			attachObject(shaderhandle);
+		}
+		else
+		{
+			success = FALSE;
+		}
+	}
 	
 	// Attach existing objects
 	if (!LLShaderMgr::instance()->attachShaderFeatures(this))
@@ -126,19 +165,9 @@ BOOL LLGLSLShader::createShader(vector<string> * attributes,
 		return FALSE;
 	}
 
-	vector< pair<string,GLenum> >::iterator fileIter = mShaderFiles.begin();
-	for ( ; fileIter != mShaderFiles.end(); fileIter++ )
-	{
-		GLhandleARB shaderhandle = LLShaderMgr::instance()->loadShaderFile((*fileIter).first, mShaderLevel, (*fileIter).second);
-		LL_DEBUGS("ShaderLoading") << "SHADER FILE: " << (*fileIter).first << " mShaderLevel=" << mShaderLevel << LL_ENDL;
-		if (mShaderLevel > 0)
-		{
-			attachObject(shaderhandle);
-		}
-		else
-		{
-			success = FALSE;
-		}
+	if (gGLManager.mGLVersion < 3.1f || no_texture_indexing)
+	{ //attachShaderFeatures may have set the number of indexed texture channels, so set to 1 again
+		mFeatures.mIndexedTextureChannels = llmin(mFeatures.mIndexedTextureChannels, 1);
 	}
 
 	// Map attributes and uniforms
@@ -165,6 +194,28 @@ BOOL LLGLSLShader::createShader(vector<string> * attributes,
 			mShaderLevel--;
 			return createShader(attributes,uniforms);
 		}
+	}
+	else if (mFeatures.mIndexedTextureChannels > 0)
+	{ //override texture channels for indexed texture rendering
+		bind();
+		S32 channel_count = mFeatures.mIndexedTextureChannels;
+
+		for (S32 i = 0; i < channel_count; i++)
+		{
+			uniform1i(llformat("tex%d", i), i);
+		}
+
+		S32 cur_tex = channel_count; //adjust any texture channels that might have been overwritten
+		for (U32 i = 0; i < mTexture.size(); i++)
+		{
+			if (mTexture[i] > -1 && mTexture[i] < channel_count)
+			{
+				llassert(cur_tex < gGLManager.mNumTextureImageUnits);
+				uniform1i(i, cur_tex);
+				mTexture[i] = cur_tex++;
+			}
+		}
+		unbind();
 	}
 	return success;
 }
@@ -210,6 +261,13 @@ void LLGLSLShader::attachObjects(GLhandleARB* objects, S32 count)
 
 BOOL LLGLSLShader::mapAttributes(const vector<string> * attributes)
 {
+	//before linking, make sure reserved attributes always have consistent locations
+	for (U32 i = 0; i < LLShaderMgr::instance()->mReservedAttribs.size(); i++)
+	{
+		const char* name = LLShaderMgr::instance()->mReservedAttribs[i].c_str();
+		glBindAttribLocationARB(mProgramObject, i, (const GLcharARB *) name);
+	}
+	
 	//link the program
 	BOOL res = link();
 
@@ -283,7 +341,7 @@ void LLGLSLShader::mapUniform(GLint index, const vector<string> * uniforms)
 		for (S32 i = 0; i < (S32) LLShaderMgr::instance()->mReservedUniforms.size(); i++)
 		{
 			if ( (mUniform[i] == -1)
-				&& (LLShaderMgr::instance()->mReservedUniforms[i].compare(0, length, name, LLShaderMgr::instance()->mReservedUniforms[i].length()) == 0))
+				&& (LLShaderMgr::instance()->mReservedUniforms[i] == name))
 			{
 				//found it
 				mUniform[i] = location;
@@ -297,7 +355,7 @@ void LLGLSLShader::mapUniform(GLint index, const vector<string> * uniforms)
 			for (U32 i = 0; i < uniforms->size(); i++)
 			{
 				if ( (mUniform[i+LLShaderMgr::instance()->mReservedUniforms.size()] == -1)
-					&& ((*uniforms)[i].compare(0, length, name, (*uniforms)[i].length()) == 0))
+					&& ((*uniforms)[i] == name))
 				{
 					//found it
 					mUniform[i+LLShaderMgr::instance()->mReservedUniforms.size()] = location;
@@ -311,7 +369,8 @@ void LLGLSLShader::mapUniform(GLint index, const vector<string> * uniforms)
 
 GLint LLGLSLShader::mapUniformTextureChannel(GLint location, GLenum type)
 {
-	if (type >= GL_SAMPLER_1D_ARB && type <= GL_SAMPLER_2D_RECT_SHADOW_ARB)
+	if (type >= GL_SAMPLER_1D_ARB && type <= GL_SAMPLER_2D_RECT_SHADOW_ARB /*||
+		type == GL_SAMPLER_2D_MULTISAMPLE*/)
 	{	//this here is a texture
 		glUniform1iARB(location, mActiveTextureChannels);
 		LL_DEBUGS("ShaderLoading") << "Assigned to texture channel " << mActiveTextureChannels << LL_ENDL;
@@ -357,10 +416,13 @@ BOOL LLGLSLShader::link(BOOL suppress_errors)
 
 void LLGLSLShader::bind()
 {
+	gGL.flush();
 	if (gGLManager.mHasShaderObjects)
 	{
+		LLVertexBuffer::unbind();
 		glUseProgramObjectARB(mProgramObject);
-
+		sCurBoundShader = mProgramObject;
+		sCurBoundShaderPtr = this;
 		if (mUniformsDirty)
 		{
 			LLShaderMgr::instance()->updateShaderUniforms(this);
@@ -371,6 +433,7 @@ void LLGLSLShader::bind()
 
 void LLGLSLShader::unbind()
 {
+	gGL.flush();
 	if (gGLManager.mHasShaderObjects)
 	{
 		stop_glerror();
@@ -382,14 +445,23 @@ void LLGLSLShader::unbind()
 				stop_glerror();
 			}
 		}
+		LLVertexBuffer::unbind();
 		glUseProgramObjectARB(0);
+		sCurBoundShader = 0;
+		sCurBoundShaderPtr = NULL;
 		stop_glerror();
 	}
 }
 
 void LLGLSLShader::bindNoShader(void)
 {
-	glUseProgramObjectARB(0);
+	LLVertexBuffer::unbind();
+	if (gGLManager.mHasShaderObjects)
+	{
+		glUseProgramObjectARB(0);
+		sCurBoundShader = 0;
+		sCurBoundShaderPtr = NULL;
+	}
 }
 
 S32 LLGLSLShader::enableTexture(S32 uniform, LLTexUnit::eTextureType mode)
@@ -935,6 +1007,12 @@ void LLGLSLShader::uniformMatrix4fv(const string& uniform, U32 count, GLboolean 
 	}
 }
 
+		
+void LLGLSLShader::setAlphaRange(F32 minimum, F32 maximum)
+{
+	uniform1f("minimum_alpha", minimum);
+	uniform1f("maximum_alpha", maximum);
+}
 
 void LLGLSLShader::vertexAttrib4f(U32 index, GLfloat x, GLfloat y, GLfloat z, GLfloat w)
 {

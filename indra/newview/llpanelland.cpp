@@ -40,6 +40,7 @@
 #include "llbutton.h"
 #include "llcheckboxctrl.h"
 #include "llfloaterland.h"
+#include "llnotificationsutil.h"
 #include "lltextbox.h"
 #include "llviewercontrol.h"
 #include "llviewerparcelmgr.h"
@@ -179,7 +180,7 @@ void LLPanelLandInfo::refresh()
 		childSetEnabled("button abandon land",owner_release || manager_releaseable || gAgent.isGodlike());
 
 		// only mainland sims are subdividable by owner
-		if (regionp->getRegionFlags() && REGION_FLAGS_ALLOW_PARCEL_CHANGES)
+		if (regionp->getRegionFlags() & REGION_FLAGS_ALLOW_PARCEL_CHANGES)
 		{
 			childSetEnabled("button subdivide land",owner_divide || manager_divideable || gAgent.isGodlike());
 		}
@@ -280,5 +281,5 @@ void LLPanelLandInfo::onClickAbout(void*)
 
 void LLPanelLandInfo::onShowOwnersHelp(void* user_data)
 {
-	LLNotifications::instance().add("ShowOwnersHelp");
+	LLNotificationsUtil::add("ShowOwnersHelp");
 }

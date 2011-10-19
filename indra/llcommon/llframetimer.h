@@ -6,6 +6,7 @@
  * $LicenseInfo:firstyear=2002&license=viewergpl$
  * 
  * Copyright (c) 2002-2009, Linden Research, Inc.
+ * Copyright (c) 2011, Aleric Inglewood.
  * 
  * Second Life Viewer Source Code
  * The source code in this file ("Source Code") is provided by Linden Lab
@@ -37,7 +38,7 @@
 /**
  * *NOTE: Because of limitations on linux which we do not really have
  * time to explore, the total time is derived from the frame time
- * and is recsynchronized on every frame.
+ * and is resynchronized on every frame.
  */
 
 #include "lltimer.h"
@@ -46,61 +47,64 @@
 class LL_COMMON_API LLFrameTimer
 {
 public:
-	LLFrameTimer() : mStartTime( sFrameTime ), mExpiry(0), mStarted(TRUE) {}
+	// Create an LLFrameTimer and start it. After creation it is running and in the state expired (hasExpired will return true).
+	LLFrameTimer(void) : mStartTime(sFrameTime), mExpiry(0), mRunning(true), mPaused(false) { }
 
-	// Return the number of seconds since the start of this
-	// application instance.
+	// Return the number of seconds since the start of the application.
 	static F64 getElapsedSeconds()
 	{
 		// Loses msec precision after ~4.5 hours...
 		return sFrameTime;
 	} 
 
-	// Return a low precision usec since epoch
+	// Return a low precision usec since epoch.
 	static U64 getTotalTime()
 	{
-		return sTotalTime ? sTotalTime : totalTime();
+		llassert(sTotalTime);
+		return sTotalTime;
 	}
 
-	// Return a low precision seconds since epoch
+	// Return a low precision seconds since epoch.
 	static F64 getTotalSeconds()
 	{
 		return sTotalSeconds;
 	}
 
-	// Call this method once per frame to update the current frame time.   This is actually called
-	// at some other times as well
+	// Call this method once per frame to update the current frame time.
+	// This is actually called at some other times as well.
 	static void updateFrameTime();
 
-	// Call this method once, and only once, per frame to update the current frame count.
-	static void updateFrameCount()					{ sFrameCount++; }
+	// Call this method once, and only once, per frame to update the current frame count and sFrameDeltaTime.
+	static void updateFrameTimeAndCount();
 
-	static U32  getFrameCount()						{ return sFrameCount; }
+	// Return current frame number (the number of frames since application start).
+	static U32 getFrameCount() { return sFrameCount; }
 
-	static F32	getFrameDeltaTimeF32();
+	// Return duration of last frame in seconds.
+	static F32 getFrameDeltaTimeF32();
 
 	// Return seconds since the current frame started
-	static F32  getCurrentFrameTime();
+	static F32 getCurrentFrameTime();
 
 	// MANIPULATORS
-	void start();
-	void stop();
-	void reset();
-	void resetWithExpiry(F32 expiration);
-	void pause();
-	void unpause();
+
+	void reset(F32 expiration = 0.f);				// Same as start() but leaves mRunning off when called after stop().
+	void start(F32 expiration = 0.f);				// Reset and (re)start with expiration.
+	void stop();									// Stop running.
+
+	void pause();									// Mark elapsed time so far.
+	void unpause();									// Move 'start' time in order to decrement time between pause and unpause from ElapsedTime.
+
 	void setTimerExpirySec(F32 expiration);
 	void setExpiryAt(F64 seconds_since_epoch);
-	BOOL checkExpirationAndReset(F32 expiration);
-	F32 getElapsedTimeAndResetF32() 				{ F32 t = F32(sFrameTime - mStartTime); reset(); return t; }
-
-	void setAge(const F64 age)						{ mStartTime = sFrameTime - age; }
+	bool checkExpirationAndReset(F32 expiration);	// Returns true when expired. Only resets if expired.
+	F32 getElapsedTimeAndResetF32() 				{ F32 t = getElapsedTimeF32(); reset(); return t; }
+	void setAge(const F64 age)						{ llassert(!mPaused); mStartTime = sFrameTime - age; }
 
 	// ACCESSORS
-	BOOL hasExpired() const							{ return (sFrameTime >= mExpiry); }
-	F32  getTimeToExpireF32() const					{ return (F32)(mExpiry - sFrameTime); }
-	F32  getElapsedTimeF32() const					{ return mStarted ? (F32)(sFrameTime - mStartTime) : (F32)mStartTime; }
-	BOOL getStarted() const							{ return mStarted; }
+	bool hasExpired() const							{ return sFrameTime >= mExpiry; }
+	F32  getElapsedTimeF32() const					{ llassert(mRunning); return mPaused ? (F32)mStartTime : (F32)(sFrameTime - mStartTime); }
+	bool getStarted() const							{ return mRunning; }
 
 	// return the seconds since epoch when this timer will expire.
 	F64 expiresAt() const;
@@ -114,45 +118,52 @@ protected:
 	// Aplication constants
 	//
 
-	// Start time of opp in usec since epoch
-	static U64 sStartTotalTime;	
+	// Application start in microseconds since epoch.
+	static U64 const sStartTotalTime;	
 
 	// 
 	// Data updated per frame
 	//
 
-	// Seconds since application start
+	// Current time in seconds since application start, updated together with sTotalTime.
 	static F64 sFrameTime;
 
-	// Time that has elapsed since last call to updateFrameTime()
+	// Microseconds between last two calls to updateFrameTimeAndCount (time between last two frames).
 	static U64 sFrameDeltaTime;
 
-	// Total microseconds since epoch.
+	// Current time in microseconds since epoch, updated at least once per frame.
 	static U64 sTotalTime;			
 
-	// Seconds since epoch.
+	// Previous (frame) time in microseconds since epoch, updated once per frame.
+	static U64 sPrevTotalTime;
+
+	// Current time in seconds since epoch, updated together with sTotalTime.
 	static F64 sTotalSeconds;
 
-	// Total number of frames elapsed in application
+	// Current frame number (number of frames since application start).
 	static S32 sFrameCount;
 
 	//
 	// Member data
 	//
 
-	// Number of seconds after application start when this timer was
-	// started. Set equal to sFrameTime when reset.
+	// When not paused (mPaused is false): number of seconds since application start,
+	// otherwise this value is equal to the accumulated run time (ElapsedTime).
+	// Set equal to sFrameTime when reset.
 	F64 mStartTime;
 
-	// Timer expires this many seconds after application start time.
+	// Timer expires when sFrameTime reaches this value (in seconds since application start).
 	F64 mExpiry;
 
-	// Useful bit of state usually associated with timers, but does
-	// not affect actual functionality
-	BOOL mStarted;
+	// True when running, merely a boolean return by getStarted(). The timer always runs.
+	bool mRunning;
+
+	// True when accumulating ElapsedTime. If false mStartTime has a different meaning
+	// and really unpause() should be called before anything else.
+	bool mPaused;
 };
 
 // Glue code for Havok (or anything else that doesn't want the full .h files)
-extern F32  getCurrentFrameTime();
+extern F32 getCurrentFrameTime();
 
 #endif  // LL_LLFRAMETIMER_H

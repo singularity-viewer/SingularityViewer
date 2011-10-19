@@ -164,6 +164,7 @@ protected:
 	
 	// Sets sMapScale, in pixels per region
 	F32						mCurZoomVal;
+	F32						mCurZoomValInterpolationStart;	// Used during mZoomTimer interpolation.
 	LLFrameTimer			mZoomTimer;
 
 	LLDynamicArray<LLUUID>	mLandmarkAssetIDList;

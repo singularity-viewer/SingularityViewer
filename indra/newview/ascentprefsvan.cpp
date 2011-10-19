@@ -37,7 +37,7 @@
 
 //project includes
 #include "llcolorswatch.h"
-#include "llvoavatar.h"
+#include "llvoavatarself.h"
 #include "llagent.h"
 #include "llfloaterchat.h"
 #include "llstartup.h"
@@ -96,7 +96,7 @@ void LLPrefsAscentVan::onCommitClientTag(LLUICtrl* ctrl, void* userdata)
             gSavedSettings.setString("AscentReportClientUUID",  client_uuid);
             gSavedSettings.setU32("AscentReportClientIndex",  client_index);
 
-            LLVOAvatar* avatar = gAgent.getAvatarObject();
+            LLVOAvatar* avatar = gAgentAvatarp;
 
             if (avatar)
             {

@@ -236,17 +236,6 @@ public:
 	pid_t fork(); 
 #endif
 
-	/**
-	  * @brief Get a reference to the application runner
-	  *
-	  * Please use the runner with caution. Since the Runner usage
-	  * pattern is not yet clear, this method just gives access to it
-	  * to add and remove runnables.
-	  * @return Returns the application runner. Do not save the
-	  * pointer past the caller's stack frame.
-	  */
-	LLRunner& getRunner() { return mRunner; }
-
 public:
 	typedef std::map<std::string, std::string> string_map;
 	string_map mOptionMap;	// Contains all command-line options and arguments in a map
@@ -263,11 +252,6 @@ protected:
 	static child_map sChildMap;
 	static LLAppChildCallback sDefaultChildCallback;
 #endif
-
-	/**
-	  * @brief This method is called once a frame to do once a frame tasks.
-	  */
-	void stepFrame();
 
 	/**
 	 * @ brief This method is called once as soon as logging is initialized.
@@ -288,9 +272,6 @@ private:
 
 	// Default application threads
 	LLErrorThread* mThreadErrorp;		// Waits for app to go to status ERROR, then runs the error callback
-
-	// This is the application level runnable scheduler.
-	LLRunner mRunner;
 
 	/** @name Runtime option implementation */
 	//@{

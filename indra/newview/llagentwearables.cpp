@@ -40,11 +40,12 @@
 #include "llfolderview.h"
 #include "llgesturemgr.h"
 #include "llinventorybridge.h"
+#include "llinventoryview.h"
 #include "llmd5.h"
-#include "llnotifications.h"
+#include "llnotificationsutil.h"
 #include "lltexlayer.h"
 #include "llviewerregion.h"
-#include "llvoavatar.h"
+#include "llvoavatarself.h"
 #include "llwearable.h"
 #include "llwearablelist.h"
 
@@ -62,6 +63,8 @@
 #include <boost/scoped_ptr.hpp>
 
 LLAgentWearables gAgentWearables;
+
+BOOL LLAgentWearables::mInitialWearablesUpdateReceived = FALSE;
 
 using namespace LLVOAvatarDefines;
 LLAgentWearables::LLAgentWearables() :
@@ -83,7 +86,7 @@ void LLAgentWearables::initClass()
 {
 }
 
-void LLAgentWearables::setAvatarObject(LLVOAvatar *avatar)
+void LLAgentWearables::setAvatarObject(LLVOAvatarSelf *avatar)
 { 
 	if (avatar)
 	{
@@ -103,8 +106,8 @@ LLAgentWearables::sendAgentWearablesUpdateCallback::~sendAgentWearablesUpdateCal
 }
 
 LLAgentWearables::addWearableToAgentInventoryCallback::addWearableToAgentInventoryCallback(
-	LLPointer<LLRefCount> cb, S32 index, LLWearable* wearable, U32 todo) :
-	mIndex(index),
+	LLPointer<LLRefCount> cb, LLWearableType::EType type, LLWearable* wearable, U32 todo) :
+	mType(type),
 	mWearable(wearable),
 	mTodo(todo),
 	mCB(cb)
@@ -117,7 +120,7 @@ void LLAgentWearables::addWearableToAgentInventoryCallback::fire(const LLUUID& i
 	if (inv_item.isNull())
 		return;
 
-	gAgentWearables.addWearabletoAgentInventoryDone(mIndex, inv_item, mWearable);
+	gAgentWearables.addWearabletoAgentInventoryDone(mType, inv_item, mWearable);
 
 	if (mTodo & CALL_UPDATE)
 	{
@@ -132,35 +135,48 @@ void LLAgentWearables::addWearableToAgentInventoryCallback::fire(const LLUUID& i
 	 */
 	if (mTodo & CALL_CREATESTANDARDDONE)
 	{
-		gAgentWearables.createStandardWearablesDone(mIndex);
+		gAgentWearables.createStandardWearablesDone(mType);
 	}
 	if (mTodo & CALL_MAKENEWOUTFITDONE)
 	{
-		gAgentWearables.makeNewOutfitDone(mIndex);
+		gAgentWearables.makeNewOutfitDone(mType);
 	}
 }
 
-void LLAgentWearables::addWearabletoAgentInventoryDone(
-	S32 index,
+void LLAgentWearables::addWearabletoAgentInventoryDone(const LLWearableType::EType type,
 	const LLUUID& item_id,
 	LLWearable* wearable)
 {
+	llinfos << "type " << type << " item " << item_id.asString() << llendl;
+
 	if (item_id.isNull())
 		return;
 
-	LLUUID old_item_id = mWearableEntry[index].mItemID;
-	mWearableEntry[index].mItemID = item_id;
-	mWearableEntry[index].mWearable = wearable;
-	if (old_item_id.notNull())
-		gInventory.addChangedMask(LLInventoryObserver::LABEL, old_item_id);
+	LLUUID old_item_id = getWearableItemID(type);
+	if (wearable)
+	{
+		wearable->setItemID(item_id);
+
+		if (old_item_id.notNull())
+		{
+			gInventory.addChangedMask(LLInventoryObserver::LABEL, old_item_id);
+			setWearable(type,wearable);
+		}
+		else
+		{
+			pushWearable(type,wearable);
+		}
+	}
+
 	gInventory.addChangedMask(LLInventoryObserver::LABEL, item_id);
+
 	LLViewerInventoryItem* item = gInventory.getItem(item_id);
 	if(item && wearable)
 	{
 		// We're changing the asset id, so we both need to set it
 		// locally via setAssetUUID() and via setTransactionID() which
 		// will be decoded on the server. JC
-		item->setAssetUUID(wearable->getID());
+		item->setAssetUUID(wearable->getAssetID());
 		item->setTransactionID(wearable->getTransactionID());
 		gInventory.addChangedMask(LLInventoryObserver::INTERNAL, item_id);
 		item->updateServer(FALSE);
@@ -171,26 +187,27 @@ void LLAgentWearables::addWearabletoAgentInventoryDone(
 void LLAgentWearables::sendAgentWearablesUpdate()
 {
 	// First make sure that we have inventory items for each wearable
-	S32 i;
-	for(i=0; i < WT_COUNT; ++i)
+	for (S32 type=0; type < LLWearableType::WT_COUNT; ++type)
 	{
-		LLWearable* wearable = mWearableEntry[ i ].mWearable;
-		if (wearable)
 		{
-			if( mWearableEntry[ i ].mItemID.isNull() )
+			LLWearable* wearable = getWearable((LLWearableType::EType)type);
+			if (wearable)
 			{
-				LLPointer<LLInventoryCallback> cb =
-					new addWearableToAgentInventoryCallback(
-						LLPointer<LLRefCount>(NULL),
-						i,
-						wearable,
-						addWearableToAgentInventoryCallback::CALL_NONE);
-				addWearableToAgentInventory(cb, wearable);
-			}
-			else
-			{
-				gInventory.addChangedMask( LLInventoryObserver::LABEL,
-						mWearableEntry[i].mItemID );
+				if (wearable->getItemID().isNull())
+				{
+					LLPointer<LLInventoryCallback> cb =
+						new addWearableToAgentInventoryCallback(
+							LLPointer<LLRefCount>(NULL),
+							(LLWearableType::EType)type,
+							wearable,
+							addWearableToAgentInventoryCallback::CALL_NONE);
+					addWearableToAgentInventory(cb, wearable);
+				}
+				else
+				{
+					gInventory.addChangedMask( LLInventoryObserver::LABEL,
+											  wearable->getItemID());
+				}
 			}
 		}
 	}
@@ -208,19 +225,19 @@ void LLAgentWearables::sendAgentWearablesUpdate()
 	gMessageSystem->addUUIDFast(_PREHASH_AgentID, gAgent.getID());
 	gMessageSystem->addUUIDFast(_PREHASH_SessionID, gAgent.getSessionID());
 
-	LL_DEBUGS("Wearables") << "sendAgentWearablesUpdate()" << LL_ENDL;
-	for(i=0; i < WT_COUNT; ++i)
+	lldebugs << "sendAgentWearablesUpdate()" << llendl;
+		for (S32 type=0; type < LLWearableType::WT_COUNT; ++type)
 	{
 		gMessageSystem->nextBlockFast(_PREHASH_WearableData);
 
-		U8 type_u8 = (U8)i;
+		U8 type_u8 = (U8)type;
 		gMessageSystem->addU8Fast(_PREHASH_WearableType, type_u8 );
 
-		LLWearable* wearable = mWearableEntry[ i ].mWearable;
+		LLWearable* wearable = getWearable((LLWearableType::EType)type);
 		if( wearable )
 		{
-			LL_DEBUGS("Wearables") << "Sending wearable " << wearable->getName() << " mItemID = " << mWearableEntry[ i ].mItemID << LL_ENDL; 
-			LLUUID item_id = mWearableEntry[i].mItemID;
+			LLUUID item_id = wearable->getItemID();
+			LL_DEBUGS("Wearables") << "Sending wearable " << wearable->getName() << " mItemID = " << item_id << LL_ENDL; 
 			const LLViewerInventoryItem *item = gInventory.getItem(item_id);
 			if (item && item->getIsLinkType())
 			{
@@ -232,35 +249,46 @@ void LLAgentWearables::sendAgentWearablesUpdate()
 		}
 		else
 		{
-			LL_DEBUGS("Wearables") << "Not wearing wearable type " << LLWearable::typeToTypeName((EWearableType)i) << LL_ENDL;
+			LL_DEBUGS("Wearables") << "Not wearing wearable type " << LLWearableType::getTypeName((LLWearableType::EType)type) << LL_ENDL;
 			gMessageSystem->addUUIDFast(_PREHASH_ItemID, LLUUID::null );
 		}
 
-		LL_DEBUGS("Wearables") << "       " << LLWearable::typeToTypeLabel((EWearableType)i) << " : " << (wearable ? wearable->getID() : LLUUID::null) << LL_ENDL;
+		lldebugs << "       " << LLWearableType::getTypeLabel((LLWearableType::EType)type) << ": " << (wearable ? wearable->getAssetID() : LLUUID::null) << llendl;
 	}
 	gAgent.sendReliableMessage();
 }
 
-void LLAgentWearables::saveWearable( EWearableType type, BOOL send_update )
+void LLAgentWearables::saveWearable(const LLWearableType::EType type, BOOL send_update,
+									const std::string new_name)
 {
-	LLWearable* old_wearable = mWearableEntry[(S32)type].mWearable;
-	if( old_wearable && (old_wearable->isDirty() || old_wearable->isOldVersion()) )
+	LLWearable* old_wearable = getWearable(type);
+	if(!old_wearable) return;
+	bool name_changed = !new_name.empty() && (new_name != old_wearable->getName());
+	if (name_changed || old_wearable->isDirty() || old_wearable->isOldVersion())
 	{
-		LLWearable* new_wearable = gWearableList.createCopyFromAvatar( old_wearable );
-		mWearableEntry[(S32)type].mWearable = new_wearable;
+		LLUUID old_item_id = old_wearable->getItemID();
+		LLWearable* new_wearable = LLWearableList::instance().createCopyFromAvatar( old_wearable );
+		new_wearable->setItemID(old_item_id); // should this be in LLWearable::copyDataFrom()?
+		setWearable(type,new_wearable);
 
-		LLInventoryItem* item = gInventory.getItem(mWearableEntry[(S32)type].mItemID);
+		LLInventoryItem* item = gInventory.getItem(old_item_id);
 		if( item )
 		{
+			std::string item_name = item->getName();
+			if (name_changed)
+			{
+				llinfos << "saveWearable changing name from "  << item->getName() << " to " << new_name << llendl;
+				item_name = new_name;
+			}
 			// Update existing inventory item
 			LLPointer<LLViewerInventoryItem> template_item =
 				new LLViewerInventoryItem(item->getUUID(),
 										  item->getParentUUID(),
 										  item->getPermissions(),
-										  new_wearable->getID(),
+										  new_wearable->getAssetID(),
 										  new_wearable->getAssetType(),
 										  item->getInventoryType(),
-										  item->getName(),
+										  item_name,
 										  item->getDescription(),
 										  item->getSaleInfo(),
 										  item->getFlags(),
@@ -268,6 +296,10 @@ void LLAgentWearables::saveWearable( EWearableType type, BOOL send_update )
 			template_item->setTransactionID(new_wearable->getTransactionID());
 			template_item->updateServer(FALSE);
 			gInventory.updateItem(template_item);
+			if (name_changed)
+			{
+				gInventory.notifyObservers();
+			}
 		}
 		else
 		{
@@ -280,14 +312,14 @@ void LLAgentWearables::saveWearable( EWearableType type, BOOL send_update )
 			LLPointer<LLInventoryCallback> cb =
 				new addWearableToAgentInventoryCallback(
 					LLPointer<LLRefCount>(NULL),
-					(S32)type,
+					type,
 					new_wearable,
 					todo);
 			addWearableToAgentInventory(cb, new_wearable);
 			return;
 		}
 		
-		gAgent.getAvatarObject()->wearableUpdated( type );
+		gAgentAvatarp->wearableUpdated( type, TRUE );
 
 		if( send_update )
 		{
@@ -296,10 +328,9 @@ void LLAgentWearables::saveWearable( EWearableType type, BOOL send_update )
 	}
 }
 
-void LLAgentWearables::saveWearableAs(
-	EWearableType type,
-	const std::string& new_name,
-	BOOL save_in_lost_and_found)
+void LLAgentWearables::saveWearableAs(const LLWearableType::EType type,
+									  const std::string& new_name,
+									  BOOL save_in_lost_and_found)
 {
 	if(!isWearableCopyable(type))
 	{
@@ -312,7 +343,8 @@ void LLAgentWearables::saveWearableAs(
 		llwarns << "LLAgent::saveWearableAs() no old wearable." << llendl;
 		return;
 	}
-	LLInventoryItem* item = gInventory.getItem(mWearableEntry[type].mItemID);
+
+	LLInventoryItem* item = gInventory.getItem(getWearableItemID(type));
 	if(!item)
 	{
 		llwarns << "LLAgent::saveWearableAs() no inventory item." << llendl;
@@ -320,7 +352,7 @@ void LLAgentWearables::saveWearableAs(
 	}
 	std::string trunc_name(new_name);
 	LLStringUtil::truncate(trunc_name, DB_INV_ITEM_NAME_STR_LEN);
-	LLWearable* new_wearable = gWearableList.createCopyFromAvatar(
+	LLWearable* new_wearable = LLWearableList::instance().createCopyFromAvatar(
 		old_wearable,
 		trunc_name);
 	LLPointer<LLInventoryCallback> cb =
@@ -333,7 +365,7 @@ void LLAgentWearables::saveWearableAs(
 	if (save_in_lost_and_found)
 	{
 		category_id = gInventory.findCategoryUUIDForType(
-			LLAssetType::AT_LOST_AND_FOUND);
+			LLFolderType::FT_LOST_AND_FOUND);
 	}
 	else
 	{
@@ -355,7 +387,7 @@ void LLAgentWearables::saveWearableAs(
 	{
 		std::string old_name = old_wearable->getName();
 		old_wearable->setName( new_name );
-		LLWearable* new_wearable = gWearableList.createCopyFromAvatar( old_wearable );
+		LLWearable* new_wearable = LLWearableList::instance().createCopyFromAvatar( old_wearable );
 		old_wearable->setName( old_name );
 			
 		LLUUID category_id;
@@ -390,21 +422,23 @@ void LLAgentWearables::saveWearableAs(
 */
 }
 
-void LLAgentWearables::revertWearable( EWearableType type )
+void LLAgentWearables::revertWearable( LLWearableType::EType type )
 {
-	LLWearable* wearable = mWearableEntry[(S32)type].mWearable;
+	LLWearable* wearable = getWearable(type);
+	llassert(wearable);
 	if( wearable )
 	{
 		wearable->writeToAvatar( TRUE );
 	}
+
 	gAgent.sendAgentSetAppearance();
 }
 
 void LLAgentWearables::revertAllWearables()
 {
-	for( S32 i=0; i < WT_COUNT; i++ )
+	for( S32 i=0; i < LLWearableType::WT_COUNT; i++ )
 	{
-		revertWearable( (EWearableType)i );
+		revertWearable( (LLWearableType::EType)i );
 	}
 }
 
@@ -415,9 +449,9 @@ void LLAgentWearables::saveAllWearables()
 	//	return;
 	//}
 
-	for( S32 i=0; i < WT_COUNT; i++ )
+	for( S32 i=0; i < LLWearableType::WT_COUNT; i++ )
 	{
-		saveWearable( (EWearableType)i, FALSE );
+		saveWearable( (LLWearableType::EType)i, FALSE );
 	}
 	sendAgentWearablesUpdate();
 }
@@ -425,16 +459,19 @@ void LLAgentWearables::saveAllWearables()
 // Called when the user changes the name of a wearable inventory item that is currenlty being worn.
 void LLAgentWearables::setWearableName( const LLUUID& item_id, const std::string& new_name )
 {
-	for( S32 i=0; i < WT_COUNT; i++ )
+	for( S32 i=0; i < LLWearableType::WT_COUNT; i++ )
 	{
-		if( mWearableEntry[i].mItemID == item_id )
+		LLUUID curr_item_id = getWearableItemID((LLWearableType::EType)i);
+		if( curr_item_id == item_id )
 		{
-			LLWearable* old_wearable = mWearableEntry[i].mWearable;
+			LLWearable* old_wearable = getWearable((LLWearableType::EType)i);
 			llassert( old_wearable );
+			if (!old_wearable) continue;
 
 			std::string old_name = old_wearable->getName();
 			old_wearable->setName( new_name );
-			LLWearable* new_wearable = gWearableList.createCopy( old_wearable );
+			LLWearable* new_wearable = LLWearableList::instance().createCopy(old_wearable);
+			new_wearable->setItemID(item_id);
 			LLInventoryItem* item = gInventory.getItem(item_id);
 			if(item)
 			{
@@ -442,7 +479,7 @@ void LLAgentWearables::setWearableName( const LLUUID& item_id, const std::string
 			}
 			old_wearable->setName( old_name );
 
-			mWearableEntry[i].mWearable = new_wearable;
+			setWearable((LLWearableType::EType)i,new_wearable);
 			sendAgentWearablesUpdate();
 			break;
 		}
@@ -450,7 +487,7 @@ void LLAgentWearables::setWearableName( const LLUUID& item_id, const std::string
 }
 
 
-BOOL LLAgentWearables::isWearableModifiable(EWearableType type) const
+BOOL LLAgentWearables::isWearableModifiable(LLWearableType::EType type) const
 {
 	LLUUID item_id = getWearableItemID(type);
 	return item_id.notNull() ? isWearableModifiable(item_id) : FALSE;
@@ -458,9 +495,10 @@ BOOL LLAgentWearables::isWearableModifiable(EWearableType type) const
 
 BOOL LLAgentWearables::isWearableModifiable(const LLUUID& item_id) const
 {
-	if(!item_id.isNull())
+	const LLUUID& linked_id = gInventory.getLinkedItemID(item_id);
+	if (linked_id.notNull())
 	{
-		LLInventoryItem* item = gInventory.getItem(item_id);
+		LLInventoryItem* item = gInventory.getItem(linked_id);
 		if(item && item->getPermissions().allowModifyBy(gAgent.getID(),
 														gAgent.getGroupID()))
 		{
@@ -470,7 +508,7 @@ BOOL LLAgentWearables::isWearableModifiable(const LLUUID& item_id) const
 	return FALSE;
 }
 
-BOOL LLAgentWearables::isWearableCopyable(EWearableType type) const
+BOOL LLAgentWearables::isWearableCopyable(LLWearableType::EType type) const
 {
 	LLUUID item_id = getWearableItemID(type);
 	if(!item_id.isNull())
@@ -485,7 +523,14 @@ BOOL LLAgentWearables::isWearableCopyable(EWearableType type) const
 	return FALSE;
 }
 
-U32 LLAgentWearables::getWearablePermMask(EWearableType type) const
+BOOL LLAgentWearables::areWearablesLoaded() const
+{
+	if(gSavedSettings.getBOOL("RenderUnloadedAvatar"))
+		return TRUE;
+	return mWearablesLoaded;
+}
+
+U32 LLAgentWearables::getWearablePermMask(LLWearableType::EType type) const
 {
 	LLUUID item_id = getWearableItemID(type);
 	if(!item_id.isNull())
@@ -499,7 +544,7 @@ U32 LLAgentWearables::getWearablePermMask(EWearableType type) const
 	return PERM_NONE;
 }
 
-LLInventoryItem* LLAgentWearables::getWearableInventoryItem(EWearableType type)
+LLInventoryItem* LLAgentWearables::getWearableInventoryItem(LLWearableType::EType type)
 {
 	LLUUID item_id = getWearableItemID(type);
 	LLInventoryItem* item = NULL;
@@ -512,11 +557,13 @@ LLInventoryItem* LLAgentWearables::getWearableInventoryItem(EWearableType type)
 
 const LLWearable* LLAgentWearables::getWearableFromItemID( const LLUUID& item_id ) const
 {
-	for( S32 i=0; i < WT_COUNT; i++ )
+	const LLUUID& base_item_id = gInventory.getLinkedItemID(item_id);
+	for( S32 i=0; i < LLWearableType::WT_COUNT; i++ )
 	{
-		if( mWearableEntry[i].mItemID == item_id )
+		const LLWearable * curr_wearable = getWearable((LLWearableType::EType)i);
+		if (curr_wearable && (curr_wearable->getItemID() == base_item_id))
 		{
-			return mWearableEntry[i].mWearable;
+			return curr_wearable;
 		}
 	}
 	return NULL;
@@ -524,16 +571,30 @@ const LLWearable* LLAgentWearables::getWearableFromItemID( const LLUUID& item_id
 
 LLWearable* LLAgentWearables::getWearableFromItemID( const LLUUID& item_id )
 {
-	for( S32 i=0; i < WT_COUNT; i++ )
+	const LLUUID& base_item_id = gInventory.getLinkedItemID(item_id);
+	for( S32 i=0; i < LLWearableType::WT_COUNT; i++ )
 	{
-		if( mWearableEntry[i].mItemID == item_id )
+		LLWearable * curr_wearable = getWearable((LLWearableType::EType)i);
+		if (curr_wearable && (curr_wearable->getItemID() == base_item_id))
 		{
-			return mWearableEntry[i].mWearable;
+			return curr_wearable;
 		}
 	}
 	return NULL;
 }
 
+LLWearable*	LLAgentWearables::getWearableFromAssetID(const LLUUID& asset_id) 
+{
+	for (S32 i=0; i < LLWearableType::WT_COUNT; i++)
+	{
+		LLWearable * curr_wearable = getWearable((LLWearableType::EType)i);
+		if (curr_wearable && (curr_wearable->getAssetID() == asset_id))
+		{
+			return curr_wearable;
+		}
+	}
+	return NULL;
+}
 
 void LLAgentWearables::sendAgentWearablesRequest()
 {
@@ -546,23 +607,213 @@ void LLAgentWearables::sendAgentWearablesRequest()
 
 // Used to enable/disable menu items.
 // static
-BOOL LLAgentWearables::selfHasWearable( void* userdata )
+BOOL LLAgentWearables::selfHasWearable(LLWearableType::EType type)
 {
-	EWearableType type = (EWearableType)(intptr_t)userdata;
-	return gAgentWearables.getWearable( type ) != NULL;
-}
-LLWearable* LLAgentWearables::getWearable(const EWearableType type)
-{ 
-	return (type < WT_COUNT) ? mWearableEntry[ type ].mWearable : NULL;
-}
-const LLWearable* LLAgentWearables::getWearable(const EWearableType type) const
-{ 
-	return (type < WT_COUNT) ? mWearableEntry[ type ].mWearable : NULL;
+	return (gAgentWearables.getWearableCount(type) > 0);
 }
 
-const LLUUID &LLAgentWearables::getWearableItemID(EWearableType type) const
+LLWearable* LLAgentWearables::getWearable(const LLWearableType::EType type)
 {
-	 return (type < WT_COUNT) ? mWearableEntry[ type ].mItemID : LLUUID::null;
+	wearableentry_map_t::iterator wearable_iter = mWearableDatas.find(type);
+	if (wearable_iter == mWearableDatas.end())
+	{
+		return NULL;
+	}
+	U32 index = 0;	//Remove when multi-wearables are implemented.
+	wearableentry_vec_t& wearable_vec = wearable_iter->second;
+	if (index>=wearable_vec.size())
+	{
+		return NULL;
+	}
+	else
+	{
+		return wearable_vec[index];
+	}
+}
+
+void LLAgentWearables::setWearable(const LLWearableType::EType type, LLWearable *wearable)
+{
+
+	LLWearable *old_wearable = getWearable(type);
+	if (!old_wearable)
+	{
+		pushWearable(type,wearable);
+		return;
+	}
+	
+	U32 index = 0;	//Remove when multi-wearables are implemented.
+	wearableentry_map_t::iterator wearable_iter = mWearableDatas.find(type);
+	if (wearable_iter == mWearableDatas.end())
+	{
+		llwarns << "invalid type, type " << type << " index " << index << llendl; 
+		return;
+	}
+	wearableentry_vec_t& wearable_vec = wearable_iter->second;
+	if (index>=wearable_vec.size())
+	{
+		llwarns << "invalid index, type " << type << " index " << index << llendl; 
+	}
+	else
+	{
+		wearable_vec[index] = wearable;
+		old_wearable->setLabelUpdated();
+		wearableUpdated(wearable);
+	}
+}
+
+U32 LLAgentWearables::pushWearable(const LLWearableType::EType type, LLWearable *wearable)
+{
+	if (wearable == NULL)
+	{
+		// no null wearables please!
+		llwarns << "Null wearable sent for type " << type << llendl;
+		return MAX_CLOTHING_PER_TYPE;
+	}
+	if (type < LLWearableType::WT_COUNT || mWearableDatas[type].size() < MAX_CLOTHING_PER_TYPE)
+	{
+		mWearableDatas[type].push_back(wearable);
+		wearableUpdated(wearable);
+		return mWearableDatas[type].size()-1;
+	}
+	return MAX_CLOTHING_PER_TYPE;
+}
+
+void LLAgentWearables::wearableUpdated(LLWearable *wearable)
+{
+	gAgentAvatarp->wearableUpdated(wearable->getType(), FALSE);
+	wearable->refreshName();
+	wearable->setLabelUpdated();
+}
+
+void LLAgentWearables::popWearable(LLWearable *wearable)
+{
+	if (wearable == NULL)
+	{
+		// nothing to do here. move along.
+		return;
+	}
+	
+	U32 index = 0;	//Remove when multi-wearables are implemented.
+	LLWearableType::EType type = wearable->getType();
+
+	if (index < MAX_CLOTHING_PER_TYPE && index < getWearableCount(type))
+	{
+		popWearable(type);
+	}
+}
+
+void LLAgentWearables::popWearable(const LLWearableType::EType type)
+{
+	LLWearable *wearable = getWearable(type);
+	if (wearable)
+	{
+		mWearableDatas[type].erase(mWearableDatas[type].begin());
+		gAgentAvatarp->wearableUpdated(wearable->getType(), TRUE);
+		wearable->setLabelUpdated();
+	}
+}
+
+U32	LLAgentWearables::getWearableIndex(const LLWearable *wearable) const
+{
+	if (wearable == NULL)
+	{
+		return MAX_CLOTHING_PER_TYPE;
+	}
+
+	const LLWearableType::EType type = wearable->getType();
+	wearableentry_map_t::const_iterator wearable_iter = mWearableDatas.find(type);
+	if (wearable_iter == mWearableDatas.end())
+	{
+		llwarns << "tried to get wearable index with an invalid type!" << llendl;
+		return MAX_CLOTHING_PER_TYPE;
+	}
+	const wearableentry_vec_t& wearable_vec = wearable_iter->second;
+	for(U32 index = 0; index < wearable_vec.size(); index++)
+	{
+		if (wearable_vec[index] == wearable)
+		{
+			return index;
+		}
+	}
+
+	return MAX_CLOTHING_PER_TYPE;
+}
+
+
+const LLWearable* LLAgentWearables::getWearable(const LLWearableType::EType type) const
+{
+	wearableentry_map_t::const_iterator wearable_iter = mWearableDatas.find(type);
+	if (wearable_iter == mWearableDatas.end())
+	{
+		return NULL;
+	}
+	U32 index = 0;	//Remove when multi-wearables are implemented.
+	const wearableentry_vec_t& wearable_vec = wearable_iter->second;
+	if (index>=wearable_vec.size())
+	{
+		return NULL;
+	}
+	else
+	{
+		return wearable_vec[index];
+	}
+}
+
+LLWearable* LLAgentWearables::getTopWearable(const LLWearableType::EType type)
+{
+	U32 count = getWearableCount(type);
+	if ( count == 0)
+	{
+		return NULL;
+	}
+
+	return getWearable(type);
+}
+
+LLWearable* LLAgentWearables::getBottomWearable(const LLWearableType::EType type)
+{
+	if (getWearableCount(type) == 0)
+	{
+		return NULL;
+	}
+
+	return getWearable(type);
+}
+
+U32 LLAgentWearables::getWearableCount(const LLWearableType::EType type) const
+{
+	wearableentry_map_t::const_iterator wearable_iter = mWearableDatas.find(type);
+	if (wearable_iter == mWearableDatas.end())
+	{
+		return 0;
+	}
+	const wearableentry_vec_t& wearable_vec = wearable_iter->second;
+	return wearable_vec.size();
+}
+
+U32 LLAgentWearables::getWearableCount(const U32 tex_index) const
+{
+	const LLWearableType::EType wearable_type = LLVOAvatarDictionary::getTEWearableType((LLVOAvatarDefines::ETextureIndex)tex_index);
+	return getWearableCount(wearable_type);
+}
+
+
+const LLUUID LLAgentWearables::getWearableItemID(LLWearableType::EType type) const
+{
+	const LLWearable *wearable = getWearable(type);
+	if (wearable)
+		return wearable->getItemID();
+	else
+		return LLUUID();
+}
+
+const LLUUID LLAgentWearables::getWearableAssetID(LLWearableType::EType type) const
+{
+	const LLWearable *wearable = getWearable(type);
+	if (wearable)
+		return wearable->getAssetID();
+	else
+		return LLUUID();
 }
 
 BOOL LLAgentWearables::isWearingItem( const LLUUID& item_id ) const
@@ -575,21 +826,21 @@ BOOL LLAgentWearables::isWearingItem( const LLUUID& item_id ) const
 void LLAgentWearables::processAgentInitialWearablesUpdate( LLMessageSystem* mesgsys, void** user_data )
 {
 	// We should only receive this message a single time.  Ignore subsequent AgentWearablesUpdates
-	// that may result from AgentWearablesRequest having been sent more than once. 
-	static bool first = true;
-	if (!first) return;
-	first = false;
+	// that may result from AgentWearablesRequest having been sent more than once.
+	if (mInitialWearablesUpdateReceived)
+		return;
+	mInitialWearablesUpdateReceived = true;
 
 	LLUUID agent_id;
 	gMessageSystem->getUUIDFast(_PREHASH_AgentData, _PREHASH_AgentID, agent_id );
 
-	LLVOAvatar* avatar = gAgent.getAvatarObject();
-	if( avatar && (agent_id == avatar->getID()) )
+	if (isAgentAvatarValid() && (agent_id == gAgentAvatarp->getID()))
 	{
-		gMessageSystem->getU32Fast(_PREHASH_AgentData, _PREHASH_SerialNum, gAgentQueryManager.mUpdateSerialNum );
+		gMessageSystem->getU32Fast(_PREHASH_AgentData, _PREHASH_SerialNum, gAgentQueryManager.mUpdateSerialNum);
 		
+		const S32 NUM_BODY_PARTS = 4;
 		S32 num_wearables = gMessageSystem->getNumberOfBlocksFast(_PREHASH_WearableData);
-		if( num_wearables < 4 )
+		if (num_wearables < NUM_BODY_PARTS)
 		{
 			// Transitional state.  Avatars should always have at least their body parts (hair, eyes, shape and skin).
 			// The fact that they don't have any here (only a dummy is sent) implies that this account existed
@@ -599,17 +850,16 @@ void LLAgentWearables::processAgentInitialWearablesUpdate( LLMessageSystem* mesg
 
 		//lldebugs << "processAgentInitialWearablesUpdate()" << llendl;
 		// Add wearables
-		LLUUID asset_id_array[ WT_COUNT ];
-		S32 i;
-		for( i=0; i < num_wearables; i++ )
+		std::pair<LLUUID, LLUUID> asset_id_array[ LLWearableType::WT_COUNT ];
+		for (S32 i=0; i < num_wearables; i++)
 		{
 			U8 type_u8 = 0;
 			gMessageSystem->getU8Fast(_PREHASH_WearableData, _PREHASH_WearableType, type_u8, i );
-			if( type_u8 >= WT_COUNT )
+			if( type_u8 >= LLWearableType::WT_COUNT )
 			{
 				continue;
 			}
-			EWearableType type = (EWearableType) type_u8;
+			LLWearableType::EType type = (LLWearableType::EType) type_u8;
 
 			LLUUID item_id;
 			gMessageSystem->getUUIDFast(_PREHASH_WearableData, _PREHASH_ItemID, item_id, i );
@@ -622,32 +872,35 @@ void LLAgentWearables::processAgentInitialWearablesUpdate( LLMessageSystem* mesg
 			}
 			else
 			{
-				LLAssetType::EType asset_type = LLWearable::typeToAssetType( type );
+				LLAssetType::EType asset_type = LLWearableType::getAssetType( type );
 				if( asset_type == LLAssetType::AT_NONE )
 				{
 					continue;
 				}
 
-				gAgentWearables.mWearableEntry[type].mItemID = item_id;
-				asset_id_array[type] = asset_id;
+				asset_id_array[type] = std::pair<LLUUID, LLUUID>(asset_id,item_id);
 			}
 
-			LL_DEBUGS("Wearables") << "       " << LLWearable::typeToTypeLabel(type) << " " << asset_id << " item id " << gAgentWearables.mWearableEntry[type].mItemID.asString() << LL_ENDL;
+			LL_DEBUGS("Wearables") << "       " << LLWearableType::getTypeLabel(type) << " " << asset_id << " item id " << gAgentWearables.getWearableItemID(type).asString() << LL_ENDL;
 		}
 
 		LLCOFMgr::instance().fetchCOF();
 
 		// now that we have the asset ids...request the wearable assets
-		for( i = 0; i < WT_COUNT; i++ )
+		for(S32 i = 0; i < LLWearableType::WT_COUNT; i++ )
 		{
-			LL_DEBUGS("Wearables") << "      fetching " << asset_id_array[i] << LL_ENDL;
-			if( !gAgentWearables.mWearableEntry[i].mItemID.isNull() )
+			LL_DEBUGS("Wearables") << "      fetching " << asset_id_array[i].first << LL_ENDL;
+			const LLUUID item_id = asset_id_array[i].second;
+			if( !item_id.isNull() )
 			{
-				gWearableList.getAsset( 
-					asset_id_array[i],
+				LLWearableList::instance().getAsset( 
+					asset_id_array[i].first,
 					LLStringUtil::null,
-					LLWearable::typeToAssetType( (EWearableType) i ), 
-					LLAgentWearables::onInitialWearableAssetArrived, (void*)(intptr_t)i );
+					LLWearableType::getAssetType( (LLWearableType::EType) i ), 
+					LLAgentWearables::onInitialWearableAssetArrived, 
+					//This scary cast is to prevent messing with llwearablelist. Since ItemIDs are now tied to wearables, 
+					//  we now need to pass the ids to onInitialWearableAssetArrived so LLWearable::setItemID can be called there.
+					(void*)(intptr_t)new std::pair<const LLWearableType::EType,const LLUUID>((LLWearableType::EType)i,item_id) );
 			}
 		}
 
@@ -660,9 +913,12 @@ void LLAgentWearables::processAgentInitialWearablesUpdate( LLMessageSystem* mesg
 // static
 void LLAgentWearables::onInitialWearableAssetArrived( LLWearable* wearable, void* userdata )
 {
-	EWearableType type = (EWearableType)(intptr_t)userdata;
+	std::pair<const LLWearableType::EType,const LLUUID>* wearable_data = (std::pair<const LLWearableType::EType,const LLUUID>*)(intptr_t) userdata;
+	LLWearableType::EType type = wearable_data->first;
+	LLUUID item_id = wearable_data->second;
+	delete wearable_data;
 
-	LLVOAvatar* avatar = gAgent.getAvatarObject();
+	LLVOAvatar* avatar = gAgentAvatarp;
 	if( !avatar )
 	{
 		return;
@@ -671,7 +927,8 @@ void LLAgentWearables::onInitialWearableAssetArrived( LLWearable* wearable, void
 	if( wearable )
 	{
 		llassert( type == wearable->getType() );
-		gAgentWearables.mWearableEntry[ type ].mWearable = wearable;
+		wearable->setItemID(item_id);
+		gAgentWearables.setWearable(type,wearable);
 
 		// disable composites if initial textures are baked
 		avatar->setupComposites();
@@ -679,7 +936,7 @@ void LLAgentWearables::onInitialWearableAssetArrived( LLWearable* wearable, void
 
 		wearable->writeToAvatar( FALSE );
 		avatar->setCompositeUpdatesEnabled(TRUE);
-		gInventory.addChangedMask( LLInventoryObserver::LABEL, gAgentWearables.mWearableEntry[type].mItemID );
+		gInventory.addChangedMask( LLInventoryObserver::LABEL, item_id );
 	}
 	else
 	{
@@ -693,9 +950,9 @@ void LLAgentWearables::onInitialWearableAssetArrived( LLWearable* wearable, void
 	if( !gAgentWearables.mWearablesLoaded )
 	{
 		gAgentWearables.mWearablesLoaded = TRUE;
-		for( S32 i = 0; i < WT_COUNT; i++ )
+		for( S32 i = 0; i < LLWearableType::WT_COUNT; i++ )
 		{
-			if( !gAgentWearables.mWearableEntry[i].mItemID.isNull() && !gAgentWearables.mWearableEntry[i].mWearable )
+			if( !gAgentWearables.getWearableItemID((LLWearableType::EType)i).isNull() && !gAgentWearables.getWearable((LLWearableType::EType)i) )
 			{
 				gAgentWearables.mWearablesLoaded = FALSE;
 				break;
@@ -720,26 +977,24 @@ void LLAgentWearables::onInitialWearableAssetArrived( LLWearable* wearable, void
 // Normally, all wearables referred to "AgentWearablesUpdate" will correspond to actual assets in the
 // database.  If for some reason, we can't load one of those assets, we can try to reconstruct it so that
 // the user isn't left without a shape, for example.  (We can do that only after the inventory has loaded.)
-void LLAgentWearables::recoverMissingWearable( EWearableType type )
+void LLAgentWearables::recoverMissingWearable( LLWearableType::EType type )
 {
 	// Try to recover by replacing missing wearable with a new one.
-	LLNotifications::instance().add("ReplacedMissingWearable");
-	lldebugs << "Wearable " << LLWearable::typeToTypeLabel( type ) << " could not be downloaded.  Replaced inventory item with default wearable." << llendl;
-	LLWearable* new_wearable = gWearableList.createNewWearable(type);
+	LLNotificationsUtil::add("ReplacedMissingWearable");
+	lldebugs << "Wearable " << LLWearableType::getTypeLabel( type ) << " could not be downloaded.  Replaced inventory item with default wearable." << llendl;
+	LLWearable* new_wearable = LLWearableList::instance().createNewWearable(type);
 
-	S32 type_s32 = (S32) type;
-	mWearableEntry[type_s32].mWearable = new_wearable;
+	setWearable(type,new_wearable);
 	new_wearable->writeToAvatar( TRUE );
 
 	// Add a new one in the lost and found folder.
 	// (We used to overwrite the "not found" one, but that could potentially
 	// destory content.) JC
-	LLUUID lost_and_found_id = 
-		gInventory.findCategoryUUIDForType(LLAssetType::AT_LOST_AND_FOUND);
+	const LLUUID lost_and_found_id = gInventory.findCategoryUUIDForType(LLFolderType::FT_LOST_AND_FOUND);
 	LLPointer<LLInventoryCallback> cb =
 		new addWearableToAgentInventoryCallback(
 			LLPointer<LLRefCount>(NULL),
-			type_s32,
+			type,
 			new_wearable,
 			addWearableToAgentInventoryCallback::CALL_RECOVERDONE);
 	addWearableToAgentInventory( cb, new_wearable, lost_and_found_id, TRUE);
@@ -748,17 +1003,8 @@ void LLAgentWearables::recoverMissingWearable( EWearableType type )
 void LLAgentWearables::recoverMissingWearableDone()
 {
 	// Have all the wearables that the avatar was wearing at log-in arrived or been fabricated?
-	mWearablesLoaded = TRUE;
-	for( S32 i = 0; i < WT_COUNT; i++ )
-	{
-		if( !mWearableEntry[i].mItemID.isNull() && !mWearableEntry[i].mWearable )
-		{
-			mWearablesLoaded = FALSE;
-			break;
-		}
-	}
-
-	if( mWearablesLoaded )
+	updateWearablesLoaded();
+	if (areWearablesLoaded())
 	{
 		// Make sure that the server's idea of the avatar's wearables actually match the wearables.
 		gAgent.sendAgentSetAppearance();
@@ -777,9 +1023,9 @@ void LLAgentWearables::createStandardWearables(BOOL female)
 
 	if (!isAgentAvatarValid()) return;
 
-	gAgent.getAvatarObject()->setSex(female ? SEX_FEMALE : SEX_MALE);
+	gAgentAvatarp->setSex(female ? SEX_FEMALE : SEX_MALE);
 
-	const BOOL create[WT_COUNT] = 
+	const BOOL create[LLWearableType::WT_COUNT] = 
 	{
 		TRUE,  //WT_SHAPE
 		TRUE,  //WT_SKIN
@@ -799,7 +1045,7 @@ void LLAgentWearables::createStandardWearables(BOOL female)
 		FALSE, //WT_PHYSICS
 	};
 
-	for( S32 i=0; i < WT_COUNT; i++ )
+	for( S32 i=0; i < LLWearableType::WT_COUNT; i++ )
 	{
 		bool once = false;
 		LLPointer<LLRefCount> donecb = NULL;
@@ -810,14 +1056,13 @@ void LLAgentWearables::createStandardWearables(BOOL female)
 				once = true;
 				donecb = new createStandardWearablesAllDoneCallback;
 			}
-			llassert( mWearableEntry[i].mWearable == NULL );
-			LLWearable* wearable = gWearableList.createNewWearable((EWearableType)i);
-			mWearableEntry[i].mWearable = wearable;
+			llassert(getWearableCount((LLWearableType::EType)i) == 0);
+			LLWearable* wearable = LLWearableList::instance().createNewWearable((LLWearableType::EType)i);
 			// no need to update here...
 			LLPointer<LLInventoryCallback> cb =
 				new addWearableToAgentInventoryCallback(
 					donecb,
-					i,
+					(LLWearableType::EType)i,
 					wearable,
 					addWearableToAgentInventoryCallback::CALL_CREATESTANDARDDONE);
 			addWearableToAgentInventory(cb, wearable, LLUUID::null, FALSE);
@@ -826,7 +1071,7 @@ void LLAgentWearables::createStandardWearables(BOOL female)
 }
 void LLAgentWearables::createStandardWearablesDone(S32 index)
 {
-	LLWearable* wearable = mWearableEntry[index].mWearable;
+	LLWearable* wearable = getWearable((LLWearableType::EType)index);
 
 	if (wearable)
 	{
@@ -839,11 +1084,10 @@ void LLAgentWearables::createStandardWearablesAllDone()
 	// ... because sendAgentWearablesUpdate will notify inventory
 	// observers.
 	mWearablesLoaded = TRUE; 
-	sendAgentWearablesUpdate();
-	gAgent.sendAgentSetAppearance();
+	updateServer();
 
 	// Treat this as the first texture entry message, if none received yet
-	gAgent.getAvatarObject()->onFirstTEMessageReceived();
+	gAgentAvatarp->onFirstTEMessageReceived();
 }
 
 void LLAgentWearables::makeNewOutfit( 
@@ -852,7 +1096,7 @@ void LLAgentWearables::makeNewOutfit(
 	const LLDynamicArray<S32>& attachments_to_include,
 	BOOL rename_clothing)
 {
-	if (!gAgent.getAvatarObject())
+	if (!gAgentAvatarp)
 	{
 		return;
 	}
@@ -862,8 +1106,8 @@ void LLAgentWearables::makeNewOutfit(
 	BOOL fUseOutfits = gSavedSettings.getBOOL("UseOutfitFolders") &&
 					   gHippoGridManager->getConnectedGrid()->supportsInvLinks();
 
-	LLAssetType::EType typeDest = (fUseOutfits) ? LLAssetType::AT_MY_OUTFITS : LLAssetType::AT_CLOTHING;
-	LLAssetType::EType typeFolder = (fUseOutfits) ? LLAssetType::AT_OUTFIT : LLAssetType::AT_NONE;
+	LLFolderType::EType typeDest = (fUseOutfits) ? LLFolderType::FT_MY_OUTFITS : LLFolderType::FT_CLOTHING;
+	LLFolderType::EType typeFolder = (fUseOutfits) ? LLFolderType::FT_OUTFIT : LLFolderType::FT_NONE;
 
 	// First, make a folder for the outfit.
 	LLUUID folder_id = gInventory.createNewCategory(gInventory.findCategoryUUIDForType(typeDest), typeFolder, new_folder_name);
@@ -882,10 +1126,10 @@ void LLAgentWearables::makeNewOutfit(
 		for( i = 0; i < count; ++i )
 		{
 			S32 index = wearables_to_include[i];
-			LLWearable* old_wearable = mWearableEntry[ index ].mWearable;
+			LLWearable* old_wearable = getWearable((LLWearableType::EType)index);
 			if( old_wearable )
 			{
-				LLViewerInventoryItem* item = gInventory.getItem(mWearableEntry[index].mItemID);
+				LLViewerInventoryItem* item = gInventory.getItem(getWearableItemID((LLWearableType::EType)index));
 				if (fUseOutfits)
 				{
 					std::string strOrdering = llformat("@%d", item->getWearableType() * 100);
@@ -910,9 +1154,9 @@ void LLAgentWearables::makeNewOutfit(
 						LLStringUtil::truncate(new_name, DB_INV_ITEM_NAME_STR_LEN);
 					}
 
-					if (fUseLinks || isWearableCopyable((EWearableType)index))
+					if (fUseLinks || isWearableCopyable((LLWearableType::EType)index))
 					{
-						LLWearable* new_wearable = gWearableList.createCopy(old_wearable);
+						LLWearable* new_wearable = LLWearableList::instance().createCopy(old_wearable);
 						if (rename_clothing)
 						{
 							new_wearable->setName(new_name);
@@ -930,10 +1174,10 @@ void LLAgentWearables::makeNewOutfit(
 						LLPointer<LLInventoryCallback> cb =
 							new addWearableToAgentInventoryCallback(
 								cbdone,
-								index,
+								(LLWearableType::EType)index,
 								new_wearable,
 								todo);
-						if (isWearableCopyable((EWearableType)index))
+						if (isWearableCopyable((LLWearableType::EType)index))
 						{
 							copy_inventory_item(
 								gAgent.getID(),
@@ -980,7 +1224,7 @@ void LLAgentWearables::makeNewOutfit(
 		for( S32 i = 0; i < attachments_to_include.count(); i++ )
 		{
 			S32 attachment_pt = attachments_to_include[i];
-			LLViewerJointAttachment* attachment = get_if_there(gAgent.getAvatarObject()->mAttachmentPoints, attachment_pt, (LLViewerJointAttachment*)NULL );
+			LLViewerJointAttachment* attachment = get_if_there(gAgentAvatarp->mAttachmentPoints, attachment_pt, (LLViewerJointAttachment*)NULL );
 			if(!attachment) continue;
 			for (LLViewerJointAttachment::attachedobjs_vec_t::iterator attachment_iter = attachment->mAttachedObjects.begin();
 				 attachment_iter != attachment->mAttachedObjects.end();
@@ -1045,9 +1289,9 @@ void LLAgentWearables::makeNewOutfit(
 	} 
 }
 
-void LLAgentWearables::makeNewOutfitDone(S32 index)
+void LLAgentWearables::makeNewOutfitDone(S32 type)
 {
-	LLUUID first_item_id = mWearableEntry[index].mItemID;
+	LLUUID first_item_id = getWearableItemID((LLWearableType::EType)type);
 	// Open the inventory and select the first item we added.
 	if( first_item_id.notNull() )
 	{
@@ -1078,14 +1322,18 @@ void LLAgentWearables::addWearableToAgentInventory(LLPointer<LLInventoryCallback
 						  cb);
 }
 
-void LLAgentWearables::removeWearable( EWearableType type )
+void LLAgentWearables::removeWearable( LLWearableType::EType type )
 {
-	LLWearable* old_wearable = mWearableEntry[ type ].mWearable;
-
-	if ( (gAgent.isTeen())
-		 && (type == WT_UNDERSHIRT || type == WT_UNDERPANTS))
+	if (gAgent.isTeen() &&
+		(type == LLWearableType::WT_UNDERSHIRT || type == LLWearableType::WT_UNDERPANTS))
 	{
 		// Can't take off underclothing in simple UI mode or on PG accounts
+		return;
+	}
+
+	if (getWearableCount(type) == 0)
+	{
+		// no wearables to remove
 		return;
 	}
 
@@ -1096,6 +1344,8 @@ void LLAgentWearables::removeWearable( EWearableType type )
 	}
 // [/RLVa:KB]
 
+	LLWearable* old_wearable = getWearable(type);
+
 	if( old_wearable )
 	{
 		if( old_wearable->isDirty() )
@@ -1103,7 +1353,7 @@ void LLAgentWearables::removeWearable( EWearableType type )
 			LLSD payload;
 			payload["wearable_type"] = (S32)type;
 			// Bring up view-modal dialog: Save changes? Yes, No, Cancel
-			LLNotifications::instance().add("WearableSave", LLSD(), payload, &LLAgentWearables::onRemoveWearableDialog);
+			LLNotificationsUtil::add("WearableSave", LLSD(), payload, &LLAgentWearables::onRemoveWearableDialog);
 			return;
 		}
 		else
@@ -1116,8 +1366,8 @@ void LLAgentWearables::removeWearable( EWearableType type )
 // static 
 bool LLAgentWearables::onRemoveWearableDialog(const LLSD& notification, const LLSD& response )
 {
-	S32 option = LLNotification::getSelectedOption(notification, response);
-	EWearableType type = (EWearableType)notification["payload"]["wearable_type"].asInteger();
+	S32 option = LLNotificationsUtil::getSelectedOption(notification, response);
+	LLWearableType::EType type = (LLWearableType::EType)notification["payload"]["wearable_type"].asInteger();
 	switch( option )
 	{
 	case 0:  // "Save"
@@ -1140,43 +1390,43 @@ bool LLAgentWearables::onRemoveWearableDialog(const LLSD& notification, const LL
 }
 
 // Called by removeWearable() and onRemoveWearableDialog() to actually do the removal.
-void LLAgentWearables::removeWearableFinal( EWearableType type )
+void LLAgentWearables::removeWearableFinal( LLWearableType::EType type )
 {
-	LLWearable* old_wearable = mWearableEntry[ type ].mWearable;
+	gInventory.addChangedMask( LLInventoryObserver::LABEL, getWearableItemID(type) );
 
-	gInventory.addChangedMask( LLInventoryObserver::LABEL, mWearableEntry[type].mItemID );
-
-	mWearableEntry[ type ].mWearable = NULL;
-	mWearableEntry[ type ].mItemID.setNull();
-
-	queryWearableCache();
+	LLWearable* old_wearable = getWearable(type);
+	//queryWearableCache();
 
 	if( old_wearable )
 	{
+		popWearable(old_wearable);
 		old_wearable->removeFromAvatar( TRUE );
 	}
 
+	queryWearableCache();
+
 	// Update the server
-	sendAgentWearablesUpdate(); 
-	gAgent.sendAgentSetAppearance();
+	updateServer();
 	gInventory.notifyObservers();
 }
 
-void LLAgentWearables::copyWearableToInventory( EWearableType type )
+void LLAgentWearables::copyWearableToInventory( LLWearableType::EType type )
 {
-	LLWearable* wearable = mWearableEntry[ type ].mWearable;
+	LLWearable* wearable = getWearable(type);
 	if( wearable )
 	{
 		// Save the old wearable if it has changed.
 		if( wearable->isDirty() )
 		{
-			wearable = gWearableList.createCopyFromAvatar( wearable );
-			mWearableEntry[ type ].mWearable = wearable;
+			LLWearable * new_wearable = LLWearableList::instance().createCopyFromAvatar( wearable );
+			new_wearable->setItemID(wearable->getItemID());
+			setWearable(type,new_wearable);
+			wearable = new_wearable;
 		}
 
 		// Make a new entry in the inventory.  (Put it in the same folder as the original item if possible.)
 		LLUUID category_id;
-		LLInventoryItem* item = gInventory.getItem( mWearableEntry[ type ].mItemID );
+		LLInventoryItem* item = gInventory.getItem( wearable->getItemID() );
 		if( item )
 		{
 			category_id = item->getParentUUID();
@@ -1201,9 +1451,9 @@ struct LLSetWearableData
 	LLWearable*			mNewWearable;
 };
 
-static bool isFirstPhysicsWearable(EWearableType type, LLInventoryItem *new_item, LLWearable *new_wearable)
+static bool isFirstPhysicsWearable(LLWearableType::EType type, LLInventoryItem *new_item, LLWearable *new_wearable)
 {
-	if (type == WT_PHYSICS && gSavedSettings.getWarning("FirstPhysicsWearable"))
+	if (type == LLWearableType::WT_PHYSICS && gSavedSettings.getWarning("FirstPhysicsWearable"))
 	{
 		class WearableDelayedCallback
 		{
@@ -1219,13 +1469,13 @@ static bool isFirstPhysicsWearable(EWearableType type, LLInventoryItem *new_item
 				}
 			}
 		};
-		LLNotifications::instance().add("FirstPhysicsWearable",LLSD(),LLSD(),boost::bind(WearableDelayedCallback::setDelayedWearable, _1, _2, new_item->getUUID(),new_wearable));
+		LLNotificationsUtil::add("FirstPhysicsWearable",LLSD(),LLSD(),boost::bind(WearableDelayedCallback::setDelayedWearable, _1, _2, new_item->getUUID(),new_wearable));
 		return true;
 	}
 	return false;
 }
 
-BOOL LLAgentWearables::needsReplacement(EWearableType  wearableType, S32 remove)
+BOOL LLAgentWearables::needsReplacement(LLWearableType::EType wearableType, S32 remove)
 {
 	return TRUE;
 	/*if (remove) return TRUE;
@@ -1240,24 +1490,24 @@ void LLAgentWearables::setWearableOutfit(const LLInventoryItem::item_array_t& it
 {
 	lldebugs << "setWearableOutfit() start" << llendl;
 
-	BOOL wearables_to_remove[WT_COUNT];
-	wearables_to_remove[WT_SHAPE]		= FALSE;
-	wearables_to_remove[WT_SKIN]		= FALSE;
-	wearables_to_remove[WT_HAIR]		= FALSE;
-	wearables_to_remove[WT_EYES]		= FALSE;
+	BOOL wearables_to_remove[LLWearableType::WT_COUNT];
+	wearables_to_remove[LLWearableType::WT_SHAPE]		= FALSE;
+	wearables_to_remove[LLWearableType::WT_SKIN]		= FALSE;
+	wearables_to_remove[LLWearableType::WT_HAIR]		= FALSE;
+	wearables_to_remove[LLWearableType::WT_EYES]		= FALSE;
 // [RLVa:KB] - Checked: 2009-07-06 (RLVa-1.1.3b) | Added: RLVa-0.2.2a
-	wearables_to_remove[WT_SHIRT]		= remove && gRlvWearableLocks.canRemove(WT_SHIRT);
-	wearables_to_remove[WT_PANTS]		= remove && gRlvWearableLocks.canRemove(WT_PANTS);
-	wearables_to_remove[WT_SHOES]		= remove && gRlvWearableLocks.canRemove(WT_SHOES);
-	wearables_to_remove[WT_SOCKS]		= remove && gRlvWearableLocks.canRemove(WT_SOCKS);
-	wearables_to_remove[WT_JACKET]		= remove && gRlvWearableLocks.canRemove(WT_JACKET);
-	wearables_to_remove[WT_GLOVES]		= remove && gRlvWearableLocks.canRemove(WT_GLOVES);
-	wearables_to_remove[WT_UNDERSHIRT]	= (!gAgent.isTeen()) && remove && gRlvWearableLocks.canRemove(WT_UNDERSHIRT);
-	wearables_to_remove[WT_UNDERPANTS]	= (!gAgent.isTeen()) && remove && gRlvWearableLocks.canRemove(WT_UNDERPANTS);
-	wearables_to_remove[WT_SKIRT]		= remove && gRlvWearableLocks.canRemove(WT_SKIRT);
-	wearables_to_remove[WT_ALPHA]		= remove && gRlvWearableLocks.canRemove(WT_ALPHA);
-	wearables_to_remove[WT_TATTOO]		= remove && gRlvWearableLocks.canRemove(WT_TATTOO);
-	wearables_to_remove[WT_PHYSICS]		= remove && gRlvWearableLocks.canRemove(WT_PHYSICS);
+	wearables_to_remove[LLWearableType::WT_SHIRT]		= remove && gRlvWearableLocks.canRemove(LLWearableType::WT_SHIRT);
+	wearables_to_remove[LLWearableType::WT_PANTS]		= remove && gRlvWearableLocks.canRemove(LLWearableType::WT_PANTS);
+	wearables_to_remove[LLWearableType::WT_SHOES]		= remove && gRlvWearableLocks.canRemove(LLWearableType::WT_SHOES);
+	wearables_to_remove[LLWearableType::WT_SOCKS]		= remove && gRlvWearableLocks.canRemove(LLWearableType::WT_SOCKS);
+	wearables_to_remove[LLWearableType::WT_JACKET]		= remove && gRlvWearableLocks.canRemove(LLWearableType::WT_JACKET);
+	wearables_to_remove[LLWearableType::WT_GLOVES]		= remove && gRlvWearableLocks.canRemove(LLWearableType::WT_GLOVES);
+	wearables_to_remove[LLWearableType::WT_UNDERSHIRT]	= (!gAgent.isTeen()) && remove && gRlvWearableLocks.canRemove(LLWearableType::WT_UNDERSHIRT);
+	wearables_to_remove[LLWearableType::WT_UNDERPANTS]	= (!gAgent.isTeen()) && remove && gRlvWearableLocks.canRemove(LLWearableType::WT_UNDERPANTS);
+	wearables_to_remove[LLWearableType::WT_SKIRT]		= remove && gRlvWearableLocks.canRemove(LLWearableType::WT_SKIRT);
+	wearables_to_remove[LLWearableType::WT_ALPHA]		= remove && gRlvWearableLocks.canRemove(LLWearableType::WT_ALPHA);
+	wearables_to_remove[LLWearableType::WT_TATTOO]		= remove && gRlvWearableLocks.canRemove(LLWearableType::WT_TATTOO);
+	wearables_to_remove[LLWearableType::WT_PHYSICS]		= remove && gRlvWearableLocks.canRemove(LLWearableType::WT_PHYSICS);
 // [/RLVa:KB]
 
 	S32 count = wearables.count();
@@ -1270,50 +1520,68 @@ void LLAgentWearables::setWearableOutfit(const LLInventoryItem::item_array_t& it
 		LLPointer<LLInventoryItem> new_item = items[i];
 
 		llassert(new_wearable);
-		EWearableType type = new_wearable->getType();
-		wearables_to_remove[type] = FALSE;
-
-		LLWearable* old_wearable = mWearableEntry[ type ].mWearable;
-		if( old_wearable )
+		
+		if (new_wearable)
 		{
-			const LLUUID& old_item_id = mWearableEntry[ type ].mItemID;
-			if( (old_wearable->getID() == new_wearable->getID()) &&
-				(old_item_id == new_item->getUUID()) )
+			LLWearableType::EType type = new_wearable->getType();
+			wearables_to_remove[type] = FALSE;
+
+			LLWearable* old_wearable = getWearable(type);
+			if( old_wearable )
 			{
-				lldebugs << "No change to wearable asset and item: " << LLWearable::typeToTypeName( type ) << llendl;
-				continue;
+				const LLUUID& old_item_id = getWearableItemID(type);
+				if( (old_wearable->getAssetID() == new_wearable->getAssetID()) &&
+					(old_item_id == new_item->getUUID()) )
+				{
+					lldebugs << "No change to wearable asset and item: " << LLWearableType::getTypeName( type ) << llendl;
+					continue;
+				}
+
+				gInventory.addChangedMask(LLInventoryObserver::LABEL, old_item_id);
+
+				// Assumes existing wearables are not dirty.
+				if( old_wearable->isDirty() )
+				{
+					llassert(0);
+					continue;
+				}
 			}
 
-			gInventory.addChangedMask(LLInventoryObserver::LABEL, old_item_id);
-
-			// Assumes existing wearables are not dirty.
-			if( old_wearable->isDirty() )
+			if (isFirstPhysicsWearable(type, new_item, new_wearable))
 			{
-				llassert(0);
-				continue;
+				return;
+			}
+
+			new_wearable->setName(new_item->getName());
+			new_wearable->setItemID(new_item->getUUID());
+
+			if (LLWearableType::getAssetType(type) == LLAssetType::AT_BODYPART)
+			{
+				// exactly one wearable per body part
+				setWearable(type,new_wearable);
+			}
+			else if(old_wearable)	//Remove when multi-wearables are implemented.
+			{
+				setWearable(type,new_wearable);
+			}
+			else
+			{
+				pushWearable(type,new_wearable);
 			}
 		}
-
-		if (isFirstPhysicsWearable(type, new_item, new_wearable))
-		{
-			return;
-		}
-
-		mWearableEntry[ type ].mItemID = new_item->getUUID();
-		mWearableEntry[ type ].mWearable = new_wearable;
 	}
 
 	std::vector<LLWearable*> wearables_being_removed;
 
-	for( i = 0; i < WT_COUNT; i++ )
+	for( i = 0; i < LLWearableType::WT_COUNT; i++ )
 	{
 		if( wearables_to_remove[i] )
 		{
-			wearables_being_removed.push_back(mWearableEntry[ i ].mWearable);
-			mWearableEntry[ i ].mWearable = NULL;
+			LLWearable* wearable = getWearable((LLWearableType::EType)i);
+			wearables_being_removed.push_back(getWearable((LLWearableType::EType)i));
+			popWearable(wearable);
 			
-			gInventory.addChangedMask(LLInventoryObserver::LABEL, mWearableEntry[ i ].mItemID);
-			mWearableEntry[ i ].mItemID.setNull();
+			gInventory.addChangedMask(LLInventoryObserver::LABEL, wearable->getItemID());
 		}
 	}
 
@@ -1341,8 +1609,8 @@ void LLAgentWearables::setWearableOutfit(const LLInventoryItem::item_array_t& it
 
 	// Start rendering & update the server
 	mWearablesLoaded = TRUE; 
-	sendAgentWearablesUpdate();
-	gAgent.sendAgentSetAppearance();
+	updateServer();
+
 
 	lldebugs << "setWearableOutfit() end" << llendl;
 }
@@ -1351,9 +1619,14 @@ void LLAgentWearables::setWearableOutfit(const LLInventoryItem::item_array_t& it
 // User has picked "wear on avatar" from a menu.
 void LLAgentWearables::setWearableItem( LLInventoryItem* new_item, LLWearable* new_wearable )
 {
-	EWearableType type = new_wearable->getType();
+	//LLAgentDumper dumper("setWearableItem");
+	if (isWearingItem(new_item->getUUID()))
+	{
+		llwarns << "wearable " << new_item->getUUID() << " is already worn" << llendl;
+		return;
+	}
+	LLWearableType::EType type = new_wearable->getType();
 
-	LLWearable* old_wearable = mWearableEntry[ type ].mWearable;
 
 // [RLVa:KB] - Checked: 2009-07-07 (RLVa-1.0.0d)
 	// Block if: we can't wear on that layer; or we're already wearing something there we can't take off
@@ -1368,13 +1641,14 @@ void LLAgentWearables::setWearableItem( LLInventoryItem* new_item, LLWearable* n
 		return;
 	}
 
+	LLWearable* old_wearable = getWearable(type);
 	if( old_wearable )
 	{
-		const LLUUID& old_item_id = mWearableEntry[ type ].mItemID;
-		if( (old_wearable->getID() == new_wearable->getID()) &&
+		const LLUUID& old_item_id = old_wearable->getItemID();
+		if( (old_wearable->getAssetID() == new_wearable->getAssetID()) &&
 			(old_item_id == new_item->getUUID()) )
 		{
-			lldebugs << "No change to wearable asset and item: " << LLWearable::typeToTypeName( type ) << llendl;
+			lldebugs << "No change to wearable asset and item: " << LLWearableType::getTypeName( type ) << llendl;
 			return;
 		}
 
@@ -1383,7 +1657,7 @@ void LLAgentWearables::setWearableItem( LLInventoryItem* new_item, LLWearable* n
 			// Bring up modal dialog: Save changes? Yes, No, Cancel
 			LLSD payload;
 			payload["item_id"] = new_item->getUUID();
-			LLNotifications::instance().add( "WearableSave", LLSD(), payload, boost::bind(LLAgentWearables::onSetWearableDialog, _1, _2, new_wearable));
+			LLNotificationsUtil::add( "WearableSave", LLSD(), payload, boost::bind(onSetWearableDialog, _1, _2, new_wearable));
 			return;
 		}
 	}
@@ -1394,7 +1668,7 @@ void LLAgentWearables::setWearableItem( LLInventoryItem* new_item, LLWearable* n
 // static 
 bool LLAgentWearables::onSetWearableDialog( const LLSD& notification, const LLSD& response, LLWearable* wearable )
 {
-	S32 option = LLNotification::getSelectedOption(notification, response);
+	S32 option = LLNotificationsUtil::getSelectedOption(notification, response);
 	LLInventoryItem* new_item = gInventory.getItem( notification["payload"]["item_id"].asUUID());
 	if( !new_item )
 	{
@@ -1428,13 +1702,18 @@ bool LLAgentWearables::onSetWearableDialog( const LLSD& notification, const LLSD
 // Called from setWearable() and onSetWearableDialog() to actually set the wearable.
 void LLAgentWearables::setWearableFinal( LLInventoryItem* new_item, LLWearable* new_wearable )
 {
-	const EWearableType type = new_wearable->getType();
+	const LLWearableType::EType type = new_wearable->getType();
 
 	// Replace the old wearable with a new one.
-	llassert( new_item->getAssetUUID() == new_wearable->getID() );
-	LLUUID old_item_id = mWearableEntry[ type ].mItemID;
-	mWearableEntry[ type ].mItemID = new_item->getUUID();
-	mWearableEntry[ type ].mWearable = new_wearable;
+	llassert( new_item->getAssetUUID() == new_wearable->getAssetID() );
+	LLWearable *old_wearable = getWearable(type);
+	LLUUID old_item_id;
+	if (old_wearable)
+	{
+		old_item_id = old_wearable->getItemID();
+	}
+	new_wearable->setItemID(new_item->getUUID());
+	setWearable(type,new_wearable);
 
 	if (old_item_id.notNull())
 	{
@@ -1446,14 +1725,12 @@ void LLAgentWearables::setWearableFinal( LLInventoryItem* new_item, LLWearable* 
 	queryWearableCache();
 	new_wearable->writeToAvatar( TRUE );
 
-	// Update the server
-	sendAgentWearablesUpdate();
-	gAgent.sendAgentSetAppearance();
+	updateServer();
 }
 
 void LLAgentWearables::queryWearableCache()
 {
-	if (!mWearablesLoaded)
+	if (!areWearablesLoaded())
 	{
 		return;
 	}
@@ -1476,28 +1753,18 @@ void LLAgentWearables::queryWearableCache()
 	S32 num_queries = 0;
 	for (U8 baked_index = 0; baked_index < BAKED_NUM_INDICES; baked_index++ )
 	{
-		const LLVOAvatarDictionary::WearableDictionaryEntry *wearable_dict = LLVOAvatarDictionary::getInstance()->getWearable((EBakedTextureIndex)baked_index);
-		LLUUID hash;
-		for (U8 i=0; i < wearable_dict->mWearablesVec.size(); i++)
+		LLUUID hash_id = computeBakedTextureHash((EBakedTextureIndex) baked_index);
+		if (hash_id.notNull())
 		{
-			// EWearableType wearable_type = gBakedWearableMap[baked_index][wearable_num];
-			const EWearableType wearable_type = wearable_dict->mWearablesVec[i];
-			const LLWearable* wearable = getWearable(wearable_type);
-			if (wearable)
-			{
-				hash ^= wearable->getID();
-			}
-		}
-		if (hash.notNull())
-		{
-			hash ^= wearable_dict->mHashID;
 			num_queries++;
 			// *NOTE: make sure at least one request gets packed
 
+			ETextureIndex te_index = LLVOAvatarDictionary::bakedToLocalTextureIndex((EBakedTextureIndex)baked_index);
+
 			//llinfos << "Requesting texture for hash " << hash << " in baked texture slot " << baked_index << llendl;
 			gMessageSystem->nextBlockFast(_PREHASH_WearableData);
-			gMessageSystem->addUUIDFast(_PREHASH_ID, hash);
-			gMessageSystem->addU8Fast(_PREHASH_TextureIndex, (U8)baked_index);
+			gMessageSystem->addUUIDFast(_PREHASH_ID, hash_id);
+			gMessageSystem->addU8Fast(_PREHASH_TextureIndex, (U8)te_index);
 		}
 
 		gAgentQueryManager.mActiveCacheQueries[ baked_index ] = gAgentQueryManager.mWearablesCacheQueryID;
@@ -1512,20 +1779,57 @@ void LLAgentWearables::queryWearableCache()
 	}
 }
 
+LLUUID LLAgentWearables::computeBakedTextureHash(LLVOAvatarDefines::EBakedTextureIndex baked_index,
+												 BOOL generate_valid_hash) // Set to false if you want to upload the baked texture w/o putting it in the cache
+{
+	LLUUID hash_id;
+	bool hash_computed = false;
+	LLMD5 hash;
+	const LLVOAvatarDictionary::BakedEntry *baked_dict = LLVOAvatarDictionary::getInstance()->getBakedTexture(baked_index);
+
+	for (U8 i=0; i < baked_dict->mWearables.size(); i++)
+	{
+		const LLWearableType::EType baked_type = baked_dict->mWearables[i];
+		//TO-DO: MULTI-WEARABLE 
+		const LLWearable* wearable = getWearable(baked_type);
+		if (wearable)
+		{
+			LLUUID asset_id = wearable->getAssetID();
+			hash.update((const unsigned char*)asset_id.mData, UUID_BYTES);
+			hash_computed = true;
+		}
+	}
+	if (hash_computed)
+	{
+		hash.update((const unsigned char*)baked_dict->mWearablesHashID.mData, UUID_BYTES);
+
+		// Add some garbage into the hash so that it becomes invalid.
+		if (!generate_valid_hash)
+		{
+			if (isAgentAvatarValid())
+			{
+				hash.update((const unsigned char*)gAgentAvatarp->getID().mData, UUID_BYTES);
+			}
+		}
+		hash.finalize();
+		hash.raw_digest(hash_id.mData);
+	}
+
+	return hash_id;
+}
+
 // User has picked "remove from avatar" from a menu.
 // static
-void LLAgentWearables::userRemoveWearable( void* userdata )
+void LLAgentWearables::userRemoveWearable(const LLWearableType::EType &type)
 {
-	EWearableType type = (EWearableType)(intptr_t)userdata;
-	
-	if( !(type==WT_SHAPE || type==WT_SKIN || type==WT_HAIR || type==WT_EYES) ) //&&
+	if( !(type==LLWearableType::WT_SHAPE || type==LLWearableType::WT_SKIN || type==LLWearableType::WT_HAIR || type==LLWearableType::WT_EYES) ) //&&
 		//!((!gAgent.isTeen()) && ( type==WT_UNDERPANTS || type==WT_UNDERSHIRT )) )
 	{
 		gAgentWearables.removeWearable( type );
 	}
 }
 
-void LLAgentWearables::userRemoveAllClothes( void* userdata )
+void LLAgentWearables::userRemoveAllClothes()
 {
 	// We have to do this up front to avoid having to deal with the case of multiple wearables being dirty.
 	if (gAgentCamera.cameraCustomizeAvatar())
@@ -1542,18 +1846,18 @@ void LLAgentWearables::userRemoveAllClothesStep2( BOOL proceed, void* userdata )
 {
 	if( proceed )
 	{
-		gAgentWearables.removeWearable( WT_SHIRT );
-		gAgentWearables.removeWearable( WT_PANTS );
-		gAgentWearables.removeWearable( WT_SHOES );
-		gAgentWearables.removeWearable( WT_SOCKS );
-		gAgentWearables.removeWearable( WT_JACKET );
-		gAgentWearables.removeWearable( WT_GLOVES );
-		gAgentWearables.removeWearable( WT_UNDERSHIRT );
-		gAgentWearables.removeWearable( WT_UNDERPANTS );
-		gAgentWearables.removeWearable( WT_SKIRT );
-		gAgentWearables.removeWearable( WT_ALPHA );
-		gAgentWearables.removeWearable( WT_TATTOO );
-		gAgentWearables.removeWearable( WT_PHYSICS );
+		gAgentWearables.removeWearable( LLWearableType::WT_SHIRT );
+		gAgentWearables.removeWearable( LLWearableType::WT_PANTS );
+		gAgentWearables.removeWearable( LLWearableType::WT_SHOES );
+		gAgentWearables.removeWearable( LLWearableType::WT_SOCKS );
+		gAgentWearables.removeWearable( LLWearableType::WT_JACKET );
+		gAgentWearables.removeWearable( LLWearableType::WT_GLOVES );
+		gAgentWearables.removeWearable( LLWearableType::WT_UNDERSHIRT );
+		gAgentWearables.removeWearable( LLWearableType::WT_UNDERPANTS );
+		gAgentWearables.removeWearable( LLWearableType::WT_SKIRT );
+		gAgentWearables.removeWearable( LLWearableType::WT_ALPHA );
+		gAgentWearables.removeWearable( LLWearableType::WT_TATTOO );
+		gAgentWearables.removeWearable( LLWearableType::WT_PHYSICS );
 	}
 }
 
@@ -1569,8 +1873,7 @@ void LLAgentWearables::userUpdateAttachments(LLInventoryModel::item_array_t& obj
 	// already wearing and in request set -> leave alone.
 	// not wearing and in request set -> put on.
 
-	LLVOAvatar* pAvatar = gAgent.getAvatarObject();
-	if (!pAvatar) return;
+	if (!isAgentAvatarValid()) return;
 
 	std::set<LLUUID> requested_item_ids;
 	std::set<LLUUID> current_item_ids;
@@ -1579,8 +1882,8 @@ void LLAgentWearables::userUpdateAttachments(LLInventoryModel::item_array_t& obj
 
 	// Build up list of objects to be removed and items currently attached.
 	llvo_vec_t objects_to_remove;
-	for (LLVOAvatar::attachment_map_t::iterator iter = pAvatar->mAttachmentPoints.begin(); 
-		 iter != pAvatar->mAttachmentPoints.end();)
+	for (LLVOAvatar::attachment_map_t::iterator iter = gAgentAvatarp->mAttachmentPoints.begin(); 
+		 iter != gAgentAvatarp->mAttachmentPoints.end();)
 	{
 		LLVOAvatar::attachment_map_t::iterator curiter = iter++;
 		LLViewerJointAttachment* attachment = curiter->second;
@@ -1642,7 +1945,7 @@ void LLAgentWearables::userUpdateAttachments(LLInventoryModel::item_array_t& obj
 
 void LLAgentWearables::userRemoveMultipleAttachments(llvo_vec_t& objects_to_remove)
 {
-	if (!gAgent.getAvatarObject()) return;
+	if (!isAgentAvatarValid()) return;
 
 // [RLVa:KB] - Checked: 2010-03-04 (RLVa-1.1.3b) | Modified: RLVa-1.2.0a
 	// RELEASE-RLVa: [SL-2.0.0] Check our callers and verify that erasing elements from the passed vector won't break random things
@@ -1691,19 +1994,14 @@ void LLAgentWearables::userRemoveMultipleAttachments(llvo_vec_t& objects_to_remo
 	gMessageSystem->sendReliable(gAgent.getRegionHost());
 }
 
-void LLAgentWearables::userRemoveAllAttachments( void* userdata )
+void LLAgentWearables::userRemoveAllAttachments()
 {
-	LLVOAvatar* avatarp = gAgent.getAvatarObject();
-	if(!avatarp)
-	{
-		llwarns << "No avatar found." << llendl;
-		return;
-	}
+	if (!isAgentAvatarValid()) return;
 
 	llvo_vec_t objects_to_remove;
 	
-	for (LLVOAvatar::attachment_map_t::iterator iter = avatarp->mAttachmentPoints.begin(); 
-		 iter != avatarp->mAttachmentPoints.end();)
+	for (LLVOAvatar::attachment_map_t::iterator iter = gAgentAvatarp->mAttachmentPoints.begin(); 
+		 iter != gAgentAvatarp->mAttachmentPoints.end();)
 	{
 		LLVOAvatar::attachment_map_t::iterator curiter = iter++;
 		LLViewerJointAttachment* attachment = curiter->second;
@@ -1791,4 +2089,23 @@ void LLAgentWearables::userAttachMultipleAttachments(LLInventoryModel::item_arra
 			msg->sendReliable( gAgent.getRegion()->getHost() );
 		}
 	}
+}
+// MULTI-WEARABLE: DEPRECATED: item pending count relies on old messages that don't support multi-wearables. do not trust to be accurate
+void LLAgentWearables::updateWearablesLoaded()
+{
+	mWearablesLoaded = TRUE;
+	for( S32 i = 0; i < LLWearableType::WT_COUNT; i++ )
+	{
+		if( !getWearableItemID((LLWearableType::EType)i).isNull() && !getWearable((LLWearableType::EType)i) )
+		{
+			mWearablesLoaded = FALSE;
+			break;
+		}
+	}
+
+}
+void LLAgentWearables::updateServer()
+{
+	sendAgentWearablesUpdate();
+	gAgent.sendAgentSetAppearance();
 }

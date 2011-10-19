@@ -64,6 +64,12 @@ protected:
 	virtual void releaseName(GLuint name);
 };
 
+class LLGLFence
+{
+public:
+	virtual void placeFence() = 0;
+	virtual void wait() = 0;
+};
 
 //============================================================================
 // base class
@@ -81,6 +87,7 @@ public:
 		llerrs << "Illegal operation!" << llendl;
 		return *this;
 	}
+
 	static LLVBOPool sStreamVBOPool;
 	static LLVBOPool sDynamicVBOPool;
 	static LLVBOPool sStreamIBOPool;
@@ -89,22 +96,28 @@ public:
 	static S32	sWeight4Loc;
 
 	static BOOL	sUseStreamDraw;
+	static U32 sForceStrideMode;
 	static BOOL sOmitBlank;
 	static BOOL	sPreferStreamDraw;
-	
+
 	static void initClass(bool use_vbo, bool no_vbo_mapping);
 	static void cleanupClass();
 	static void setupClientArrays(U32 data_mask);
 	static void drawArrays(U32 mode, const std::vector<LLVector3>& pos, const std::vector<LLVector3>& norm);
+
  	static void clientCopy(F64 max_time = 0.005); //copy data from client to GL
 	static void unbind(); //unbind any bound vertex buffer
 
 	//get the size of a vertex with the given typemask
-	//if offsets is not NULL, its contents will be filled
-	//with the offset of each vertex component in the buffer, 
-	// indexed by the following enum
-	static S32 calcStride(const U32& typemask, S32* offsets = NULL); 										
+	static S32 calcVertexSize(const U32& typemask);
 
+	//get the size of a buffer with the given typemask and vertex count
+	//fill offsets with the offset of each vertex component array into the buffer
+	// indexed by the following enum
+	//If strided, num_vertices will be ignored.
+	S32 calcOffsets(const U32& typemask, S32* offsets, S32 num_vertices);		
+
+	
 	enum {
 		TYPE_VERTEX,
 		TYPE_NORMAL,
@@ -120,6 +133,9 @@ public:
 		TYPE_CLOTHWEIGHT,
 		TYPE_MAX,
 		TYPE_INDEX,
+		
+		//no actual additional data, but indicates position.w is texture index
+		TYPE_TEXTURE_INDEX,
 	};
 	enum {
 		MAP_VERTEX = (1<<TYPE_VERTEX),
@@ -134,6 +150,7 @@ public:
 		MAP_WEIGHT = (1<<TYPE_WEIGHT),
 		MAP_WEIGHT4 = (1<<TYPE_WEIGHT4),
 		MAP_CLOTHWEIGHT = (1<<TYPE_CLOTHWEIGHT),
+		MAP_TEXTURE_INDEX = (1<<TYPE_TEXTURE_INDEX),
 	};
 	
 protected:
@@ -160,11 +177,11 @@ protected:
 	void allocateClientIndexBuffer() ;
 		
 public:
-	LLVertexBuffer(U32 typemask, S32 usage);
+	LLVertexBuffer(U32 typemask, S32 usage, bool strided=true);
 	
 	// map for data access
-	volatile U8*		mapVertexBuffer(S32 type = -1, S32 access = -1);
-	volatile U8*		mapIndexBuffer(S32 access = -1);
+	volatile U8*		mapVertexBuffer(S32 type, S32 index);
+	volatile U8*		mapIndexBuffer(S32 index);
 
 	// set for rendering
 	virtual void	setBuffer(U32 data_mask, S32 type = -1); 	// calls  setupVertexBuffer() if data_mask is not 0
@@ -197,22 +214,18 @@ public:
 	S32 getRequestedVerts() const			{ return mRequestedNumVerts; }
 	S32 getRequestedIndices() const			{ return mRequestedNumIndices; }
 
-	volatile U8* getIndicesPointer() const			{ return useVBOs() ? NULL : mMappedIndexData; }
-	volatile U8* getVerticesPointer() const			{ return useVBOs() ? NULL : mMappedData; }
-	S32 getStride() const					{ return mStride; }
-	S32 getTypeMask() const					{ return mTypeMask; }
-	BOOL hasDataType(S32 type) const		{ return ((1 << type) & getTypeMask()) ? TRUE : FALSE; }
-	S32 getSize() const						{ return mNumVerts*mStride; }
+	volatile U8* getIndicesPointer() const			{ return useVBOs() ? (U8*) mAlignedIndexOffset : mMappedIndexData; }
+	volatile U8* getVerticesPointer() const			{ return useVBOs() ? (U8*) mAlignedOffset : mMappedData; }
+	S32 getStride(S32 type) const					{ return mIsStrided ? mStride : sTypeSize[type]; }
+	U32 getTypeMask() const					{ return mTypeMask; }
+	bool hasDataType(S32 type) const		{ return ((1 << type) & getTypeMask()); }
+	S32 getSize() const;
 	S32 getIndicesSize() const				{ return mNumIndices * sizeof(U16); }
 	volatile U8* getMappedData() const				{ return mMappedData; }
 	volatile U8* getMappedIndices() const			{ return mMappedIndexData; }
 	S32 getOffset(S32 type) const			{ return mOffsets[type]; }
 	S32 getUsage() const					{ return mUsage; }
-
-	void setStride(S32 type, S32 new_stride);
 	
-	void markDirty(U32 vert_index, U32 vert_count, U32 indices_index, U32 indices_count);
-
 	void draw(U32 mode, U32 count, U32 indices_offset) const;
 	void drawArrays(U32 mode, U32 offset, U32 count) const;
 	void drawRange(U32 mode, U32 start, U32 end, U32 count, U32 indices_offset) const;
@@ -228,7 +241,11 @@ protected:
 	S32		mRequestedNumVerts;  // Number of vertices requested
 	S32		mRequestedNumIndices;  // Number of indices requested
 
-	S32		mStride;
+	ptrdiff_t mAlignedOffset;
+	ptrdiff_t mAlignedIndexOffset;
+	bool	mIsStrided;
+	S32		mStride;		// Vertex size.
+	S32		mSize;			// Full array size
 	U32		mTypeMask;
 	S32		mUsage;			// GL usage
 	U32		mGLBuffer;		// GL VBO handle
@@ -244,20 +261,11 @@ protected:
 	BOOL	mDynamicSize;	// if TRUE, buffer has been resized at least once (and should be padded)
 	S32		mOffsets[TYPE_MAX];
 
-	class DirtyRegion
-	{
-	public:
-		U32 mIndex;
-		U32 mCount;
-		U32 mIndicesIndex;
-		U32 mIndicesCount;
+	mutable LLGLFence* mFence;
 
-		DirtyRegion(U32 vi, U32 vc, U32 ii, U32 ic)
-			: mIndex(vi), mCount(vc), mIndicesIndex(ii), mIndicesCount(ic)
-		{ }	
-	};
+	void placeFence() const;
+	void waitFence() const;
 
-	std::vector<DirtyRegion> mDirtyRegions; //vector of dirty regions to rebuild
 
 public:
 	static S32 sCount;
@@ -269,10 +277,10 @@ public:
 		
 	static BOOL sDisableVBOMapping; //disable glMapBufferARB
 	static BOOL sEnableVBOs;
-	static S32 sTypeOffsets[TYPE_MAX];
+	static S32 sTypeSize[TYPE_MAX];
 	static U32 sGLMode[LLRender::NUM_MODES];
 	static U32 sGLRenderBuffer;
-	static U32 sGLRenderIndices;	
+	static U32 sGLRenderIndices;
 	static BOOL sVBOActive;
 	static BOOL sIBOActive;
 	static U32 sLastMask;

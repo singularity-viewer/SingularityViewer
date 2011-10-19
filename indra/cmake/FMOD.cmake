@@ -43,6 +43,7 @@ endif (NOT FMOD_LIBRARY)
 
 find_path(FMOD_INCLUDE_DIR fmod.h
           ${LIBS_PREBUILT_DIR}/include
+          ${LIBS_PREBUILT_DIR}/${LL_ARCH_DIR}/include
           ${FMOD_SDK_DIR}/api/inc
           ${FMOD_SDK_DIR}/inc
           ${FMOD_SDK_DIR}

@@ -46,7 +46,6 @@ public:
 
 	// sets destroy immediate true
 	static void setZealous(BOOL b);
-	static BOOL getZealous();
 
 private:
 	static BOOL sDestroyImmediate;

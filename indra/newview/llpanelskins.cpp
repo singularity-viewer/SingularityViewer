@@ -39,6 +39,7 @@
 #include "llbutton.h"
 #include "lluictrlfactory.h"
 #include "lldiriterator.h"
+#include "llnotificationsutil.h"
 
 // project includes
 #include "llviewercontrol.h"
@@ -147,7 +148,7 @@ void LLPanelSkins::apply()
 	if (oldSkin != mSkin)
 	{
 		  oldSkin=mSkin;
-		  LLNotifications::instance().add("ChangeSkin");
+		  LLNotificationsUtil::add("ChangeSkin");
 		  refresh();
 	}
 }

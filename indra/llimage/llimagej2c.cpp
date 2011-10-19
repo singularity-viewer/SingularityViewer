@@ -28,6 +28,11 @@
  * COMPLETENESS OR PERFORMANCE.
  * $/LicenseInfo$
  */
+#if LL_LINUX && defined(LL_STANDALONE)
+#include <dlfcn.h>
+#include <apr_portable.h>
+#endif
+
 #include "linden_common.h"
 
 #include "apr_pools.h"
@@ -47,7 +52,7 @@ typedef const char* (*EngineInfoLLImageJ2CFunction)();
 CreateLLImageJ2CFunction j2cimpl_create_func;
 DestroyLLImageJ2CFunction j2cimpl_destroy_func;
 EngineInfoLLImageJ2CFunction j2cimpl_engineinfo_func;
-AIAPRPool j2cimpl_dso_memory_pool;
+LLAPRPool j2cimpl_dso_memory_pool;
 apr_dso_handle_t *j2cimpl_dso_handle;
 
 //Declare the prototype for theses functions here, their functionality
@@ -85,9 +90,15 @@ void LLImageJ2C::openDSO()
 	j2cimpl_dso_memory_pool.create();
 
 	//attempt to load the shared library
+#if LL_LINUX && defined(LL_STANDALONE)
+    void *dso_handle = dlopen(dso_path.c_str(), RTLD_NOW | RTLD_GLOBAL);
+    rv = (!dso_handle)?APR_EDSOOPEN:apr_os_dso_handle_put(&j2cimpl_dso_handle,
+            dso_handle, j2cimpl_dso_memory_pool());
+#else
 	rv = apr_dso_load(&j2cimpl_dso_handle,
 					  dso_path.c_str(),
 					  j2cimpl_dso_memory_pool());
+#endif
 
 	//now, check for success
 	if ( rv == APR_SUCCESS )
@@ -365,7 +376,7 @@ S32 LLImageJ2C::calcDataSizeJ2C(S32 w, S32 h, S32 comp, S32 discard_level, F32 r
 		discard_level--;
 	}
 	S32 bytes = (S32)((F32)(w*h*comp)*rate);
-	bytes = llmax(bytes, calcHeaderSizeJ2C());
+	//bytes = llmax(bytes, calcHeaderSizeJ2C());
 	return bytes;
 }
 
@@ -385,9 +396,11 @@ S32 LLImageJ2C::calcDataSize(S32 discard_level)
 		static const LLCachedControl<S32> offset("SianaJ2CSizeOffset", 0);
 		
 		S32 size = calcDataSizeJ2C(getWidth(), getHeight(), getComponents(), discard_level, mRate);
-		S32 size_d0 = calcDataSizeJ2C(getWidth(), getHeight(), getComponents(), discard_level, mRate);
-		
-		return pow(size/size_d0, exponent)*size_d0 + offset;
+		S32 size_d0 = calcDataSizeJ2C(getWidth(), getHeight(), getComponents(), 0, mRate);
+		llassert_always(size_d0);
+		S32 bytes = pow(size/size_d0, exponent)*size_d0 + offset;
+		bytes = llmax(bytes, calcHeaderSizeJ2C());
+		return bytes;
 	}
 
 	discard_level = llclamp(discard_level, 0, MAX_DISCARD_LEVEL);
@@ -401,6 +414,7 @@ S32 LLImageJ2C::calcDataSize(S32 discard_level)
 		while ( level >= 0 )
 		{
 			mDataSizes[level] = calcDataSizeJ2C(getWidth(), getHeight(), getComponents(), level, mRate);
+			mDataSizes[level] = llmax(mDataSizes[level], calcHeaderSizeJ2C());
 			level--;
 		}
 
@@ -473,8 +487,7 @@ BOOL LLImageJ2C::loadAndValidate(const std::string &filename)
 	resetLastError();
 
 	S32 file_size = 0;
-	LLAPRFile infile ;
-	infile.open(filename, LL_APR_RB, LLAPRFile::global, &file_size);
+	LLAPRFile infile(filename, LL_APR_RB, &file_size);
 	apr_file_t* apr_file = infile.getFileHandle() ;
 	if (!apr_file)
 	{

@@ -54,6 +54,7 @@
 #include "llalertdialog.h"
 #include "llselectmgr.h"
 #include "llscrolllistctrl.h"
+#include "llnotificationsutil.h"
 #include "lltextbox.h"
 #include "lluictrlfactory.h"
 #include "llviewerwindow.h"
@@ -66,6 +67,9 @@ std::map<const LLUUID, LLFloaterGroupPicker*> LLFloaterGroupPicker::sInstances;
 
 // helper functions
 void init_group_list(LLScrollListCtrl* ctrl, const LLUUID& highlight_id, const std::string& none_text, U64 powers_mask = GP_ALL_POWERS);
+
+//callbacks
+void onGroupSortChanged(void* user_data);
 
 ///----------------------------------------------------------------------------
 /// Class LLFloaterGroupPicker
@@ -198,15 +202,9 @@ LLPanelGroups::~LLPanelGroups()
 // clear the group list, and get a fresh set of info.
 void LLPanelGroups::reset()
 {
-	LLCtrlListInterface *group_list = childGetListInterface("group list");
-	if (group_list)
-	{
-		group_list->operateOnAll(LLCtrlListInterface::OP_DELETE);
-	}
 	childSetTextArg("groupcount", "[COUNT]", llformat("%d",gAgent.mGroups.count()));
 	childSetTextArg("groupcount", "[MAX]", llformat("%d", gHippoLimits->getMaxAgentGroups()));
 	
-
 	const std::string none_text = getString("none");
 	init_group_list(getChild<LLScrollListCtrl>("group list"), gAgent.getGroupID(), none_text);
 	enableButtons();
@@ -220,7 +218,9 @@ BOOL LLPanelGroups::postBuild()
 	childSetTextArg("groupcount", "[MAX]", llformat("%d", gHippoLimits->getMaxAgentGroups()));
 
 	const std::string none_text = getString("none");
-	init_group_list(getChild<LLScrollListCtrl>("group list"), gAgent.getGroupID(), none_text);
+	LLScrollListCtrl *group_list = getChild<LLScrollListCtrl>("group list");
+	init_group_list(group_list, gAgent.getGroupID(), none_text);
+	group_list->setSortChangedCallback(onGroupSortChanged); //Force 'none' to always be first entry.
 
 	childSetAction("Activate", onBtnActivate, this);
 
@@ -426,7 +426,7 @@ void LLPanelGroups::leave()
 			args["GROUP"] = gAgent.mGroups.get(i).mName;
 			LLSD payload;
 			payload["group_id"] = group_id;
-			LLNotifications::instance().add("GroupLeaveConfirmMember", args, payload, callbackLeaveGroup);
+			LLNotificationsUtil::add("GroupLeaveConfirmMember", args, payload, callbackLeaveGroup);
 		}
 	}
 }
@@ -478,8 +478,97 @@ bool LLPanelGroups::callbackLeaveGroup(const LLSD& notification, const LLSD& res
 
 void LLPanelGroups::onGroupList(LLUICtrl* ctrl, void* userdata)
 {
-	LLPanelGroups* self = (LLPanelGroups*)userdata;
-	if(self) self->enableButtons();
+	LLPanelGroups *self = (LLPanelGroups*)userdata;
+	if(!self)
+		return;
+
+	self->enableButtons();
+
+	LLScrollListCtrl *group_list = (LLScrollListCtrl*)self->getChild<LLScrollListCtrl>("group list");
+	if(!group_list)
+		return;
+
+	LLScrollListItem *item = group_list->getFirstSelected();
+	if(!item)
+		return;
+
+	const LLUUID group_id =  item->getValue().asUUID();
+	if(group_id.isNull())
+		return;
+
+	LLGroupData group_data;
+	if(!gAgent.getGroupData(group_id,group_data))
+		return;
+
+	bool list_in_profile = item->getColumn(1)->getValue().asBoolean();
+	bool receive_chat = item->getColumn(2)->getValue().asBoolean();
+	bool recieve_notify = item->getColumn(3)->getValue().asBoolean();
+	bool update_floaters = false;
+	if(gIMMgr->getIgnoreGroup(group_id) == receive_chat)
+	{
+		gIMMgr->updateIgnoreGroup(group_id, !receive_chat);
+		update_floaters = true;
+	}
+	if(	(bool)group_data.mListInProfile != list_in_profile ||
+		(bool)group_data.mAcceptNotices != recieve_notify )
+	{
+		gAgent.setUserGroupFlags(group_id, recieve_notify, list_in_profile);
+	}
+	else if(update_floaters) //gAgent.setUserGroupFlags already calls update_group_floaters
+		update_group_floaters(group_id);
+}
+
+LLSD create_group_element(const LLGroupData *group_datap, const LLUUID &active_group, const std::string& none_text, const U64 &powers_mask)
+{
+	if(group_datap && !((powers_mask == GP_ALL_POWERS) || ((group_datap->mPowers & powers_mask) != 0)))
+		return LLSD();
+	const LLUUID &id = group_datap ? group_datap->mID : LLUUID::null;
+	const bool enabled = !!group_datap;
+	
+	std::string style = (group_datap && group_datap->mListInProfile) ? "BOLD" : "NORMAL";
+	if(active_group == id)
+	{
+		style.append("|ITALIC");
+	}
+	LLSD element;
+	element["id"] = id;
+	LLSD& name_column = element["columns"][0];
+	name_column["column"] = "name";
+	name_column["value"] = group_datap ? group_datap->mName : none_text;
+	name_column["font"] = "SANSSERIF";
+	name_column["font-style"] = style;
+
+	LLSD& show_column = element["columns"][1];
+	show_column["column"] = "is_listed_group";
+	show_column["type"] = "checkbox";
+	show_column["enabled"] = enabled;
+	show_column["value"] = enabled && group_datap->mListInProfile;
+
+	LLSD& chat_column = element["columns"][2];
+	chat_column["column"] = "is_chattable_group";
+	chat_column["type"] = "checkbox";
+	chat_column["enabled"] = enabled;
+	chat_column["value"] = enabled && !gIMMgr->getIgnoreGroup(id);
+
+	LLSD& notice_column = element["columns"][3];
+	notice_column["column"] = "is_notice_group";
+	notice_column["type"] = "checkbox";
+	notice_column["enabled"] = enabled;
+	notice_column["value"] = enabled && group_datap->mAcceptNotices;
+
+	return element;
+}
+
+void onGroupSortChanged(void* user_data)
+{
+	LLPanelGroups *panel = (LLPanelGroups*)user_data;
+	if(!panel)
+		return;
+	LLScrollListCtrl *group_list = (LLScrollListCtrl*)panel->getChild<LLScrollListCtrl>("group list");
+	if(!group_list)
+		return;
+
+	group_list->moveToFront(group_list->getItemIndex(LLUUID::null));
 }
 
 void init_group_list(LLScrollListCtrl* ctrl, const LLUUID& highlight_id, const std::string& none_text, U64 powers_mask)
@@ -489,48 +578,29 @@ void init_group_list(LLScrollListCtrl* ctrl, const LLUUID& highlight_id, const s
 	LLCtrlListInterface *group_list = ctrl->getListInterface();
 	if (!group_list) return;
 
+	const LLUUID selected_id	= group_list->getSelectedValue();
+	const S32	selected_idx	= group_list->getFirstSelectedIndex();
+	const S32	scroll_pos		= ctrl->getScrollPos();
+
 	group_list->operateOnAll(LLCtrlListInterface::OP_DELETE);
 
 	for(S32 i = 0; i < count; ++i)
 	{
-		id = gAgent.mGroups.get(i).mID;
-		LLGroupData* group_datap = &gAgent.mGroups.get(i);
-		if ((powers_mask == GP_ALL_POWERS) || ((group_datap->mPowers & powers_mask) != 0))
-		{
-			std::string style = "NORMAL";
-			if(highlight_id == id)
-			{
-				style = "BOLD";
-			}
-
-			LLSD element;
-			element["id"] = id;
-			element["columns"][0]["column"] = "name";
-			element["columns"][0]["value"] = group_datap->mName;
-			element["columns"][0]["font"] = "SANSSERIF";
-			element["columns"][0]["font-style"] = style;
-
+		LLSD element = create_group_element(&gAgent.mGroups.get(i), highlight_id, none_text, powers_mask);
+		if(element.size())
 			group_list->addElement(element, ADD_SORTED);
-		}
 	}
 
 	// add "none" to list at top
-	{
-		std::string style = "NORMAL";
-		if (highlight_id.isNull())
-		{
-			style = "BOLD";
-		}
-		LLSD element;
-		element["id"] = LLUUID::null;
-		element["columns"][0]["column"] = "name";
-		element["columns"][0]["value"] = none_text;
-		element["columns"][0]["font"] = "SANSSERIF";
-		element["columns"][0]["font-style"] = style;
+	group_list->addElement(create_group_element(NULL, highlight_id, none_text, powers_mask), ADD_TOP);
 
-		group_list->addElement(element, ADD_TOP);
-	}
-
-	group_list->selectByValue(highlight_id);
+	if(selected_id.notNull())
+		group_list->selectByValue(selected_id);
+	else
+		group_list->selectByValue(highlight_id);			//highlight is actually active group
+	if(selected_idx!=group_list->getFirstSelectedIndex())	//if index changed then our stored pos is pointless.
+		ctrl->scrollToShowSelected();
+	else
+		ctrl->setScrollPos(scroll_pos);
 }
 

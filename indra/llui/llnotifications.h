@@ -91,8 +91,9 @@
 
 #include <boost/utility.hpp>
 #include <boost/shared_ptr.hpp>
-#include <boost/type_traits.hpp>
 #include <boost/enable_shared_from_this.hpp>
+#include <boost/type_traits.hpp>
+#include <boost/signals2.hpp>
 
 // we want to minimize external dependencies, but this one is important
 #include "llsd.h"
@@ -101,9 +102,9 @@
 // and we need this to manage the notification callbacks
 #include "llfunctorregistry.h"
 #include "llui.h"
+#include "llxmlnode.h"
+#include "llnotificationptr.h"
 
-class LLNotification;
-typedef boost::shared_ptr<LLNotification> LLNotificationPtr;
 
 /*****************************************************************************
 *   Signal and handler declarations

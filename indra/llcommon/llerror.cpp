@@ -56,9 +56,8 @@
 #include "llsdserialize.h"
 #include "llstl.h"
 #include "lltimer.h"
-#include "aithreadsafe.h"
 
-extern apr_thread_mutex_t* gCallStacksLogMutexp;
+#include "aithreadsafe.h"
 
 namespace {
 #if !LL_WINDOWS
@@ -881,8 +880,8 @@ You get:
 	
 */
 
-apr_thread_mutex_t* gLogMutexp;
-apr_thread_mutex_t* gCallStacksLogMutexp;
+extern apr_thread_mutex_t* gLogMutexp;
+extern apr_thread_mutex_t* gCallStacksLogMutexp;
 
 namespace {
 	bool checkLevelMap(const LevelMap& map, const std::string& key,

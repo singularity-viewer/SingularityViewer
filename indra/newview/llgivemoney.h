@@ -77,11 +77,7 @@ private:
 	static void onGive(void* data);
 	void give(S32 amount);
 	static void processPayPriceReply(LLMessageSystem* msg, void **userdata);
-	static void onCacheOwnerName(const LLUUID& owner_id,
-								 const std::string& firstname,
-								 const std::string& lastname,
-								 BOOL is_group,
-								 void* userdata);
+	void onCacheOwnerName( const LLUUID& owner_id,	const std::string& full_name, bool is_group);
 	void finishPayUI(const LLUUID& target_id, BOOL is_group);
 
 protected:
@@ -97,6 +93,8 @@ protected:
 	LLGiveMoneyInfo* mQuickPayInfo[MAX_PAY_BUTTONS];
 
 	LLSafeHandle<LLObjectSelection> mObjectSelection;
+
+	boost::signals2::scoped_connection mNameConnection; //will disconnect on destruction
 
 	static S32 sLastAmount;
 };

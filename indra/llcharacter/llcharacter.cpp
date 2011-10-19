@@ -45,7 +45,7 @@
 LLStringTable LLCharacter::sVisualParamNames(1024);
 
 std::vector< LLCharacter* > LLCharacter::sInstances;
-
+BOOL LLCharacter::sAllowInstancesChange = TRUE ;
 
 //-----------------------------------------------------------------------------
 // LLCharacter()
@@ -59,8 +59,10 @@ LLCharacter::LLCharacter()
 	mSkeletonSerialNum( 0 ),
 	mInAppearance( false )
 {
-	mMotionController.setCharacter( this );
+	llassert_always(sAllowInstancesChange) ;
 	sInstances.push_back(this);
+
+	mMotionController.setCharacter( this );
 	mPauseRequest = new LLPauseRequestHandle();
 }
 
@@ -77,11 +79,22 @@ LLCharacter::~LLCharacter()
 	{
 		delete param;
 	}
-	std::vector<LLCharacter*>::iterator iter = std::find(sInstances.begin(), sInstances.end(), this);
-	if (iter != sInstances.end())
+
+	U32 i ;
+	U32 size = sInstances.size() ;
+	for(i = 0 ; i < size ; i++)
 	{
-		sInstances.erase(iter);
+		if(sInstances[i] == this)
+		{
+			break ;
+		}
 	}
+
+	llassert_always(i < size) ;
+
+	llassert_always(sAllowInstancesChange) ;
+	sInstances[i] = sInstances[size - 1] ;
+	sInstances.pop_back() ;
 }
 
 

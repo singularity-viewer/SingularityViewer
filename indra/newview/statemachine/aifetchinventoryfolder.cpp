@@ -67,7 +67,7 @@ AIInventoryFetchDescendentsObserver::AIInventoryFetchDescendentsObserver(AIState
 
 void AIFetchInventoryFolder::fetch(std::string const& foldername, bool create, bool fetch_contents)
 {
-  fetch(gAgent.getInventoryRootID(), foldername, create, fetch_contents);
+  fetch(gInventory.getRootFolderID(), foldername, create, fetch_contents);
 }
 
 char const* AIFetchInventoryFolder::state_str_impl(state_type run_state) const
@@ -88,7 +88,10 @@ void AIFetchInventoryFolder::initialize_impl(void)
   mNeedNotifyObservers = false;
   set_state(AIFetchInventoryFolder_checkFolderExists);
   if (!gInventory.isInventoryUsable())
+  {
+	// This immediately calls this->idle(), and then when the event occurs cont().
 	AIEvent::Register(AIEvent::LLInventoryModel_mIsAgentInvUsable_true, this);
+  }
 }
 
 void AIFetchInventoryFolder::multiplex_impl(void)
@@ -100,7 +103,7 @@ void AIFetchInventoryFolder::multiplex_impl(void)
 	  // If LLInventoryModel_mIsAgentInvUsable_true then this should be and stay true forever.
 	  llassert(gInventory.isInventoryUsable());
 	  if (mParentFolder.isNull())
-		mParentFolder = gAgent.getInventoryRootID();
+		mParentFolder = gInventory.getRootFolderID();
 	  if (mFolderUUID.isNull() || !gInventory.getCategory(mFolderUUID))		// Is the UUID unknown, or doesn't exist?
 	  {
 		// Set this to null here in case we abort.
@@ -113,7 +116,7 @@ void AIFetchInventoryFolder::multiplex_impl(void)
 		  break;
 		}
 		// Check if the parent exists.
-		if (mParentFolder != gAgent.getInventoryRootID() && !gInventory.getCategory(mParentFolder))
+		if (mParentFolder != gInventory.getRootFolderID() && !gInventory.getCategory(mParentFolder))
 		{
 		  llwarns << "Unknown parent folder ID " << mParentFolder << llendl;
 		  abort();
@@ -140,7 +143,7 @@ void AIFetchInventoryFolder::multiplex_impl(void)
 			break;
 		  }
 		  // Create the folder.
-		  mFolderUUID = gInventory.createNewCategory(mParentFolder, LLAssetType::AT_NONE, mFolderName);
+		  mFolderUUID = gInventory.createNewCategory(mParentFolder, LLFolderType::FT_NONE, mFolderName);
 		  llassert_always(!mFolderUUID.isNull());
 		  Dout(dc::statemachine, "Created folder \"" << mFolderName << "\".");
 		  mNeedNotifyObservers = true;

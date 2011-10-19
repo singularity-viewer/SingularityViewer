@@ -42,6 +42,8 @@ static LLRegisterWidget<LLUICtrl> r("ui_ctrl");
 // NOTE: the LLFocusableElement implementation has been moved to llfocusmgr.cpp, to mirror the header where the class is defined.
 
 LLUICtrl::LLUICtrl() :
+	mCommitSignal(NULL),
+	mValidateSignal(NULL),
 	mCommitCallback(NULL),
 	mLostTopCallback(NULL),
 	mValidateCallback(NULL),
@@ -59,7 +61,9 @@ LLUICtrl::LLUICtrl(const std::string& name, const LLRect& rect, BOOL mouse_opaqu
 :	// can't make this automatically follow top and left, breaks lots
 	// of buttons in the UI. JC 7/20/2002
 	LLView( name, rect, mouse_opaque, reshape ),
-	mCommitCallback( on_commit_callback) ,
+	mCommitSignal(NULL),
+	mValidateSignal(NULL),
+	mCommitCallback( on_commit_callback),
 	mLostTopCallback( NULL ),
 	mValidateCallback( NULL ),
 	mCallbackUserData( callback_userdata ),
@@ -78,6 +82,9 @@ LLUICtrl::~LLUICtrl()
 		llwarns << "UI Control holding top ctrl deleted: " << getName() << ".  Top view removed." << llendl;
 		gFocusMgr.removeTopCtrlWithoutCallback( this );
 	}
+
+	delete mCommitSignal;
+	delete mValidateSignal;
 }
 
 void LLUICtrl::onCommit()
@@ -86,6 +93,8 @@ void LLUICtrl::onCommit()
 	{
 		mCommitCallback( this, mCallbackUserData );
 	}
+	if (mCommitSignal)
+		(*mCommitSignal)(this, getValue());
 }
 
 //virtual
@@ -555,3 +564,15 @@ void LLUICtrl::setMinValue(LLSD min_value)
 // virtual
 void LLUICtrl::setMaxValue(LLSD max_value)								
 { }
+
+boost::signals2::connection LLUICtrl::setCommitCallback( const commit_signal_t::slot_type& cb ) 
+{ 
+	if (!mCommitSignal) mCommitSignal = new commit_signal_t();
+	return mCommitSignal->connect(cb); 
+}
+
+boost::signals2::connection LLUICtrl::setValidateCallback( const enable_signal_t::slot_type& cb ) 
+{ 
+	if (!mValidateSignal) mValidateSignal = new enable_signal_t();
+	return mValidateSignal->connect(cb); 
+}

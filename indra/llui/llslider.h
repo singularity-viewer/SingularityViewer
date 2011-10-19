@@ -55,6 +55,7 @@ public:
 	virtual LLXMLNodePtr getXML(bool save_children = true) const;
 	static  LLView* fromXML(LLXMLNodePtr node, LLView *parent, class LLUICtrlFactory *factory);
 
+	virtual ~LLSlider();
 	void			setValue( F32 value, BOOL from_event = FALSE );
 	F32				getValueF32() const { return mValue; }
 
@@ -71,8 +72,10 @@ public:
 	void			setMinValue(F32 min_value) {mMinValue = min_value; updateThumbRect(); }
 	void			setMaxValue(F32 max_value) {mMaxValue = max_value; updateThumbRect(); }
 	void			setIncrement(F32 increment) {mIncrement = increment;}
-	void			setMouseDownCallback( void (*cb)(LLUICtrl* ctrl, void* userdata) ) { mMouseDownCallback = cb; }
-	void			setMouseUpCallback(	void (*cb)(LLUICtrl* ctrl, void* userdata) ) { mMouseUpCallback = cb; }
+
+	boost::signals2::connection setMouseDownCallback( const commit_signal_t::slot_type& cb );
+	boost::signals2::connection setMouseUpCallback(	const commit_signal_t::slot_type& cb );
+
 
 	virtual BOOL	handleHover(S32 x, S32 y, MASK mask);
 	virtual BOOL	handleMouseUp(S32 x, S32 y, MASK mask);
@@ -103,8 +106,8 @@ private:
 	LLColor4		mThumbOutlineColor;
 	LLColor4		mThumbCenterColor;
 	
-	void			(*mMouseDownCallback)(LLUICtrl* ctrl, void* userdata);
-	void			(*mMouseUpCallback)(LLUICtrl* ctrl, void* userdata);
+	commit_signal_t*	mMouseDownSignal;
+	commit_signal_t*	mMouseUpSignal;
 };
 
 #endif  // LL_LLSLIDER_H

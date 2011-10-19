@@ -10,7 +10,7 @@
 
 #include "llagent.h"
 #include "llagentcamera.h"
-#include "llvoavatar.h"
+#include "llvoavatarself.h"
 #include "llanimationstates.h"
 #include "lluictrlfactory.h"
 #include "llinventoryview.h"
@@ -421,7 +421,7 @@ void LLFloaterAO::onComboBoxCommit(LLUICtrl* ctrl, void* userdata)
 		{
 			int state = STATE_AGENT_IDLE;
 			std::string stranim = box->getValue().asString();
-//			llinfos << "state " << (gAgent.getAvatarObject()->isSitting()) << " - " << getAnimationState() << llendl;
+//			llinfos << "state " << (gAgentAvatarp->isSitting()) << " - " << getAnimationState() << llendl;
 			if (box->getName() == "walks")
 			{
 				gAgent.sendAnimationRequest(GetAnimID(ANIM_AGENT_WALK), ANIM_REQUEST_STOP);
@@ -442,9 +442,9 @@ void LLFloaterAO::onComboBoxCommit(LLUICtrl* ctrl, void* userdata)
 			}
 			else if (box->getName() == "sits")
 			{
-				if (gAgent.getAvatarObject() && (gSavedSettings.getBOOL("AOEnabled")) && (gSavedSettings.getBOOL("AOSitsEnabled")))
+				if (gAgentAvatarp && (gSavedSettings.getBOOL("AOEnabled")) && (gSavedSettings.getBOOL("AOSitsEnabled")))
 				{
-					if ((gAgent.getAvatarObject()->isSitting()) && (getAnimationState() == STATE_AGENT_SIT))
+					if ((gAgentAvatarp->isSitting()) && (getAnimationState() == STATE_AGENT_SIT))
 					{
 //						llinfos << "sitting " << GetAnimID(ANIM_AGENT_SIT) << " " << getAssetIDByName(stranim) << llendl;
 						gAgent.sendAnimationRequest(GetAnimID(ANIM_AGENT_SIT), ANIM_REQUEST_STOP);
@@ -457,9 +457,9 @@ void LLFloaterAO::onComboBoxCommit(LLUICtrl* ctrl, void* userdata)
 			else if (box->getName() == "gsits")
 			{
 //				llinfos << "gsitting " << GetAnimID(ANIM_AGENT_SIT_GROUND) << " " << getAssetIDByName(stranim) << llendl;
-				if (gAgent.getAvatarObject())
+				if (gAgentAvatarp)
 				{
-					if ((gAgent.getAvatarObject()->isSitting()) && (getAnimationState() == STATE_AGENT_GROUNDSIT))
+					if ((gAgentAvatarp->isSitting()) && (getAnimationState() == STATE_AGENT_GROUNDSIT))
 					{
 //						llinfos << "gsitting " << GetAnimID(ANIM_AGENT_SIT_GROUND) << " " << getAssetIDByName(stranim) << llendl;
 						gAgent.sendAnimationRequest(GetAnimID(ANIM_AGENT_SIT_GROUND), ANIM_REQUEST_STOP);
@@ -776,9 +776,9 @@ void LLFloaterAO::run()
 
 int LLFloaterAO::getAnimationState()
 {
-	if (gAgent.getAvatarObject())
+	if (gAgentAvatarp)
 	{
-		if (gAgent.getAvatarObject()->isSitting()) setAnimationState(STATE_AGENT_SIT);
+		if (gAgentAvatarp->isSitting()) setAnimationState(STATE_AGENT_SIT);
 		else if (gAgent.getFlying()) setAnimationState(STATE_AGENT_HOVER);
 	}
 	return mAnimationState;
@@ -867,11 +867,11 @@ BOOL LLFloaterAO::ChangeStand()
 {
 	if (gSavedSettings.getBOOL("AOEnabled"))
 	{
-		if (gAgent.getAvatarObject())
+		if (gAgentAvatarp)
 		{
 			if (gSavedSettings.getBOOL("AONoStandsInMouselook") && gAgentCamera.cameraMouselook()) return FALSE;
 
-			if (gAgent.getAvatarObject()->isSitting())
+			if (gAgentAvatarp->isSitting())
 			{
 //				stopMotion(getCurrentStandId(), FALSE, TRUE); //stop stand first then set state
 //				if (getAnimationState() != STATE_AGENT_GROUNDSIT) setAnimationState(STATE_AGENT_SIT);
@@ -922,9 +922,9 @@ BOOL LLFloaterAO::startMotion(const LLUUID& id, F32 time_offset, BOOL stand)
 		if (id.notNull())
 		{
 			BOOL sitting = FALSE;
-			if (gAgent.getAvatarObject())
+			if (gAgentAvatarp)
 			{
-				sitting = gAgent.getAvatarObject()->isSitting();
+				sitting = gAgentAvatarp->isSitting();
 			}
 			if (sitting) return FALSE;
 			gAgent.sendAnimationRequest(id, ANIM_REQUEST_START);

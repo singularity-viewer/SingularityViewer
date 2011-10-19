@@ -94,7 +94,7 @@ virtual void	setEnabled(BOOL enabled)	{ mEnabled = enabled; }
 		LLCheckBoxCtrl, LLComboBox, LLLineEditor, LLMenuGL, LLRadioGroup, etc
 virtual BOOL	setLabelArg( const std::string& key, const LLStringExplicit& text ) { return FALSE; }
 		LLUICtrl, LLButton, LLCheckBoxCtrl, LLLineEditor, LLMenuGL, LLSliderCtrl
-virtual void	onVisibilityChange ( BOOL curVisibilityIn );
+virtual void	handleVisibilityChange ( BOOL curVisibilityIn );
 		LLMenuGL
 virtual LLRect getSnapRect() const	{ return mRect; } *TODO: Make non virtual
 		LLFloater
@@ -104,14 +104,14 @@ virtual void	reshape(S32 width, S32 height, BOOL called_from_parent = TRUE);
 		LLUICtrl, et. al.
 virtual void	translate( S32 x, S32 y );
 		LLMenuGL		
-virtual void	userSetShape(const LLRect& new_rect);
+virtual void	handleReshape(const LLRect& new_rect, bool by_user = false);
 		LLFloater, LLScrollLIstVtrl
 virtual LLView*	findSnapRect(LLRect& new_rect, const LLCoordGL& mouse_dir, LLView::ESnapType snap_type, S32 threshold, S32 padding = 0);
 virtual LLView*	findSnapEdge(S32& new_edge_val, const LLCoordGL& mouse_dir, ESnapEdge snap_edge, ESnapType snap_type, S32 threshold, S32 padding = 0);
 		LLScrollListCtrl
 virtual BOOL	canSnapTo(const LLView* other_view) { return other_view != this && other_view->getVisible(); }
 		LLFloater
-virtual void	snappedTo(const LLView* snap_view) {}
+virtual void	setSnappedTo(const LLView* snap_view) {}
 		LLFloater
 virtual BOOL	handleKey(KEY key, MASK mask, BOOL called_from_parent);
 		*
@@ -342,7 +342,7 @@ public:
 
 	virtual BOOL	setLabelArg( const std::string& key, const LLStringExplicit& text );
 
-	virtual void	onVisibilityChange ( BOOL curVisibilityIn );
+	virtual void	handleVisibilityChange ( BOOL curVisibilityIn );
 
 	void			pushVisible(BOOL visible)	{ mLastVisible = mVisible; setVisible(visible); }
 	void			popVisible()				{ setVisible(mLastVisible); mLastVisible = TRUE; }
@@ -389,13 +389,13 @@ public:
 	BOOL			translateIntoRect( const LLRect& constraint, BOOL allow_partial_outside );
 	void			centerWithin(const LLRect& bounds);
 
-	virtual void	userSetShape(const LLRect& new_rect);
+	void	setShape(const LLRect& new_rect, bool by_user = false);
 	virtual LLView*	findSnapRect(LLRect& new_rect, const LLCoordGL& mouse_dir, LLView::ESnapType snap_type, S32 threshold, S32 padding = 0);
 	virtual LLView*	findSnapEdge(S32& new_edge_val, const LLCoordGL& mouse_dir, ESnapEdge snap_edge, ESnapType snap_type, S32 threshold, S32 padding = 0);
 
 	virtual BOOL	canSnapTo(const LLView* other_view);
 
-	virtual void	snappedTo(const LLView* snap_view);
+	virtual void	setSnappedTo(const LLView* snap_view);
 	
 	// inherited from LLFocusableElement
 	/* virtual */ BOOL	handleKey(KEY key, MASK mask, BOOL called_from_parent);
@@ -586,7 +586,7 @@ public:
 	static BOOL deleteViewByHandle(LLHandle<LLView> handle);
 	static LLWindow*	getWindow(void) { return LLUI::sWindow; }
 
-	
+	virtual void	handleReshape(const LLRect& rect, bool by_user);
 protected:
 	virtual BOOL	handleKeyHere(KEY key, MASK mask);
 	virtual BOOL	handleUnicodeCharHere(llwchar uni_char);

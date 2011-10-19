@@ -59,7 +59,7 @@ const S32 HUD_ARROW_SIZE = 32;
 LLHUDView::LLHUDView(const LLRect& r)
 {
 	LLUICtrlFactory::getInstance()->buildPanel(this, "panel_hud.xml");
-	userSetShape(r);
+	setShape(r,true);
 }
 
 LLHUDView::~LLHUDView()

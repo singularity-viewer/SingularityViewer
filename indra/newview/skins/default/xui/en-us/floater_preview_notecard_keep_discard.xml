@@ -1,35 +1,71 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
-<floater bottom="-484" can_close="true" can_drag_on_left="false" can_minimize="true"
-     can_resize="true" enabled="true" height="400" left="138" min_height="243"
-     min_width="234" mouse_opaque="true" name="preview_notecard" width="400">
-	<text_editor type="string" length="1" bottom="-366"
-	     embedded_items="true" enabled="true" follows="left|top|right|bottom"
-	     font="SansSerif" height="320" ignore_tab="false" left="4"
-	     max_length="65536" mouse_opaque="true" name="Notecard Editor" width="392"
-	     word_wrap="true">
-		Loading...
-	</text_editor>
+<floater bottom="-762" can_close="true" can_drag_on_left="false" can_minimize="true"
+     can_resize="true" enabled="true" follows="left|top" height="377" left="273"
+     min_height="259" min_width="350" mouse_opaque="true"
+     name="preview notecard" title="Note:" width="400">
+	<icon bottom="-19" color="1 1 1 1" enabled="true" follows="top|right" height="16"
+	     image_name="icon_lock.tga" left="344" mouse_opaque="true" name="lock"
+	     width="16" />
 	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
 	     bottom="-38" drop_shadow_visible="true" enabled="true" follows="left|top"
 	     font="SansSerif" h_pad="0" halign="left" height="19" left="13"
 	     mouse_opaque="true" name="desc txt" v_pad="0" width="80">
 		Description:
 	</text>
-	<icon bottom="-19" color="1 1 1 1" enabled="true" follows="top|right" height="16"
-	     image_name="icon_lock.tga" left="344" mouse_opaque="true" name="lock"
-	     width="16" />
-	<button bottom="-391" enabled="true" follows="left|bottom" font="SansSerif"
-	     halign="center" height="20" label="Keep" label_selected="Keep" left="9"
-	     mouse_opaque="true" name="Keep" scale_image="true" width="100" />
-	<button bottom="-391" enabled="true" follows="left|bottom" font="SansSerif"
-	     halign="center" height="20" label="Discard" label_selected="Discard"
-	     left="114" mouse_opaque="true" name="Discard" scale_image="true"
-	     width="100" />
 	<line_editor bevel_style="in" border_style="line" border_thickness="1" bottom="-38"
 	     enabled="true" follows="left|top|right" font="SansSerif"
 	     handle_edit_keys_directly="false" height="19" left="93" max_length="127"
 	     mouse_opaque="true" name="desc" select_all_on_focus_received="false"
 	     select_on_focus="false" width="294" spell_check="true" />
-	<string name="no_object">Unable to find object containing this note.:</string>
-	<string name="not_allowed">You are not allowed to view this note.</string>
+	<menu_bar bottom="-56" drop_shadow="false" enabled="true" follows="left|top|right"
+	     height="18" left="8" mouse_opaque="false" name="motecard_menu" opaque="false"
+	     tear_off="false" width="220">
+		<menu bottom_delta="16" left="0" drop_shadow="true" enabled="true" height="198" width="150"
+		     mouse_opaque="false" name="Edit" opaque="true" tear_off="false">
+			<menu_item_call bottom_delta="-30" enabled="false" height="20" label="Undo" left="0"
+			     mouse_opaque="true" name="Undo" width="139" />
+			<menu_item_call bottom_delta="-50" enabled="false" height="20" label="Redo" left="0"
+			     mouse_opaque="true" name="Redo" width="139" />
+			<menu_item_separator bottom_delta="-58" enabled="true" height="8" label="-----------" left="0"
+			     mouse_opaque="true" name="separator1" width="139" />
+			<menu_item_call bottom_delta="-78" enabled="false" height="20" label="Cut" left="0"
+			     mouse_opaque="true" name="Cut" width="139" />
+			<menu_item_call bottom_delta="-98" enabled="false" height="20" label="Copy" left="0"
+			     mouse_opaque="true" name="Copy" width="139" />
+			<menu_item_call bottom_delta="-118" enabled="false" height="20" label="Paste" left="0"
+			     mouse_opaque="true" name="Paste" width="139" />
+			<menu_item_separator bottom_delta="-126" enabled="true" height="8" label="-----------" left="0"
+			     mouse_opaque="true" name="separator2" width="139" />
+			<menu_item_call bottom_delta="-146" enabled="true" height="20" label="Select All" left="0"
+			     mouse_opaque="true" name="Select All" width="139" />
+			<menu_item_call bottom_delta="-166" enabled="false" height="20" label="Deselect" left="0"
+			     mouse_opaque="true" name="Deselect" width="139" />
+			<menu_item_separator bottom_delta="-174" enabled="true" height="8" label="-----------" left="0"
+			     mouse_opaque="true" name="separator3" width="139" />
+			<menu_item_call bottom_delta="-194" enabled="true" height="20" label="Search / Replace..."
+			     left="0" mouse_opaque="true" name="Search / Replace..." width="139" />
+		</menu>
+	</menu_bar>
+	<text_editor type="string" length="1" bottom="-344" embedded_items="true" enabled="true"
+	     follows="left|top|right|bottom" font="SansSerif" height="285"
+	     ignore_tab="false" left="4" max_length="65536" mouse_opaque="true"
+	     name="Notecard Editor" width="392" word_wrap="true">
+		Loading...
+	</text_editor>
+	<button bottom="-370" enabled="true" follows="left|bottom" font="SansSerif"
+	     halign="center" height="20" label="Keep" label_selected="Keep" left="9"
+	     mouse_opaque="true" name="Keep" scale_image="true" width="100" />
+	<button bottom="-370" enabled="false" follows="left|bottom" font="SansSerif"
+	     halign="center" height="20" label="Save" label_selected="Save" left="114"
+	     mouse_opaque="false" name="Save" scale_image="true" width="100" />
+	<button bottom="-370" enabled="true" follows="left|bottom" font="SansSerif"
+	     halign="center" height="20" label="Discard" label_selected="Discard"
+	     left="219" mouse_opaque="true" name="Discard" scale_image="true"
+	     width="100" />
+	<string name="no_object">
+		Unable to find object containing this note.
+	</string>
+	<string name="not_allowed">
+		You are not allowed to view this note.
+	</string>
 </floater>

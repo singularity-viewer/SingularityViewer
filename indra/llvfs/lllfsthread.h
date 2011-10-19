@@ -39,7 +39,7 @@
 #include <set>
 
 #include "llapr.h"
-#include "llmemory.h"		// LLPointer
+#include "llpointer.h"
 #include "llqueuedthread.h"
 
 //============================================================================

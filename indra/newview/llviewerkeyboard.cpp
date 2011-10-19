@@ -44,7 +44,7 @@
 #include "llmoveview.h"
 #include "lltoolfocus.h"
 #include "llviewerwindow.h"
-#include "llvoavatar.h"
+#include "llvoavatarself.h"
 
 //
 // Constants
@@ -843,7 +843,7 @@ EKeyboardMode LLViewerKeyboard::getMode()
 	{
 		return MODE_EDIT_AVATAR;
 	}
-	else if (gAgent.getAvatarObject() && gAgent.getAvatarObject()->isSitting())
+	else if (gAgentAvatarp && gAgentAvatarp->isSitting())
 	{
 		return MODE_SITTING;
 	}

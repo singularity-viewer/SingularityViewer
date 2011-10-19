@@ -1,11 +1,11 @@
-/** 
+/**
  * @file lscript_library.cpp
  * @brief external library interface
  *
  * $LicenseInfo:firstyear=2002&license=viewergpl$
- * 
+ *
  * Copyright (c) 2002-2009, Linden Research, Inc.
- * 
+ *
  * Second Life Viewer Source Code
  * The source code in this file ("Source Code") is provided by Linden Lab
  * to you under the terms of the GNU General Public License, version 2.0
@@ -13,17 +13,17 @@
  * ("Other License"), formally executed by you and Linden Lab.  Terms of
  * the GPL can be found in doc/GPL-license.txt in this distribution, or
  * online at http://secondlifegrid.net/programs/open_source/licensing/gplv2
- * 
+ *
  * There are special exceptions to the terms and conditions of the GPL as
  * it is applied to this Source Code. View the full text of the exception
  * in the file doc/FLOSS-exception.txt in this software distribution, or
  * online at
  * http://secondlifegrid.net/programs/open_source/licensing/flossexception
- * 
+ *
  * By copying, modifying or distributing this software, you acknowledge
  * that you have read and understood your obligations described above,
  * and agree to abide by those obligations.
- * 
+ *
  * ALL LINDEN LAB SOURCE CODE IS PROVIDED "AS IS." LINDEN LAB MAKES NO
  * WARRANTIES, EXPRESS, IMPLIED OR OTHERWISE, REGARDING ITS ACCURACY,
  * COMPLETENESS OR PERFORMANCE.
@@ -37,7 +37,7 @@
 //  ##  ##  ## ##     ## ########  ## ## ##  ##  ## ## ## ##   ####  ##   ##
 //  ##  ##  ## ######### ##   ##   ##  ####  ##  ##  #### ##    ##
 //  ##  ##  ## ##     ## ##    ##  ##   ###  ##  ##   ### ##    ##  #### ####
-//   ###  ###  ##     ## ##     ## ##    ## #### ##    ##  ######   #### #### 
+//   ###  ###  ##     ## ##     ## ##    ## #### ##    ##  ######   #### ####
 //
 // When adding functions, they <b>MUST</b> be appended to the end of
 // the init() method. The init() associates the name with a number,
@@ -327,7 +327,7 @@ void LLScriptLibrary::init()
 
 	addFunction(10.f, 0.2f, dummy_func, "llSetRemoteScriptAccessPin", NULL, "i");
 	addFunction(10.f, 3.f, dummy_func, "llRemoteLoadScriptPin", NULL, "ksiii");
-	
+
 	addFunction(10.f, 1.f, dummy_func, "llOpenRemoteDataChannel", NULL, NULL);
 	addFunction(10.f, 3.f, dummy_func, "llSendRemoteData", "k", "ksis");
 	addFunction(10.f, 3.f, dummy_func, "llRemoteDataReply", NULL, "kksi");
@@ -343,7 +343,7 @@ void LLScriptLibrary::init()
 	addFunction(10.f, 0.f, dummy_func, "llLog", "f", "f");
 	addFunction(10.f, 0.f, dummy_func, "llGetAnimationList", "l", "k");
 	addFunction(10.f, 2.f, dummy_func, "llSetParcelMusicURL", NULL, "s");
-	
+
 	addFunction(10.f, 0.f, dummy_func, "llGetRootPosition", "v", NULL);
 	addFunction(10.f, 0.f, dummy_func, "llGetRootRotation", "q", NULL);
 
@@ -362,7 +362,7 @@ void LLScriptLibrary::init()
 	addFunction(10.f, 0.0f, dummy_func, "llBase64ToInteger", "i", "s");
 	addFunction(10.f, 0.f, dummy_func, "llGetGMTclock", "f", "");
 	addFunction(10.f, 10.f, dummy_func, "llGetSimulatorHostname", "s", "");
-	
+
 	addFunction(10.f, 0.2f, dummy_func, "llSetLocalRot", NULL, "q");
 
 	addFunction(10.f, 0.f, dummy_func, "llParseStringKeepNulls", "l", "sll");
@@ -385,12 +385,12 @@ void LLScriptLibrary::init()
 	addFunction(10.f, 2.f, dummy_func, "llParcelMediaQuery", "l", "l");
 
 	addFunction(10.f, 1.f, dummy_func, "llModPow", "i", "iii");
-	
+
 	addFunction(10.f, 0.f, dummy_func, "llGetInventoryType", "i", "s");
 	addFunction(10.f, 0.f, dummy_func, "llSetPayPrice", NULL, "il");
 	addFunction(10.f, 0.f, dummy_func, "llGetCameraPos", "v", "");
 	addFunction(10.f, 0.f, dummy_func, "llGetCameraRot", "q", "");
-	
+
 	addFunction(10.f, 20.f, dummy_func, "llSetPrimURL", NULL, "s");
 	addFunction(10.f, 20.f, dummy_func, "llRefreshPrimURL", NULL, "");
 	addFunction(10.f, 0.f, dummy_func, "llEscapeURL", "s", "s");
@@ -403,7 +403,7 @@ void LLScriptLibrary::init()
 
 	addFunction(10.f, 0.f, dummy_func, "llSetCameraParams", NULL, "l");
 	addFunction(10.f, 0.f, dummy_func, "llClearCameraParams", NULL, NULL);
-	
+
 	addFunction(10.f, 0.f, dummy_func, "llListStatistics", "f", "il");
 	addFunction(10.f, 0.f, dummy_func, "llGetUnixTime", "i", NULL);
 	addFunction(10.f, 0.f, dummy_func, "llGetParcelFlags", "i", "v");
@@ -425,7 +425,7 @@ void LLScriptLibrary::init()
 	addFunction(10.f, 0.2f, dummy_func, "llSetLinkPrimitiveParams", NULL, "il");
 	addFunction(10.f, 0.2f, dummy_func, "llSetLinkTexture", NULL, "isi");
 
-	
+
 	addFunction(10.f, 0.f, dummy_func, "llStringTrim", "s", "si");
 	addFunction(10.f, 0.f, dummy_func, "llRegionSay", NULL, "is");
 	addFunction(10.f, 0.f, dummy_func, "llGetObjectDetails", "l", "kl");
@@ -462,19 +462,168 @@ void LLScriptLibrary::init()
 	addFunction(10.f, 0.f, dummy_func, "llGetLinkNumberOfSides", "i", "i");
 
     // IDEVO Name lookup calls, see lscript_avatar_names.h
-    addFunction(10.f, 0.f, dummy_func, "llGetUsername", "s", "k");
-    addFunction(10.f, 0.f, dummy_func, "llRequestUsername", "k", "k");
-    addFunction(10.f, 0.f, dummy_func, "llGetDisplayName", "s", "k");
+	addFunction(10.f, 0.f, dummy_func, "llGetUsername", "s", "k");
+	addFunction(10.f, 0.f, dummy_func, "llRequestUsername", "k", "k");
+	addFunction(10.f, 0.f, dummy_func, "llGetDisplayName", "s", "k");
 	addFunction(10.f, 0.f, dummy_func, "llRequestDisplayName", "k", "k");
-
 	addFunction(10.f, 0.f, dummy_func, "llGetEnv", "s", "s");
 	addFunction(10.f, 0.f, dummy_func, "llRegionSayTo", NULL, "kis");
 
-	// energy, sleep, dummy_func, name, return type, parameters, help text, gods-only
+  // Adding missing (more recent) LSL functions.
 
-	// IF YOU ADD NEW SCRIPT CALLS, YOU MUST PUT THEM AT THE END OF THIS LIST.
-	// Otherwise the bytecode numbers for each call will be wrong, and all
-	// existing scripts will crash.
+	addFunction(10.f, 0.f, dummy_func, "llCastRay", "l", "vvl");
+	addFunction(10.f, 0.f, dummy_func, "llGetSPMaxMemory", "i", NULL);
+	addFunction(10.f, 0.f, dummy_func, "llGetUsedMemory", "i", NULL);
+	addFunction(10.f, 0.f, dummy_func, "llGodLikeRezObject", NULL, "kv");
+	addFunction(10.f, 0.f, dummy_func, "llScriptProfiler", NULL, "i");
+	addFunction(10.f, 0.f, dummy_func, "llSetInventoryPermMask", NULL, "sii");
+	addFunction(10.f, 0.f, dummy_func, "llSetObjectPermMask", NULL, "ii");
+	// Even more recent
+	addFunction(10.f, 0.f, dummy_func, "llSetMemoryLimit", "i", "i");
+	addFunction(10.f, 0.f, dummy_func, "llSetLinkMedia", "i", "iil");
+	addFunction(10.f, 0.f, dummy_func, "llGetLinkMedia", "l", "iil");
+	addFunction(10.f, 0.f, dummy_func, "llClearLinkMedia", "i", "ii");
+	addFunction(10.f, 0.f, dummy_func, "llSetLinkCamera", NULL, "ivv");
+	addFunction(10.f, 0.f, dummy_func, "llSetContentType", NULL, "ki");
+	addFunction(10.f, 0.f, dummy_func, "llLinkSitTarget", NULL, "ivr");
+	addFunction(10.f, 0.f, dummy_func, "llAvatarOnLinkSitTarget", "k", "i");
+	/* No info on these new functions yet....
+	 * addFunction(10.f, 0.f, dummy_func, "llSetVelocity", "", "");
+	 * addFunction(10.f, 0.f, dummy_func, "llSetRotationalVelocity", "", "");
+	 */
+
+	// REGARDING OSSL FUNCTIONS
+	// These additions should be posted underneath the llFunctions
+	// These functions pertain to OpenSimulator and are in no part applicable to SecondLife by Linden Labs
+	// The Current State of these functions are in flux and development is ongoing.  Not all the functions are presently
+	// documented and therefore the description may be incomplete and require further attention.
+	// OpenSimulator is written in C# and not CPP therefore some values for example "double = float" etc. are different.
+
+	// OSSL corrections and syntax additions added + set in same order as found in OSSL_stub.cs of OpenSim Source (Updated PM October-21-2010
+	// based on OpenSimulator Ver. 0.7.x DEV/Master Git # a7acb650d400a280a7b9edabd304376dff9c81af - a7acb65-r/14142
+	// Updates by WhiteStar Magic
+	
+	// It should be noted though, that the order of OSSL functions is not important for correct functionality. 
+
+	addFunction(10.f, 0.f, dummy_func, "osSetRegionWaterHeight", NULL, "f");
+	addFunction(10.f, 0.f, dummy_func, "osSetRegionSunSettings", NULL, "iif");
+	addFunction(10.f, 0.f, dummy_func, "osSetEstateSunSettings", NULL, "if");
+	addFunction(10.f, 0.f, dummy_func, "osGetCurrentSunHour", "f", NULL);
+	addFunction(10.f, 0.f, dummy_func, "osSunGetParam","f", "s");  // Deprecated. Use osGetSunParam instead
+	addFunction(10.f, 0.f, dummy_func, "osSunSetParam", "sf", NULL);  // Deprecated. Use osSetSunParam instead
+	addFunction(10.f, 0.f, dummy_func, "osWindActiveModelPluginName", "s", NULL);
+	addFunction(10.f, 0.f, dummy_func, "osParcelJoin", NULL, "vv");
+	addFunction(10.f, 0.f, dummy_func, "osParcelSubdivide", NULL, "vv");
+	addFunction(10.f, 0.f, dummy_func, "osParcelSetDetails", NULL, "vv"); // Deprecated. Use osSetParcelDetails instead.
+	// addFunction(10.f, 0.f, dummy_func, "osWindParamSet", NULL, "ssf"); // This function was renamed before it was implemented. Leaving this in for now.
+	// addFunction(10.f, 0.f, dummy_func, "osWindParamGet", "f", "ss");  // This function was renamed before it was implemented. Leaving this in for now.
+	addFunction(10.f, 0.f, dummy_func, "osList2Double", "f", "li");
+	addFunction(10.f, 0.f, dummy_func, "osSetDynamicTextureURL", NULL, "ksssi");
+	addFunction(10.f, 0.f, dummy_func, "osSetDynamicTextureData", NULL, "ksssi");
+	addFunction(10.f, 0.f, dummy_func, "osSetDynamicTextureURLBlend", NULL, "ksssii");
+	addFunction(10.f, 0.f, dummy_func, "osSetDynamicTextureDataBlend", NULL, "ksssii");
+	addFunction(10.f, 0.f, dummy_func, "osSetDynamicTextureURLBlendFace", NULL, "ksssfiiii");
+	addFunction(10.f, 0.f, dummy_func, "osSetDynamicTextureDataBlendFace", NULL, "ksssfiiii");
+	addFunction(10.f, 0.f, dummy_func, "osTerrainGetHeight", "f", "ii");   // Deprecated. Use osGetTerrainHeight instead
+	addFunction(10.f, 0.f, dummy_func, "osTerrainSetHeight", NULL, "iif");   // Deprecated. Use osSetTerrainHeight instead
+	addFunction(10.f, 0.f, dummy_func, "osTerrainFlush", NULL, NULL);
+	addFunction(10.f, 0.f, dummy_func, "osRegionRestart", "i", "f");
+	addFunction(10.f, 0.f, dummy_func, "osRegionNotice",NULL, "s");
+	addFunction(10.f, 0.f, dummy_func, "osConsoleCommand", NULL, "s");
+	addFunction(10.f, 0.f, dummy_func, "osSetParcelMediaURL", NULL, "s");
+	addFunction(10.f, 0.f, dummy_func, "osSetParcelSIPAddress", NULL, "s");
+	addFunction(10.f, 0.f, dummy_func, "osSetPrimFloatOnWater", NULL, "i");
+	addFunction(10.f, 0.f, dummy_func, "osTeleportAgent", NULL, "ksvv");
+	addFunction(10.f, 0.f, dummy_func, "osGetAgentIP", "s", "k");
+	addFunction(10.f, 0.f, dummy_func, "osGetAgents", "l", NULL);
+	addFunction(10.f, 0.f, dummy_func, "osAvatarPlayAnimation", NULL, "ks");
+	addFunction(10.f, 0.f, dummy_func, "osAvatarStopAnimation", NULL, "ks");
+	addFunction(10.f, 0.f, dummy_func, "osMovePen", NULL, "sii");
+	addFunction(10.f, 0.f, dummy_func, "osDrawLine", NULL, "siiii");
+	addFunction(10.f, 0.f, dummy_func, "osDrawText", NULL, "ss");
+	addFunction(10.f, 0.f, dummy_func, "osDrawEllipse", NULL, "sii");
+	addFunction(10.f, 0.f, dummy_func, "osDrawRectangle", NULL, "sii");
+	addFunction(10.f, 0.f, dummy_func, "osDrawFilledRectangle", NULL, "sii");
+	addFunction(10.f, 0.f, dummy_func, "osDrawPolygon", "s", "sll");
+	addFunction(10.f, 0.f, dummy_func, "osDrawFilledPolygon", "s", "sll");
+	addFunction(10.f, 0.f, dummy_func, "osSetFontSize", NULL, "si");
+	addFunction(10.f, 0.f, dummy_func, "osSetFontName", NULL, "ss");
+	addFunction(10.f, 0.f, dummy_func, "osSetPenSize", NULL, "si");
+	addFunction(10.f, 0.f, dummy_func, "osSetPenCap", NULL, "sss");
+	addFunction(10.f, 0.f, dummy_func, "osSetPenColour", NULL, "ss"); // Deprecated. Use osSetPenColor instead
+	addFunction(10.f, 0.f, dummy_func, "osDrawImage", NULL, "siis");
+	addFunction(10.f, 0.f, dummy_func, "osGetDrawStringSize", "v", "sssi");
+	addFunction(10.f, 0.f, dummy_func, "osSetStateEvents", NULL, "i");
+	addFunction(10.f, 0.f, dummy_func, "osGetScriptEngineName", "s", NULL);
+	addFunction(10.f, 0.f, dummy_func, "osGetSimulatorVersion", "s", NULL);
+	addFunction(10.f, 0.f, dummy_func, "osParseJSON", "s", "s");
+	addFunction(10.f, 0.f, dummy_func, "osMessageObject", NULL, "ks");
+	addFunction(10.f, 0.f, dummy_func, "osMakeNotecard", NULL, "sl");
+	addFunction(10.f, 0.f, dummy_func, "osGetNotecardLine", "s", "si");
+	addFunction(10.f, 0.f, dummy_func, "osGetNotecard", "s", "s");
+	addFunction(10.f, 0.f, dummy_func, "osGetNumberOfNotecardLines", "i", "s");
+	addFunction(10.f, 0.f, dummy_func, "osAvatarName2Key", "k", "ss");
+	addFunction(10.f, 0.f, dummy_func, "osKey2Name", "s", "k");
+	addFunction(10.f, 0.f, dummy_func, "osGetGridNick", "s", NULL);
+	addFunction(10.f, 0.f, dummy_func, "osGetGridName", "s", NULL);
+	addFunction(10.f, 0.f, dummy_func, "osGetGridLoginURI", "s", NULL);
+	addFunction(10.f, 0.f, dummy_func, "osFormatString", "s", "sl");
+	addFunction(10.f, 0.f, dummy_func, "osMatchString", "l", "ssi");
+	addFunction(10.f, 0.f, dummy_func, "osLoadedCreationDate", "s", NULL);
+	addFunction(10.f, 0.f, dummy_func, "osLoadedCreationTime", "s", NULL);
+	addFunction(10.f, 0.f, dummy_func, "osLoadedCreationID", "s", NULL);
+	addFunction(10.f, 0.f, dummy_func, "osGetLinkPrimitiveParams", "l", "il");
+	addFunction(10.f, 0.f, dummy_func, "osNpcCreate", "k", "ssvk");
+	addFunction(10.f, 0.f, dummy_func, "osNpcMoveTo", NULL, "kv");
+	addFunction(10.f, 0.f, dummy_func, "osNpcSay", NULL, "ks");
+	addFunction(10.f, 0.f, dummy_func, "osNpcRemove", NULL, "k");
+	addFunction(10.f, 0.f, dummy_func, "osGetMapTexture", "k", NULL);
+	addFunction(10.f, 0.f, dummy_func, "osGetRegionMapTexture", "k", "s");
+	addFunction(10.f, 0.f, dummy_func, "osGetRegionStats", "l", NULL);
+	addFunction(10.f, 0.f, dummy_func, "osGetSimulatorMemory", "i", NULL);
+	addFunction(10.f, 0.f, dummy_func, "osKickAvatar", NULL, "sss");
+	addFunction(10.f, 0.f, dummy_func, "osSetSpeed", NULL, "kf");
+	addFunction(10.f, 0.f, dummy_func, "osCauseDamage", NULL, "kf");
+	addFunction(10.f, 0.f, dummy_func, "osCauseHealing", NULL, "kf");
+	addFunction(10.f, 0.f, dummy_func, "osGetPrimitiveParams", "l", "kl");
+	addFunction(10.f, 0.f, dummy_func, "osSetPrimitiveParams", NULL, "kl");
+	addFunction(10.f, 0.f, dummy_func, "osSetProjectionParams", NULL, "kikfff");
+	addFunction(10.f, 0.f, dummy_func, "osUnixTimeToTimestamp", "s", "i");
+	addFunction(10.f, 0.f, dummy_func, "osSetPenColor", NULL, "ss");
+	addFunction(10.f, 0.f, dummy_func, "osGetSunParam","f", "s");
+	addFunction(10.f, 0.f, dummy_func, "osSetSunParam", NULL, "sf");
+	addFunction(10.f, 0.f, dummy_func, "osSetParcelDetails", NULL, "vl");
+	addFunction(10.f, 0.f, dummy_func, "osGetTerrainHeight", "f", "ii");
+	addFunction(10.f, 0.f, dummy_func, "osSetTerrainHeight", NULL, "iif");
+	addFunction(10.f, 0.f, dummy_func, "osGetAvatarList", "l", NULL);
+	addFunction(10.f, 0.f, dummy_func, "osTeleportOwner", NULL, "svv");
+	addFunction(10.f, 0.f, dummy_func, "osGetWindParam","f", "ss");
+	addFunction(10.f, 0.f, dummy_func, "osSetWindParam", NULL, "ssf");
+	
+
+	// LightShare functions
+	addFunction(10.f, 0.f, dummy_func, "cmSetWindlightScene", "i", "l");
+	addFunction(10.f, 0.f, dummy_func, "cmSetWindlightSceneTargeted", "i", "lk");
+	addFunction(10.f, 0.f, dummy_func, "cmGetWindlightScene", "l", "l");
+	// LightShare functions - alternate versions
+	// don't ask me why they renamed 'em, but we need to include both versions -- MC
+	addFunction(10.f, 0.f, dummy_func, "lsSetWindlightScene", "i", "l");
+	addFunction(10.f, 0.f, dummy_func, "lsSetWindlightSceneTargeted", "i", "lk");
+	addFunction(10.f, 0.f, dummy_func, "lsGetWindlightScene", "l", "l");
+
+	// New OSSL functions 08-10-2011
+	addFunction(10.f, 0.f, dummy_func, "osNpcSaveAppearance", "k", "ks");
+	addFunction(10.f, 0.f, dummy_func, "osNpcLoadAppearance", NULL, "ks");
+	addFunction(10.f, 0.f, dummy_func, "osNpcMoveToTarget", NULL, "kvi");
+	addFunction(10.f, 0.f, dummy_func, "osOwnerSaveAppearance", "k", "s");
+
+	// More new stuffs
+	addFunction(10.f, 0.f, dummy_func, "osNpcGetRot", "r", "k");
+	addFunction(10.f, 0.f, dummy_func, "osNpcSetRot", NULL, "kr");
+	addFunction(10.f, 0.f, dummy_func, "osAgentSaveAppearance", "k", "ks");
+	addFunction(10.f, 0.f, dummy_func, "osNpcGetPos", "v", "k");
+	addFunction(10.f, 0.f, dummy_func, "osNpcStopMoveToTarget", NULL, "k");
+
 }
 
 LLScriptLibraryFunction::LLScriptLibraryFunction(F32 eu, F32 st, void (*exec_func)(LLScriptLibData *, LLScriptLibData *, const LLUUID &), const char *name, const char *ret_type, const char *args, BOOL god_only)
@@ -494,7 +643,7 @@ void LLScriptLibrary::addFunction(F32 eu, F32 st, void (*exec_func)(LLScriptLibD
 
 void LLScriptLibrary::assignExec(const char *name, void (*exec_func)(LLScriptLibData *, LLScriptLibData *, const LLUUID &))
 {
-	for (std::vector<LLScriptLibraryFunction>::iterator i = mFunctions.begin(); 
+	for (std::vector<LLScriptLibraryFunction>::iterator i = mFunctions.begin();
 		 i != mFunctions.end(); ++i)
 	{
 		if (!strcmp(name, i->mName))
@@ -503,7 +652,7 @@ void LLScriptLibrary::assignExec(const char *name, void (*exec_func)(LLScriptLib
 			return;
 		}
 	}
-	
+
 	llerrs << "Unknown LSL function in assignExec: " << name << llendl;
 }
 

@@ -36,6 +36,7 @@
 
 #include "llvertexbuffer.h"
 #include "llcubemap.h"
+#include "llglslshader.h"
 #include "llimagegl.h"
 #include "llrendertarget.h"
 #include "lltexture.h"
@@ -49,7 +50,9 @@ F64 gGLLastProjection[16];
 F64 gGLProjection[16];
 S32	gGLViewport[4];
 
-static const U32 LL_NUM_TEXTURE_LAYERS = 8; 
+U32 LLTexUnit::sWhiteTexture = 0;
+
+static const U32 LL_NUM_TEXTURE_LAYERS = 32; 
 static const U32 LL_NUM_LIGHT_UNITS = 8;
 
 static GLenum sGLTextureType[] =
@@ -57,6 +60,7 @@ static GLenum sGLTextureType[] =
 	GL_TEXTURE_2D,
 	GL_TEXTURE_RECTANGLE_ARB,
 	GL_TEXTURE_CUBE_MAP_ARB
+	//,GL_TEXTURE_2D_MULTISAMPLE  Don't use.
 };
 
 static GLint sGLAddressMode[] =
@@ -119,13 +123,16 @@ void LLTexUnit::refreshState(void)
 	// We set dirty to true so that the tex unit knows to ignore caching
 	// and we reset the cached tex unit state
 
+	gGL.flush();
+	
 	glActiveTextureARB(GL_TEXTURE0_ARB + mIndex);
 
 	//
 	// Per apple spec, don't call glEnable/glDisable when index exceeds max texture units
 	// http://www.mailinglistarchive.com/html/mac-opengl@lists.apple.com/2008-07/msg00653.html
 	//
-	bool enableDisable = (mIndex < gGLManager.mNumTextureUnits);
+	bool enableDisable = !LLGLSLShader::sNoFixedFunction && 
+		(mIndex < gGLManager.mNumTextureUnits) /*&& mCurrTexType != LLTexUnit::TT_MULTISAMPLE_TEXTURE*/;
 		
 	if (mCurrTexType != TT_NONE)
 	{
@@ -163,6 +170,7 @@ void LLTexUnit::activate(void)
 
 	if ((S32)gGL.mCurrTextureUnitIndex != mIndex || gGL.mDirty)
 	{
+		gGL.flush();
 		glActiveTextureARB(GL_TEXTURE0_ARB + mIndex);
 		gGL.mCurrTextureUnitIndex = mIndex;
 	}
@@ -180,7 +188,11 @@ void LLTexUnit::enable(eTextureType type)
 			disable(); // Force a disable of a previous texture type if it's enabled.
 		}
 		mCurrTexType = type;
-		if (mIndex < gGLManager.mNumTextureUnits)
+
+		gGL.flush();
+		if (!LLGLSLShader::sNoFixedFunction && 
+			//type != LLTexUnit::TT_MULTISAMPLE_TEXTURE &&
+			mIndex < gGLManager.mNumTextureUnits)
 		{
 			glEnable(sGLTextureType[type]);
 		}
@@ -195,7 +207,10 @@ void LLTexUnit::disable(void)
 	{
 		activate();
 		unbind(mCurrTexType);
-		if (mIndex < gGLManager.mNumTextureUnits)
+		gGL.flush();
+		if (!LLGLSLShader::sNoFixedFunction &&
+			//mCurrTexType != LLTexUnit::TT_MULTISAMPLE_TEXTURE &&
+			mIndex < gGLManager.mNumTextureUnits)
 		{
 			glDisable(sGLTextureType[mCurrTexType]);
 		}
@@ -279,6 +294,7 @@ bool LLTexUnit::bind(LLImageGL* texture, bool for_rendering, bool forceBind)
 	}
 	if ((mCurrTexture != texture->getTexName()) || forceBind)
 	{
+		gGL.flush();
 		activate();
 		enable(texture->getTarget());
 		mCurrTexture = texture->getTexName();
@@ -398,13 +414,23 @@ void LLTexUnit::unbind(eTextureType type)
 
 		activate();
 		mCurrTexture = 0;
-		glBindTexture(sGLTextureType[type], 0);
+		if (LLGLSLShader::sNoFixedFunction && type == LLTexUnit::TT_TEXTURE)
+		{
+			glBindTexture(sGLTextureType[type], sWhiteTexture);
+		}
+		else
+		{
+			glBindTexture(sGLTextureType[type], 0);
+		}
+		stop_glerror();
 	}
 }
 
 void LLTexUnit::setTextureAddressMode(eTextureAddressMode mode)
 {
 	if (mIndex < 0 || mCurrTexture == 0) return;
+
+	gGL.flush();
 
 	activate();
 
@@ -418,7 +444,9 @@ void LLTexUnit::setTextureAddressMode(eTextureAddressMode mode)
 
 void LLTexUnit::setTextureFilteringOption(LLTexUnit::eTextureFilterOptions option)
 {
-	if (mIndex < 0 || mCurrTexture == 0) return;
+	if (mIndex < 0 || mCurrTexture == 0 /*|| mCurrTexType == LLTexUnit::TT_MULTISAMPLE_TEXTURE*/) return;
+
+	gGL.flush();
 
 	if (option == TFO_POINT)
 	{
@@ -464,6 +492,11 @@ void LLTexUnit::setTextureFilteringOption(LLTexUnit::eTextureFilterOptions optio
 
 void LLTexUnit::setTextureBlendType(eTextureBlendType type)
 {
+	if (LLGLSLShader::sNoFixedFunction)
+	{ //texture blend type means nothing when using shaders
+		return;
+	}
+
 	if (mIndex < 0) return;
 
 	// Do nothing if it's already correctly set.
@@ -471,6 +504,8 @@ void LLTexUnit::setTextureBlendType(eTextureBlendType type)
 	{
 		return;
 	}
+
+	gGL.flush();
 
 	activate();
 	mCurrBlendType = type;
@@ -582,12 +617,18 @@ GLint LLTexUnit::getTextureSourceType(eTextureBlendSrc src, bool isAlpha)
 
 void LLTexUnit::setTextureCombiner(eTextureBlendOp op, eTextureBlendSrc src1, eTextureBlendSrc src2, bool isAlpha)
 {
+	if (LLGLSLShader::sNoFixedFunction)
+	{ //register combiners do nothing when not using fixed function
+		return;
+	}	
+
 	if (mIndex < 0) return;
 
 	activate();
 	if (mCurrBlendType != TB_COMBINE || gGL.mDirty)
 	{
 		mCurrBlendType = TB_COMBINE;
+		gGL.flush();
 		glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_COMBINE_ARB);
 	}
 
@@ -597,6 +638,8 @@ void LLTexUnit::setTextureCombiner(eTextureBlendOp op, eTextureBlendSrc src1, eT
 	{
 		return;
 	}
+
+	gGL.flush();
 
 	// Get the gl source enums according to the eTextureBlendSrc sources passed in
 	GLint source1 = getTextureSource(src1);
@@ -730,6 +773,7 @@ void LLTexUnit::setColorScale(S32 scale)
 	if (mCurrColorScale != scale || gGL.mDirty)
 	{
 		mCurrColorScale = scale;
+		gGL.flush();
 		glTexEnvi( GL_TEXTURE_ENV, GL_RGB_SCALE, scale );
 	}
 }
@@ -739,6 +783,7 @@ void LLTexUnit::setAlphaScale(S32 scale)
 	if (mCurrAlphaScale != scale || gGL.mDirty)
 	{
 		mCurrAlphaScale = scale;
+		gGL.flush();
 		glTexEnvi( GL_TEXTURE_ENV, GL_ALPHA_SCALE, scale );
 	}
 }
@@ -889,13 +934,7 @@ LLRender::LLRender()
     mMode(LLRender::TRIANGLES),
     mCurrTextureUnitIndex(0),
     mMaxAnisotropy(0.f) 
-{
-	mBuffer = new LLVertexBuffer(immediate_mask, 0);
-	mBuffer->allocateBuffer(4096, 0, TRUE);
-	mBuffer->getVertexStrider(mVerticesp);
-	mBuffer->getTexCoord0Strider(mTexcoordsp);
-	mBuffer->getColorStrider(mColorsp);
-	
+{	
 	mTexUnits.reserve(LL_NUM_TEXTURE_LAYERS);
 	for (U32 i = 0; i < LL_NUM_TEXTURE_LAYERS; i++)
 	{
@@ -926,6 +965,17 @@ LLRender::~LLRender()
 	shutdown();
 }
 
+void LLRender::init()
+{
+	llassert_always(mBuffer.isNull()) ;
+
+	mBuffer = new LLVertexBuffer(immediate_mask, 0);
+	mBuffer->allocateBuffer(4096, 0, TRUE);
+	mBuffer->getVertexStrider(mVerticesp);
+	mBuffer->getTexCoord0Strider(mTexcoordsp);
+	mBuffer->getColorStrider(mColorsp);
+}
+
 void LLRender::shutdown()
 {
 	for (U32 i = 0; i < mTexUnits.size(); i++)
@@ -941,6 +991,7 @@ void LLRender::shutdown()
 		delete mLightState[i];
 	}
 	mLightState.clear();
+	mBuffer = NULL ;
 }
 
 void LLRender::refreshState(void)
@@ -1047,6 +1098,10 @@ void LLRender::setSceneBlendType(eBlendType type)
 void LLRender::setAlphaRejectSettings(eCompareFunc func, F32 value)
 {
 	flush();
+	if (LLGLSLShader::sNoFixedFunction)
+	{ //glAlphaFunc is deprecated in OpenGL 3.3
+		return;
+	}
 
 	if (mCurrAlphaFunc != func ||
 		mCurrAlphaFuncVal != value)
@@ -1060,6 +1115,30 @@ void LLRender::setAlphaRejectSettings(eCompareFunc func, F32 value)
 		else
 		{
 			glAlphaFunc(sGLCompareFunc[func], value);
+		}
+	}
+
+	if (gDebugGL)
+	{ //make sure cached state is correct
+		GLint cur_func = 0;
+		glGetIntegerv(GL_ALPHA_TEST_FUNC, &cur_func);
+		
+		if (func == CF_DEFAULT)
+		{
+			func = CF_GREATER;
+		}
+		
+		if (cur_func != sGLCompareFunc[func])
+		{
+			llerrs << "Alpha test function corrupted!" << llendl;
+		}
+		
+		F32 ref = 0.f;
+		glGetFloatv(GL_ALPHA_TEST_REF, &ref);
+		
+		if (ref != value)
+		{
+			llerrs << "Alpha test value corrupted!" << llendl;
 		}
 	}
 }

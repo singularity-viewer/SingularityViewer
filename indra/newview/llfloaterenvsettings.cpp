@@ -79,11 +79,11 @@ void LLFloaterEnvSettings::initCallbacks(void)
 	childSetCommitCallback("EnvTimeSlider", onChangeDayTime, NULL);
 	childSetCommitCallback("EnvCloudSlider", onChangeCloudCoverage, NULL);
 	childSetCommitCallback("EnvWaterFogSlider", onChangeWaterFogDensity, 
-		&LLWaterParamManager::instance()->mFogDensity);	
+		&LLWaterParamManager::getInstance()->mFogDensity);	
 
 	// color picker
 	childSetCommitCallback("EnvWaterColor", onChangeWaterColor, 
-		&LLWaterParamManager::instance()->mFogColor);
+		&LLWaterParamManager::getInstance()->mFogColor);
 
 	// WL Top
 	childSetAction("EnvAdvancedSkyButton", onOpenAdvancedSky, NULL);
@@ -102,7 +102,7 @@ void LLFloaterEnvSettings::syncMenu()
 	sldr = sEnvSettings->getChild<LLSliderCtrl>("EnvTimeSlider");
 
 	// sync the clock
-	F32 val = (F32)LLWLParamManager::instance()->mAnimator.getDayTime();
+	F32 val = (F32)LLWLParamManager::getInstance()->mAnimator.getDayTime();
 	std::string timeStr = timeToString(val);
 
 	LLTextBox* textBox;
@@ -120,9 +120,9 @@ void LLFloaterEnvSettings::syncMenu()
 
 	// sync cloud coverage
 	bool err;
-	childSetValue("EnvCloudSlider", LLWLParamManager::instance()->mCurParams.getFloat("cloud_shadow", err));
+	childSetValue("EnvCloudSlider", LLWLParamManager::getInstance()->mCurParams.getFloat("cloud_shadow", err));
 
-	LLWaterParamManager * param_mgr = LLWaterParamManager::instance();
+	LLWaterParamManager * param_mgr = LLWaterParamManager::getInstance();
 	// sync water params
 	LLColor4 col = param_mgr->getFogColor();
 	LLColorSwatchCtrl* colCtrl = sEnvSettings->getChild<LLColorSwatchCtrl>("EnvWaterColor");
@@ -133,7 +133,7 @@ void LLFloaterEnvSettings::syncMenu()
 	param_mgr->setDensitySliderValue(param_mgr->mFogDensity.mExp);
 
 	// turn off Use Estate Time button if it's already being used
-	if(LLWLParamManager::instance()->mAnimator.mUseLindenTime)
+	if(LLWLParamManager::getInstance()->mAnimator.mUseLindenTime)
 	{
 		childDisable("EnvUseEstateTimeButton");
 	} else {
@@ -197,7 +197,7 @@ bool LLFloaterEnvSettings::isOpen()
 {
 	if (sEnvSettings != NULL) 
 	{
-		return true;
+		return sEnvSettings->getVisible();
 	}
 	return false;
 }
@@ -218,8 +218,8 @@ void LLFloaterEnvSettings::onChangeDayTime(LLUICtrl* ctrl, void* userData)
 	sldr = sEnvSettings->getChild<LLSliderCtrl>("EnvTimeSlider");
 
 	// deactivate animator
-	LLWLParamManager::instance()->mAnimator.mIsRunning = false;
-	LLWLParamManager::instance()->mAnimator.mUseLindenTime = false;
+	LLWLParamManager::getInstance()->mAnimator.mIsRunning = false;
+	LLWLParamManager::getInstance()->mAnimator.mUseLindenTime = false;
 
 	F32 val = sldr->getValueF32() + 0.25f;
 	if(val > 1.0) 
@@ -227,9 +227,9 @@ void LLFloaterEnvSettings::onChangeDayTime(LLUICtrl* ctrl, void* userData)
 		val--;
 	}
 
-	LLWLParamManager::instance()->mAnimator.setDayTime((F64)val);
-	LLWLParamManager::instance()->mAnimator.update(
-		LLWLParamManager::instance()->mCurParams);
+	LLWLParamManager::getInstance()->mAnimator.setDayTime((F64)val);
+	LLWLParamManager::getInstance()->mAnimator.update(
+		LLWLParamManager::getInstance()->mCurParams);
 }
 
 void LLFloaterEnvSettings::onChangeCloudCoverage(LLUICtrl* ctrl, void* userData)
@@ -238,11 +238,11 @@ void LLFloaterEnvSettings::onChangeCloudCoverage(LLUICtrl* ctrl, void* userData)
 	sldr = sEnvSettings->getChild<LLSliderCtrl>("EnvCloudSlider");
 	
 	// deactivate animator
-	//LLWLParamManager::instance()->mAnimator.mIsRunning = false;
-	//LLWLParamManager::instance()->mAnimator.mUseLindenTime = false;
+	//LLWLParamManager::getInstance()->mAnimator.mIsRunning = false;
+	//LLWLParamManager::getInstance()->mAnimator.mUseLindenTime = false;
 
 	F32 val = sldr->getValueF32();
-	LLWLParamManager::instance()->mCurParams.set("cloud_shadow", val);
+	LLWLParamManager::getInstance()->mCurParams.set("cloud_shadow", val);
 }
 
 void LLFloaterEnvSettings::onChangeWaterFogDensity(LLUICtrl* ctrl, void* userData)
@@ -259,10 +259,10 @@ void LLFloaterEnvSettings::onChangeWaterFogDensity(LLUICtrl* ctrl, void* userDat
 	
 	F32 val = sldr->getValueF32();
 	expFloatControl->mExp = val;
-	LLWaterParamManager::instance()->setDensitySliderValue(val);
+	LLWaterParamManager::getInstance()->setDensitySliderValue(val);
 
-	expFloatControl->update(LLWaterParamManager::instance()->mCurParams);
-	LLWaterParamManager::instance()->propagateParameters();
+	expFloatControl->update(LLWaterParamManager::getInstance()->mCurParams);
+	LLWaterParamManager::getInstance()->propagateParameters();
 }
 
 void LLFloaterEnvSettings::onChangeWaterColor(LLUICtrl* ctrl, void* userData)
@@ -271,8 +271,8 @@ void LLFloaterEnvSettings::onChangeWaterColor(LLUICtrl* ctrl, void* userData)
 	WaterColorControl * colorControl = static_cast<WaterColorControl *>(userData);	
 	*colorControl = swatch->get();
 
-	colorControl->update(LLWaterParamManager::instance()->mCurParams);
-	LLWaterParamManager::instance()->propagateParameters();
+	colorControl->update(LLWaterParamManager::getInstance()->mCurParams);
+	LLWaterParamManager::getInstance()->propagateParameters();
 }
 
 
@@ -290,7 +290,7 @@ void LLFloaterEnvSettings::onSubmitWindlight(void* userData)
 {
 	Meta7WindlightPacket * wl = new Meta7WindlightPacket();
 
-	LLWaterParamManager * param_mgr = LLWaterParamManager::instance();
+	LLWaterParamManager * param_mgr = LLWaterParamManager::getInstance();
 	wl->reflectionWaveletScale.X = param_mgr->mNormalScale.mX;
 	wl->reflectionWaveletScale.Y = param_mgr->mNormalScale.mY;
 	wl->reflectionWaveletScale.Z = param_mgr->mNormalScale.mZ;
@@ -311,8 +311,8 @@ void LLFloaterEnvSettings::onUseEstateTime(void* userData)
 		box->selectByValue("");
 	}
 
-	LLWLParamManager::instance()->mAnimator.mIsRunning = true;
-	LLWLParamManager::instance()->mAnimator.mUseLindenTime = true;
+	LLWLParamManager::getInstance()->mAnimator.mIsRunning = true;
+	LLWLParamManager::getInstance()->mAnimator.mUseLindenTime = true;
 }
 
 std::string LLFloaterEnvSettings::timeToString(F32 curTime)

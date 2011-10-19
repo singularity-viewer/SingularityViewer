@@ -45,7 +45,7 @@
 //-----------------------------------------------------------------------------
 LLViewerVisualParamInfo::LLViewerVisualParamInfo()
 	:
-	mWearableType( WT_INVALID ),
+	mWearableType( LLWearableType::WT_INVALID ),
 	mCamDist( 0.5f ),
 	mCamAngle( 0.f ),
 	mCamElevation( 0.f ),
@@ -76,7 +76,7 @@ BOOL LLViewerVisualParamInfo::parseXml(LLXmlTreeNode *node)
 	static LLStdStringHandle wearable_string = LLXmlTree::addAttributeString("wearable");
 	if( node->getFastAttributeString( wearable_string, wearable) )
 	{
-		mWearableType = LLWearable::typeNameToType( wearable );
+		mWearableType = LLWearableType::typeNameToType( wearable );
 	}
 
 	static LLStdStringHandle edit_group_string = LLXmlTree::addAttributeString("edit_group");

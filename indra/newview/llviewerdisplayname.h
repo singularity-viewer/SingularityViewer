@@ -23,9 +23,7 @@
  * Linden Research, Inc., 945 Battery Street, San Francisco, CA  94111  USA
  * $/LicenseInfo$
  */
-/*
-Ported to Phoenix by Wolfspirit Magic.
-*/
+
 #ifndef LLVIEWERDISPLAYNAME_H
 #define LLVIEWERDISPLAYNAME_H
 

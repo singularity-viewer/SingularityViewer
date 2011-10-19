@@ -9,6 +9,7 @@
 #include "llcheckboxctrl.h"
 #include "statemachine/aifilepicker.h"
 #include "llviewerwindow.h"
+#include "llwindow.h"
 #include "llviewercontrol.h"
 #include "lldate.h"
 #include "llagent.h"

@@ -56,6 +56,7 @@
 #include "llfloaterworldmap.h"
 #include "llhudtext.h"
 #include "llhudview.h"
+#include "llinventorydefines.h"
 #include "llinventorymodel.h"
 #include "lllandmarklist.h"
 #include "llsky.h"

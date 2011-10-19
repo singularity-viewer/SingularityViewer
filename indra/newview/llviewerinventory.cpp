@@ -33,6 +33,7 @@
 #include "llviewerprecompiledheaders.h"
 #include "llviewerinventory.h"
 
+#include "llnotificationsutil.h"
 #include "message.h"
 #include "indra_constants.h"
 
@@ -46,6 +47,7 @@
 #include "llgesturemgr.h"
 
 #include "llinventorybridge.h"
+#include "llinventorydefines.h"
 #include "llinventoryview.h"
 
 #include "llviewerregion.h"
@@ -192,7 +194,7 @@ void LLViewerInventoryItem::updateServer(BOOL is_new) const
 		// *FIX: deal with this better.
 		llwarns << "LLViewerInventoryItem::updateServer() - for incomplete item"
 			   << llendl;
-	 	LLNotifications::instance().add("IncompleteInventoryItem");
+	 	LLNotificationsUtil::add("IncompleteInventoryItem");
 		return;
 	}
 	LLInventoryModel::LLCategoryUpdate up(mParentUUID, is_new ? 1 : 0);
@@ -360,29 +362,13 @@ void LLViewerInventoryItem::updateParentOnServer(BOOL restamp) const
 //	return mClones;
 //}
 
-// [RLVa:KB] - Checked: 2010-09-27 (RLVa-1.1.3a) | Added: RLVa-1.1.3a
-bool LLViewerInventoryItem::isWearableType() const
-{
-	return (getInventoryType() == LLInventoryType::IT_WEARABLE);
-}
-
-EWearableType LLViewerInventoryItem::getWearableType() const
-{
-	if (!isWearableType())
-	{
-		return WT_INVALID;
-	}
-	return EWearableType(getFlags() & LLInventoryItemFlags::II_FLAGS_WEARABLES_MASK);
-}
-// [/RLVa:KB]
-
 ///----------------------------------------------------------------------------
 /// Class LLViewerInventoryCategory
 ///----------------------------------------------------------------------------
 
 LLViewerInventoryCategory::LLViewerInventoryCategory(const LLUUID& uuid,
 													 const LLUUID& parent_uuid,
-													 LLAssetType::EType pref,
+													 LLFolderType::EType pref,
 													 const std::string& name,
 													 const LLUUID& owner_id) :
 	LLInventoryCategory(uuid, parent_uuid, pref, name),
@@ -390,7 +376,7 @@ LLViewerInventoryCategory::LLViewerInventoryCategory(const LLUUID& uuid,
 	mVersion(LLViewerInventoryCategory::VERSION_UNKNOWN),
 	mDescendentCount(LLViewerInventoryCategory::DESCENDENT_COUNT_UNKNOWN)
 {
-	mDescendentsRequested.reset();
+	mDescendentsRequested.stop();
 }
 
 LLViewerInventoryCategory::LLViewerInventoryCategory(const LLUUID& owner_id) :
@@ -398,7 +384,7 @@ LLViewerInventoryCategory::LLViewerInventoryCategory(const LLUUID& owner_id) :
 	mVersion(LLViewerInventoryCategory::VERSION_UNKNOWN),
 	mDescendentCount(LLViewerInventoryCategory::DESCENDENT_COUNT_UNKNOWN)
 {
-	mDescendentsRequested.reset();
+	mDescendentsRequested.stop();
 }
 
 LLViewerInventoryCategory::LLViewerInventoryCategory(const LLViewerInventoryCategory* other)
@@ -441,9 +427,10 @@ void LLViewerInventoryCategory::updateParentOnServer(BOOL restamp) const
 void LLViewerInventoryCategory::updateServer(BOOL is_new) const
 {
 	// communicate that change with the server.
-	if ( (LLAssetType::AT_NONE != mPreferredType) && (LLAssetType::AT_OUTFIT != mPreferredType) )
+
+	if (LLFolderType::lookupIsProtectedType(mPreferredType))
 	{
-		LLNotifications::instance().add("CannotModifyProtectedCategories");
+		LLNotificationsUtil::add("CannotModifyProtectedCategories");
 		return;
 	}
 
@@ -465,9 +452,9 @@ void LLViewerInventoryCategory::removeFromServer( void )
 	llinfos << "Removing inventory category " << mUUID << " from server."
 			<< llendl;
 	// communicate that change with the server.
-	if ( (LLAssetType::AT_NONE != mPreferredType) && (LLAssetType::AT_OUTFIT != mPreferredType) )
+	if(LLFolderType::lookupIsProtectedType(mPreferredType))
 	{
-		LLNotifications::instance().add("CannotRemoveProtectedCategories");
+		LLNotificationsUtil::add("CannotRemoveProtectedCategories");
 		return;
 	}
 
@@ -489,12 +476,12 @@ bool LLViewerInventoryCategory::fetchDescendents()
 	// <edit>
 	if((mUUID == gSystemFolderRoot) || (gInventory.isObjectDescendentOf(mUUID, gSystemFolderRoot))) return false;
 	// </edit>
-	if((VERSION_UNKNOWN == mVersion)
-	   && mDescendentsRequested.hasExpired())	//Expired check prevents multiple downloads.
+	if (VERSION_UNKNOWN == mVersion &&
+	    (!mDescendentsRequested.getStarted() ||
+		 mDescendentsRequested.hasExpired()))	// Expired check prevents multiple downloads.
 	{
 		const F32 FETCH_TIMER_EXPIRY = 10.0f;
-		mDescendentsRequested.reset();
-		mDescendentsRequested.setTimerExpirySec(FETCH_TIMER_EXPIRY);
+		mDescendentsRequested.start(FETCH_TIMER_EXPIRY);
 
 		// bitfield
 		// 1 = by date
@@ -524,7 +511,7 @@ bool LLViewerInventoryCategory::fetchDescendents()
 		}
 		else
 		{	//Deprecated, but if we don't have a capability, use the old system.
-			llinfos << "FetchInventoryDescendents capability not found.  Using deprecated UDP message." << llendl;
+			//llinfos << "FetchInventoryDescendents capability not found.  Using deprecated UDP message." << llendl;
 			LLMessageSystem* msg = gMessageSystem;
 			msg->newMessage("FetchInventoryDescendents");
 			msg->nextBlock("AgentData");
@@ -584,7 +571,7 @@ bool LLViewerInventoryCategory::importFileLocal(LLFILE* fp)
 		}
 		else if(0 == strcmp("pref_type", keyword))
 		{
-			mPreferredType = LLAssetType::lookup(valuestr);
+			mPreferredType = LLFolderType::lookup(valuestr);
 		}
 		else if(0 == strcmp("name", keyword))
 		{
@@ -622,7 +609,7 @@ bool LLViewerInventoryCategory::exportFileLocal(LLFILE* fp) const
 	mParentUUID.toString(uuid_str);
 	fprintf(fp, "\t\tparent_id\t%s\n", uuid_str.c_str());
 	fprintf(fp, "\t\ttype\t%s\n", LLAssetType::lookup(mType));
-	fprintf(fp, "\t\tpref_type\t%s\n", LLAssetType::lookup(mPreferredType));
+	fprintf(fp, "\t\tpref_type\t%s\n", LLFolderType::lookup(mPreferredType).c_str());
 	fprintf(fp, "\t\tname\t%s|\n", mName.c_str());
 	mOwnerID.toString(uuid_str);
 	fprintf(fp, "\t\towner_id\t%s\n", uuid_str.c_str());
@@ -719,13 +706,12 @@ void RezAttachmentCallback::fire(const LLUUID& inv_item)
 	}
 }
 
-extern LLGestureManager gGestureManager;
 void ActivateGestureCallback::fire(const LLUUID& inv_item)
 {
 	if (inv_item.isNull())
 		return;
 
-	gGestureManager.activateGesture(inv_item);
+	LLGestureMgr::instance().activateGesture(inv_item);
 }
 
 void CreateGestureCallback::fire(const LLUUID& inv_item)
@@ -733,7 +719,7 @@ void CreateGestureCallback::fire(const LLUUID& inv_item)
 	if (inv_item.isNull())
 		return;
 
-	gGestureManager.activateGesture(inv_item);
+	LLGestureMgr::instance().activateGesture(inv_item);
 	
 	LLViewerInventoryItem* item = gInventory.getItem(inv_item);
 	if (!item) return;
@@ -754,7 +740,7 @@ void create_inventory_item(const LLUUID& agent_id, const LLUUID& session_id,
 						   const LLUUID& parent, const LLTransactionID& transaction_id,
 						   const std::string& name,
 						   const std::string& desc, LLAssetType::EType asset_type,
-						   LLInventoryType::EType inv_type, EWearableType wtype,
+						   LLInventoryType::EType inv_type, LLWearableType::EType wtype,
 						   U32 next_owner_perm,
 						   LLPointer<LLInventoryCallback> cb)
 {
@@ -906,15 +892,19 @@ public:
 
 void copy_inventory_from_notecard(const LLUUID& object_id, const LLUUID& notecard_inv_id, const LLInventoryItem *src, U32 callback_id)
 {
-	LLSD body;
-	LLViewerRegion* viewer_region = NULL;
-	if(object_id.notNull())
+	if (NULL == src)
 	{
-		LLViewerObject* vo = gObjectList.findObject(object_id);
-		if(vo)
-		{
-			viewer_region = vo->getRegion();
-		}
+		LL_WARNS("copy_inventory_from_notecard") << "Null pointer to item was passed for object_id "
+												 << object_id << " and notecard_inv_id "
+												 << notecard_inv_id << LL_ENDL;
+		return;
+	}
+
+	LLViewerRegion* viewer_region = NULL;
+    LLViewerObject* vo = NULL;
+	if (object_id.notNull() && (vo = gObjectList.findObject(object_id)) != NULL)
+    {
+        viewer_region = vo->getRegion();
 	}
 
 	// Fallback to the agents region if for some reason the 
@@ -924,20 +914,32 @@ void copy_inventory_from_notecard(const LLUUID& object_id, const LLUUID& notecar
 		viewer_region = gAgent.getRegion();
 	}
 
-	if(viewer_region)
+	if (! viewer_region)
 	{
-		std::string url = viewer_region->getCapability("CopyInventoryFromNotecard");
-		if (!url.empty())
-		{
-			body["notecard-id"] = notecard_inv_id;
-			body["object-id"] = object_id;
-			body["item-id"] = src->getUUID();
-			body["folder-id"] = gInventory.findCategoryUUIDForType(src->getType());
-			body["callback-id"] = (LLSD::Integer)callback_id;
+        LL_WARNS("copy_inventory_from_notecard") << "Can't find region from object_id "
+                                                 << object_id << " or gAgent"
+                                                 << LL_ENDL;
+        return;
+    }
 
-			LLHTTPClient::post(url, body, new LLCopyInventoryFromNotecardResponder());
-		}
+	// check capability to prevent a crash while LL_ERRS in LLCapabilityListener::capListener. See EXT-8459.
+	std::string url = viewer_region->getCapability("CopyInventoryFromNotecard");
+	if (url.empty())
+	{
+        LL_WARNS("copy_inventory_from_notecard") << "There is no 'CopyInventoryFromNotecard' capability"
+												 << " for region: " << viewer_region->getName()
+                                                 << LL_ENDL;
+		return;
 	}
+
+    LLSD request, body;
+    body["notecard-id"] = notecard_inv_id;
+    body["object-id"] = object_id;
+    body["item-id"] = src->getUUID();
+	body["folder-id"] = gInventory.findCategoryUUIDForType(LLFolderType::assetTypeToFolderType(src->getType()));
+    body["callback-id"] = (LLSD::Integer)callback_id;
+
+	LLHTTPClient::post(url, body, new LLCopyInventoryFromNotecardResponder());
 }
 
 
@@ -964,6 +966,22 @@ const LLUUID& LLViewerInventoryItem::getAssetUUID() const
 	return LLInventoryItem::getAssetUUID();
 }
 
+
+const bool LLViewerInventoryItem::getIsFullPerm() const
+{
+	LLPermissions item_permissions = getPermissions();
+
+	// modify-ok & copy-ok & transfer-ok
+	return ( item_permissions.allowOperationBy(PERM_MODIFY,
+						   gAgent.getID(),
+						   gAgent.getGroupID()) &&
+		 item_permissions.allowOperationBy(PERM_COPY,
+						   gAgent.getID(),
+						   gAgent.getGroupID()) &&
+		 item_permissions.allowOperationBy(PERM_TRANSFER,
+						   gAgent.getID(),
+						   gAgent.getGroupID()) );
+}
 const std::string& LLViewerInventoryItem::getName() const
 {
 	if (const LLViewerInventoryItem *linked_item = getLinkedItem())
@@ -1040,6 +1058,30 @@ U32 LLViewerInventoryItem::getFlags() const
 	return LLInventoryItem::getFlags();
 }
 
+bool LLViewerInventoryItem::isWearableType() const
+{
+	return (getInventoryType() == LLInventoryType::IT_WEARABLE);
+}
+
+LLWearableType::EType LLViewerInventoryItem::getWearableType() const
+{
+	if (!isWearableType())
+	{
+		return LLWearableType::WT_INVALID;
+	}
+	return LLWearableType::EType(getFlags() & LLInventoryItemFlags::II_FLAGS_WEARABLES_MASK);
+}
+
+
+time_t LLViewerInventoryItem::getCreationDate() const
+{
+	return LLInventoryItem::getCreationDate();
+}
+
+U32 LLViewerInventoryItem::getCRC32() const
+{
+	return LLInventoryItem::getCRC32();	
+}
 
 // This returns true if the item that this item points to 
 // doesn't exist in memory (i.e. LLInventoryModel).  The baseitem
@@ -1075,4 +1117,46 @@ LLViewerInventoryCategory *LLViewerInventoryItem::getLinkedCategory() const
 		return linked_category;
 	}
 	return NULL;
+}
+
+bool LLViewerInventoryItem::checkPermissionsSet(PermissionMask mask) const
+{
+	const LLPermissions& perm = getPermissions();
+	PermissionMask curr_mask = PERM_NONE;
+	if(perm.getOwner() == gAgent.getID())
+	{
+		curr_mask = perm.getMaskBase();
+	}
+	else if(gAgent.isInGroup(perm.getGroup()))
+	{
+		curr_mask = perm.getMaskGroup();
+	}
+	else
+	{
+		curr_mask = perm.getMaskEveryone();
+	}
+	return ((curr_mask & mask) == mask);
+}
+
+PermissionMask LLViewerInventoryItem::getPermissionMask() const
+{
+	const LLPermissions& permissions = getPermissions();
+
+	BOOL copy = permissions.allowCopyBy(gAgent.getID());
+	BOOL mod = permissions.allowModifyBy(gAgent.getID());
+	BOOL xfer = permissions.allowOperationBy(PERM_TRANSFER, gAgent.getID());
+	PermissionMask perm_mask = 0;
+	if (copy) perm_mask |= PERM_COPY;
+	if (mod)  perm_mask |= PERM_MODIFY;
+	if (xfer) perm_mask |= PERM_TRANSFER;
+	return perm_mask;
+}
+
+//----------
+
+void LLViewerInventoryItem::onCallingCardNameLookup(const LLUUID& id, const std::string& name, bool is_group)
+{
+	rename(name);
+	gInventory.addChangedMask(LLInventoryObserver::LABEL, getUUID());
+	gInventory.notifyObservers();
 }

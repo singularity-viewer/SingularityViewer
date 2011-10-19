@@ -41,7 +41,6 @@
 S32 COL_1_WIDTH = 200;
 
 static std::string sOnlineDescriptor = "*";
-static std::string sNameFormat = "[FIRST] [LAST]";
 
 LLFloaterNewIM::LLFloaterNewIM()
 {
@@ -69,7 +68,6 @@ BOOL LLFloaterNewIM::postBuild()
 			llwarns << "LLUICtrlFactory::getNameListByName() returned NULL for 'user_list'" << llendl;
 		}
 		sOnlineDescriptor = getString("online_descriptor");
-		sNameFormat = getString("name_format");
 		setDefaultBtn("start_btn");
 		return TRUE;
 	}	
@@ -135,11 +133,8 @@ void LLFloaterNewIM::addGroup(const LLUUID& uuid, void* data, BOOL bold, BOOL on
 
 void LLFloaterNewIM::addAgent(const LLUUID& uuid, void* data, BOOL online)
 {
-	std::string first, last;
-	gCacheName->getName(uuid, first, last);
-	LLUIString fullname = sNameFormat;
-	fullname.setArg("[FIRST]", first);
-	fullname.setArg("[LAST]", last);
+	std::string fullname;
+	gCacheName->getFullName(uuid, fullname);
 
 	LLSD row;
 	row["id"] = uuid;

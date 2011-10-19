@@ -51,13 +51,14 @@ public:
 	 */
 public:
 	static void show(void*);
-	static void onAvatarNameLookup(const LLUUID& uuid, const std::string& strFirst, const std::string& strLast, BOOL fGroup, void* pParam);
+	void onAvatarNameLookup(const LLUUID& uuid);
 protected:
 	void refreshAll();
 private:
 	RlvFloaterBehaviour(const LLSD& key = LLSD());
 
-	std::list<LLUUID> m_PendingLookup;
+public:
+	std::map<LLUUID,boost::signals2::connection> m_PendingLookup;	//Have to hold a signal so we can remove it later.
 };
 
 // ============================================================================

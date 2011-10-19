@@ -103,8 +103,7 @@ void LLFloaterVFS::reloadEntry(entry file)
 	gVFS->removeFile(file.mID, file.mType);
 	std::string file_name = file.mFilename;
 	S32 file_size;
-	LLAPRFile fp;
-	fp.open(file_name, LL_APR_RB, LLAPRFile::global, &file_size);
+	LLAPRFile fp(file_name, LL_APR_RB, &file_size);
 	if(fp.getFileHandle())
 	{
 		LLVFile file(gVFS, asset_id, asset_type, LLVFile::WRITE);
@@ -256,8 +255,7 @@ void LLFloaterVFS::onClickAdd_continued(void* user_data, AIFilePicker* filepicke
 		LLUUID asset_id;
 		asset_id.generate();
 		S32 file_size;
-		LLAPRFile fp;
-		fp.open(temp_filename, LL_APR_RB, LLAPRFile::global, &file_size);
+		LLAPRFile fp(temp_filename, LL_APR_RB, &file_size);
 		if(fp.getFileHandle())
 		{
 			if(asset_type == LLAssetType::AT_TEXTURE)

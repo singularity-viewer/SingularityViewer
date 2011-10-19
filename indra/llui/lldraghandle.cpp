@@ -255,7 +255,8 @@ void LLDragHandleTop::reshapeTitleBox()
 		getRect().getWidth() - LEFT_PAD - RIGHT_PAD,
 		title_height);
 
-	getTitleBox()->setRect( title_rect );
+	// calls reshape on mTitleBox
+	getTitleBox()->setShape( title_rect );
 }
 
 void LLDragHandleTop::reshape(S32 width, S32 height, BOOL called_from_parent)
@@ -337,14 +338,14 @@ BOOL LLDragHandle::handleHover(S32 x, S32 y, MASK mask)
 
 		LLView* snap_view = getParent()->findSnapRect(new_rect, mouse_dir, SNAP_PARENT_AND_SIBLINGS, sSnapMargin);
 
-		getParent()->snappedTo(snap_view);
+		getParent()->setSnappedTo(snap_view);
 		delta_x = new_rect.mLeft - pre_snap_x;
 		delta_y = new_rect.mBottom - pre_snap_y;
 		translated_rect.translate(delta_x, delta_y);
 
 		// restore original rect so delta are detected, then call user reshape method to handle snapped floaters, etc
 		getParent()->setRect(original_rect);
-		getParent()->userSetShape(translated_rect);
+		getParent()->setShape(translated_rect,true);
 
 		mDragLastScreenX += delta_x;
 		mDragLastScreenY += delta_y;

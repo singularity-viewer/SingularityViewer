@@ -3,43 +3,48 @@
 <map>
     <key>installables</key>
     <map>
-      <key>GL</key>
+      <key>glext</key>
       <map>
         <key>copyright</key>
-        <string>Copyright (c) 1991-2000 Silicon Graphics, Inc.</string>
+        <string>Copyright (c) 2007-2010 Khronos Group Inc.</string>
         <key>description</key>
-        <string>A standard for 3D Graphics rendering engine.</string>
+        <string>OpenGL Extension Header Files</string>
         <key>license</key>
-        <string>GL</string>
+        <string>glext</string>
         <key>packages</key>
         <map>
-          <key>darwin</key>
-          <map>
-            <key>md5sum</key>
-            <string>0bd2795a2afe09f6c563f2f888f24cc9</string>
-            <key>url</key>
-            <uri>http://s3.amazonaws.com/viewer-source-downloads/install_pkgs/GL-darwin-20080613.tar.bz2</uri>
-          </map>
           <key>linux</key>
           <map>
             <key>md5sum</key>
-            <string>2ab29212a7f3acdaebf10059af816be0</string>
+            <string>2fc9a86782ec8dcc719ddc78026e7ba2</string>
             <key>url</key>
-            <uri>http://s3.amazonaws.com/viewer-source-downloads/install_pkgs/GL-linux-20080812.tar.bz2</uri>
-          </map>
-          <key>linux64</key>
-          <map>
-            <key>md5sum</key>
-            <string>9c3dff3817f1105f9054401fdef1fe50</string>
-            <key>url</key>
-            <uri>http://s3.amazonaws.com/viewer-source-downloads/install_pkgs/GL-linux64-20080909.tar.bz2</uri>
+            <uri>https://github.com/downloads/siana/SingularityViewer/glext-68-win32-linux.tar.bz2</uri>
           </map>
           <key>windows</key>
           <map>
             <key>md5sum</key>
-            <string>91155239b02f576384603795d41eb971</string>
+            <string>2fc9a86782ec8dcc719ddc78026e7ba2</string>
             <key>url</key>
-            <uri>http://s3.amazonaws.com/viewer-source-downloads/install_pkgs/GL-windows-20090505.tar.bz2</uri>
+            <uri>https://github.com/downloads/siana/SingularityViewer/glext-68-win32-linux.tar.bz2</uri>
+          </map>
+        </map>
+      </map>
+	  <key>freeglut</key>
+      <map>
+        <key>copyright</key>
+        <string>Copyright (c) 1999-2000 Pawel W. Olszta.</string>
+        <key>description</key>
+        <string>OpenSource alternative to OpenGL Utility Toolkit</string>
+        <key>license</key>
+        <string>freeglut</string>
+        <key>packages</key>
+        <map>
+          <key>windows</key>
+          <map>
+            <key>md5sum</key>
+            <string>fefd6b548d677a60a198e50d9326d939</string>
+            <key>url</key>
+            <uri>https://github.com/downloads/Shyotl/SingularityViewer/freeglut-2.6.0-win32.tar.bz2</uri>
           </map>
         </map>
       </map>
@@ -403,9 +408,9 @@
           <key>darwin</key>
           <map>
             <key>md5sum</key>
-            <string>694173293a483c01472a30cc7d895c5a</string>
+            <string>a9ab0e2910e1a8fe06a2a42ffdc8b7da</string>
             <key>url</key>
-            <uri>http://s3.amazonaws.com/viewer-source-downloads/install_pkgs/freetype-2.1.5-darwin-20080812.tar.bz2</uri>
+			<uri>https://github.com/siana-osx/SingularityViewer/downloads/freetype-2.4.4-darwin-20110705.tar.bz2</uri>
           </map>
           <key>linux</key>
           <map>
@@ -539,16 +544,16 @@
           <key>linux</key>
           <map>
             <key>md5sum</key>
-            <string>1d7acbc5b578b3b5cfc739d2f454b18c</string>
+            <string>b190d8a0dce8dd8b514d2adb2c74b8d8</string>
             <key>url</key>
-            <uri>https://github.com/downloads/siana/SingularityViewer/google-linux-110103.tar.bz2</uri>
+			<uri>http://sldev.free.fr/libraries/google-perftools-1.8.3-linux-20110924.tar.bz2</uri>
           </map>
           <key>windows</key>
           <map>
             <key>md5sum</key>
-            <string>571a398f5b3f65ba2c02f48df843cc97</string>
+            <string>4f787437a5e063ccde6637dfb1ebc01d</string>
             <key>url</key>
-            <uri>https://github.com/downloads/siana/SingularityViewer/tcmalloc-1.7-min-20110507.tar.bz2</uri>
+			<uri>https://bitbucket.org/Ansariel/phoenix-prebuilts/downloads/google_perftools-1.8-windows-20111005.tar.bz2</uri>
           </map>
         </map>
       </map>
@@ -922,9 +927,9 @@ anguage Infrstructure (CLI) international standard</string>
           <key>linux</key>
           <map>
             <key>md5sum</key>
-            <string>5d743c93b970abe685b185de83001a6e</string>
+            <string>6e422a3548597a043223de9e9384c734</string>
             <key>url</key>
-            <uri>http://s3.amazonaws.com/viewer-source-downloads/install_pkgs/llqtwebkit-linux-qt4.6-20100923.tar.bz2</uri>
+            <uri>https://github.com/downloads/siana/SingularityViewer/llqtwebkit-4.7.1-linux-20111013.tar.bz2</uri>
           </map>
           <key>windows</key>
           <map>
@@ -1330,10 +1335,61 @@ anguage Infrstructure (CLI) international standard</string>
         <key>url</key>
         <string>http://opensource-definition.org/licenses/afl-2.1.html</string>
       </map>
-      <key>GL</key>
+      <key>glext</key>
       <map>
-        <key>url</key>
-        <string>http://www.xfree86.org/4.4.0/LICENSE9.html#sgi</string>
+        <key>text</key>
+        <string>Copyright (c) 2007-2010 The Khronos Group Inc.
+
+Permission is hereby granted, free of charge, to any person obtaining a
+copy of this software and/or associated documentation files (the
+"Materials"), to deal in the Materials without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Materials, and to
+permit persons to whom the Materials are furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be included
+in all copies or substantial portions of the Materials.
+
+THE MATERIALS ARE PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+MATERIALS OR THE USE OR OTHER DEALINGS IN THE MATERIALS.
+        </string>
+      </map>
+      <key>freeglut</key>
+      <map>
+        <key>text</key>
+        <string>Freeglut Copyright
+------------------
+
+Freeglut code without an explicit copyright is covered by the following
+copyright:
+
+Copyright (c) 1999-2000 Pawel W. Olszta. All Rights Reserved.
+Permission is hereby granted, free of charge,  to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction,  including without limitation the rights
+to use, copy,  modify, merge,  publish, distribute,  sublicense,  and/or sell
+copies or substantial portions of the Software.
+
+The above  copyright notice  and this permission notice  shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE  IS PROVIDED "AS IS",  WITHOUT WARRANTY OF ANY KIND,  EXPRESS OR
+IMPLIED,  INCLUDING  BUT  NOT LIMITED  TO THE WARRANTIES  OF MERCHANTABILITY,
+FITNESS  FOR  A PARTICULAR PURPOSE  AND NONINFRINGEMENT.  IN  NO EVENT  SHALL
+PAWEL W. OLSZTA BE LIABLE FOR ANY CLAIM,  DAMAGES OR OTHER LIABILITY, WHETHER
+IN  AN ACTION  OF CONTRACT,  TORT OR OTHERWISE,  ARISING FROM,  OUT OF  OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+Except as contained in this notice,  the name of Pawel W. Olszta shall not be
+used  in advertising  or otherwise to promote the sale, use or other dealings
+in this Software without prior written authorization from Pawel W. Olszta.
+        </string>
       </map>
       <key>MSDTW</key>
       <map>

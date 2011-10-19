@@ -72,7 +72,12 @@ public:
 		FTM_UPDATE_GRASS,
 		FTM_UPDATE_TREE,
 		FTM_UPDATE_AVATAR,
-		
+#if MESH_ENABLED
+		FTM_UPDATE_RIGGED_VOLUME,
+		FTM_SKIN_RIGGED,
+		FTM_RIGGED_OCTREE,
+#endif //MESH_ENABLED
+
 		// common render components
 		FTM_SHADOW_GEOMETRY,
 		FTM_SHADOW_RENDER,
@@ -131,6 +136,12 @@ public:
 		FTM_STATESORT,
 		FTM_STATESORT_DRAWABLE,
 		FTM_STATESORT_POSTSORT,
+#if MESH_ENABLED
+		FTM_MESH_UPDATE,
+		FTM_MESH_LOCK1,
+		FTM_MESH_LOCK2,
+		FTM_LOAD_MESH_LOD,
+#endif //MESH_ENABLED
 		FTM_REBUILD_VBO,
 		FTM_REBUILD_VOLUME_VB,
 		FTM_REBUILD_BRIDGE_VB,
@@ -256,7 +267,6 @@ public:
 	static void reset();
 	static U64 countsPerSecond();
 
-	static std::string sClockType;
 public:
 	static int sCurDepth;
 	static U64 sStart[FTM_MAX_DEPTH];

@@ -70,14 +70,16 @@
 //   .-------. |   |
 //   |  Run  |_,   |		Call multiplex_impl() until idle(), abort() or finish() is called.
 //   '-------'     |
-//    |     |      |
-//    v     |      |
-//  Abort   |      |		Calls abort_impl().
-//    |     |      |
-//    v     v      |
-//    Finish       |		Calls finish_impl().
-//       |         |
-//       `---------'
+//    |    |       |
+//    v    |       |
+//  Abort  |       |		Calls abort_impl().
+//    |    |       |
+//    v    v       |
+//    Finish       |		Calls finish_impl(), which may call kill() and/or the callback
+//    |    |       |		function passed to run(), if any, which may call kill() and/or run().
+//    |    `-------'
+//    v
+//  Killed					Delete the statemachine (all statemachines must be allocated with new).
 //
 // Each state causes corresponding code to be called.
 // Finish cleans up whatever is done by Initialize.
@@ -92,6 +94,12 @@
 // A derived class can exit the Run state by calling one of two methods:
 // abort() in case of failure, or finish() in case of success.
 // Respectively these set the state to Abort and Finish.
+//
+// finish_impl may call kill() for a (default) destruction upon finish.
+// Even in that case the callback (passed to run()) may call run() again,
+// which overrides the request for a default kill. Or, if finish_impl
+// doesn't call kill() the callback may call kill() to request the
+// destruction of the state machine object.
 //
 // State machines are run from the "idle" part of the viewer main loop.
 // Often a state machine has nothing to do however. In that case it can
@@ -184,7 +192,7 @@ class AIStateMachine {
 	base_state_type mState;						//!< State of the base class.
 	bool mIdle;									//!< True if this state machine is not running.
 	bool mAborted;								//!< True after calling abort() and before calling run().
-	bool mQueued;							//!< True when the statemachine is queued to be added back to the active list.
+	bool mQueued;								//!< True when the statemachine is queued to be added back to the active list.
 	S64 mSleep;									//!< Non-zero while the state machine is sleeping.
 
 	// Callback facilities.

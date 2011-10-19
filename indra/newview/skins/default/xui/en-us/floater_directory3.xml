@@ -84,12 +84,12 @@
 			     name="search_editor" select_all_on_focus_received="false"
 			     select_on_focus="false" tab_group="1" tool_tip="Search Second Life"
 			     width="160" spell_check="true" />
-			<button bottom="-26" follows="top|right" font="SansSerifSmall" height="20" label="Back"
-			     left="230" name="back_btn" width="70" />
-			<button bottom="-26" follows="top|right" font="SansSerifSmall" height="20"
-			     label="Forward" left="304" name="forward_btn" width="70" />
-      <button bottom="-26" follows="top|right" font="SansSerifSmall" height="20"
-			     label="Reload" left="388" name="reload_btn" width="50" />
+			<button bottom="-26" follows="top|right" font="SansSerifSmall" height="25" 
+            label="" left="230" name="back_btn" width="25" image_overlay="go-previous-4.png"/>
+			<button bottom="-26" follows="top|right" font="SansSerifSmall" height="25"
+			     label="" left_delta="27" name="forward_btn" width="25" image_overlay="go-next-4.png" />
+      <button bottom="-26" follows="top|right" font="SansSerifSmall" height="25"
+			     label="" left_delta="27" name="reload_btn" width="25" image_overlay="view-refresh-5.png"/>
 			<button bottom="-48" follows="top|right" font="SansSerif" height="20"
 			     label="Search" left="121" name="search_btn" width="95" />
 			<combo_box allow_text_entry="false" bottom="-46" follows="right|top" height="18"
@@ -371,16 +371,21 @@
 		     width="778">
         <string name="searching_text">Searching...</string>
         <string name="not_found_text">None Found.</string>
-        <button bottom="-30" follows="top|left" font="SansSerifSmall" height="20"
-          label="Back"
+        <button bottom="-30" follows="top|left" font="SansSerifSmall" height="25"
+          label=""
+          image_overlay="go-previous-4.png"
           left="10"
-          name="back_btn" width="70" />
-        <button bottom_delta="0" follows="top|left" font="SansSerifSmall" height="20"
-          label="Forward" left_delta="75"
-          name="forward_btn" width="70" />
-        <button bottom_delta="0" follows="top|left" font="SansSerifSmall" height="20"
-         label="Reload" left_delta="85"
-         name="reload_btn" width="50" />
+          name="back_btn" width="25" />
+        <button bottom_delta="0" follows="top|left" font="SansSerifSmall" height="25"
+          label=""
+          image_overlay="go-next-4.png"
+          left_delta="27"
+          name="forward_btn" width="25" />
+        <button bottom_delta="0" follows="top|left" font="SansSerifSmall" height="25"
+         label=""
+         image_overlay="view-refresh-5.png"
+         left_delta="27"
+         name="reload_btn" width="25" />
         <!-- No mature content checkbox, showcase is all PG -->
         <web_browser name="showcase_browser"
           bottom="25"

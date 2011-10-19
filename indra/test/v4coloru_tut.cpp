@@ -140,7 +140,7 @@ namespace tut
 		U8 r = 0x12, g = 0xFF, b = 0xAF;
 		LLColor4U llcolor4u(r,g,b);
 		ensure("magVecSquared:Fail ", is_approx_equal(llcolor4u.magVecSquared(), (F32)(r*r + g*g + b*b)));
-		ensure("magVec:Fail ", is_approx_equal(llcolor4u.magVec(), fsqrtf(r*r + g*g + b*b)));
+		ensure("magVec:Fail ", is_approx_equal(llcolor4u.magVec(), (F32) sqrt(r*r + g*g + b*b)));
 	}
 
 	template<> template<>

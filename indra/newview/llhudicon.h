@@ -33,7 +33,7 @@
 #ifndef LL_LLHUDICON_H
 #define LL_LLHUDICON_H
 
-#include "llmemory.h"
+#include "llpointer.h"
 #include "lldarrayptr.h"
 
 #include "llhudobject.h"
@@ -58,7 +58,6 @@ friend class LLHUDObject;
 
 public:
 	/*virtual*/ void render();
-	/*virtual*/ void renderForSelect();
 	/*virtual*/ void markDead();
 	/*virtual*/ F32 getDistance() const { return mDistance; }
 

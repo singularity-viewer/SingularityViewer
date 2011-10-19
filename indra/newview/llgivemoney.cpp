@@ -188,9 +188,6 @@ LLFloaterPay::LLFloaterPay(const std::string& name,
 LLFloaterPay::~LLFloaterPay()
 {
 	std::for_each(mCallbackData.begin(), mCallbackData.end(), DeletePointer());
-
-	// Clean up if we are still waiting for a name.
-	gCacheName->cancelCallback(mTargetUUID,onCacheOwnerName,this);
 }
 
 // static
@@ -391,7 +388,7 @@ void LLFloaterPay::payDirectly(money_callback callback,
 	
 void LLFloaterPay::finishPayUI(const LLUUID& target_id, BOOL is_group)
 {
-	gCacheName->get(target_id, is_group, onCacheOwnerName, (void*)this);
+	mNameConnection = gCacheName->get(target_id, is_group, boost::bind(&LLFloaterPay::onCacheOwnerName, this, _1, _2, _3));
 
 	// Make sure the amount field has focus
 
@@ -402,29 +399,22 @@ void LLFloaterPay::finishPayUI(const LLUUID& target_id, BOOL is_group)
 	mTargetIsGroup = is_group;
 }
 
-// static
 void LLFloaterPay::onCacheOwnerName(const LLUUID& owner_id,
-									const std::string& firstname,
-									const std::string& lastname,
-									BOOL is_group,
-									void* userdata)
+									const std::string& full_name,
+									bool is_group)
 {
-	LLFloaterPay* self = (LLFloaterPay*)userdata;
-	if (!self) return;
-	
 	if (is_group)
 	{
-		self->childSetVisible("payee_group",true);
-		self->childSetVisible("payee_resident",false);
+		childSetVisible("payee_group",true);
+		childSetVisible("payee_resident",false);
 	}
 	else
 	{
-		self->childSetVisible("payee_group",false);
-		self->childSetVisible("payee_resident",true);
+		childSetVisible("payee_group",false);
+		childSetVisible("payee_resident",true);
 	}
 	
-	self->childSetTextArg("payee_name", "[FIRST]", firstname);
-	self->childSetTextArg("payee_name", "[LAST]", lastname);
+	childSetTextArg("payee_name", "[NAME]", full_name);
 }
 
 // static

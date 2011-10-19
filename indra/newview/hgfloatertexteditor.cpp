@@ -24,6 +24,7 @@
 #include "llappviewer.h" // System Folders
 #include "llfloaterperms.h" //get default perms
 #include "lllocalinventory.h"
+#include "llnotificationsutil.h"
 
 std::list<HGFloaterTextEditor*> HGFloaterTextEditor::sInstances;
 S32 HGFloaterTextEditor::sUploadAmount = 10;
@@ -255,7 +256,7 @@ void HGFloaterTextEditor::onClickUpload(void* user_data)
 	{
 		LLSD args;
 		args["ERROR_MESSAGE"] = "Couldn't write data to file";
-		LLNotifications::instance().add("ErrorMessage", args);
+		LLNotificationsUtil::add("ErrorMessage", args);
 		return;
 	}
 	
@@ -270,7 +271,7 @@ void HGFloaterTextEditor::onClickUpload(void* user_data)
 			item->getName(), 
 			item->getDescription(), 
 			0, 
-			item->getType(), 
+			LLFolderType::assetTypeToFolderType(item->getType()), 
 			item->getInventoryType(), 
 			LLFloaterPerms::getNextOwnerPerms(), LLFloaterPerms::getGroupPerms(), LLFloaterPerms::getEveryonePerms(),
 			item->getName(),  
@@ -289,7 +290,7 @@ void HGFloaterTextEditor::onClickUpload(void* user_data)
 									fake_asset_id.asString(),
 									item->getType(),
 									item->getInventoryType(),
-									(EWearableType)item->getFlags(),
+									(LLWearableType::EType)item->getFlags(),
 									PERM_ITEM_UNRESTRICTED,
 									new NewResourceItemCallback);
 	}
@@ -328,7 +329,7 @@ void HGFloaterTextEditor::onClickSave(void* user_data)
 	{
 		LLSD args;
 		args["ERROR_MESSAGE"] = "Couldn't write data to file";
-		LLNotifications::instance().add("ErrorMessage", args);
+		LLNotificationsUtil::add("ErrorMessage", args);
 		return;
 	}
 
@@ -391,7 +392,7 @@ void HGFloaterTextEditor::onSaveComplete(const LLUUID& asset_uuid, void* user_da
 	{
 		LLSD args;
 		args["ERROR_MESSAGE"] = llformat("Upload failed with status %d, also %d", status, ext_status);
-		LLNotifications::instance().add("ErrorMessage", args);
+		LLNotificationsUtil::add("ErrorMessage", args);
 	}
 }
 

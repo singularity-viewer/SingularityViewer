@@ -192,9 +192,9 @@ private:
 
 	static bool sUseReadThread;
 	apr_pollfd_t mPollFD;
-	AIAPRPool mPollFDPool;
+	LLAPRPool mPollFDPool;
 	static apr_pollset_t *sPollSet;
-    static AIAPRPool sPollSetPool;
+    static LLAPRPool sPollSetPool;
 	static bool sPollsetNeedsRebuild;
 	static LLMutex *sInstancesMutex;
 	static std::list<LLPluginProcessParent*> sInstances;

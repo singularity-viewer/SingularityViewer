@@ -39,6 +39,7 @@
 #include "llinventory.h"
 #include "llviewerinventory.h"
 #include "llinventorymodel.h"
+#include "llinventorydefines.h"
 #include "llinventoryview.h"
 #include "llagent.h"
 #include "lltooldraganddrop.h"
@@ -48,6 +49,7 @@
 #include "llbutton.h"
 #include "lliconctrl.h"
 #include "llcheckboxctrl.h"
+#include "llnotificationsutil.h"
 #include "llscrolllistctrl.h"
 #include "lltextbox.h"
 
@@ -55,7 +57,6 @@
 #include "llviewerwindow.h"
 #include "llviewercontrol.h"
 #include "llviewermessage.h"
-#include "llnotifications.h"
 
 const S32 NOTICE_DATE_STRING_SIZE = 30;
 
@@ -351,7 +352,7 @@ void LLPanelGroupNotices::onClickSendMessage(void* data)
 	if (self->mCreateSubject->getText().empty())
 	{
 		// Must supply a subject
-		LLNotifications::instance().add("MustSpecifyGroupNoticeSubject");
+		LLNotificationsUtil::add("MustSpecifyGroupNoticeSubject");
 		return;
 	}
 	send_group_notice(

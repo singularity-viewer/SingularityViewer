@@ -32,6 +32,11 @@
 
 #if LL_DBUS_ENABLED
 
+#ifdef LL_STANDALONE
+#include <dlfcn.h>
+#include <apr_portable.h>
+#endif
+
 #include "linden_common.h"
 
 extern "C" {
@@ -71,9 +76,17 @@ bool grab_dbus_syms(std::string dbus_dso_name)
 	//attempt to load the shared library
 	apr_pool_create(&sSymDBUSDSOMemoryPool, NULL);
   
+#ifdef LL_STANDALONE
+    void *dso_handle = dlopen(dbus_dso_name.c_str(), RTLD_NOW | RTLD_GLOBAL);
+    rv = (!dso_handle)?APR_EDSOOPEN:apr_os_dso_handle_put(&sSymDBUSDSOHandle,
+            dso_handle, sSymDBUSDSOMemoryPool);
+
+	if ( APR_SUCCESS == rv )
+#else
 	if ( APR_SUCCESS == (rv = apr_dso_load(&sSymDBUSDSOHandle,
 					       dbus_dso_name.c_str(),
 					       sSymDBUSDSOMemoryPool) ))
+#endif
 	{
 		INFOMSG("Found DSO: %s", dbus_dso_name.c_str());
 

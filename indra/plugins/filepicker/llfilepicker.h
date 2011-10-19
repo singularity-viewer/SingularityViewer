@@ -39,6 +39,7 @@
 #ifndef LL_LLFILEPICKER_H
 #define LL_LLFILEPICKER_H
 
+#include "basic_plugin_base.h"		// For PLS_INFOS etc.
 #include "legacy.h"
 #include <vector>
 
@@ -163,10 +164,10 @@ private:
 #if LL_DARWIN
 	NavDialogCreationOptions mNavOptions;
 	
-	OSStatus doNavChooseDialog(ELoadFilter filter);
-	OSStatus doNavSaveDialog(ESaveFilter filter, const std::string& filename);
+	OSStatus doNavChooseDialog(ELoadFilter filter, const std::string& folder);
+	OSStatus doNavSaveDialog(ESaveFilter filter, const std::string& filename, const std::string& folder);
 	static Boolean navOpenFilterProc(AEDesc *theItem, void *info, void *callBackUD, NavFilterModes filterMode);
-    static pascal void LLFilePickerBase::doNavCallbackEvent(NavEventCallbackMessage callBackSelector, NavCBRecPtr callBackParms, void* callBackUD);
+    static pascal void doNavCallbackEvent(NavEventCallbackMessage callBackSelector, NavCBRecPtr callBackParms, void* callBackUD);
 	ELoadFilter getLoadFilter(void) const { return mLoadFilter; }
 	std::string const& getFolder(void) const { return mFolder; }
 #endif	// LL_DARWIN
@@ -189,6 +190,7 @@ public:
 
 #endif	// LL_GTK
 #if !LL_WINDOWS && !(LL_GTK && LL_X11)
+public:
 	void setWindowID(unsigned long window_id) { PLS_WARNS << "Calling unimplemented LLFilePickerBase::setWindowID" << PLS_ENDL; }
 #endif
 

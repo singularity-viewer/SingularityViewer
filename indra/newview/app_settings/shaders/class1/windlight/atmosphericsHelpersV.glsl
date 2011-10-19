@@ -5,7 +5,7 @@
  * $License$
  */
  
-#version 120
+
 
 vec3 atmosAmbient(vec3 light)
 {

@@ -96,13 +96,13 @@ void LLWLDayCycle::loadDayCycle(const std::string & fileName)
 			// check each param name exists in param manager
 			bool success;
 			LLWLParamSet pset;
-			success = LLWLParamManager::instance()->getParamSet(day_data[i][1].asString(), pset);
+			success = LLWLParamManager::getInstance()->getParamSet(day_data[i][1].asString(), pset);
 			if(!success)
 			{
 				// alert the user
 				LLSD args;
 				args["SKY"] = day_data[i][1].asString();
-				LLNotifications::instance().add("WLMissingSky", args);
+				LLNotifications::instance().add("WLMissingSky", args, LLSD());
 				continue;
 			}
 			
@@ -203,7 +203,7 @@ bool LLWLDayCycle::changeKeyParam(F32 time, const std::string & name)
 	// just remove and add back
 	// make sure param exists
 	LLWLParamSet tmp;
-	bool stat = LLWLParamManager::instance()->getParamSet(name, tmp);
+	bool stat = LLWLParamManager::getInstance()->getParamSet(name, tmp);
 	if(stat == false) 
 	{
 		return stat;
@@ -249,7 +249,7 @@ bool LLWLDayCycle::getKeyedParam(F32 time, LLWLParamSet& param)
 	std::map<F32, std::string>::iterator mIt = mTimeMap.find(time);
 	if(mIt != mTimeMap.end()) 
 	{
-		return LLWLParamManager::instance()->getParamSet(mIt->second, param);
+		return LLWLParamManager::getInstance()->getParamSet(mIt->second, param);
 	}
 
 	// return error if not found

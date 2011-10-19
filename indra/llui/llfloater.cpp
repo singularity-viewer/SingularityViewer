@@ -763,7 +763,7 @@ BOOL LLFloater::canSnapTo(const LLView* other_view)
 	return LLPanel::canSnapTo(other_view);
 }
 
-void LLFloater::snappedTo(const LLView* snap_view)
+void LLFloater::setSnappedTo(const LLView* snap_view)
 {
 	if (!snap_view || snap_view == getParent())
 	{
@@ -780,10 +780,10 @@ void LLFloater::snappedTo(const LLView* snap_view)
 	}
 }
 
-void LLFloater::userSetShape(const LLRect& new_rect)
+void LLFloater::handleReshape(const LLRect& new_rect, bool by_user)
 {
 	const LLRect old_rect = getRect();
-	LLView::userSetShape(new_rect);
+	LLView::handleReshape(new_rect, by_user);
 
 	// if not minimized, adjust all snapped dependents to new shape
 	if (!isMinimized())
@@ -818,7 +818,7 @@ void LLFloater::userSetShape(const LLRect& new_rect)
 				delta_y += new_rect.mBottom - old_rect.mBottom;
 
 				dependent_rect.translate(delta_x, delta_y);
-				floaterp->userSetShape(dependent_rect);
+				floaterp->setShape(dependent_rect, by_user);
 			}
 		}
 	}
@@ -2274,11 +2274,11 @@ void LLFloaterView::adjustToFitScreen(LLFloater* floater, BOOL allow_partial_out
 		// floater is hosted elsewhere, so ignore
 		return;
 	}
-	S32 screen_width = getSnapRect().getWidth();
-	S32 screen_height = getSnapRect().getHeight();
-	// convert to local coordinate frame
-	LLRect snap_rect_local = getLocalSnapRect();
+	LLRect::tCoordType screen_width = getSnapRect().getWidth();
+	LLRect::tCoordType screen_height = getSnapRect().getHeight();
 
+	
+	// only automatically resize non-minimized, resizable floaters
 	if( floater->isResizable() && !floater->isMinimized() )
 	{
 		LLRect view_rect = floater->getRect();
@@ -2302,7 +2302,11 @@ void LLFloaterView::adjustToFitScreen(LLFloater* floater, BOOL allow_partial_out
 			new_width = llmax(new_width, min_width);
 			new_height = llmax(new_height, min_height);
 
-			floater->reshape( new_width, new_height, TRUE );
+			LLRect new_rect;
+			new_rect.setLeftTopAndSize(view_rect.mLeft,view_rect.mTop,new_width, new_height);
+
+			floater->setShape(new_rect);
+
 			if (floater->followsRight())
 			{
 				floater->translate(old_width - new_width, 0);
@@ -2316,7 +2320,7 @@ void LLFloaterView::adjustToFitScreen(LLFloater* floater, BOOL allow_partial_out
 	}
 
 	// move window fully onscreen
-	if (floater->translateIntoRect( snap_rect_local, allow_partial_outside ))
+	if (floater->translateIntoRect( getLocalSnapRect(), allow_partial_outside ))
 	{
 		floater->clearSnapTarget();
 	}

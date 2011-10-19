@@ -39,6 +39,7 @@
 #include "llframetimer.h"
 #include "llgl.h"
 #include "llhost.h"
+#include "llnotificationsutil.h"
 #include "llregionflags.h"
 #include "llstring.h"
 #include "message.h"
@@ -931,7 +932,7 @@ void LLPanelGridTools::onClickKickAll(void* userdata)
 	gFloaterView->getNewFloaterPosition(&left, &top);
 	LLRect rect(left, top, left+400, top-300);
 
-	LLNotifications::instance().add("KickAllUsers", LLSD(), LLSD(), LLPanelGridTools::confirmKick);
+	LLNotificationsUtil::add("KickAllUsers", LLSD(), LLSD(), LLPanelGridTools::confirmKick);
 }
 
 
@@ -941,7 +942,7 @@ bool LLPanelGridTools::confirmKick(const LLSD& notification, const LLSD& respons
 	{
 		LLSD payload;
 		payload["kick_message"] = response["message"].asString();
-		LLNotifications::instance().add("ConfirmKick", LLSD(), payload, LLPanelGridTools::finishKick);
+		LLNotificationsUtil::add("ConfirmKick", LLSD(), payload, LLPanelGridTools::finishKick);
 	}
 	return false;
 }
@@ -973,7 +974,7 @@ bool LLPanelGridTools::finishKick(const LLSD& notification, const LLSD& response
 // static
 void LLPanelGridTools::onClickFlushMapVisibilityCaches(void* data)
 {
-	LLNotifications::instance().add("FlushMapVisibilityCaches", LLSD(), LLSD(), flushMapVisibilityCachesConfirm);
+	LLNotificationsUtil::add("FlushMapVisibilityCaches", LLSD(), LLSD(), flushMapVisibilityCachesConfirm);
 }
 
 // static
@@ -1435,7 +1436,7 @@ void LLPanelRequestTools::onClickRequest(void* data)
 
 void terrain_download_done(void** data, S32 status, LLExtStat ext_status)
 {
-	LLNotifications::instance().add("TerrainDownloaded");
+	LLNotificationsUtil::add("TerrainDownloaded");
 }
 
 

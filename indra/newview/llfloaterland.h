@@ -38,8 +38,9 @@
 #include <vector>
 
 #include "llfloater.h"
+#include "llpointer.h"	// LLPointer<>
 //#include "llviewertexturelist.h"
-#include "llmemory.h"	// LLPointer<>
+#include "llsafehandle.h"
 
 typedef std::set<LLUUID, lluuid_less> uuid_list_t;
 const F32 CACHE_REFRESH_TIME	= 2.5f;
@@ -70,6 +71,7 @@ class LLPanelLandAccess;
 class LLPanelLandBan;
 class LLPanelLandRenters;
 class LLPanelLandCovenant;
+class LLParcel;
 
 class LLFloaterLand
 :	public LLFloater, public LLFloaterSingleton<LLFloaterLand>
@@ -80,6 +82,8 @@ public:
 
 	static LLPanelLandObjects* getCurrentPanelLandObjects();
 	static LLPanelLandCovenant* getCurrentPanelLandCovenant();
+	
+	LLParcel* getCurrentSelectedParcel();
 
 	// Destroys itself on close.
 	virtual void onClose(bool app_quitting);
@@ -235,6 +239,11 @@ protected:
 
 	LLSafeHandle<LLParcelSelection>&	mParcel;
 
+	// This pointer is needed to avoid parcel deselection until buying pass is completed or canceled.
+	// Deselection happened because of zero references to parcel selection, which took place when 
+	// "Buy Pass" was called from popup menu(EXT-6464)
+	static LLPointer<LLParcelSelection>	sSelectionForBuyPass;
+
 	static LLHandle<LLFloater> sBuyPassDialogHandle;
 };
 
@@ -353,6 +362,7 @@ private:
 
 	LLCheckBoxCtrl		*mMatureCtrl;
 	LLCheckBoxCtrl		*mPushRestrictionCtrl;
+	LLCheckBoxCtrl		*mSeeAvatarsCtrl;
 	LLButton			*mPublishHelpButton;
 
 	LLSafeHandle<LLParcelSelection>&	mParcel;

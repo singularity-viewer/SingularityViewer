@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <!-- This file contains strings that used to be hardcoded in the source.
      It is only for those strings which don't belong in a floater.
-     For example, the strings used in avatar chat bubbles, and strings 
+     For example, the strings used in avatar chat bubbles, and strings
      that are returned from one component and may appear in many places-->
 <strings>
-	
+
 	<string name="hippo_label_free">free</string>
 	<string name="hippo_label_week">week</string>
 	<string name="TeleportOfferMaturity">
@@ -12,7 +12,7 @@
 	</string>
 	<string name="TeleportLureMaturity">
 	  [NAME]'s teleport lure is to [DESTINATION]
-	</string>	
+	</string>
 
 	<!-- Login -->
 	<string name="LoginInProgress">Logging in. [APP_NAME] may appear frozen.  Please wait.</string>
@@ -36,8 +36,8 @@
 
 	<!-- Disconnection -->
 	<string name="AgentLostConnection">This region may be experiencing trouble.  Please check your connection to the Internet.</string>
-	
-	
+
+
 	<!-- Tooltip, llhoverview.cpp -->
 	<string name="TooltipPerson">Person</string><!-- Object under mouse pointer is an avatar -->
 	<string name="TooltipNoName">(no name)</string> <!-- No name on an object -->
@@ -63,9 +63,9 @@
 	<string name="TooltipFlagGroupScripts">Group Scripts</string>
 	<string name="TooltipFlagNoScripts">No Scripts</string>
 	<string name="TooltipLand">Land:</string>
-	<string name="TooltipMustSingleDrop">Only a single item can be dragged here</string>	
+	<string name="TooltipMustSingleDrop">Only a single item can be dragged here</string>
 
-	
+
 	<!-- Indicates that an avatar's name or other similar datum is being retrieved. General usage. -->
 	<string name="RetrievingData">Retrieving...</string>
 
@@ -73,21 +73,21 @@
 
 	<!-- Indicates something is being loaded. Maybe should be merged with RetrievingData -->
 	<string name="LoadingData">Loading...</string>
-	
-	
+
+
 	<!-- namecache -->
 	<!-- Avatar name: text shown for LLUUID::null -->
 	<string name="AvatarNameNobody">(nobody)</string>
-	
+
 	<!-- Avatar name: text shown while fetching name -->
 	<string name="AvatarNameWaiting">(waiting)</string>
 
 	<!-- Avatar name: text shown as an alternative to AvatarNameFetching, easter egg. -->
 	<string name="AvatarNameHippos">(hippos)</string>
-	
+
 	<!-- Group name: text shown for LLUUID::null -->
 	<string name="GroupNameNone">(none)</string>
-	
+
 	<!-- Asset errors. Used in llassetstorage.cpp, translation from error code to error message. -->
 	<string name="AssetErrorNone">No error</string>
 	<string name="AssetErrorRequestFailed">Asset request: failed</string>
@@ -100,7 +100,7 @@
 	<string name="AssetErrorCircuitGone">Circuit gone</string>
 	<string name="AssetErrorPriceMismatch">Viewer and server do not agree on price</string>
 	<string name="AssetErrorUnknownStatus">Unknown status</string>
-	
+
 	<!-- llvoavatar. Displayed in the avatar's chat bubble -->
 	<string name="AvatarEditingApparance">(Editing Appearance)</string>
 	<string name="AvatarAway">Away</string>
@@ -177,24 +177,24 @@
 	<string name="anim_express_worry">Worry</string>
 	<string name="anim_yes_happy">Yes (Happy)</string>
 	<string name="anim_yes_head">Yes</string>
-	
+
 	<string name="texture_loading">Loading...</string>
 	<string name="worldmap_offline">Offline</string>
-	
+
 	<!-- Chat -->
 	<string name="whisper">whispers:</string>
 	<string name="shout">shouts:</string>
-	
+
 	<!-- Sim Access labels -->
 	<string name="SIM_ACCESS_PG">PG</string>
 	<string name="SIM_ACCESS_MATURE">Mature</string>
 	<string name="SIM_ACCESS_ADULT">Adult</string>
 	<string name="SIM_ACCESS_DOWN">Offline</string>
 	<string name="SIM_ACCESS_MIN">Unknown</string>
-	
+
 	<!-- For use when we do not have land type back from the server -->
 	<string name="land_type_unknown">(unknown)</string>
-	
+
 	<!-- Covenant info -->
 	<string name="covenant_never_modified">Last Modified: (never)</string>
 	<string name="covenant_modified">Last Modified: </string>
@@ -215,7 +215,7 @@
 	<string name="compressed_image_files">Compressed Images</string>
 	<string name="load_files">Load Files</string>
 	<string name="choose_the_directory">Choose Directory</string>
-	
+
 	<!-- LSL Usage Hover Tips -->
   <string name="LSLTipSleepTime">
 Sleeps script for [SLEEP_TIME] seconds.
@@ -1650,8 +1650,8 @@ string llGetHTTPHeader(key request_id, string header)
 Returns the value for header for request_id
   </string>
   <string name="LSLTipText_llSetPrimMediaParams">
-    integer llSetPrimMediaParams(integer face, list params)
-    Returns an integer that is a STATUS_* flag which details the success/failure of the operation(s).
+integer llSetPrimMediaParams(integer face, list params)
+Returns an integer that is a STATUS_* flag which details the success/failure of the operation(s).
   </string>
   <string name="LSLTipText_llGetPrimMediaParams">
     list llGetPrimMediaParams(integer face, list params)
@@ -1659,54 +1659,687 @@ Returns the media params for a particular face on an object, given the desired l
 (Returns an empty list if no media exists on the face.)
   </string>
   <string name="LSLTipText_llClearPrimMedia">
-    integer llClearPrimMedia(integer face)
-    Returns an integer that is a STATUS_* flag which details the success/failure of the operation.
+integer llClearPrimMedia(integer face)
+Returns an integer that is a STATUS_* flag which details the success/failure of the operation.
   </string>
   <string name="LSLTipText_llSetLinkPrimitiveParamsFast">
-    llSetLinkPrimitiveParamsFast(integer linknumber, list rules)
-    Set primitive parameters for linknumber based on rules with no built-in script sleep.
+llSetLinkPrimitiveParamsFast(integer linknumber, list rules)
+Set primitive parameters for linknumber based on rules with no built-in script sleep.
   </string>
   <string name="LSLTipText_llGetLinkPrimitiveParams">
-    list llGetLinkPrimitiveParams(integer linknumber,list rules)
+list llGetLinkPrimitiveParams(integer linknumber,list rules)
 Get primitive parameters for linknumber based on rules.
   </string>
   <string name="LSLTipText_llLinkParticleSystem">
-    list llLinkParticleSystem(integer linknumber, list rules)
+list llLinkParticleSystem(integer linknumber, list rules)
 Creates a particle system based on rules.  Empty list removes particle system from object.
 List format is [ rule1, data1, rule2, data2 . . . rulen, datan ].
   </string>
   <string name="LSLTipText_llSetLinkTextureAnim">
-    llSetLinkTextureAnim(integer link, integer mode, integer face, integer sizex, integer sizey, float start, float length, float rate)
-    Animate the texture on the specified face/faces of the specified prim/prims by setting the texture scale and offset.
+llSetLinkTextureAnim(integer link, integer mode, integer face, integer sizex, integer sizey, float start, float length, float rate)
+Animate the texture on the specified face/faces of the specified prim/prims by setting the texture scale and offset.
   </string>
   <string name="LSLTipText_llGetLinkNumberOfSides">
-    integer llGetLinkNumberOfSides(integer link)
-    Returns the number of sides of the specified linked prim.
+integer llGetLinkNumberOfSides(integer link)
+Returns the number of sides of the specified linked prim.
   </string>
   <string name="LSLTipText_llGetUsername">
-    string llGetUsername(key id)
-    Returns the single-word username of an avatar, iff the avatar is in the current region, otherwise the empty string.
+string llGetUsername(key id)
+Returns the single-word username of an avatar, if the avatar is in the current region, otherwise the empty string.
   </string>
   <string name="LSLTipText_llRequestUsername">
-    key llRequestUsername(key id)
-    Requests single-word username of an avatar.  When data is available the dataserver event will be raised.
+key llRequestUsername(key id)
+Requests single-word username of an avatar.  When data is available the dataserver event will be raised.
   </string>
   <string name="LSLTipText_llGetDisplayName">
-    string llGetDisplayName(key id)
-    Returns the name of an avatar, iff the avatar is in the current simulator, and the name has been cached, otherwise the same as llGetUsername.  Use llRequestDisplayName if you absolutely must have the display name.
+string llGetDisplayName(key id)
+Returns the name of an avatar, if the avatar is in the current simulator, and the name has been cached, otherwise the same as llGetUsername. Use llRequestDisplayName if you absolutely must have the display name.
   </string>
   <string name="LSLTipText_llRequestDisplayName">
-    key llRequestDisplayName(key id)
-    Requests name of an avatar.  When data is available the dataserver event will be raised.
+key llRequestDisplayName(key id)
+Requests name of an avatar.  When data is available the dataserver event will be raised.
   </string>
-<string name="LSLTipText_llRegionSayTo">
+  <string name="LSLTipText_llRegionSayTo">
 llRegionSayTo(key target, integer channel, string msg)
 Sends msg on channel (not DEBUG_CHANNEL) directly to prim or avatar target anywhere within the region
-</string>
-<string name="LSLTipText_llGetEnv">
+  </string>
+  <string name="LSLTipText_llGetEnv">
 string llGetEnv(string name)
 Returns a string with the requested data about the region
-</string>
+  </string>
 
+  <string name="LSLTipText_llCastRay">
+list llCastRay( Vector start, Vector end, list options )
+Returns a list consisting of the following three values for each hit: UUID, Link number, Hit position.
+  </string>
+  <string name="LSLTipText_llGetSPMaxMemory">
+integer llGetSPMaxMemory( )
+Returns the integer of the most bytes used while llScriptProfiler was last active.
+  </string>
+  <string name="LSLTipText_llGetUsedMemory">
+integer llGetUsedMemory( )
+Returns the integer of the number of bytes of memory currently in use by the script.
+  </string>
+  <string name="LSLTipText_llGodLikeRezObject">
+llGodLikeRezObject( key inventory, vector pos )
+Rez directly off of UUID if owner has god-bit set.
+(Requires god mode)
+  </string>
+  <string name="LSLTipText_llScriptProfiler">
+llScriptProfiler( integer flags )
+Enables or disables the scripts profiling state.
+  </string>
+  <string name="LSLTipText_llSetInventoryPermMask">
+llSetInventoryPermMask( string item, integer mask, integer value )
+Sets the given permission mask to the new value on the inventory item.
+(Requires god mode)
+  </string>
+  <string name="LSLTipText_llSetObjectPermMask">
+llSetObjectPermMask( integer mask, integer value )
+Sets the given permission mask to the new value on the root object the task is attached to.
+(Requires god mode)
+  </string>
+  <string name="LSLTipText_llSetMemoryLimit">
+integer llSetMemoryLimit( integer limit )
+Request ''limit'' bytes to be reserved for this script.
+  </string>
+  <string name="LSLTipText_llSetLinkMedia">
+integer llSetLinkMedia( integer link, integer face, list params )
+Set the media params for a particular face on the linked prim(s) without a delay.
+  </string>
+  <string name="LSLTipText_llGetLinkMedia">
+list llGetLinkMedia( integer link, integer face, list params )
+Returns a list with the media params for a particular face on a linked prim, given the desired list of named params.
+  </string>
+  <string name="LSLTipText_llClearLinkMedia">
+integer llClearLinkMedia( integer link, integer face )
+Clears the media and all params from the given face on the linked prim(s).
+  </string>
+  <string name="LSLTipText_llSetLinkCamera">
+llSetLinkCamera( integer link, vector eye, vector at )
+Sets the camera eye offset, and the offset that the camera is looking at, for avatars that sit on the linked prim.
+  </string>
+  <string name="LSLTipText_llSetContentType">
+llSetContentType( key request_id, integer content_type )
+Set the Internet media type of an LSL HTTP server response.
+  </string>
+  <string name="LSLTipText_llLinkSitTarget">
+llLinkSitTarget( integer link, vector offset, rotation rot );
+Set the sit location for the linked prim(s). The sit location is relative to the prim's position and rotation.
+  </string>
+  <string name="LSLTipText_llAvatarOnLinkSitTarget">
+key llAvatarOnLinkSitTarget( integer link )
+Returns a key that is the UUID of the user seated on the prim.
+  </string>
+
+<!-- No info on these functions yet....
+  <string name="LSLTipText_llSetVelocity">
+  </string>
+  <string name="LSLTipText_llSetRotationalVelocity">
+  </string>
+-->
+
+
+<!-- Addition of OSSL commands for use in OpenSimulator based regions, including Aurora -->
+  <string name="LSLTipText_osSetRegionWaterHeight">
+osSetRegionWaterHeight(float height)
+Adjusts water height on region.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osSetRegionSunSettings">
+osSetRegionSunSettings(integer useEstateSun, integer sunFixed, float sunHour)
+Changes the estate sun settings, then triggers a sun update
+'sunFixed' TRUE to keep the sun stationary, FALSE to use global time
+'sunHour' The sun hour that is desired, 0...24, 0 is sunrise.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osSetEstateSunSettings">
+osSetEstateSunSettings(integer sunFixed, float sunHour)
+sunFixed = TRUE or FALSE, sunHour = 00.00 to 24.00.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osGetCurrentSunHour">
+float osGetCurrentSunHour()
+Returns float value of current sun hour 0...24 0 is sunrise.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osSunGetParam">
+*DEPRECATED* Use osGetSunParam instead.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osSunSetParam">
+*DEPRECATED* Use osSetSunParam instead.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osWindActiveModelPluginName">
+string osWindActiveModelPluginName()
+Returns the current working wind module installed
+These are SimpleRandomWind or ConfigurableWind.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osParcelJoin">
+osParcelJoin(vector pos1, vector pos2))
+Joins parcels @ X,Y coordinates.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osParcelSubdivide">
+osParcelSubdivide(vector pos1, vector pos2))
+Subdivides parcels @ X,Y coordinates.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osParcelSetDetails">
+*DEPRECATED* Use osSetParcelDetails instead.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osWindParamSet">
+*DEPRECATED* Use osSetWindParam instead.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osWindParamGet">
+*DEPRECATED* Use osGetWindParam instead.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osList2Double">
+double osList2Double(list src, integer index)
+Returns double-precision value from src at index.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osSetDynamicTextureURL">
+osSetDynamicTextureURL(key dynamicID, string contentType, string url, string extraParams, integer timer )
+Renders a web texture on the prim containing the script, and returns the UUID of the newly created texture.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osSetDynamicTextureData">
+osSetDynamicTextureData(key dynamicID, string contentType, string data, string extraParams, integer timer)
+Writes text and vector graphics onto a prim face.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osSetDynamicTextureURLBlend">
+osSetDynamicTextureURLBlend(key dynamicID, string contentType, string url, string extraParams, integer timer, integer alpha)
+Allows for two dynamic textures to blend on the prim containing this script.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osSetDynamicTextureDataBlend">
+osSetDynamicTextureDataBlend(key dynamicID, string contentType, string data, string extraParams, integer timer, integer alpha)
+Allows for two dynamic textures to blend on the prim containing this script.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osSetDynamicTextureURLBlendFace">
+osSetDynamicTextureURLBlendFace(key dynamicID, string contentType, string url, string extraParams, integer blend, integer disp, integer timer, integer alpha, integer face)
+Loads a web texture on a prim.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osSetDynamicTextureDataBlendFace">
+osSetDynamicTextureDataBlendFace(key dynamicID, string contentType, string data, string extraParams, integer blend, integer disp, integer timer, integer alpha, integer face)
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osTerrainGetHeight">
+*DEPRECATED* Use osGetTerrainHeight instead.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osTerrainSetHeight">
+*DEPRECATED* Use osSetTerrainHeight instead.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osTerrainFlush">
+osTerrainFlush()
+Updates terrain data. Call this after you are done using osTerrainSetHeight.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osRegionRestart">
+integer osRegionRestart(float seconds)
+Restart the current region in the specified number of seconds from now.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osRegionNotice">
+osRegionNotice(string msg)
+Broadcasts a notification message to all agents on the current region.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osConsoleCommand">
+osConsoleCommand(string command)
+Issues commands directly to the OpenSim server console.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osSetParcelMediaURL">
+osSetParcelMediaURL(string url)
+Sets parcel media URL.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osSetParcelSIPAddress">
+osSetParcelSIPAddress(string SIPAddress)
+Sets parcel SIP Address for Voice.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osSetPrimFloatOnWater">
+osSetPrimFloatOnWater(integer floatYN)
+Make physical prims float at the water level, TRUE or FALSE.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osTeleportAgent">
+osTeleportAgent(key agent, integer regionX, integer regionY, vector position, vector lookat)
+  or
+osTeleportAgent(key agent, string regionName, vector position, vector lookat)
+  or
+osTeleportAgent(key agent, vector position, vector lookat)
+Teleports the specified agent to a specified location in the region, the grid, or the hypergrid. See documentation for details.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osGetAgentIP">
+string osGetAgentIP(key agent)
+Returns the Avatars IP Address
+Allows in-world tools be used to coordinate out of world network services that need access to client IP addresses.
+Should *ONLY* be used by Region Server Owner.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osGetAgents">
+list osGetAgents()
+Returns a list of all avatars in the region in which the script is running.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osAvatarPlayAnimation">
+osAvatarPlayAnimation(key UUID, string animation)
+Triggers animations contained within the same prim as the script. Does not need the target avatar's permission.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osAvatarStopAnimation">
+osAvatarStopAnimation(key UUID, string animation)
+Stops specified animation on the specified avatar.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osMovePen">
+osMovePen(string drawList, integer x, integer y)
+Moves the pen's location to the coordinates specified by the x and y parameters, without drawing anything.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osDrawLine">
+osDrawLine(string drawList, integer startX, integer startY, integer endX, integer endY)
+osDrawLine(string drawList, integer endX, integer endY)
+Draws a line on a dynamic texture.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osDrawText">
+osDrawText(string drawList, string text)
+Renders text on a dynamic texture.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osDrawEllipse">
+osDrawEllipse(string drawList, integer width, integer height)
+Draws an ellipse on a dynamic texture.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osDrawRectangle">
+osDrawRectangle(string drawList, integer width, integer height)
+Draws a rectangle on a dynamic texture.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osDrawFilledRectangle">
+osDrawFilledRectangle(string drawList, integer width, integer height)
+Draws a rectangle on a dynamic texture, and fills it with the current pen color.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osDrawPolygon">
+string osDrawPolygon (string drawList, list x, list y)
+Draws a polygon on a dynamic texture.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osDrawFilledPolygon">
+string osDrawFilledPolygon (string drawList, list x, list y)
+Draws a polygon on a dynamic texture, and fills it with the current pen color.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osSetFontSize">
+osSetFontSize(string drawList, integer fontSize)
+Sets the font size to be used in osDrawText.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osSetFontName">
+osSetFontName(string drawList, string fontName)
+Sets current font to be used by osDrawText.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osSetPenSize">
+osSetPenSize(string drawList, integer penSize)
+Sets the pen size (line thickness) that is to be used when drawing dynamic textures.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osSetPenCap">
+osSetPenCap(string drawList, string direction, string type)
+Apply a shape on the end of a line. This allows using arrow, diamond, round and flat caps.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osSetPenColour">
+*DEPRECATED* Use osSetPenColor instead
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osDrawImage">
+osDrawImage(string drawList, integer width, integer height, string imageUrl)
+Retrieves an image specified by the imageUrl parameter and draws it at the specified height and width.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osGetDrawStringSize">
+vector osGetDrawStringSize(string contentType, string text, string fontName, integer fontSize)
+Returns a vector containing the horizontal and vertical dimensions in pixels of the specified text
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osSetStateEvents">
+osSetStateEvents(integer events)
+Used in the past as a workaround for a bug with Opensim, which has long since been fixed.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osGetScriptEngineName">
+string osGetScriptEngineName()
+Returns the name of the script engine which is currently enabled on the server.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osGetSimulatorVersion">
+string osGetSimulatorVersion()
+Returns OpenSim server version information as a string.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osParseJSON">
+string osParseJSON(string JSON)
+Returns a hashtable containing the structured JSON contents.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osMessageObject">
+osMessageObject(key UUID, string message)
+Sends a string to the object identified by UUID.
+The receiving object requires a dataserver(key queryid, string data) in a contained script(s).
+The queryid passed will be the id of the calling object.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osMakeNotecard">
+osMakeNotecard(string notecardName, list contents)
+Write a Notecard contained in Prim with contents of list.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osGetNotecardLine">
+string osGetNotecardLine(string name, integer line)
+Reads the requested notecard line and return its data as a string.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osGetNotecard">
+string osGetNotecard(string name)
+Reads the entire notecard and return its data as a string.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osGetNumberOfNotecardLines">
+integer osGetNumberOfNotecardLines(string name)
+Returns total number of lines in a notecard.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osAvatarName2Key">
+key osAvatarName2Key(string firstname, string lastname)
+Returns the avatar's UUID from their firstname, lastname.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osKey2Name">
+string osKey2Name(key UUID)
+Returns avatar name from their UUID key.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osGetGridNick">
+string osGetGridNick()
+Returns the grid's nickname.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osGetGridName">
+string osGetGridName()
+Returns the grid's name.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osGetGridLoginURI">
+string osGetGridLoginURI()
+Returns the grid's LoginURI.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osFormatString">
+string osFormatString(string str, list strings)
+Return the string with parameters substituted into it (format comes from .NET String.Format class)
+Parameters are specified positionally.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osMatchString">
+list osMatchString(string src, string pattern, integer start)
+Return a list of matches for the pattern and its components inside the source string.
+The pattern is a regular expression. Each match in the result is the string that matched and its position in the source.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osLoadedCreationDate">
+string osLoadedCreationDate()
+Returns Creation Date from meta data of OAR.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osLoadedCreationTime">
+string osLoadedCreationTime()
+Returns Creation Time from meta data of OAR.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osLoadedCreationID">
+string osLoadedCreationID()
+Returns creation ID from meta data of OAR. Can not be used to identify a machine.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osGetLinkPrimitiveParams">
+list osGetLinkPrimitiveParams(integer linknumber, list rules)
+Returns the primitive parameters for the linkset prims specified by linknumber. If using linkset constants (e.g. LINK_SET, LINK_ALL_CHILDREN, etc), the requested parameters of each relevant prim are concatenated to the end of the list. Otherwise, usage is identical to llGetPrimitiveParams().
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osNpcCreate">
+key osNpcCreate(string firstname, string lastname, vector position, key UUID)
+Creates an NPC (Non Player Character) clone named firstname lastname at position from an already existing avatar specified by UUID.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osNpcMoveTo">
+osNpcMoveTo(key npc, vector position)
+Moves an NPC to a location within the region.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osNpcSay">
+osNpcSay(key npc, string message)
+Makes an NPC say something.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osNpcRemove">
+osNpcRemove(key npc)
+Removes an NPC.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osGetMapTexture">
+key osGetMapTexture()
+Returns the map texture UUID.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osGetRegionMapTexture">
+key osGetRegionMapTexture(string regionName)
+Returns the map texture UUID for the regionName requested.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osGetRegionStats">
+list osGetRegionStats()
+Returns a list of float values representing a number of region statistics (21 of the values shown in the statistics bar of LL-based clients).
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osGetSimulatorMemory">
+integer osGetSimulatorMemory()
+Returns the current amount of RAM used by the current OpenSim instance.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osKickAvatar">
+osKickAvatar(string FirstName, string LastName, string alert)
+Kicks avatar from region with an alert message.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osSetSpeed">
+osSetSpeed(key UUID, float SpeedModifier)
+Multiplies the normal running, walking, and flying speed of the specified avatar.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osCauseDamage">
+osCauseDamage(key UUID, float damage)
+Causes damage to specified avatar.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osCauseHealing">
+osCauseHealing(key UUID, float healing)
+Causes healing to specified avatar.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osGetPrimitiveParams">
+list osGetPrimitiveParams(key prim, list rules)
+Gets the parameters of the primitive, specified by key.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osSetPrimitiveParams">
+osSetPrimitiveParams(key prim, list rules)
+Sets primitive Params.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osSetProjectionParams">
+osSetProjectionParams(key prim. integer projection, key texture, float fov, float focus, float amb)
+Set projection paramaters for light sources.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osUnixTimeToTimestamp">
+string osUnixTimeToTimestamp(integer unixtime)
+Converts unixtime to an llGetTimeStamp() formated string.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osSetPenColor">
+osSetPenColor(string drawList, string color)
+Sets the pen color that is to be used when drawing dynamic textures.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osGetSunParam">
+float osGetSunParam(string param)
+Returns current float values for param, where param = day_length, year_length, day_night_offset, update_interval.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osSetSunParam">
+osSetSunParam(string param, float value)
+Sets region's sun parameters, where param = day_length, year_length, day_night_offset, update_interval.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osSetParcelDetails">
+osSetParcelDetails(vector pos, list rules)
+Set parcel details.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osGetTerrainHeight">
+float osGetTerrainHeight(integer x, integer y)
+Returns current terrain height at the given coordinates.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osSetTerrainHeight">
+osSetTerrainHeight(integer x, integer y, float val)
+Sets terrain height at the given coordinates. Use osTerrainFlush() afterwards.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osGetAvatarList">
+list osGetAvatarList()
+Returns a strided list of the UUID, position, and name of each avatar in the region, except the owner.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osTeleportOwner">
+osTeleportOwner(integer regionX, integer regionY, vector position, vector lookat)
+  or
+osTeleportOwner(string regionName, vector position, vector lookat)
+  or
+osTeleportOwner(vector position, vector lookat)
+Teleports the owner of the object that holds the script to a specified location in the region, the grid, or the hypergrid. See documentation for details.
+(OpenSim only.)
+  </string>
+
+  <!-- LightShare functions -->
+  <string name="LSLTipText_cmSetWindlightScene">
+integer cmSetWindlightScene(list rules)
+Set the current WindLight scene. Estate managers and owners only.
+(Reguires LightShare)
+  </string>
+  <string name="LSLTipText_cmSetWindlightSceneTargeted">
+integer cmSetWindlightSceneTargeted(list rules, key target)
+Set the current WindLight scene directed at a specific avatar. Estate managers and owners only.
+(Reguires LightShare)
+  </string>
+  <string name="LSLTipText_cmGetWindlightScene">
+list cmGetWindlightScene(list rules)
+Get the current WindLight settings.
+(Reguires LightShare)
+  </string>
+  <!-- LightShare functions - alternate versions -->
+  <!-- don't ask me why they renamed 'em, but we need to include both versions - -  MC -->
+  <string name="LSLTipText_lsSetWindlightScene">
+integer lsSetWindlightScene(list rules)
+Set the current WindLight scene. Estate managers and owners only.
+(Reguires LightShare)
+  </string>
+  <string name="LSLTipText_lsSetWindlightSceneTargeted">
+integer lsSetWindlightSceneTargeted(list rules, key target)
+Set the current WindLight scene directed at a specific avatar. Estate managers and owners only.
+(Reguires LightShare)
+  </string>
+  <string name="LSLTipText_lsGetWindlightScene">
+list lsGetWindlightScene(list rules)
+Get the current WindLight settings.
+(Reguires LightShare)
+  </string>
+
+  <!-- New OSSL Functions as of 8-10-2011 -->
+  <string name="LSLTipText_osNpcSaveAppearance">
+key osNpcSaveAppearance(key npc, string notecardName)
+Saves the NPC's appearance to a notecard.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osNpcLoadAppearance">
+osNpcLoadAppearance(key npc, string notecardName)
+Loads the NPC's appearance from a notecard with appearance data.
+Notecards can also be loaded by UUID.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osNpcMoveToTarget">
+osNpcMoveToTarget(key npc, vector position, integer options)
+Moves the NPC to a target at a given vector, using options to walk or to fly there.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osOwnerSaveAppearance">
+key osOwnerSaveAppearance(string notecardName)
+Saves the owner's appearance to a notecard inside the prim that holds the script.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osNpcGetRot">
+rotation osNpcGetRot(key npc)
+Retrieves the rotation of an NPC
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osNpcSetRot">
+osNpcSetRot(key npc, rotation rot)
+Sets an NPC's rotation.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osAgentSaveAppearance">
+key osOwnerSaveAppearance(key avatarId, string notecardName)
+Saves an avatar's appearance to a notecard inside the prim that holds the script.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osNpcGetPos">
+vector osNpcGetPos(key npc)
+Retrieves the vector of an NPC's position within a region.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osNpcStopMoveToTarget">
+osNpcStopMoveToTarget(key npc)
+Makes an NPC stop moving to a target.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osGetWindParam">
+float osGetWindParam(string plugin, string param)
+Gets the value of param property for plugin module.
+(OpenSim only.)
+  </string>
+  <string name="LSLTipText_osSetWindParam">
+osSetWindParam(string plugin, string param, float value)
+Sets value of param property for plugin module.
+(OpenSim only.)
+  </string>
 </strings>
-

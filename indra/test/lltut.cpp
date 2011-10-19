@@ -94,7 +94,7 @@ namespace tut
 				return;
 			
 			case LLSD::TypeReal:
-				ensure_equals(msg + " real", actual.asReal(), expected.asReal());
+				tut::ensure_equals(msg + " real", actual.asReal(), expected.asReal());
 				return;
 			
 			case LLSD::TypeString:

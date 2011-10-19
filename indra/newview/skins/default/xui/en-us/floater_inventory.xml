@@ -5,8 +5,11 @@
      title="Inventory" width="467">
 	<search_editor bottom="-50" follows="left|top|right" height="16" label="Type here to search"
 	    left="6" mouse_opaque="true" name="inventory search editor" width="455" />
-	<text name="group_titles_textbox" font="SansSerifSmall" follows="left|top"
-		height="16" left="10" bottom_delta="-24" width="120">Quick Filter:</text>
+  <button left="6" bottom_delta="-26" height="22" width="22" follows="left|top" halign="center"
+    label="" image_overlay="inv_collapse_all.tga" name="collapse_btn" mouse_opaque="true" font="SansSerif"
+    tool_tip="Collapse All" />
+  <text name="group_titles_textbox" halign="right" font="SansSerifSmall" follows="left|top"
+		height="16" left="30" bottom_delta="2" right="93">Quick Filter:</text>
 	<!-- Inventory Type Filter Labels -->
 	<string name="filter_type_all">All Types</string>
 	<string name="filter_type_animation">Animations</string>
@@ -21,7 +24,7 @@
 	<string name="filter_type_texture">Textures</string>
 	<string name="filter_type_snapshot">Snapshots</string>
 	<string name="filter_type_custom">Custom...</string>
-	<combo_box name="Quick Filter" label="Quick Filter" follows="left|top" height="20" left="80" width="150" bottom_delta="0">
+	<combo_box name="Quick Filter" label="Quick Filter" follows="left|top|right" height="20" left="95" right="-6" bottom_delta="0">
 		<combo_item name="filter_type_all">All Types</combo_item>
 		<separator />
 		<combo_item name="filter_type_animation">Animations</combo_item>

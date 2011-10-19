@@ -40,6 +40,8 @@
 
 #include "lldir.h"
 #include "lldispatcher.h"
+#include "llnotifications.h"
+#include "llnotificationsutil.h"
 #include "llparcel.h"
 #include "message.h"
 
@@ -327,12 +329,12 @@ BOOL LLPanelClassified::titleIsValid()
 	const std::string& name = mNameEditor->getText();
 	if (name.empty())
 	{
-		LLNotifications::instance().add("BlankClassifiedName");
+		LLNotificationsUtil::add("BlankClassifiedName");
 		return FALSE;
 	}
 	if (!isalnum(name[0]))
 	{
-		LLNotifications::instance().add("ClassifiedMustBeAlphanumeric");
+		LLNotificationsUtil::add("ClassifiedMustBeAlphanumeric");
 		return FALSE;
 	}
 
@@ -387,7 +389,7 @@ BOOL LLPanelClassified::canClose()
 
 	LLSD args;
 	args["NAME"] = mNameEditor->getText();
-	LLNotifications::instance().add("ClassifiedSave", args, LLSD(), boost::bind(&LLPanelClassified::saveCallback, this, _1, _2));
+	LLNotificationsUtil::add("ClassifiedSave", args, LLSD(), boost::bind(&LLPanelClassified::saveCallback, this, _1, _2));
 	return FALSE;
 }
 
@@ -813,7 +815,7 @@ void LLPanelClassified::onClickUpdate(void* data)
 	if(self->mMatureCombo->getCurrentIndex() == DECLINE_TO_STATE)
 	{
 		// Tell user about it
-		LLNotifications::instance().add("SetClassifiedMature", 
+		LLNotificationsUtil::add("SetClassifiedMature", 
 				LLSD(), 
 				LLSD(), 
 				boost::bind(&LLPanelClassified::confirmMature, self, _1, _2));
@@ -883,7 +885,7 @@ void LLPanelClassified::callbackGotPriceForListing(S32 option, std::string text,
 		args["MIN_PRICE"] = price_text;
 		args["[CURRENCY]"] = gHippoGridManager->getConnectedGrid()->getCurrencySymbol();
 			
-		LLNotifications::instance().add("MinClassifiedPrice", args);
+		LLNotificationsUtil::add("MinClassifiedPrice", args);
 		return;
 	}
 
@@ -894,7 +896,7 @@ void LLPanelClassified::callbackGotPriceForListing(S32 option, std::string text,
 	LLSD args;
 	args["AMOUNT"] = llformat("%d", price_for_listing);
 	args["CURRENCY"] = gHippoGridManager->getConnectedGrid()->getCurrencySymbol();
-	LLNotifications::instance().add("PublishClassified", args, LLSD(), 
+	LLNotificationsUtil::add("PublishClassified", args, LLSD(), 
 									boost::bind(&LLPanelClassified::confirmPublish, self, _1, _2));
 }
 

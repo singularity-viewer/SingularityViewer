@@ -50,6 +50,7 @@
 #include "llviewercontrol.h"
 #include "llmenucommands.h"
 #include "llmenugl.h"
+#include "llnotificationsutil.h"
 #include "llpluginclassmedia.h"
 #include "lltextbox.h"
 #include "lluiconstants.h"
@@ -193,13 +194,13 @@ void LLPanelDirFind::draw()
 // When we show any browser-based view, we want to hide all
 // the right-side XUI detail panels.
 // virtual
-void LLPanelDirFind::onVisibilityChange(BOOL new_visibility)
+void LLPanelDirFind::handleVisibilityChange(BOOL new_visibility)
 {
 	if (new_visibility)
 	{
 		mFloaterDirectory->hideAllDetailPanels();
 	}
-	LLPanel::onVisibilityChange(new_visibility);
+	LLPanel::handleVisibilityChange(new_visibility);
 }
 
 // virtual
@@ -218,7 +219,7 @@ void LLPanelDirFindAll::search(const std::string& search_text)
 	BOOL inc_adult = childGetValue("incadult").asBoolean();
 	if (!(inc_pg || inc_mature || inc_adult))
 	{
-		LLNotifications::instance().add("NoContentToSearch");
+		LLNotificationsUtil::add("NoContentToSearch");
 		return;
 	}
 	
@@ -445,7 +446,7 @@ void LLPanelDirFind::onClickBack( void* data )
 // static
 void LLPanelDirFind::onClickHelp( void* data )
 {
-	LLNotifications::instance().add("ClickSearchHelpAll");
+	LLNotificationsUtil::add("ClickSearchHelpAll");
 }
 
 // static
@@ -597,7 +598,7 @@ void LLPanelDirFindAllOld::onClickSearch(void *userdata)
 	BOOL inc_adult = self->childGetValue("incadult").asBoolean();
 	if (!(inc_pg || inc_mature || inc_adult))
 	{
-		LLNotifications::instance().add("NoContentToSearch");
+		LLNotificationsUtil::add("NoContentToSearch");
 		return;
 	}
 

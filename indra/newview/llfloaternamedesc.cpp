@@ -206,7 +206,7 @@ void LLFloaterNameDesc::onBtnOK( void* userdata )
 	upload_new_resource(fp->mFilenameAndPath, // file
 			    fp->childGetValue("name_form").asString(), 
 			    fp->childGetValue("description_form").asString(), 
-			    0, LLAssetType::AT_NONE, LLInventoryType::IT_NONE,
+			    0, LLFolderType::FT_NONE, LLInventoryType::IT_NONE,
 			    LLFloaterPerms::getNextOwnerPerms(), LLFloaterPerms::getGroupPerms(), LLFloaterPerms::getEveryonePerms(),
 			    display_name, callback, expected_upload_cost, nruserdata);
 	fp->close(false);

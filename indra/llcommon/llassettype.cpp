@@ -35,6 +35,7 @@
 #include "llassettype.h"
 #include "lldictionary.h"
 #include "llmemory.h"
+#include "llsingleton.h"
 
 ///----------------------------------------------------------------------------
 /// Class LLAssetType
@@ -85,26 +86,27 @@ LLAssetDictionary::LLAssetDictionary()
 	addEntry(LLAssetType::AT_OBJECT, 			new AssetEntry("OBJECT",			"object",	"object",			true,		false,		false));
 	addEntry(LLAssetType::AT_NOTECARD, 			new AssetEntry("NOTECARD",			"notecard",	"note card",		true,		false,		true));
 	addEntry(LLAssetType::AT_CATEGORY, 			new AssetEntry("CATEGORY",			"category",	"folder",			true,		false,		false));
-	addEntry(LLAssetType::AT_ROOT_CATEGORY, 	new AssetEntry("ROOT_CATEGORY", 	"root",		"root",				false,		false,		false));
+	//addEntry(LLAssetType::AT_ROOT_CATEGORY, 	new AssetEntry("ROOT_CATEGORY", 	"root",		"root",				false,		false,		false));
 	addEntry(LLAssetType::AT_LSL_TEXT, 			new AssetEntry("LSL_TEXT",			"lsltext",	"lsl2 script",		true,		false,		false));
 	addEntry(LLAssetType::AT_LSL_BYTECODE, 		new AssetEntry("LSL_BYTECODE",		"lslbyte",	"lsl bytecode",		true,		false,		false));
 	addEntry(LLAssetType::AT_TEXTURE_TGA, 		new AssetEntry("TEXTURE_TGA",		"txtr_tga",	"tga texture",		true,		false,		false));
 	addEntry(LLAssetType::AT_BODYPART, 			new AssetEntry("BODYPART",			"bodypart",	"body part",		true,		true,		true));
-	addEntry(LLAssetType::AT_TRASH, 			new AssetEntry("TRASH", 			"trash",	"trash",			false,		false,		false));
-	addEntry(LLAssetType::AT_SNAPSHOT_CATEGORY, new AssetEntry("SNAPSHOT_CATEGORY",	"snapshot", "snapshot",			false,		false,		false));
-	addEntry(LLAssetType::AT_LOST_AND_FOUND, 	new AssetEntry("LOST_AND_FOUND",	"lstndfnd",	"lost and found",	false,		false,		false));
+	//addEntry(LLAssetType::AT_TRASH, 			new AssetEntry("TRASH", 			"trash",	"trash",			false,		false,		false));
+	//addEntry(LLAssetType::AT_SNAPSHOT_CATEGORY, new AssetEntry("SNAPSHOT_CATEGORY",	"snapshot", "snapshot",			false,		false,		false));
+	//addEntry(LLAssetType::AT_LOST_AND_FOUND, 	new AssetEntry("LOST_AND_FOUND",	"lstndfnd",	"lost and found",	false,		false,		false));
 	addEntry(LLAssetType::AT_SOUND_WAV, 		new AssetEntry("SOUND_WAV",			"snd_wav",	"sound",			true,		false,		false));
 	addEntry(LLAssetType::AT_IMAGE_TGA, 		new AssetEntry("IMAGE_TGA",			"img_tga",	"targa image",		true,		false,		false));
 	addEntry(LLAssetType::AT_IMAGE_JPEG, 		new AssetEntry("IMAGE_JPEG",		"jpeg",		"jpeg image",		true,		false,		false));
 	addEntry(LLAssetType::AT_ANIMATION, 		new AssetEntry("ANIMATION",			"animatn",	"animation",		true,		true,		true));
 	addEntry(LLAssetType::AT_GESTURE, 			new AssetEntry("GESTURE",			"gesture",	"gesture",			true,		true,		true));
 	addEntry(LLAssetType::AT_SIMSTATE, 			new AssetEntry("SIMSTATE",			"simstate",	"simstate",			false,		false,		false));
-	addEntry(LLAssetType::AT_FAVORITE, 			new AssetEntry("FAVORITE",			"favorite",	"",					false,		false,		false));
+	//addEntry(LLAssetType::AT_FAVORITE, 			new AssetEntry("FAVORITE",			"favorite",	"",					false,		false,		false));
 	addEntry(LLAssetType::AT_LINK, 				new AssetEntry("LINK",				"link",		"sym link",			false,		false,		true));
 	addEntry(LLAssetType::AT_LINK_FOLDER, 		new AssetEntry("FOLDER_LINK",		"link_f", 	"sym folder link",	false,		false,		true));
 	addEntry(LLAssetType::AT_CURRENT_OUTFIT,	new AssetEntry("FOLDER_LINK",		"current",	"current outfit",	false,		false,		false));
 	addEntry(LLAssetType::AT_OUTFIT,			new AssetEntry("OUTFIT",			"outfit", 	"outfit",			false,		false,		false));
 	addEntry(LLAssetType::AT_MY_OUTFITS,		new AssetEntry("MY_OUTFITS",		"my_otfts",	"my outfits",		false,		false,		false));
+	addEntry(LLAssetType::AT_MESH,		        new AssetEntry("MESH",		        "mesh",	    "mesh",		        false,		true,		true));
 	addEntry(LLAssetType::AT_NONE, 				new AssetEntry("NONE",				"-1",		NULL,		  		false,		false,		false));
 };		
 
@@ -206,47 +208,7 @@ LLAssetType::EType LLAssetType::lookupHumanReadable(const std::string& readable_
 	return AT_NONE;
 }
 
-EDragAndDropType LLAssetType::lookupDragAndDropType( EType asset )
-{
-	switch( asset )
-	{
-	case AT_TEXTURE:		return DAD_TEXTURE;
-	case AT_SOUND:			return DAD_SOUND;
-	case AT_CALLINGCARD:	return DAD_CALLINGCARD;
-	case AT_LANDMARK:		return DAD_LANDMARK;
-	case AT_SCRIPT:			return DAD_NONE;
-	case AT_CLOTHING:		return DAD_CLOTHING;
-	case AT_OBJECT:			return DAD_OBJECT;
-	case AT_NOTECARD:		return DAD_NOTECARD;
-	case AT_CATEGORY:		return DAD_CATEGORY;
-	case AT_ROOT_CATEGORY:	return DAD_ROOT_CATEGORY;
-	case AT_LSL_TEXT:		return DAD_SCRIPT;
-	case AT_BODYPART:		return DAD_BODYPART;
-	case AT_ANIMATION:		return DAD_ANIMATION;
-	case AT_GESTURE:		return DAD_GESTURE;
-	case AT_FAVORITE:		return DAD_CATEGORY;
-	case AT_LINK:			return DAD_LINK;
-	case AT_LINK_FOLDER:	return DAD_LINK;
-	case AT_CURRENT_OUTFIT:	return DAD_LINK;
-	case AT_OUTFIT:			return DAD_LINK;
-	case AT_MY_OUTFITS:		return DAD_CATEGORY;
-	default: 				return DAD_NONE;
-	};
-}
-
-// static. Generate a good default description
-void LLAssetType::generateDescriptionFor(LLAssetType::EType type,
-										 std::string& desc)
-{
-	const S32 BUF_SIZE = 30;
-	char time_str[BUF_SIZE];	/* Flawfinder: ignore */
-	time_t now;
-	time(&now);
-	memset(time_str, '\0', BUF_SIZE);
-	strftime(time_str, BUF_SIZE - 1, "%Y-%m-%d %H:%M:%S ", localtime(&now));
-	desc.assign(time_str);
-	desc.append(LLAssetType::lookupHumanReadable(type));
-}
+//NOTE: LLAssetType::lookupDragAndDropType & LLAssetType::generateDescriptionFor moved to newview/llviewerassettype.h
 
 // static
 bool LLAssetType::lookupCanLink(EType asset_type)

@@ -122,7 +122,8 @@ public:
 	bool canNavigateForward();
 	bool canNavigateBack();
 	std::string getMediaURL() { return mMediaURL; }
-	std::string getMediaHomeURL() { return mHomeURL; }
+	std::string getHomeURL() { return mHomeURL; }
+	void setHomeURL(const std::string& home_url) { mHomeURL = home_url; }
 	std::string getMimeType() { return mMimeType; }
 	void getTextureSize(S32 *texture_width, S32 *texture_height);
 	void scaleMouse(S32 *mouse_x, S32 *mouse_y);

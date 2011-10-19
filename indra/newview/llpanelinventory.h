@@ -60,7 +60,7 @@ class LLFolderViewEventListener;
 
 // Utility function to hide all entries except those in the list
 class LLMenuGL;
-void hideContextEntries(LLMenuGL& menu, 
+void hide_context_entries(LLMenuGL& menu, 
 		const std::vector<std::string> &entries_to_show, 
 		const std::vector<std::string> &disabled_entries);
 
@@ -82,7 +82,7 @@ protected:
 								 S32 serial_num,
 								 void* user_data);
 	void updateInventory();
-	void createFolderViews(LLInventoryObject* inventory_root, InventoryObjectList& contents);
+	void createFolderViews(LLInventoryObject* inventory_root, LLInventoryObject::object_list_t& contents);
 	void createViewsForCategory(LLInventoryObject::object_list_t* inventory,
 								LLInventoryObject* parent,
 								LLFolderViewFolder* folder);

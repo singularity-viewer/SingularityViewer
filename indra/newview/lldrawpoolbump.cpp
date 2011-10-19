@@ -162,6 +162,7 @@ void LLStandardBumpmap::addstandard()
 			LLViewerTextureManager::getFetchedTexture(LLUUID(bump_image_id));	
 		gStandardBumpmapList[LLStandardBumpmap::sStandardBumpmapCount].mImage->setBoostLevel(LLViewerTexture::BOOST_BUMP) ;
 		gStandardBumpmapList[LLStandardBumpmap::sStandardBumpmapCount].mImage->setLoadedCallback(LLBumpImageList::onSourceStandardLoaded, 0, TRUE, FALSE, NULL, NULL );
+		gStandardBumpmapList[LLStandardBumpmap::sStandardBumpmapCount].mImage->forceToSaveRawImage(0) ;
 		LLStandardBumpmap::sStandardBumpmapCount++;
 	}
 
@@ -324,6 +325,9 @@ void LLDrawPoolBump::endRenderPass(S32 pass)
 			llassert(0);
 			break;
 	}
+
+	//to cleanup texture channels
+	LLRenderPass::endRenderPass(pass);
 }
 
 //static
@@ -362,6 +366,11 @@ void LLDrawPoolBump::beginShiny(bool invisible)
 	}
 
 	bindCubeMap(shader, mVertexShaderLevel, diffuse_channel, cube_channel, invisible);
+
+	if (mVertexShaderLevel > 1)
+	{ //indexed texture rendering, channel 0 is always diffuse
+		diffuse_channel = 0;
+	}
 }
 
 //static
@@ -429,16 +438,16 @@ void LLDrawPoolBump::renderShiny(bool invisible)
 		LLGLEnable blend_enable(GL_BLEND);
 		if (!invisible && mVertexShaderLevel > 1)
 		{
-			LLRenderPass::renderTexture(LLRenderPass::PASS_SHINY, sVertexMask);
+			LLRenderPass::pushBatches(LLRenderPass::PASS_SHINY, sVertexMask | LLVertexBuffer::MAP_TEXTURE_INDEX, TRUE, TRUE);
 		}
 		else if (!invisible)
 		{
 			renderGroups(LLRenderPass::PASS_SHINY, sVertexMask);
 		}
-		else // invisible
-		{
-			renderGroups(LLRenderPass::PASS_INVISI_SHINY, sVertexMask);
-		}
+		//else // invisible (deprecated)
+		//{
+			//renderGroups(LLRenderPass::PASS_INVISI_SHINY, sVertexMask);
+		//}
 	}
 }
 
@@ -464,11 +473,15 @@ void LLDrawPoolBump::unbindCubeMap(LLGLSLShader* shader, S32 shader_level, S32& 
 			}
 		}
 	}
-	gGL.getTexUnit(diffuse_channel)->disable();
-	gGL.getTexUnit(cube_channel)->disable();
 
-	gGL.getTexUnit(0)->unbind(LLTexUnit::TT_TEXTURE);
-	gGL.getTexUnit(0)->setTextureBlendType(LLTexUnit::TB_MULT);
+	if (!LLGLSLShader::sNoFixedFunction)
+	{
+		gGL.getTexUnit(diffuse_channel)->disable();
+		gGL.getTexUnit(cube_channel)->disable();
+
+		gGL.getTexUnit(0)->unbind(LLTexUnit::TT_TEXTURE);
+		gGL.getTexUnit(0)->setTextureBlendType(LLTexUnit::TB_MULT);
+	}
 }
 
 void LLDrawPoolBump::endShiny(bool invisible)
@@ -537,6 +550,12 @@ void LLDrawPoolBump::beginFullbrightShiny()
 		gGL.getTexUnit(cube_channel)->bind(cube_map);
 		gGL.getTexUnit(0)->activate();
 	}
+
+	if (mVertexShaderLevel > 1)
+	{ //indexed texture rendering, channel 0 is always diffuse
+		diffuse_channel = 0;
+	}
+
 	mShiny = TRUE;
 }
 
@@ -551,7 +570,15 @@ void LLDrawPoolBump::renderFullbrightShiny()
 	if( gSky.mVOSkyp->getCubeMap() )
 	{
 		LLGLEnable blend_enable(GL_BLEND);
-		LLRenderPass::renderTexture(LLRenderPass::PASS_FULLBRIGHT_SHINY, sVertexMask);
+
+		if (mVertexShaderLevel > 1)
+		{
+			LLRenderPass::pushBatches(LLRenderPass::PASS_FULLBRIGHT_SHINY, sVertexMask | LLVertexBuffer::MAP_TEXTURE_INDEX, TRUE, TRUE);
+		}
+		else
+		{
+			LLRenderPass::renderTexture(LLRenderPass::PASS_FULLBRIGHT_SHINY, sVertexMask);
+		}
 	}
 }
 
@@ -569,19 +596,19 @@ void LLDrawPoolBump::endFullbrightShiny()
 		cube_map->disable();
 		cube_map->restoreMatrix();
 
-		if (diffuse_channel != 0)
+		/*if (diffuse_channel != 0)
 		{
 			shader->disableTexture(LLViewerShaderMgr::DIFFUSE_MAP);
 		}
 		gGL.getTexUnit(0)->activate();
-		gGL.getTexUnit(0)->enable(LLTexUnit::TT_TEXTURE);
+		gGL.getTexUnit(0)->enable(LLTexUnit::TT_TEXTURE);*/
 
 		shader->unbind();
-		gGL.getTexUnit(0)->setTextureBlendType(LLTexUnit::TB_MULT);
+		//gGL.getTexUnit(0)->setTextureBlendType(LLTexUnit::TB_MULT);
 	}
 	
-	gGL.getTexUnit(0)->unbind(LLTexUnit::TT_TEXTURE);
-	gGL.getTexUnit(0)->setTextureBlendType(LLTexUnit::TB_MULT);
+	//gGL.getTexUnit(0)->unbind(LLTexUnit::TT_TEXTURE);
+	//gGL.getTexUnit(0)->setTextureBlendType(LLTexUnit::TB_MULT);
 
 	diffuse_channel = -1;
 	cube_channel = 0;
@@ -692,36 +719,44 @@ void LLDrawPoolBump::beginBump(U32 pass)
 	// Optional second pass: emboss bump map
 	stop_glerror();
 
-	// TEXTURE UNIT 0
-	// Output.rgb = texture at texture coord 0
-	gGL.getTexUnit(0)->activate();
+	if (LLGLSLShader::sNoFixedFunction)
+	{
+		gObjectBumpProgram.bind();
+	}
+	else
+	{
+		// TEXTURE UNIT 0
+		// Output.rgb = texture at texture coord 0
+		gGL.getTexUnit(0)->activate();
 
-	gGL.getTexUnit(0)->setTextureColorBlend(LLTexUnit::TBO_REPLACE, LLTexUnit::TBS_TEX_ALPHA);
-	gGL.getTexUnit(0)->setTextureAlphaBlend(LLTexUnit::TBO_REPLACE, LLTexUnit::TBS_TEX_ALPHA);
+		gGL.getTexUnit(0)->setTextureColorBlend(LLTexUnit::TBO_REPLACE, LLTexUnit::TBS_TEX_ALPHA);
+		gGL.getTexUnit(0)->setTextureAlphaBlend(LLTexUnit::TBO_REPLACE, LLTexUnit::TBS_TEX_ALPHA);
 
-	// TEXTURE UNIT 1
-	gGL.getTexUnit(1)->activate();
+		// TEXTURE UNIT 1
+		gGL.getTexUnit(1)->activate();
  
-	gGL.getTexUnit(1)->enable(LLTexUnit::TT_TEXTURE);
+		gGL.getTexUnit(1)->enable(LLTexUnit::TT_TEXTURE);
 
-	gGL.getTexUnit(1)->setTextureColorBlend(LLTexUnit::TBO_ADD_SIGNED, LLTexUnit::TBS_PREV_COLOR, LLTexUnit::TBS_ONE_MINUS_TEX_ALPHA);
-	gGL.getTexUnit(1)->setTextureAlphaBlend(LLTexUnit::TBO_REPLACE, LLTexUnit::TBS_TEX_ALPHA);
+		gGL.getTexUnit(1)->setTextureColorBlend(LLTexUnit::TBO_ADD_SIGNED, LLTexUnit::TBS_PREV_COLOR, LLTexUnit::TBS_ONE_MINUS_TEX_ALPHA);
+		gGL.getTexUnit(1)->setTextureAlphaBlend(LLTexUnit::TBO_REPLACE, LLTexUnit::TBS_TEX_ALPHA);
 
-	// src	= tex0 + (1 - tex1) - 0.5
-	//		= (bump0/2 + 0.5) + (1 - (bump1/2 + 0.5)) - 0.5
-	//		= (1 + bump0 - bump1) / 2
+		// src	= tex0 + (1 - tex1) - 0.5
+		//		= (bump0/2 + 0.5) + (1 - (bump1/2 + 0.5)) - 0.5
+		//		= (1 + bump0 - bump1) / 2
 
 
-	// Blend: src * dst + dst * src
-	//		= 2 * src * dst
-	//		= 2 * ((1 + bump0 - bump1) / 2) * dst   [0 - 2 * dst]
-	//		= (1 + bump0 - bump1) * dst.rgb
-	//		= dst.rgb + dst.rgb * (bump0 - bump1)
+		// Blend: src * dst + dst * src
+		//		= 2 * src * dst
+		//		= 2 * ((1 + bump0 - bump1) / 2) * dst   [0 - 2 * dst]
+		//		= (1 + bump0 - bump1) * dst.rgb
+		//		= dst.rgb + dst.rgb * (bump0 - bump1)
+
+		gGL.getTexUnit(0)->activate();
+		gGL.getTexUnit(1)->unbind(LLTexUnit::TT_TEXTURE);
+	}
+
 	gGL.setSceneBlendType(LLRender::BT_MULT_X2);
-	gGL.getTexUnit(0)->activate();
 	stop_glerror();
-
-	gGL.getTexUnit(1)->unbind(LLTexUnit::TT_TEXTURE);
 }
 
 //static
@@ -751,14 +786,21 @@ void LLDrawPoolBump::endBump(U32 pass)
 		return;
 	}
 
-	// Disable texture unit 1
-	gGL.getTexUnit(1)->activate();
-	gGL.getTexUnit(1)->disable();
-	gGL.getTexUnit(1)->setTextureBlendType(LLTexUnit::TB_MULT);
+	if (LLGLSLShader::sNoFixedFunction)
+	{
+		gObjectBumpProgram.unbind();
+	}
+	else
+	{
+		// Disable texture blending on unit 1
+		gGL.getTexUnit(1)->activate();
+		//gGL.getTexUnit(1)->disable();
+		gGL.getTexUnit(1)->setTextureBlendType(LLTexUnit::TB_MULT);
 
-	// Disable texture unit 0
-	gGL.getTexUnit(0)->activate();
-	gGL.getTexUnit(0)->setTextureBlendType(LLTexUnit::TB_MULT);
+		// Disable texture blending on unit 0
+		gGL.getTexUnit(0)->activate();
+		gGL.getTexUnit(0)->setTextureBlendType(LLTexUnit::TB_MULT);
+	}
 	
 	gGL.setSceneBlendType(LLRender::BT_ALPHA);
 }
@@ -845,6 +887,9 @@ void LLDrawPoolBump::endPostDeferredPass(S32 pass)
 		endBump(LLRenderPass::PASS_POST_BUMP);
 		break;
 	}
+
+	//to disable texture channels
+	LLRenderPass::endRenderPass(pass);
 }
 
 void LLDrawPoolBump::renderPostDeferred(S32 pass)
@@ -930,7 +975,6 @@ void LLBumpImageList::addTextureStats(U8 bump, const LLUUID& base_image_id, F32 
 
 void LLBumpImageList::updateImages()
 {	
-	llpushcallstacks ;
 	for (bump_image_map_t::iterator iter = mBrightnessEntries.begin(); iter != mBrightnessEntries.end(); )
 	{
 		bump_image_map_t::iterator curiter = iter++;
@@ -957,7 +1001,7 @@ void LLBumpImageList::updateImages()
 			}
 		}
 	}
-	llpushcallstacks ;
+
 	for (bump_image_map_t::iterator iter = mDarknessEntries.begin(); iter != mDarknessEntries.end(); )
 	{
 		bump_image_map_t::iterator curiter = iter++;
@@ -984,7 +1028,6 @@ void LLBumpImageList::updateImages()
 			}
 		}
 	}
-	llpushcallstacks ;
 }
 
 
@@ -1032,11 +1075,12 @@ LLViewerTexture* LLBumpImageList::getBrightnessDarknessImage(LLViewerFetchedText
 		if (!src_image->hasCallbacks())
 		{ //if image has no callbacks but resolutions don't match, trigger raw image loaded callback again
 			if (src_image->getWidth() != bump->getWidth() ||
-				src_image->getHeight() != bump->getHeight() ||
-				(LLPipeline::sRenderDeferred && bump->getComponents() != 4))
+				src_image->getHeight() != bump->getHeight())// ||
+				//(LLPipeline::sRenderDeferred && bump->getComponents() != 4))
 			{
 				src_image->setBoostLevel(LLViewerTexture::BOOST_BUMP) ;
 				src_image->setLoadedCallback( callback_func, 0, TRUE, FALSE, new LLUUID(src_image->getID()), NULL );
+				src_image->forceToSaveRawImage(0) ;
 			}
 		}
 	}
@@ -1304,43 +1348,59 @@ void LLDrawPoolBump::renderBump(U32 type, U32 mask)
 	}
 }
 
-void LLDrawPoolBump::pushBatch(LLDrawInfo& params, U32 mask, BOOL texture)
+void LLDrawPoolBump::pushBatch(LLDrawInfo& params, U32 mask, BOOL texture, BOOL batch_textures)
 {
 	applyModelMatrix(params);
 
-	if (params.mTextureMatrix)
+	bool tex_setup = false;
+
+	if (batch_textures && params.mTextureList.size() > 1)
 	{
-		if (mShiny)
+		for (U32 i = 0; i < params.mTextureList.size(); ++i)
 		{
-			gGL.getTexUnit(0)->activate();
-			glMatrixMode(GL_TEXTURE);
+			if (params.mTextureList[i].notNull())
+			{
+				gGL.getTexUnit(i)->bind(params.mTextureList[i], TRUE);
+			}
 		}
-		else
+	}
+	else
+	{ //not batching textures or batch has only 1 texture -- might need a texture matrix
+		if (params.mTextureMatrix)
 		{
-			gGL.getTexUnit(1)->activate();
-			glMatrixMode(GL_TEXTURE);
+			if (mShiny)
+			{
+				gGL.getTexUnit(0)->activate();
+				glMatrixMode(GL_TEXTURE);
+			}
+			else
+			{
+				gGL.getTexUnit(1)->activate();
+				glMatrixMode(GL_TEXTURE);
+				glLoadMatrixf((GLfloat*) params.mTextureMatrix->mMatrix);
+				gPipeline.mTextureMatrixOps++;
+				gGL.getTexUnit(0)->activate();
+			}
+
 			glLoadMatrixf((GLfloat*) params.mTextureMatrix->mMatrix);
 			gPipeline.mTextureMatrixOps++;
-			gGL.getTexUnit(0)->activate();
+
+			tex_setup = true;
 		}
 
-		glLoadMatrixf((GLfloat*) params.mTextureMatrix->mMatrix);
-		gPipeline.mTextureMatrixOps++;
-	}
-
-	if (mShiny && mVertexShaderLevel > 1 && texture)
-	{
-		if (params.mTexture.notNull())
+		if (mShiny && mVertexShaderLevel > 1 && texture)
 		{
-			gGL.getTexUnit(diffuse_channel)->bind(params.mTexture) ;
-			params.mTexture->addTextureStats(params.mVSize);		
-		}
-		else
-		{
-			gGL.getTexUnit(diffuse_channel)->unbind(LLTexUnit::TT_TEXTURE);
+			if (params.mTexture.notNull())
+			{
+				gGL.getTexUnit(diffuse_channel)->bind(params.mTexture) ;
+				params.mTexture->addTextureStats(params.mVSize);		
+			}
+			else
+			{
+				gGL.getTexUnit(diffuse_channel)->unbind(LLTexUnit::TT_TEXTURE);
+			}
 		}
 	}
-	
 	if (params.mGroup)
 	{
 		params.mGroup->rebuildMesh();
@@ -1348,7 +1408,7 @@ void LLDrawPoolBump::pushBatch(LLDrawInfo& params, U32 mask, BOOL texture)
 	params.mVertexBuffer->setBuffer(mask);
 	params.mVertexBuffer->drawRange(LLRender::TRIANGLES, params.mStart, params.mEnd, params.mCount, params.mOffset);
 	gPipeline.addTrianglesDrawn(params.mCount/3);
-	if (params.mTextureMatrix)
+	if (tex_setup)
 	{
 		if (mShiny)
 		{
@@ -1369,12 +1429,22 @@ void LLDrawPoolInvisible::render(S32 pass)
 { //render invisiprims
 	LLFastTimer t(LLFastTimer::FTM_RENDER_INVISIBLE);
   
+	if (gPipeline.canUseVertexShaders())
+	{
+		gOcclusionProgram.bind();
+	}
+
 	U32 invisi_mask = LLVertexBuffer::MAP_VERTEX;
 	glStencilMask(0);
 	gGL.setColorMask(false, false);
 	pushBatches(LLRenderPass::PASS_INVISIBLE, invisi_mask, FALSE);
 	gGL.setColorMask(true, false);
 	glStencilMask(0xFFFFFFFF);
+
+	if (gPipeline.canUseVertexShaders())
+	{
+		gOcclusionProgram.unbind();
+	}
 
 	if (gPipeline.hasRenderBatches(LLRenderPass::PASS_INVISI_SHINY))
 	{

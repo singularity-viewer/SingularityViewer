@@ -435,7 +435,7 @@ bool LLImageDXT::convertToDXR()
 	S32 nmips = calcNumMips(width,height);
 	S32 total_bytes = getDataSize();
 	U8* olddata = getData();
-	U8* newdata = new U8[total_bytes];
+	U8* newdata = new (std::nothrow) U8[total_bytes];
 	if (!newdata)
 	{
 		llerrs << "Out of memory in LLImageDXT::convertToDXR()" << llendl;

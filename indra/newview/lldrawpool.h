@@ -147,8 +147,8 @@ public:
 	void resetDrawOrders() { }
 
 	static void applyModelMatrix(LLDrawInfo& params);
-	virtual void pushBatches(U32 type, U32 mask, BOOL texture = TRUE);
-	virtual void pushBatch(LLDrawInfo& params, U32 mask, BOOL texture);
+	virtual void pushBatches(U32 type, U32 mask, BOOL texture = TRUE, BOOL batch_textures = FALSE);
+	virtual void pushBatch(LLDrawInfo& params, U32 mask, BOOL texture, BOOL batch_textures = FALSE);
 	virtual void renderGroup(LLSpatialGroup* group, U32 type, U32 mask, BOOL texture = TRUE);
 	virtual void renderGroups(U32 type, U32 mask, BOOL texture = TRUE);
 	virtual void renderTexture(U32 type, U32 mask);
@@ -169,10 +169,7 @@ public:
 	LLFacePool(const U32 type);
 	virtual ~LLFacePool();
 	
-	virtual void renderForSelect() {}; //Override if neded.
 	BOOL isDead() { return mReferences.empty(); }
-	virtual void renderFaceSelected(LLFace *facep, LLViewerTexture *image, const LLColor4 &color,
-									const S32 index_offset = 0, const S32 index_count = 0) {}; //Override if neded.
 
 	virtual LLViewerTexture *getTexture();
 	virtual void dirtyTextures(const std::set<LLViewerFetchedTexture*>& textures);
@@ -185,8 +182,6 @@ public:
 	
 	virtual void resetDrawOrders();
 	void resetAll();
-
-	BOOL moveFace(LLFace *face, LLDrawPool *poolp, BOOL copy_data = FALSE);
 
 	void destroy();
 

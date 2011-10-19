@@ -421,12 +421,16 @@ void LLGLTexMemBar::draw()
 	
 	std::string text;
 
+	S32 global_raw_memory;
+	{
+		global_raw_memory = *AIAccess<S32>(LLImageRaw::sGlobalRawMemory);
+	}
 	text = llformat("GL Tot: %d/%d MB Bound: %d/%d MB Raw Tot: %d MB Bias: %.2f Cache: %.1f/%.1f MB Net Tot Tex: %.1f MB Tot Obj: %.1f MB",
 					total_mem,
 					max_total_mem,
 					bound_mem,
 					max_bound_mem,
-					LLImageRaw::sGlobalRawMemory >> 20,	discard_bias,
+					global_raw_memory >> 20,	discard_bias,
 					cache_usage, cache_max_usage, total_texture_downloaded, total_object_downloaded);
 	//, cache_entries, cache_max_entries
 

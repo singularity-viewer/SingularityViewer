@@ -61,7 +61,7 @@
             <key>Global</key>
             <map>
               <key>Name</key>
-              <string>settings.xml</string>
+              <string>settings_singularity.xml</string>
               <key>NameFromSetting</key>
               <string>ClientSettingsFile</string>
             </map>

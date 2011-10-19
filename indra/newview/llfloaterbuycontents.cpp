@@ -46,7 +46,9 @@
 #include "llalertdialog.h"
 #include "llcheckboxctrl.h"
 #include "llinventorymodel.h"	// for gInventory
+#include "llinventorydefines.h"
 #include "llinventoryview.h"	// for get_item_icon
+#include "llnotificationsutil.h"
 #include "llselectmgr.h"
 #include "llscrolllistctrl.h"
 #include "llviewerobject.h"
@@ -86,7 +88,7 @@ void LLFloaterBuyContents::show(const LLSaleInfo& sale_info)
 
 	if (selection->getRootObjectCount() != 1)
 	{
-		LLNotifications::instance().add("BuyContentsOneOnly");
+		LLNotificationsUtil::add("BuyContentsOneOnly");
 		return;
 	}
 
@@ -116,7 +118,7 @@ void LLFloaterBuyContents::show(const LLSaleInfo& sale_info)
 	BOOL owners_identical = LLSelectMgr::getInstance()->selectGetOwner(owner_id, owner_name);
 	if (!owners_identical)
 	{
-		LLNotifications::instance().add("BuyContentsOneOwner");
+		LLNotificationsUtil::add("BuyContentsOneOwner");
 		return;
 	}
 
@@ -188,10 +190,6 @@ void LLFloaterBuyContents::inventoryChanged(LLViewerObject* obj,
 
 		// Skip folders, so we know we have inventory items only
 		if (asset_type == LLAssetType::AT_CATEGORY)
-			continue;
-
-		// Skip root folders, so we know we have inventory items only
-		if (asset_type == LLAssetType::AT_ROOT_CATEGORY) 
 			continue;
 
 		LLInventoryItem* inv_item = (LLInventoryItem*)((LLInventoryObject*)(*it));
@@ -290,7 +288,7 @@ void LLFloaterBuyContents::onClickBuy(void*)
 
 	// Put the items where we put new folders.
 	LLUUID category_id;
-	category_id = gInventory.findCategoryUUIDForType(LLAssetType::AT_CATEGORY);
+	category_id = gInventory.findCategoryUUIDForType(LLFolderType::FT_ROOT_INVENTORY);
 
 	// *NOTE: doesn't work for multiple object buy, which UI does not
 	// currently support sale info is used for verification only, if

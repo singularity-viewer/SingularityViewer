@@ -46,7 +46,7 @@
 #include "lluictrlfactory.h"
 #include "llviewerwindow.h"
 #include "llappviewer.h"
-#include "llnotifications.h"
+#include "llnotificationsutil.h"
 
 // static
 void* LLPanelGroupTab::createTab(void* data)
@@ -411,7 +411,7 @@ BOOL LLPanelGroup::attemptTransition()
 		LLSD args;
 		args["NEEDS_APPLY_MESSAGE"] = mesg;
 		args["WANT_APPLY_MESSAGE"] = mWantApplyMesg;
-		LLNotifications::instance().add("PanelGroupApply", args, LLSD(),
+		LLNotificationsUtil::add("PanelGroupApply", args, LLSD(),
 			boost::bind(&LLPanelGroup::handleNotifyCallback, this, _1, _2));
 		mShowingNotifyDialog = TRUE;
 		
@@ -559,7 +559,7 @@ bool LLPanelGroup::apply()
 	{
 		LLSD args;
 		args["MESSAGE"] = apply_mesg;
-		LLNotifications::instance().add("GenericAlert", args);
+		LLNotificationsUtil::add("GenericAlert", args);
 	}
 
 	return false;

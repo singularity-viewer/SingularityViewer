@@ -39,6 +39,7 @@
 // libraries
 #include "lldatapacker.h"
 #include "lldarray.h"
+#include "llinventorydefines.h"
 #include "llstring.h"
 #include "lldir.h"
 #include "llmultigesture.h"
@@ -57,7 +58,7 @@
 #include "llinventorymodel.h"
 #include "llkeyboard.h"
 #include "lllineeditor.h"
-#include "llnotify.h"
+#include "llnotificationsutil.h"
 #include "llradiogroup.h"
 #include "llscrolllistctrl.h"
 #include "lltextbox.h"
@@ -156,10 +157,10 @@ LLPreviewGesture* LLPreviewGesture::show(const std::string& title, const LLUUID&
 	}
 
 	// Start speculative download of sounds and animations
-	LLUUID animation_folder_id = gInventory.findCategoryUUIDForType(LLAssetType::AT_ANIMATION);
+	LLUUID animation_folder_id = gInventory.findCategoryUUIDForType(LLFolderType::FT_ANIMATION);
 	gInventory.startBackgroundFetch(animation_folder_id);
 
-	LLUUID sound_folder_id = gInventory.findCategoryUUIDForType(LLAssetType::AT_SOUND);
+	LLUUID sound_folder_id = gInventory.findCategoryUUIDForType(LLFolderType::FT_SOUND);
 	gInventory.startBackgroundFetch(sound_folder_id);
 
 	// this will call refresh when we have everything.
@@ -286,7 +287,7 @@ BOOL LLPreviewGesture::canClose()
 	else
 	{
 		// Bring up view-modal dialog: Save changes? Yes, No, Cancel
-		LLNotifications::instance().add("SaveChanges", LLSD(), LLSD(),
+		LLNotificationsUtil::add("SaveChanges", LLSD(), LLSD(),
 			boost::bind(&LLPreviewGesture::handleSaveChangesDialog, this, _1, _2) );
 		return FALSE;
 	}
@@ -295,7 +296,7 @@ BOOL LLPreviewGesture::canClose()
 // virtual
 void LLPreviewGesture::onClose(bool app_quitting)
 {
-	gGestureManager.stopGesture(mPreviewGesture);
+	LLGestureMgr::instance().stopGesture(mPreviewGesture);
 	LLPreview::onClose(app_quitting);
 }
 
@@ -327,13 +328,13 @@ bool LLPreviewGesture::handleSaveChangesDialog(const LLSD& notification, const L
 	switch(option)
 	{
 	case 0:  // "Yes"
-		gGestureManager.stopGesture(mPreviewGesture);
+		LLGestureMgr::instance().stopGesture(mPreviewGesture);
 		mCloseAfterSave = TRUE;
 		onClickSave(this);
 		break;
 
 	case 1:  // "No"
-		gGestureManager.stopGesture(mPreviewGesture);
+		LLGestureMgr::instance().stopGesture(mPreviewGesture);
 		mDirty = FALSE; // Force the dirty flag because user has clicked NO on confirm save dialog...
 		close();
 		break;
@@ -611,7 +612,7 @@ void LLPreviewGesture::addAnimations()
 													PERM_ITEM_UNRESTRICTED,
 													gAgent.getID(),
 													gAgent.getGroupID());
-	gInventory.collectDescendentsIf(gAgent.getInventoryRootID(),
+	gInventory.collectDescendentsIf(gInventory.getRootFolderID(),
 									cats,
 									items,
 									LLInventoryModel::EXCLUDE_TRASH,
@@ -656,7 +657,7 @@ void LLPreviewGesture::addSounds()
 													PERM_ITEM_UNRESTRICTED,
 													gAgent.getID(),
 													gAgent.getGroupID());
-	gInventory.collectDescendentsIf(gAgent.getInventoryRootID(),
+	gInventory.collectDescendentsIf(gInventory.getRootFolderID(),
 									cats,
 									items,
 									LLInventoryModel::EXCLUDE_TRASH,
@@ -840,7 +841,7 @@ void LLPreviewGesture::refresh()
 	
 	mOptionsText->setText(optionstext);
 
-	BOOL active = gGestureManager.isGestureActive(mItemUUID);
+	BOOL active = LLGestureMgr::instance().isGestureActive(mItemUUID);
 	mActiveCheck->set(active);
 
 	// Can only preview if there are steps
@@ -1126,14 +1127,14 @@ void LLPreviewGesture::saveIfNeeded()
 	if(0)
 	// </edit>
 	{
-		LLNotifications::instance().add("GestureSaveFailedTooManySteps");
+		LLNotificationsUtil::add("GestureSaveFailedTooManySteps");
 
 		delete gesture;
 		gesture = NULL;
 	}
 	else if (!ok)
 	{
-		LLNotifications::instance().add("GestureSaveFailedTryAgain");
+		LLNotificationsUtil::add("GestureSaveFailedTryAgain");
 		delete gesture;
 		gesture = NULL;
 	}
@@ -1194,10 +1195,10 @@ void LLPreviewGesture::saveIfNeeded()
 
 		// If this gesture is active, then we need to update the in-memory
 		// active map with the new pointer.
-		if (!delayedUpload && gGestureManager.isGestureActive(mItemUUID))
+		if (!delayedUpload && LLGestureMgr::instance().isGestureActive(mItemUUID))
 		{
 			// gesture manager now owns the pointer
-			gGestureManager.replaceGesture(mItemUUID, gesture, asset_id);
+			LLGestureMgr::instance().replaceGesture(mItemUUID, gesture, asset_id);
 
 			// replaceGesture may deactivate other gestures so let the
 			// inventory know.
@@ -1272,7 +1273,7 @@ void LLPreviewGesture::onSaveComplete(const LLUUID& asset_uuid, void* user_data,
 			}
 			else
 			{
-				LLNotifications::instance().add("GestureSaveFailedObjectNotFound");
+				LLNotificationsUtil::add("GestureSaveFailedObjectNotFound");
 			}
 		}
 
@@ -1288,7 +1289,7 @@ void LLPreviewGesture::onSaveComplete(const LLUUID& asset_uuid, void* user_data,
 		llwarns << "Problem saving gesture: " << status << llendl;
 		LLSD args;
 		args["REASON"] = std::string(LLAssetStorage::getErrorString(status));
-		LLNotifications::instance().add("GestureSaveFailedReason", args);
+		LLNotificationsUtil::add("GestureSaveFailedReason", args);
 	}
 	delete info;
 	info = NULL;
@@ -1720,13 +1721,13 @@ void LLPreviewGesture::onClickDelete(void* data)
 void LLPreviewGesture::onCommitActive(LLUICtrl* ctrl, void* data)
 {
 	LLPreviewGesture* self = (LLPreviewGesture*)data;
-	if (!gGestureManager.isGestureActive(self->mItemUUID))
+	if (!LLGestureMgr::instance().isGestureActive(self->mItemUUID))
 	{
-		gGestureManager.activateGesture(self->mItemUUID);
+		LLGestureMgr::instance().activateGesture(self->mItemUUID);
 	}
 	else
 	{
-		gGestureManager.deactivateGesture(self->mItemUUID);
+		LLGestureMgr::instance().deactivateGesture(self->mItemUUID);
 	}
 
 	// Make sure the (active) label in the inventory gets updated.
@@ -1765,14 +1766,14 @@ void LLPreviewGesture::onClickPreview(void* data)
 		self->mPreviewBtn->setLabel(self->getString("stop_txt"));
 
 		// play it, and delete when done
-		gGestureManager.playGesture(self->mPreviewGesture);
+		LLGestureMgr::instance().playGesture(self->mPreviewGesture);
 
 		self->refresh();
 	}
 	else
 	{
 		// Will call onDonePreview() below
-		gGestureManager.stopGesture(self->mPreviewGesture);
+		LLGestureMgr::instance().stopGesture(self->mPreviewGesture);
 
 		self->refresh();
 	}

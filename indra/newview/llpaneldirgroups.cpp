@@ -41,6 +41,7 @@
 #include "llqueryflags.h"
 #include "llviewercontrol.h"
 #include "llviewerwindow.h"
+#include "llnotificationsutil.h"
 
 LLPanelDirGroups::LLPanelDirGroups(const std::string& name, LLFloaterDirectory* floater)
 	:	LLPanelDirBrowser(name, floater)
@@ -92,7 +93,7 @@ void LLPanelDirGroups::performQuery()
 	// possible we threw away all the short words in the query so check length
 	if ( query_string.length() < mMinSearchChars )
 	{
-		LLNotifications::instance().add("SeachFilteredOnShortWordsEmpty");
+		LLNotificationsUtil::add("SeachFilteredOnShortWordsEmpty");
 		return;
 	};
 
@@ -101,7 +102,7 @@ void LLPanelDirGroups::performQuery()
 		BOOL inc_adult = childGetValue("incadult").asBoolean();
 		if (!(inc_pg || inc_mature || inc_adult))
 		{
-			LLNotifications::instance().add("NoContentToSearch");
+			LLNotificationsUtil::add("NoContentToSearch");
 			return;
 		}
 		
@@ -110,7 +111,7 @@ void LLPanelDirGroups::performQuery()
 	{
 		LLSD args;
 		args["[FINALQUERY]"] = query_string;
-		LLNotifications::instance().add("SeachFilteredOnShortWords", args);
+		LLNotificationsUtil::add("SeachFilteredOnShortWords", args);
 	};
 
 	setupNewSearch();

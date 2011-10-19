@@ -76,6 +76,23 @@ extern PFNGLUNMAPBUFFERARBPROC		glUnmapBufferARB;
 extern PFNGLGETBUFFERPARAMETERIVARBPROC	glGetBufferParameterivARB;
 extern PFNGLGETBUFFERPOINTERVARBPROC	glGetBufferPointervARB;
 
+// GL_ARB_sync
+extern PFNGLFENCESYNCPROC				glFenceSync;
+extern PFNGLISSYNCPROC					glIsSync;
+extern PFNGLDELETESYNCPROC				glDeleteSync;
+extern PFNGLCLIENTWAITSYNCPROC			glClientWaitSync;
+extern PFNGLWAITSYNCPROC				glWaitSync;
+extern PFNGLGETINTEGER64VPROC			glGetInteger64v;
+extern PFNGLGETSYNCIVPROC				glGetSynciv;
+
+// GL_APPLE_flush_buffer_range
+extern PFNGLBUFFERPARAMETERIAPPLEPROC	glBufferParameteriAPPLE;
+extern PFNGLFLUSHMAPPEDBUFFERRANGEAPPLEPROC glFlushMappedBufferRangeAPPLE;
+
+// GL_ARB_map_buffer_range
+extern PFNGLMAPBUFFERRANGEPROC			glMapBufferRange;
+extern PFNGLFLUSHMAPPEDBUFFERRANGEPROC	glFlushMappedBufferRange;
+
 // GL_ATI_vertex_array_object
 extern PFNGLNEWOBJECTBUFFERATIPROC			glNewObjectBufferATI;
 extern PFNGLISOBJECTBUFFERATIPROC			glIsObjectBufferATI;
@@ -312,6 +329,23 @@ extern PFNGLUNMAPBUFFERARBPROC		glUnmapBufferARB;
 extern PFNGLGETBUFFERPARAMETERIVARBPROC	glGetBufferParameterivARB;
 extern PFNGLGETBUFFERPOINTERVARBPROC	glGetBufferPointervARB;
 
+// GL_ARB_sync
+extern PFNGLFENCESYNCPROC				glFenceSync;
+extern PFNGLISSYNCPROC					glIsSync;
+extern PFNGLDELETESYNCPROC				glDeleteSync;
+extern PFNGLCLIENTWAITSYNCPROC			glClientWaitSync;
+extern PFNGLWAITSYNCPROC				glWaitSync;
+extern PFNGLGETINTEGER64VPROC			glGetInteger64v;
+extern PFNGLGETSYNCIVPROC				glGetSynciv;
+
+// GL_APPLE_flush_buffer_range
+extern PFNGLBUFFERPARAMETERIAPPLEPROC	glBufferParameteriAPPLE;
+extern PFNGLFLUSHMAPPEDBUFFERRANGEAPPLEPROC glFlushMappedBufferRangeAPPLE;
+
+// GL_ARB_map_buffer_range
+extern PFNGLMAPBUFFERRANGEPROC			glMapBufferRange;
+extern PFNGLFLUSHMAPPEDBUFFERRANGEPROC	glFlushMappedBufferRange;
+
 // GL_ATI_vertex_array_object
 extern PFNGLNEWOBJECTBUFFERATIPROC			glNewObjectBufferATI;
 extern PFNGLISOBJECTBUFFERATIPROC			glIsObjectBufferATI;
@@ -455,31 +489,36 @@ extern PFNGLGETCOMPRESSEDTEXIMAGEARBPROC glGetCompressedTexImageARB;
 //GL_EXT_blend_func_separate
 extern PFNGLBLENDFUNCSEPARATEEXTPROC glBlendFuncSeparateEXT;
 
-//GL_EXT_framebuffer_object
-extern PFNGLISRENDERBUFFEREXTPROC glIsRenderbufferEXT;
-extern PFNGLBINDRENDERBUFFEREXTPROC glBindRenderbufferEXT;
-extern PFNGLDELETERENDERBUFFERSEXTPROC glDeleteRenderbuffersEXT;
-extern PFNGLGENRENDERBUFFERSEXTPROC glGenRenderbuffersEXT;
-extern PFNGLRENDERBUFFERSTORAGEEXTPROC glRenderbufferStorageEXT;
-extern PFNGLGETRENDERBUFFERPARAMETERIVEXTPROC glGetRenderbufferParameterivEXT;
-extern PFNGLISFRAMEBUFFEREXTPROC glIsFramebufferEXT;
-extern PFNGLBINDFRAMEBUFFEREXTPROC glBindFramebufferEXT;
-extern PFNGLDELETEFRAMEBUFFERSEXTPROC glDeleteFramebuffersEXT;
-extern PFNGLGENFRAMEBUFFERSEXTPROC glGenFramebuffersEXT;
-extern PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC glCheckFramebufferStatusEXT;
-extern PFNGLFRAMEBUFFERTEXTURE1DEXTPROC glFramebufferTexture1DEXT;
-extern PFNGLFRAMEBUFFERTEXTURE2DEXTPROC glFramebufferTexture2DEXT;
-extern PFNGLFRAMEBUFFERTEXTURE3DEXTPROC glFramebufferTexture3DEXT;
-extern PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC glFramebufferRenderbufferEXT;
-extern PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC glGetFramebufferAttachmentParameterivEXT;
-extern PFNGLGENERATEMIPMAPEXTPROC glGenerateMipmapEXT;
-extern PFNGLBLITFRAMEBUFFEREXTPROC glBlitFramebufferEXT;
-extern PFNGLRENDERBUFFERSTORAGEMULTISAMPLEEXTPROC glRenderbufferStorageMultisampleEXT;
-extern PFNGLFRAMEBUFFERTEXTURELAYEREXTPROC glFramebufferTextureLayerEXT;
+//GL_ARB_framebuffer_object
+extern PFNGLISRENDERBUFFERPROC glIsRenderbuffer;
+extern PFNGLBINDRENDERBUFFERPROC glBindRenderbuffer;
+extern PFNGLDELETERENDERBUFFERSPROC glDeleteRenderbuffers;
+extern PFNGLGENRENDERBUFFERSPROC glGenRenderbuffers;
+extern PFNGLRENDERBUFFERSTORAGEPROC glRenderbufferStorage;
+extern PFNGLGETRENDERBUFFERPARAMETERIVPROC glGetRenderbufferParameteriv;
+extern PFNGLISFRAMEBUFFERPROC glIsFramebuffer;
+extern PFNGLBINDFRAMEBUFFERPROC glBindFramebuffer;
+extern PFNGLDELETEFRAMEBUFFERSPROC glDeleteFramebuffers;
+extern PFNGLGENFRAMEBUFFERSPROC glGenFramebuffers;
+extern PFNGLCHECKFRAMEBUFFERSTATUSPROC glCheckFramebufferStatus;
+extern PFNGLFRAMEBUFFERTEXTURE1DPROC glFramebufferTexture1D;
+extern PFNGLFRAMEBUFFERTEXTURE2DPROC glFramebufferTexture2D;
+extern PFNGLFRAMEBUFFERTEXTURE3DPROC glFramebufferTexture3D;
+extern PFNGLFRAMEBUFFERRENDERBUFFERPROC glFramebufferRenderbuffer;
+extern PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC glGetFramebufferAttachmentParameteriv;
+extern PFNGLGENERATEMIPMAPPROC glGenerateMipmap;
+extern PFNGLBLITFRAMEBUFFERPROC glBlitFramebuffer;
+extern PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC glRenderbufferStorageMultisample;
+extern PFNGLFRAMEBUFFERTEXTURELAYERPROC glFramebufferTextureLayer;
 
 //GL_ARB_draw_buffers
 extern PFNGLDRAWBUFFERSARBPROC glDrawBuffersARB;
 
+//GL_ARB_texture_multisample
+extern PFNGLTEXIMAGE2DMULTISAMPLEPROC glTexImage2DMultisample;
+extern PFNGLTEXIMAGE3DMULTISAMPLEPROC glTexImage3DMultisample;
+extern PFNGLGETMULTISAMPLEFVPROC glGetMultisamplefv;
+extern PFNGLSAMPLEMASKIPROC glSampleMaski;
 
 #elif LL_WINDOWS
 //----------------------------------------------------------------------------
@@ -511,6 +550,23 @@ extern PFNGLMAPBUFFERARBPROC		glMapBufferARB;
 extern PFNGLUNMAPBUFFERARBPROC		glUnmapBufferARB;
 extern PFNGLGETBUFFERPARAMETERIVARBPROC	glGetBufferParameterivARB;
 extern PFNGLGETBUFFERPOINTERVARBPROC	glGetBufferPointervARB;
+
+// GL_ARB_sync
+extern PFNGLFENCESYNCPROC				glFenceSync;
+extern PFNGLISSYNCPROC					glIsSync;
+extern PFNGLDELETESYNCPROC				glDeleteSync;
+extern PFNGLCLIENTWAITSYNCPROC			glClientWaitSync;
+extern PFNGLWAITSYNCPROC				glWaitSync;
+extern PFNGLGETINTEGER64VPROC			glGetInteger64v;
+extern PFNGLGETSYNCIVPROC				glGetSynciv;
+
+// GL_APPLE_flush_buffer_range
+extern PFNGLBUFFERPARAMETERIAPPLEPROC	glBufferParameteriAPPLE;
+extern PFNGLFLUSHMAPPEDBUFFERRANGEAPPLEPROC glFlushMappedBufferRangeAPPLE;
+
+// GL_ARB_map_buffer_range
+extern PFNGLMAPBUFFERRANGEPROC			glMapBufferRange;
+extern PFNGLFLUSHMAPPEDBUFFERRANGEPROC	glFlushMappedBufferRange;
 
 // GL_ATI_vertex_array_object
 extern PFNGLNEWOBJECTBUFFERATIPROC			glNewObjectBufferATI;
@@ -654,30 +710,36 @@ extern PFNGLGETATTRIBLOCATIONARBPROC glGetAttribLocationARB;
 //GL_EXT_blend_func_separate
 extern PFNGLBLENDFUNCSEPARATEEXTPROC glBlendFuncSeparateEXT;
 
-//GL_EXT_framebuffer_object
-extern PFNGLISRENDERBUFFEREXTPROC glIsRenderbufferEXT;
-extern PFNGLBINDRENDERBUFFEREXTPROC glBindRenderbufferEXT;
-extern PFNGLDELETERENDERBUFFERSEXTPROC glDeleteRenderbuffersEXT;
-extern PFNGLGENRENDERBUFFERSEXTPROC glGenRenderbuffersEXT;
-extern PFNGLRENDERBUFFERSTORAGEEXTPROC glRenderbufferStorageEXT;
-extern PFNGLGETRENDERBUFFERPARAMETERIVEXTPROC glGetRenderbufferParameterivEXT;
-extern PFNGLISFRAMEBUFFEREXTPROC glIsFramebufferEXT;
-extern PFNGLBINDFRAMEBUFFEREXTPROC glBindFramebufferEXT;
-extern PFNGLDELETEFRAMEBUFFERSEXTPROC glDeleteFramebuffersEXT;
-extern PFNGLGENFRAMEBUFFERSEXTPROC glGenFramebuffersEXT;
-extern PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC glCheckFramebufferStatusEXT;
-extern PFNGLFRAMEBUFFERTEXTURE1DEXTPROC glFramebufferTexture1DEXT;
-extern PFNGLFRAMEBUFFERTEXTURE2DEXTPROC glFramebufferTexture2DEXT;
-extern PFNGLFRAMEBUFFERTEXTURE3DEXTPROC glFramebufferTexture3DEXT;
-extern PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC glFramebufferRenderbufferEXT;
-extern PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC glGetFramebufferAttachmentParameterivEXT;
-extern PFNGLGENERATEMIPMAPEXTPROC glGenerateMipmapEXT;
-extern PFNGLBLITFRAMEBUFFEREXTPROC glBlitFramebufferEXT;
-extern PFNGLRENDERBUFFERSTORAGEMULTISAMPLEEXTPROC glRenderbufferStorageMultisampleEXT;
-extern PFNGLFRAMEBUFFERTEXTURELAYEREXTPROC glFramebufferTextureLayerEXT;
+//GL_ARB_framebuffer_object
+extern PFNGLISRENDERBUFFERPROC glIsRenderbuffer;
+extern PFNGLBINDRENDERBUFFERPROC glBindRenderbuffer;
+extern PFNGLDELETERENDERBUFFERSPROC glDeleteRenderbuffers;
+extern PFNGLGENRENDERBUFFERSPROC glGenRenderbuffers;
+extern PFNGLRENDERBUFFERSTORAGEPROC glRenderbufferStorage;
+extern PFNGLGETRENDERBUFFERPARAMETERIVPROC glGetRenderbufferParameteriv;
+extern PFNGLISFRAMEBUFFERPROC glIsFramebuffer;
+extern PFNGLBINDFRAMEBUFFERPROC glBindFramebuffer;
+extern PFNGLDELETEFRAMEBUFFERSPROC glDeleteFramebuffers;
+extern PFNGLGENFRAMEBUFFERSPROC glGenFramebuffers;
+extern PFNGLCHECKFRAMEBUFFERSTATUSPROC glCheckFramebufferStatus;
+extern PFNGLFRAMEBUFFERTEXTURE1DPROC glFramebufferTexture1D;
+extern PFNGLFRAMEBUFFERTEXTURE2DPROC glFramebufferTexture2D;
+extern PFNGLFRAMEBUFFERTEXTURE3DPROC glFramebufferTexture3D;
+extern PFNGLFRAMEBUFFERRENDERBUFFERPROC glFramebufferRenderbuffer;
+extern PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC glGetFramebufferAttachmentParameteriv;
+extern PFNGLGENERATEMIPMAPPROC glGenerateMipmap;
+extern PFNGLBLITFRAMEBUFFERPROC glBlitFramebuffer;
+extern PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC glRenderbufferStorageMultisample;
+extern PFNGLFRAMEBUFFERTEXTURELAYERPROC glFramebufferTextureLayer;
 
 //GL_ARB_draw_buffers
 extern PFNGLDRAWBUFFERSARBPROC glDrawBuffersARB;
+
+//GL_ARB_texture_multisample
+extern PFNGLTEXIMAGE2DMULTISAMPLEPROC glTexImage2DMultisample;
+extern PFNGLTEXIMAGE3DMULTISAMPLEPROC glTexImage3DMultisample;
+extern PFNGLGETMULTISAMPLEFVPROC glGetMultisamplefv;
+extern PFNGLSAMPLEMASKIPROC glSampleMaski;
 
 #elif LL_DARWIN
 //----------------------------------------------------------------------------
@@ -696,7 +758,7 @@ extern PFNGLDRAWBUFFERSARBPROC glDrawBuffersARB;
 #include <AvailabilityMacros.h>
 
 //GL_EXT_blend_func_separate
-extern void glBlendFuncSeparateEXT(GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha) AVAILABLE_MAC_OS_X_VERSION_10_4_AND_LATER;
+extern void glBlendFuncSeparateEXT(GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha) ;
 
 // GL_EXT_framebuffer_object
 extern GLboolean glIsRenderbufferEXT(GLuint renderbuffer) AVAILABLE_MAC_OS_X_VERSION_10_4_AND_LATER;
@@ -719,6 +781,7 @@ extern void glGenerateMipmapEXT(GLenum target) AVAILABLE_MAC_OS_X_VERSION_10_4_A
 
 #ifndef GL_ARB_framebuffer_object
 #define glGenerateMipmap glGenerateMipmapEXT
+#define GL_MAX_SAMPLES	0x8D57
 #endif
 // GL_ARB_draw_buffers
 extern void glDrawBuffersARB(GLsizei n, const GLenum* bufs) AVAILABLE_MAC_OS_X_VERSION_10_4_AND_LATER;
@@ -726,6 +789,46 @@ extern void glDrawBuffersARB(GLsizei n, const GLenum* bufs) AVAILABLE_MAC_OS_X_V
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+//
+// Define map buffer range headers on Mac
+//
+#ifndef GL_ARB_map_buffer_range
+#define GL_MAP_READ_BIT                   0x0001
+#define GL_MAP_WRITE_BIT                  0x0002
+#define GL_MAP_INVALIDATE_RANGE_BIT       0x0004
+#define GL_MAP_INVALIDATE_BUFFER_BIT      0x0008
+#define GL_MAP_FLUSH_EXPLICIT_BIT         0x0010
+#define GL_MAP_UNSYNCHRONIZED_BIT         0x0020
+#endif
+
+//
+// Define multisample headers on Mac
+//
+#ifndef GL_ARB_texture_multisample
+#define GL_SAMPLE_POSITION                0x8E50
+#define GL_SAMPLE_MASK                    0x8E51
+#define GL_SAMPLE_MASK_VALUE              0x8E52
+#define GL_MAX_SAMPLE_MASK_WORDS          0x8E59
+#define GL_TEXTURE_2D_MULTISAMPLE         0x9100
+#define GL_PROXY_TEXTURE_2D_MULTISAMPLE   0x9101
+#define GL_TEXTURE_2D_MULTISAMPLE_ARRAY   0x9102
+#define GL_PROXY_TEXTURE_2D_MULTISAMPLE_ARRAY 0x9103
+#define GL_TEXTURE_BINDING_2D_MULTISAMPLE 0x9104
+#define GL_TEXTURE_BINDING_2D_MULTISAMPLE_ARRAY 0x9105
+#define GL_TEXTURE_SAMPLES                0x9106
+#define GL_TEXTURE_FIXED_SAMPLE_LOCATIONS 0x9107
+#define GL_SAMPLER_2D_MULTISAMPLE         0x9108
+#define GL_INT_SAMPLER_2D_MULTISAMPLE     0x9109
+#define GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE 0x910A
+#define GL_SAMPLER_2D_MULTISAMPLE_ARRAY   0x910B
+#define GL_INT_SAMPLER_2D_MULTISAMPLE_ARRAY 0x910C
+#define GL_UNSIGNED_INT_SAMPLER_2D_MULTISAMPLE_ARRAY 0x910D
+#define GL_MAX_COLOR_TEXTURE_SAMPLES      0x910E
+#define GL_MAX_DEPTH_TEXTURE_SAMPLES      0x910F
+#define GL_MAX_INTEGER_SAMPLES            0x9110
+#endif
+
 //
 // Define vertex buffer object headers on Mac
 //

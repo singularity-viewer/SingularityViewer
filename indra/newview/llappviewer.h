@@ -66,11 +66,11 @@ public:
 	// Application control
 	void flushVFSIO(); // waits for vfs transfers to complete
 	void forceQuit(); // Puts the viewer into 'shutting down without error' mode.
+	void fastQuit(S32 error_code = 0); // Shuts down the viewer immediately after sending a logout message
 	void requestQuit(); // Request a quit. A kinder, gentler quit.
 	void userQuit(); // The users asks to quit. Confirm, then requestQuit()
     void earlyExit(const std::string& name, 
 				   const LLSD& substitutions = LLSD()); // Display an error dialog and forcibly quit.
-    void forceExit(S32 arg); // exit() immediately (after some cleanup).
     void abortQuit();  // Called to abort a quit request.
 
     bool quitRequested() { return mQuitRequested; }
@@ -96,7 +96,9 @@ public:
 	static LLImageDecodeThread* getImageDecodeThread() { return sImageDecodeThread; }
 	static LLTextureFetch* getTextureFetch() { return sTextureFetch; }
 
-	static U32 getTextureCacheVersion();
+	static U32 getTextureCacheVersion() ;
+	static U32 getObjectCacheVersion() ;
+
 	const std::string& getSerialNumber() { return mSerialNumber; }
 	
 	bool getPurgeCache() const { return mPurgeCache; }
@@ -156,6 +158,9 @@ public:
 	// *NOTE:Mani Fix this for login abstraction!!
 	void handleLoginComplete();
 
+	void addOnIdleCallback(const boost::function<void()>& cb); // add a callback to fire (once) when idle
+
+	void purgeCache(); // Clear the local cache. 
 protected:
 	virtual bool initWindow(); // Initialize the viewer's window.
 	virtual bool initLogging(); // Initialize log files, logging system, return false on failure.
@@ -176,7 +181,6 @@ private:
 	bool initConfiguration(); // Initialize settings from the command line/config file.
 
 	bool initCache(); // Initialize local client cache.
-	void purgeCache(); // Clear the local cache. 
 
 	// We have switched locations of both Mac and Windows cache, make sure
 	// files migrate and old cache is cleared out.
@@ -309,8 +313,6 @@ extern LLTimer gLogoutTimer;
 extern F32 gSimLastTime; 
 extern F32 gSimFrames;
 
-extern LLUUID gInventoryLibraryOwner;
-extern LLUUID gInventoryLibraryRoot;
 // <edit>
 extern LLUUID gSystemFolderRoot;
 extern LLUUID gSystemFolderSettings;

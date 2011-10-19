@@ -18,6 +18,7 @@
 
 #include "lluictrlfactory.h"
 #include "llcombobox.h"
+#include "llnotificationsutil.h"
 
 #include "llagent.h" // gAgent
 #include "llviewerwindow.h" // alertXml
@@ -185,7 +186,7 @@ void LLLocalInventory::loadInvCache(std::string filename)
 		container_id.generate();
 		container->setUUID(container_id);
 		container->setParent(gSystemFolderRoot);
-		container->setPreferredType(LLAssetType::AT_NONE);
+		container->setPreferredType(LLFolderType::FT_NONE);
 		LLInventoryModel::update_map_t container_update;
 		++container_update[container->getParentUUID()];
 		gInventory.accountForUpdate(container_update);
@@ -199,7 +200,7 @@ void LLLocalInventory::loadInvCache(std::string filename)
 		orphaned_items_id.generate();
 		orphaned_items->setUUID(orphaned_items_id);
 		orphaned_items->setParent(container_id);
-		orphaned_items->setPreferredType(LLAssetType::AT_NONE);
+		orphaned_items->setPreferredType(LLFolderType::FT_NONE);
 		
 		LLInventoryModel::update_map_t orphaned_items_update;
 		++orphaned_items_update[orphaned_items->getParentUUID()];
@@ -315,7 +316,7 @@ void LLLocalInventory::loadInvCache(std::string filename)
 
 			LLSD args;
 			args["ERROR_MESSAGE"] = message.str();
-			LLNotifications::instance().add("ErrorMessage", args);
+			LLNotificationsUtil::add("ErrorMessage", args);
 		}
 		conflicting_cats.clear();// srsly dont think this is need but w/e :D
 	}
@@ -470,7 +471,7 @@ void LLFloaterNewLocalInventory::onClickOK(void* user_data)
 	LLUUID owner_id = LLUUID(floater->getChild<LLLineEditor>("owner_id_line")->getText());
 
 	LLAssetType::EType type = LLAssetType::lookup(floater->getChild<LLComboBox>("type_combo")->getValue().asString());
-	LLInventoryType::EType inv_type = LLInventoryType::IT_CALLINGCARD;
+	LLInventoryType::EType inv_type = LLInventoryType::IT_NONE;
 	switch(type)
 	{
 	case LLAssetType::AT_TEXTURE:
@@ -504,12 +505,13 @@ void LLFloaterNewLocalInventory::onClickOK(void* user_data)
 	case LLAssetType::AT_CATEGORY:
 		inv_type = LLInventoryType::IT_CATEGORY;
 		break;
-	case LLAssetType::AT_ROOT_CATEGORY:
-	case LLAssetType::AT_TRASH:
-	case LLAssetType::AT_SNAPSHOT_CATEGORY:
-	case LLAssetType::AT_LOST_AND_FOUND:
+	//No longer asset types.
+	/*case LLFolderType::FT_ROOT_CATEGORY:
+	case LLFolderType::FT_TRASH:
+	case LLFolderType::FT_SNAPSHOT_CATEGORY:
+	case LLFolderType::FT_LOST_AND_FOUND:
 		inv_type = LLInventoryType::IT_ROOT_CATEGORY;
-		break;
+		break;*/
 	case LLAssetType::AT_LSL_TEXT:
 	case LLAssetType::AT_LSL_BYTECODE:
 		inv_type = LLInventoryType::IT_LSL;
@@ -523,12 +525,14 @@ void LLFloaterNewLocalInventory::onClickOK(void* user_data)
 	case LLAssetType::AT_GESTURE:
 		inv_type = LLInventoryType::IT_GESTURE;
 		break;
-	case LLAssetType::AT_SIMSTATE:
+	//case LLAssetType::AT_SIMSTATE:
 	default:
-		inv_type = LLInventoryType::IT_CALLINGCARD;
+		//inv_type = LLInventoryType::IT_CALLINGCARD;
 		break;
 	}
 
+	if(inv_type == LLInventoryType::IT_NONE)
+		return;
 
 	LLPermissions* perms = new LLPermissions();
 	perms->init(creator_id, owner_id, LLUUID::null, LLUUID::null);

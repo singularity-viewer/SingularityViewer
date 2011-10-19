@@ -4,6 +4,7 @@
  * $LicenseInfo:firstyear=2002&license=viewergpl$
  * 
  * Copyright (c) 2002-2009, Linden Research, Inc.
+ * Copyright (c) 2011, Aleric Inglewood.
  * 
  * Second Life Viewer Source Code
  * The source code in this file ("Source Code") is provided by Linden Lab
@@ -35,48 +36,55 @@
 
 #include "llframetimer.h"
 
+// Local constants.
+static F64 const USEC_PER_SECOND = 1000000.0;
+static F64 const USEC_TO_SEC_F64 = 0.000001;
+
 // Static members
-//LLTimer	LLFrameTimer::sInternalTimer;
-U64 LLFrameTimer::sStartTotalTime = totalTime();
-F64 LLFrameTimer::sFrameTime = 0.0;
-U64 LLFrameTimer::sTotalTime = 0;
-F64 LLFrameTimer::sTotalSeconds = 0.0;
-S32 LLFrameTimer::sFrameCount = 0;
-U64 LLFrameTimer::sFrameDeltaTime = 0;
-const F64 USEC_PER_SECOND = 1000000.0;
-const F64 USEC_TO_SEC_F64 = 0.000001;
+U64 const LLFrameTimer::sStartTotalTime = totalTime();				// Application start in microseconds since epoch.
+U64 LLFrameTimer::sTotalTime = LLFrameTimer::sStartTotalTime;		// Current time in microseconds since epoch, updated at least once per frame.
+F64 LLFrameTimer::sTotalSeconds =									// Current time in seconds since epoch, updated together with LLFrameTimer::sTotalTime.
+        U64_to_F64(LLFrameTimer::sTotalTime) * USEC_TO_SEC_F64;
+F64 LLFrameTimer::sFrameTime = 0.0;									// Current time in seconds since application start, updated together with LLFrameTimer::sTotalTime.
+// Updated exactly once per frame:
+S32 LLFrameTimer::sFrameCount = 0;									// Current frame number (number of frames since application start).
+U64 LLFrameTimer::sPrevTotalTime = LLFrameTimer::sStartTotalTime;	// Previous (frame) time in microseconds since epoch, updated once per frame.
+U64 LLFrameTimer::sFrameDeltaTime = 0;								// Microseconds between last two calls to LLFrameTimer::updateFrameTimeAndCount.
 
 // static
 void LLFrameTimer::updateFrameTime()
 {
-	U64 total_time = totalTime();
-	sFrameDeltaTime = total_time - sTotalTime;
-	sTotalTime = total_time;
+	sTotalTime = totalTime();
 	sTotalSeconds = U64_to_F64(sTotalTime) * USEC_TO_SEC_F64;
 	sFrameTime = U64_to_F64(sTotalTime - sStartTotalTime) * USEC_TO_SEC_F64;
 } 
 
-void LLFrameTimer::start()
+// static
+void LLFrameTimer::updateFrameTimeAndCount()
 {
-	reset();
-	mStarted = TRUE;
+	updateFrameTime();
+	sFrameDeltaTime = sTotalTime - sPrevTotalTime;
+	sPrevTotalTime = sTotalTime;
+	++sFrameCount;
+}
+
+void LLFrameTimer::reset(F32 expiration)
+{
+	llassert(!mPaused);
+	mStartTime = sFrameTime;
+	mExpiry = sFrameTime + expiration;
+}
+
+void LLFrameTimer::start(F32 expiration)
+{
+	reset(expiration);
+	mRunning = true;							// Start, if not already started.
 }
 
 void LLFrameTimer::stop()
 {
-	mStarted = FALSE;
-}
-
-void LLFrameTimer::reset()
-{
-	mStartTime = sFrameTime;
-	mExpiry = sFrameTime;
-}
-
-void LLFrameTimer::resetWithExpiry(F32 expiration)
-{
-	reset();
-	setTimerExpirySec(expiration);
+	llassert(!mPaused);
+	mRunning = false;
 }
 
 // Don't combine pause/unpause with start/stop
@@ -89,25 +97,31 @@ void LLFrameTimer::resetWithExpiry(F32 expiration)
 //  Note: elapsed would also be valid with no unpause() call (= time run until pause() called)
 void LLFrameTimer::pause()
 {
-	if (mStarted)
-		mStartTime = sFrameTime - mStartTime; // save dtime
-	mStarted = FALSE;
+	if (!mPaused)
+	{
+		mStartTime = sFrameTime - mStartTime;	// Abuse mStartTime to store the elapsed time so far.
+	}
+	mPaused = true;
 }
 
 void LLFrameTimer::unpause()
 {
-	if (!mStarted)
-		mStartTime = sFrameTime - mStartTime; // restore dtime
-	mStarted = TRUE;
+	if (mPaused)
+	{
+		mStartTime = sFrameTime - mStartTime;	// Set mStartTime consistent with the elapsed time so far.
+	}
+	mPaused = false;
 }
 
 void LLFrameTimer::setTimerExpirySec(F32 expiration)
 {
-	mExpiry = expiration + mStartTime;
+	llassert(!mPaused);
+	mExpiry = mStartTime + expiration;
 }
 
 void LLFrameTimer::setExpiryAt(F64 seconds_since_epoch)
 {
+	llassert(!mPaused);
 	mStartTime = sFrameTime;
 	mExpiry = seconds_since_epoch - (USEC_TO_SEC_F64 * sStartTotalTime);
 }
@@ -119,20 +133,14 @@ F64 LLFrameTimer::expiresAt() const
 	return expires_at;
 }
 
-BOOL LLFrameTimer::checkExpirationAndReset(F32 expiration)
+bool LLFrameTimer::checkExpirationAndReset(F32 expiration)
 {
-	//llinfos << "LLFrameTimer::checkExpirationAndReset()" << llendl;
-	//llinfos << "  mStartTime:" << mStartTime << llendl;
-	//llinfos << "  sFrameTime:" << sFrameTime << llendl;
-	//llinfos << "  mExpiry:   " <<  mExpiry << llendl;
-
-	if(hasExpired())
+	if (hasExpired())
 	{
-		reset();
-		setTimerExpirySec(expiration);
-		return TRUE;
+		reset(expiration);
+		return true;
 	}
-	return FALSE;
+	return false;
 }
 
 // static

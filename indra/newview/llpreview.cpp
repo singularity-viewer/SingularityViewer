@@ -36,6 +36,7 @@
 #include "llpreview.h"
 #include "lllineeditor.h"
 #include "llinventory.h"
+#include "llinventorydefines.h"
 #include "llinventorymodel.h"
 #include "llresmgr.h"
 #include "lltextbox.h"
@@ -46,11 +47,15 @@
 #include "llviewerobject.h"
 #include "llviewerobjectlist.h"
 #include "lldbstrings.h"
+#include "llfloatersearchreplace.h"
+#include "llpreviewnotecard.h"
+#include "llpreviewscript.h"
 #include "llagent.h"
-#include "llvoavatar.h"
+#include "llvoavatarself.h"
 #include "llselectmgr.h"
 #include "llinventoryview.h"
 #include "llviewerinventory.h"
+#include "llviewerassettype.h"
 
 // Constants
 
@@ -226,7 +231,7 @@ void LLPreview::onCommit()
 			// update the object itself.
 			if( item->getType() == LLAssetType::AT_OBJECT )
 			{
-				LLVOAvatar* avatar = gAgent.getAvatarObject();
+				LLVOAvatar* avatar = gAgentAvatarp;
 				if( avatar )
 				{
 					LLViewerObject* obj = avatar->getWornAttachment( item->getUUID() );
@@ -406,7 +411,7 @@ BOOL LLPreview::handleHover(S32 x, S32 y, MASK mask)
 		   && LLToolDragAndDrop::getInstance()->isOverThreshold(screen_x, screen_y))
 		{
 			EDragAndDropType type;
-			type = LLAssetType::lookupDragAndDropType(item->getType());
+			type = LLViewerAssetType::lookupDragAndDropType(item->getType());
 			LLToolDragAndDrop::ESource src = LLToolDragAndDrop::SOURCE_LIBRARY;
 			if(!mObjectUUID.isNull())
 			{
@@ -497,7 +502,7 @@ void LLPreview::onDiscardBtn(void* data)
 	*/
 
 	// Move the item to the trash
-	LLUUID trash_id = gInventory.findCategoryUUIDForType(LLAssetType::AT_TRASH);
+	LLUUID trash_id = gInventory.findCategoryUUIDForType(LLFolderType::FT_TRASH);
 	if (item->getParentUUID() != trash_id)
 	{
 		LLInventoryModel::update_list_t update;
@@ -529,13 +534,14 @@ LLPreview* LLPreview::getFirstPreviewForSource(const LLUUID& source_id)
 	return NULL;
 }
 
-void LLPreview::userSetShape(const LLRect& new_rect)
+void LLPreview::handleReshape(const LLRect& new_rect, bool by_user)
 {
-	if(new_rect.getWidth() != getRect().getWidth() || new_rect.getHeight() != getRect().getHeight())
+	if(by_user 
+		&& (new_rect.getWidth() != getRect().getWidth() || new_rect.getHeight() != getRect().getHeight()))
 	{
 		userResized();
 	}
-	LLFloater::userSetShape(new_rect);
+	LLFloater::handleReshape(new_rect, by_user);
 }
 
 //
@@ -558,14 +564,14 @@ void LLMultiPreview::open()		/*Flawfinder: ignore*/
 }
 
 
-void LLMultiPreview::userSetShape(const LLRect& new_rect)
+void LLMultiPreview::handleReshape(const LLRect& new_rect, bool by_user)
 {
 	if(new_rect.getWidth() != getRect().getWidth() || new_rect.getHeight() != getRect().getHeight())
 	{
 		LLPreview* frontmost_preview = (LLPreview*)mTabContainer->getCurrentPanel();
 		if (frontmost_preview) frontmost_preview->userResized();
 	}
-	LLFloater::userSetShape(new_rect);
+	LLFloater::handleReshape(new_rect, by_user);
 }
 
 
@@ -575,6 +581,24 @@ void LLMultiPreview::tabOpen(LLFloater* opened_floater, bool from_click)
 	if (opened_preview && opened_preview->getAssetStatus() == LLPreview::PREVIEW_ASSET_UNLOADED)
 	{
 		opened_preview->loadAsset();
+	}
+
+	LLFloater* search_floater = LLFloaterSearchReplace::getInstance();
+	if (search_floater && search_floater->getDependee() == this)
+	{
+		LLPreviewNotecard* notecard_preview; LLPreviewLSL* script_preview;
+		if ((notecard_preview = dynamic_cast<LLPreviewNotecard*>(opened_preview)) != NULL)
+		{
+			LLFloaterSearchReplace::show(notecard_preview->getEditor());
+		}
+		else if ((script_preview = dynamic_cast<LLPreviewLSL*>(opened_preview)) != NULL)
+		{
+			LLFloaterSearchReplace::show(script_preview->getEditor());
+		}
+		else
+		{
+			search_floater->setVisible(FALSE);
+		}
 	}
 }
 

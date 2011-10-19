@@ -61,6 +61,7 @@
 #include "llviewerstats.h"
 #include "llviewercamera.h"
 #include "llviewerwindow.h"
+#include "llwindow.h"
 #include "llviewermenufile.h"	// upload_new_resource()
 #include "llfloaterpostcard.h"
 #include "llcheckboxctrl.h"
@@ -68,6 +69,7 @@
 #include "lltoolfocus.h"
 #include "lltoolmgr.h"
 #include "llworld.h"
+#include "llagentui.h"
 
 #include "llgl.h"
 #include "llglheaders.h"
@@ -75,6 +77,7 @@
 #include "llimagepng.h"
 #include "llimagebmp.h"
 #include "llimagej2c.h"
+#include "llnotificationsutil.h"
 #include "llvfile.h"
 #include "llvfs.h"
 
@@ -228,7 +231,6 @@ LLSnapshotLivePreview::LLSnapshotLivePreview (const LLRect& rect) :
 	mSnapshotBufferType(LLViewerWindow::SNAPSHOT_TYPE_COLOR)
 {
 	setSnapshotQuality(gSavedSettings.getS32("SnapshotQuality"));
-	mSnapshotDelayTimer.setTimerExpirySec(0.0f);
 	mSnapshotDelayTimer.start();
 // 	gIdleCallbacks.addFunction( &LLSnapshotLivePreview::onIdle, (void*)this );
 	sList.insert(this);
@@ -349,8 +351,7 @@ void LLSnapshotLivePreview::updateSnapshot(BOOL new_snapshot, BOOL new_thumbnail
 	mShineAnimTimer.stop();
 	if (new_snapshot)
 	{
-		mSnapshotDelayTimer.start();
-		mSnapshotDelayTimer.setTimerExpirySec(delay);
+		mSnapshotDelayTimer.start(delay);
 	}
 	if(new_thumbnail)
 	{
@@ -753,7 +754,7 @@ BOOL LLSnapshotLivePreview::onIdle( void* snapshot_preview )
 
 	// see if it's time yet to snap the shot and bomb out otherwise.
 	previewp->mSnapshotActive = 
-		(previewp->mSnapshotDelayTimer.getStarted() &&	previewp->mSnapshotDelayTimer.hasExpired())
+		(previewp->mSnapshotDelayTimer.getStarted() && previewp->mSnapshotDelayTimer.hasExpired())
 		&& !LLToolCamera::getInstance()->hasMouseCapture(); // don't take snapshots while ALT-zoom active
 	if ( ! previewp->mSnapshotActive)
 	{
@@ -975,9 +976,9 @@ void LLSnapshotLivePreview::saveTexture()
 	{
 		LLVFile::writeFile(formatted->getData(), formatted->getDataSize(), gVFS, new_asset_id, LLAssetType::AT_TEXTURE);
 		std::string pos_string;
-		gAgent.buildLocationString(pos_string);
+		LLAgentUI::buildLocationString(pos_string, LLAgentUI::LOCATION_FORMAT_FULL);
 		std::string who_took_it;
-		gAgent.buildFullname(who_took_it);
+		LLAgentUI::buildFullname(who_took_it);
 		LLAssetStorage::LLStoreAssetCallback callback = NULL;
 		S32 expected_upload_cost = LLGlobalEconomy::Singleton::getInstance()->getPriceUpload();
 		void *userdata = NULL;
@@ -986,7 +987,7 @@ void LLSnapshotLivePreview::saveTexture()
 				    "Snapshot : " + pos_string,
 				    "Taken by " + who_took_it + " at " + pos_string,
 				    0,
-				    LLAssetType::AT_SNAPSHOT_CATEGORY,
+				    LLFolderType::FT_SNAPSHOT_CATEGORY,
 				    LLInventoryType::IT_SNAPSHOT,
 				    PERM_ALL,  // Note: Snapshots to inventory is a special case of content upload
 				    LLFloaterPerms::getGroupPerms(), // that is more permissive than other uploads
@@ -997,7 +998,7 @@ void LLSnapshotLivePreview::saveTexture()
 	}
 	else
 	{
-		LLNotifications::instance().add("ErrorEncodingSnapshot");
+		LLNotificationsUtil::add("ErrorEncodingSnapshot");
 		llwarns << "Error encoding snapshot" << llendl;
 	}
 
@@ -1136,8 +1137,6 @@ LLViewerWindow::ESnapshotType LLFloaterSnapshot::Impl::getLayerType(LLFloaterSna
 		type = LLViewerWindow::SNAPSHOT_TYPE_COLOR;
 	else if (id == "depth")
 		type = LLViewerWindow::SNAPSHOT_TYPE_DEPTH;
-	else if (id == "objects")
-		type = LLViewerWindow::SNAPSHOT_TYPE_OBJECT_ID;
 	return type;
 }
 
@@ -2110,11 +2109,17 @@ void LLFloaterSnapshot::draw()
 	}
 }
 
+void LLFloaterSnapshot::onOpen()
+{
+	gSavedSettings.setBOOL("SnapshotBtnState", TRUE);
+}
+
 void LLFloaterSnapshot::onClose(bool app_quitting)
 {
 	gSnapshotFloaterView->setEnabled(FALSE);
 	// Set invisible so it doesn't eat tooltips. JC
 	gSnapshotFloaterView->setVisible(FALSE);
+	gSavedSettings.setBOOL("SnapshotBtnState", FALSE);
 	destroy();
 }
 

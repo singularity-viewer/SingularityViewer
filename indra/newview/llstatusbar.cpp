@@ -69,6 +69,7 @@
 #include "llviewerthrottle.h"
 #include "lluictrlfactory.h"
 #include "llvoiceclient.h"	// for gVoiceClient
+#include "llagentui.h"
 
 #include "lltoolmgr.h"
 #include "llfocusmgr.h"
@@ -79,6 +80,7 @@
 #include "llfontgl.h"
 #include "llrect.h"
 #include "llerror.h"
+#include "llnotificationsutil.h"
 #include "llparcel.h"
 #include "llstring.h"
 #include "message.h"
@@ -246,8 +248,8 @@ void LLStatusBar::draw()
 
 	if (isBackgroundVisible())
 	{
-		static const LLCachedControl<LLColor4> color_drop_shadow("ColorDropShadow",LLColor4(LLColor4U(0,0,0,200)),LLUI::sColorsGroup);
-		static const LLCachedControl<S32> drop_shadow_floater("DropShadowFloater",5,LLUI::sConfigGroup);
+		static const LLCachedControl<LLColor4> color_drop_shadow(*LLUI::sColorsGroup,"ColorDropShadow",LLColor4(LLColor4U(0,0,0,200)));
+		static const LLCachedControl<S32> drop_shadow_floater(*LLUI::sConfigGroup,"DropShadowFloater");
 		gl_drop_shadow(0, getRect().getHeight(), getRect().getWidth(), 0, 
 			color_drop_shadow, 
 			drop_shadow_floater );
@@ -495,11 +497,10 @@ void LLStatusBar::refresh()
 		mRegionDetails.mPing = region->getNetDetailsForLCD();
 		if (parcel)
 		{
-			location_name = region->getName()
-				+ llformat(" %d, %d, %d (%s) - %s", 
-						   pos_x, pos_y, pos_z,
-						   region->getSimAccessString().c_str(),
-						   parcel->getName().c_str());
+			if (!LLAgentUI::buildLocationString(location_name, LLAgentUI::LOCATION_FORMAT_FULL)) 
+			{
+				location_name = "???";
+			}
 
 			// keep these around for the LCD to use
 			mRegionDetails.mRegionName = region->getName();
@@ -683,8 +684,7 @@ void LLStatusBar::setBalance(S32 balance)
 
 	if( balance != mBalance )
 	{
-		mBalanceTimer->reset();
-		mBalanceTimer->setTimerExpirySec( ICON_TIMER_EXPIRY );
+		mBalanceTimer->reset(ICON_TIMER_EXPIRY);
 		mBalance = balance;
 	}
 }
@@ -715,7 +715,7 @@ void LLStatusBar::setHealth(S32 health)
 		{
 			LLVOAvatar *me;
 
-			if ((me = gAgent.getAvatarObject()))
+			if ((me = gAgentAvatarp))
 			{
 				if (me->getSex() == SEX_FEMALE)
 				{
@@ -728,8 +728,7 @@ void LLStatusBar::setHealth(S32 health)
 			}
 		}
 
-		mHealthTimer->reset();
-		mHealthTimer->setTimerExpirySec( ICON_TIMER_EXPIRY );
+		mHealthTimer->reset(ICON_TIMER_EXPIRY);
 	}
 
 	mHealth = health;
@@ -794,7 +793,7 @@ static void onClickBuyCurrency(void* data)
 
 static void onClickHealth(void* )
 {
-	LLNotifications::instance().add("NotSafe");
+	LLNotificationsUtil::add("NotSafe");
 }
 
 static void onClickScriptDebug(void*)
@@ -804,22 +803,22 @@ static void onClickScriptDebug(void*)
 
 static void onClickFly(void* )
 {
-	LLNotifications::instance().add("NoFly");
+	LLNotificationsUtil::add("NoFly");
 }
 
 static void onClickPush(void* )
 {
-	LLNotifications::instance().add("PushRestricted");
+	LLNotificationsUtil::add("PushRestricted");
 }
 
 static void onClickVoice(void* )
 {
-	LLNotifications::instance().add("NoVoice");
+	LLNotificationsUtil::add("NoVoice");
 }
 
 static void onClickBuild(void*)
 {
-	LLNotifications::instance().add("NoBuild");
+	LLNotificationsUtil::add("NoBuild");
 }
 
 static void onClickScripts(void*)
@@ -827,15 +826,15 @@ static void onClickScripts(void*)
 	LLViewerRegion* region = gAgent.getRegion();
 	if(region && region->getRegionFlags() & REGION_FLAGS_ESTATE_SKIP_SCRIPTS)
 	{
-		LLNotifications::instance().add("ScriptsStopped");
+		LLNotificationsUtil::add("ScriptsStopped");
 	}
 	else if(region && region->getRegionFlags() & REGION_FLAGS_SKIP_SCRIPTS)
 	{
-		LLNotifications::instance().add("ScriptsNotRunning");
+		LLNotificationsUtil::add("ScriptsNotRunning");
 	}
 	else
 	{
-		LLNotifications::instance().add("NoOutsideScripts");
+		LLNotificationsUtil::add("NoOutsideScripts");
 	}
 }
 

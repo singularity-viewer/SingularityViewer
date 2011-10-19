@@ -58,6 +58,7 @@ public:
 	LLStat mTexturePacketsStat;
 	LLStat mActualInKBitStat;	// From the packet ring (when faking a bad connection)
 	LLStat mActualOutKBitStat;	// From the packet ring (when faking a bad connection)
+	LLStat mTrianglesDrawnStat;
 
 	// Simulator stats
 	LLStat mSimTimeDilation;
@@ -99,14 +100,21 @@ public:
 	LLStat mPhysicsPinnedTasks;
 	LLStat mPhysicsLODTasks;
 	LLStat mPhysicsMemoryAllocated;
-	/*
-	LLStat mSimCPUUsageStat;
-	LLStat mSimMemTotalStat;
-	LLStat mSimMemRSSStat;
-	*/
-
 
 	LLStat mSimPingStat;
+
+	LLStat mNumImagesStat;
+	LLStat mNumRawImagesStat;
+	LLStat mGLTexMemStat;
+	LLStat mGLBoundMemStat;
+	LLStat mRawMemStat;
+	LLStat mFormattedMemStat;
+
+	LLStat mNumObjectsStat;
+	LLStat mNumActiveObjectsStat;
+	LLStat mNumNewObjectsStat;
+	LLStat mNumSizeCulledStat;
+	LLStat mNumVisCulledStat;
 
 	void resetStats();
 public:
@@ -190,6 +198,90 @@ public:
 	
 	void addToMessage(LLSD &body) const;
 
+	struct  StatsAccumulator
+	{
+		S32 mCount;
+		F32 mSum;
+		F32 mSumOfSquares;
+		F32 mMinValue;
+		F32 mMaxValue;
+		U32 mCountOfNextUpdatesToIgnore;
+
+		inline StatsAccumulator()
+		{
+			reset();
+		}
+
+		inline void push( F32 val )
+		{
+			if ( mCountOfNextUpdatesToIgnore > 0 )
+			{
+				mCountOfNextUpdatesToIgnore--;
+				return;
+			}
+			
+			mCount++;
+			mSum += val;
+			mSumOfSquares += val * val;
+			if (mCount == 1 || val > mMaxValue)
+			{
+				mMaxValue = val;
+			}
+			if (mCount == 1 || val < mMinValue)
+			{
+				mMinValue = val;
+			}
+		}
+		
+		inline F32 getMean() const
+		{
+			return (mCount == 0) ? 0.f : ((F32)mSum)/mCount;
+		}
+
+		inline F32 getMinValue() const
+		{
+			return mMinValue;
+		}
+
+		inline F32 getMaxValue() const
+		{
+			return mMaxValue;
+		}
+
+		inline F32 getStdDev() const
+		{
+			const F32 mean = getMean();
+			return (mCount == 0) ? 0.f : sqrt( mSumOfSquares/mCount - (mean * mean) );
+		}
+		
+		inline U32 getCount() const
+		{
+			return mCount;
+		}
+
+		inline void reset()
+		{
+			mCount = 0;
+			mSum = mSumOfSquares = 0.f;
+			mMinValue = 0.0f;
+			mMaxValue = 0.0f;
+			mCountOfNextUpdatesToIgnore = 0;
+		}
+		
+		inline LLSD getData() const
+		{
+			LLSD data;
+			data["mean"] = getMean();
+			data["std_dev"] = getStdDev();
+			data["count"] = (S32)mCount;
+			data["min"] = getMinValue();
+			data["max"] = getMaxValue();
+			return data;
+		}
+	};
+
+	StatsAccumulator mAgentPositionSnaps;
+	
 private:
 	F64	mStats[ST_COUNT];
 

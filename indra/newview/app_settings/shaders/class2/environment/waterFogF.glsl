@@ -5,7 +5,7 @@
  * $License$
  */
  
-#version 120
+
 
 uniform vec4 lightnorm;
 uniform vec4 waterPlane;
@@ -32,7 +32,7 @@ vec4 applyWaterFog(vec4 color)
 	float depth = length(getPositionEye() - int_v);
 		
 	//get "thickness" of water
-	float l = max(depth, 0.1);
+	float l = min(max(depth, 0.1),50.0);
 
 	float kd = waterFogDensity;
 	float ks = waterFogKS;

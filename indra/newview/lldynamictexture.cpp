@@ -34,6 +34,7 @@
 
 #include "lldynamictexture.h"
 #include "llglheaders.h"
+#include "llwindow.h"			// getPosition()
 #include "llviewerwindow.h"
 #include "llviewercamera.h"
 #include "llviewercontrol.h"
@@ -41,6 +42,7 @@
 #include "llvertexbuffer.h"
 #include "llviewerdisplay.h"
 #include "llrender.h"
+#include "llglslshader.h"
 
 // static
 LLViewerDynamicTexture::instance_list_t LLViewerDynamicTexture::sInstances[ LLViewerDynamicTexture::ORDER_COUNT ];
@@ -55,6 +57,13 @@ LLViewerDynamicTexture::LLViewerDynamicTexture(S32 width, S32 height, S32 compon
 {
 	llassert((1 <= components) && (components <= 4));
 
+	if(gGLManager.mDebugGPU)
+	{
+		if(components == 3)
+		{
+			mComponents = 4 ; //convert to 32bits.
+		}
+	}
 	generateGLTexture();
 
 	llassert( 0 <= order && order < ORDER_COUNT );
@@ -123,7 +132,7 @@ void LLViewerDynamicTexture::preRender(BOOL clear_depth)
 		// force rendering to on-screen portion of frame buffer
 		LLCoordScreen window_pos;
 		gViewerWindow->getWindow()->getPosition( &window_pos );
-		mOrigin.set(0, gViewerWindow->getWindowDisplayHeight() - mFullHeight);  // top left corner
+		mOrigin.set(0, gViewerWindow->getWindowHeightRaw() - mFullHeight);  // top left corner
 
 		if (window_pos.mX < 0)
 		{
@@ -178,7 +187,7 @@ void LLViewerDynamicTexture::postRender(BOOL success)
 	}
 
 	// restore viewport
-	gViewerWindow->setupViewport();
+	gViewerWindow->setup2DViewport();
 
 	// restore camera
 	LLViewerCamera* camera = LLViewerCamera::getInstance();
@@ -201,6 +210,14 @@ BOOL LLViewerDynamicTexture::updateAllInstances()
 	{
 		return TRUE;
 	}
+
+	LLGLSLShader::bindNoShader();
+	LLVertexBuffer::unbind();
+	
+	bool no_ff = LLGLSLShader::sNoFixedFunction;
+	static const LLCachedControl<bool> force_fixed_functions("ShyotlUseLegacyDynamicTexture",false);
+	if(force_fixed_functions)
+		LLGLSLShader::sNoFixedFunction = false;
 
 	BOOL result = FALSE;
 	BOOL ret = FALSE ;
@@ -231,6 +248,8 @@ BOOL LLViewerDynamicTexture::updateAllInstances()
 			}
 		}
 	}
+
+	LLGLSLShader::sNoFixedFunction = no_ff;
 
 	return ret;
 }

@@ -1136,7 +1136,7 @@ LLPumpIO::LLChainInfo::LLChainInfo() :
 	mInit(false),
 	mLock(0),
 	mEOS(false),
-	mDescriptorsPool(new AIAPRPool(LLThread::tldata().mRootPool))
+	mDescriptorsPool(new LLAPRPool(LLThread::tldata().mRootPool))
 {
 	LLMemType m1(LLMemType::MTYPE_IO_PUMP);
 	mTimer.setTimerExpirySec(DEFAULT_CHAIN_EXPIRY_SECS);
@@ -1147,9 +1147,7 @@ void LLPumpIO::LLChainInfo::setTimeoutSeconds(F32 timeout)
 	LLMemType m1(LLMemType::MTYPE_IO_PUMP);
 	if(timeout > 0.0f)
 	{
-		mTimer.start();
-		mTimer.reset();
-		mTimer.setTimerExpirySec(timeout);
+		mTimer.start(timeout);
 	}
 	else
 	{

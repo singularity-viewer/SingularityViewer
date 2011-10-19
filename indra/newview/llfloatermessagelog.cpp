@@ -3,6 +3,7 @@
 #include "llfloatermessagelog.h"
 #include "lluictrlfactory.h"
 #include "llworld.h"
+#include "llnotificationsutil.h"
 #include "llviewerregion.h"
 #include "llscrolllistctrl.h"
 #include "lltexteditor.h"
@@ -806,7 +807,7 @@ BOOL LLFloaterMessageLog::onClickCloseCircuit(void* user_data)
 	args["MESSAGE"] = "This will delete local circuit data.\nDo you want to tell the remote host to close the circuit too?";
 	LLSD payload;
 	payload["circuittoclose"] = myhost.getString(); 
-	LLNotifications::instance().add("GenericAlertYesCancel", args, payload, onConfirmCloseCircuit);
+	LLNotificationsUtil::add("GenericAlertYesCancel", args, payload, onConfirmCloseCircuit);
 	return TRUE;
 }
 // static
@@ -840,7 +841,7 @@ bool LLFloaterMessageLog::onConfirmCloseCircuit(const LLSD& notification, const 
 		args["MESSAGE"] = "That host had a region associated with it.\nDo you want to clean that up?";
 		LLSD payload;
 		payload["regionhost"] = myhost.getString();
-		LLNotifications::instance().add("GenericAlertYesCancel", args, payload, onConfirmRemoveRegion);
+		LLNotificationsUtil::add("GenericAlertYesCancel", args, payload, onConfirmRemoveRegion);
 	}
 	return false;
 }

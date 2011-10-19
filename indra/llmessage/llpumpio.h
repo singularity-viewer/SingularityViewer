@@ -41,7 +41,7 @@
 #include <sys/param.h>
 #endif
 
-#include "aiaprpool.h"
+#include "llaprpool.h"
 #include "llbuffer.h"
 #include "llframetimer.h"
 #include "lliopipe.h"
@@ -363,7 +363,7 @@ protected:
 		typedef std::pair<LLIOPipe::ptr_t, apr_pollfd_t> pipe_conditional_t;
 		typedef std::vector<pipe_conditional_t> conditionals_t;
 		conditionals_t mDescriptors;
-		boost::shared_ptr<AIAPRPool> mDescriptorsPool;
+		boost::shared_ptr<LLAPRPool> mDescriptorsPool;
 	};
 
 	// All the running chains & info
@@ -383,8 +383,8 @@ protected:
 	callbacks_t mCallbacks;
 
 	// Memory pool for pollsets & mutexes.
-	AIAPRPool mPool;
-	AIAPRPool mCurrentPool;
+	LLAPRPool mPool;
+	LLAPRPool mCurrentPool;
 	S32 mCurrentPoolReallocCount;
 
 #if LL_THREADS_APR

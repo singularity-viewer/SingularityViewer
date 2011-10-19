@@ -75,14 +75,18 @@ public:
 	virtual LLSD	getValue() const			{ return LLSD(getValueF32()); }
 	virtual BOOL	setLabelArg( const std::string& key, const LLStringExplicit& text );
 
-	virtual void	setMinValue(LLSD min_value)	{ setMinValue((F32)min_value.asReal()); }
-	virtual void	setMaxValue(LLSD max_value)	{ setMaxValue((F32)max_value.asReal()); }
+
 
 	BOOL			isMouseHeldDown() const { return mSlider->hasMouseCapture(); }
 
+
+	virtual void	setPrecision(S32 precision);
+
 	virtual void    setEnabled( BOOL b );
 	virtual void	clear();
-	virtual void	setPrecision(S32 precision);
+
+	virtual void	setMinValue(LLSD min_value)	{ setMinValue((F32)min_value.asReal()); }
+	virtual void	setMaxValue(LLSD max_value)	{ setMaxValue((F32)max_value.asReal()); }
 	void			setMinValue(F32 min_value)  { mSlider->setMinValue(min_value); updateText(); }
 	void			setMaxValue(F32 max_value)  { mSlider->setMaxValue(max_value); updateText(); }
 	void			setIncrement(F32 increment) { mSlider->setIncrement(increment);}
@@ -94,8 +98,8 @@ public:
 	void			setLabelColor(const LLColor4& c)			{ mTextEnabledColor = c; }
 	void			setDisabledLabelColor(const LLColor4& c)	{ mTextDisabledColor = c; }
 
-	void			setSliderMouseDownCallback(	void (*slider_mousedown_callback)(LLUICtrl* caller, void* userdata) );
-	void			setSliderMouseUpCallback(	void (*slider_mouseup_callback)(LLUICtrl* caller, void* userdata) );
+	boost::signals2::connection setSliderMouseDownCallback(	const commit_signal_t::slot_type& cb );
+	boost::signals2::connection setSliderMouseUpCallback( const commit_signal_t::slot_type& cb );
 
 	virtual void	onTabInto();
 
@@ -111,8 +115,6 @@ public:
 	virtual std::string getControlName() const { return mSlider->getControlName(); }
 	
 	static void		onSliderCommit(LLUICtrl* caller, void* userdata);
-	static void		onSliderMouseDown(LLUICtrl* caller,void* userdata);
-	static void		onSliderMouseUp(LLUICtrl* caller,void* userdata);
 
 	static void		onEditorCommit(LLUICtrl* caller, void* userdata);
 	static void		onEditorGainFocus(LLFocusableElement* caller, void *userdata);
@@ -138,9 +140,6 @@ private:
 
 	LLColor4		mTextEnabledColor;
 	LLColor4		mTextDisabledColor;
-
-	void			(*mSliderMouseUpCallback)( LLUICtrl* ctrl, void* userdata );
-	void			(*mSliderMouseDownCallback)( LLUICtrl* ctrl, void* userdata );
 };
 
 #endif  // LL_LLSLIDERCTRL_H

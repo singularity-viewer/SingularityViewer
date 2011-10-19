@@ -431,7 +431,8 @@ public:
 
 	void setText(const LLStringExplicit &new_text) { mSearchEdit->setText(new_text); }
 
-	void setSearchCallback(void (*search_callback)(const std::string& search_string, void* user_data), void* data) { mSearchCallback = search_callback; mCallbackUserData = data; }
+	typedef boost::function<void (const std::string&, void *)> search_callback_t;
+	void setSearchCallback(search_callback_t cb,void *user_data) { mSearchCallback = boost::bind(cb,_1,user_data); }
 
 	// LLUICtrl interface
 	virtual void	setValue(const LLSD& value );
@@ -446,7 +447,8 @@ private:
 
 	LLLineEditor* mSearchEdit;
 	class LLButton* mClearSearchButton;
-	void (*mSearchCallback)(const std::string& search_string, void* user_data);
+
+	search_callback_t	mSearchCallback;
 
 };
 

@@ -207,13 +207,6 @@ public:
 	static U32 sTextureBits;
 	static U32 sTexturePackets;
 
-	static LLStat sNumImagesStat;
-	static LLStat sNumRawImagesStat;
-	static LLStat sGLTexMemStat;
-	static LLStat sGLBoundMemStat;
-	static LLStat sRawMemStat;
-	static LLStat sFormattedMemStat;
-
 private:
 	static S32 sNumImages;
 	static void (*sUUIDCallback)(void**, const LLUUID &);

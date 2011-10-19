@@ -50,6 +50,7 @@
 #include "llviewercontrol.h"
 #include "lluictrlfactory.h"
 #include "llviewerwindow.h"
+#include "llwindow.h"
 #include "llgl.h"
 #include "llmemory.h"
 #include "llimage.h"
@@ -203,7 +204,7 @@ showUI ()
 		{
 			LLColor4 curCol = swatch->get ();
 			send_agent_pause();
-			gViewerWindow->getWindow ()->dialog_color_picker ( &curCol [ 0 ], &curCol [ 1 ], &curCol [ 2 ] );
+			gViewerWindow->getWindow()->dialogColorPicker( &curCol [ 0 ], &curCol [ 1 ], &curCol [ 2 ] );
 			send_agent_resume();
 
 			setOrigRgb ( curCol [ 0 ], curCol [ 1 ], curCol [ 2 ] );

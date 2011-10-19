@@ -5,7 +5,7 @@
  * $License$
  */
  
-#version 120
+
 
 // All lights, no specular highlights
 

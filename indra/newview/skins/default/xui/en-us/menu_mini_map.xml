@@ -64,6 +64,10 @@
 			 left="0" mouse_opaque="true" name="Custom" width="128">
 			<on_click function="MiniMap.setcustom" />
 		</menu_item_call>
-	</menu>
-
+  </menu>
+  <menu_item_call bottom_delta="-18" enabled = "true" height="18" label="Unmark"
+   left="0" mouse_opaque="true" name="Unmark" width="128">
+    <on_click function="MiniMap.setunmark" />
+    <on_enable function="MiniMap.enableunmark" />
+  </menu_item_call>
 </menu>

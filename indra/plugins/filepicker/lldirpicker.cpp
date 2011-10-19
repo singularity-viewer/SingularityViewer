@@ -189,15 +189,11 @@ OSStatus	LLDirPicker::doNavChooseDialog()
 
 	error = NavCreateChooseFolderDialog(&mNavOptions, &doNavCallbackEvent, NULL, NULL, &navRef);
 
-	gViewerWindow->mWindow->beforeDialog();
-
 	if (error == noErr)
 	{
 		PLS_FLUSH;
 		error = NavDialogRun(navRef);
 	}
-
-	gViewerWindow->mWindow->afterDialog();
 
 	if (error == noErr)
 		error = NavDialogGetReply(navRef, &navReply);
@@ -232,7 +228,7 @@ BOOL LLDirPicker::getDir(std::string const& folder)
 	BOOL success = FALSE;
 	OSStatus	error = noErr;
 	
-	mFileName = folder;
+	mFileName = const_cast<std::string*>(&folder);
 	
 //	mNavOptions.saveFileName 
 

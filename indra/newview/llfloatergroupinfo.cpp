@@ -188,7 +188,7 @@ void LLFloaterGroupInfo::refreshGroup(const LLUUID& group_id)
 }
 
 // static
-void LLFloaterGroupInfo::callbackLoadGroupName(const LLUUID& id, const std::string& first, const std::string& last, BOOL is_group, void* data)
+void LLFloaterGroupInfo::callbackLoadGroupName(const LLUUID& id, const std::string& full_name, bool is_group)
 {
 	LLFloaterGroupInfo *fgi = get_if_there(sInstances, id, (LLFloaterGroupInfo*)NULL);
 
@@ -196,7 +196,7 @@ void LLFloaterGroupInfo::callbackLoadGroupName(const LLUUID& id, const std::stri
 	{
 		// Build a new title including the group name.
 		std::ostringstream title;
-		title << first << " - " << FLOATER_TITLE;
+		title << full_name << " - " << FLOATER_TITLE;
 		fgi->setTitle(title.str());
 	}
 }
@@ -221,8 +221,7 @@ void LLFloaterGroupInfo::showFromUUID(const LLUUID& group_id,
 		{
 			// Look up the group name.
 			// The callback will insert it into the title.
-			const BOOL is_group = TRUE;
-			gCacheName->get(group_id, is_group, callbackLoadGroupName, NULL);
+			gCacheName->get(group_id, true, boost::bind(&callbackLoadGroupName, _1, _2, _3));
 		}
 	}
 

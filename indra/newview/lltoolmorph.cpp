@@ -62,7 +62,7 @@
 #include "llviewertexturelist.h"
 #include "llviewerobject.h"
 #include "llviewerwindow.h"
-#include "llvoavatar.h"
+#include "llvoavatarself.h"
 #include "pipeline.h"
 
 
@@ -146,12 +146,12 @@ void LLVisualParamHint::requestHintUpdates( LLVisualParamHint* exception1, LLVis
 
 BOOL LLVisualParamHint::needsRender()
 {
-	return mNeedsUpdate && mDelayFrames-- <= 0 && !gAgent.getAvatarObject()->getIsAppearanceAnimating() && mAllowsUpdates;
+	return mNeedsUpdate && mDelayFrames-- <= 0 && !gAgentAvatarp->getIsAppearanceAnimating() && mAllowsUpdates;
 }
 
 void LLVisualParamHint::preRender(BOOL clear_depth)
 {
-	LLVOAvatar* avatarp = gAgent.getAvatarObject();
+	LLVOAvatar* avatarp = gAgentAvatarp;
 
 	mLastParamWeight = avatarp->getVisualParamWeight(mVisualParam);
 	avatarp->setVisualParamWeight(mVisualParam, mVisualParamWeight);
@@ -171,7 +171,7 @@ void LLVisualParamHint::preRender(BOOL clear_depth)
 BOOL LLVisualParamHint::render()
 {
 	LLVisualParamReset::sDirty = TRUE;
-	LLVOAvatar* avatarp = gAgent.getAvatarObject();
+	LLVOAvatar* avatarp = gAgentAvatarp;
 
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
@@ -304,7 +304,7 @@ BOOL LLVisualParamReset::render()
 {
 	if (sDirty)
 	{
-		LLVOAvatar* avatarp = gAgent.getAvatarObject();
+		LLVOAvatar* avatarp = gAgentAvatarp;
 		avatarp->updateComposites();
 		avatarp->updateVisualParams();
 		avatarp->updateGeometry(avatarp->mDrawable);

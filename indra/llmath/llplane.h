@@ -42,13 +42,17 @@
 // The plane normal = [A, B, C]
 // The closest approach = D / sqrt(A*A + B*B + C*C)
 
-class LLPlane : public LLVector4
+class LLPlane
 {
 public:
+	
+	// Constructors
 	LLPlane() {}; // no default constructor
 	LLPlane(const LLVector3 &p0, F32 d) { setVec(p0, d); }
 	LLPlane(const LLVector3 &p0, const LLVector3 &n) { setVec(p0, n); }
-	inline void setVec(const LLVector3 &p0, F32 d) { LLVector4::setVec(p0[0], p0[1], p0[2], d); }
+	inline void setVec(const LLVector3 &p0, F32 d) { mV.set(p0[0], p0[1], p0[2], d); }
+	
+	// Set
 	inline void setVec(const LLVector3 &p0, const LLVector3 &n)
 	{
 		F32 d = -(p0 * n);
@@ -64,39 +68,38 @@ public:
 		F32 d = -(w * p0);
 		setVec(w, d);
 	}
-
-	inline LLPlane& operator=(const LLVector4& v2) {  LLVector4::setVec(v2[0],v2[1],v2[2],v2[3]); return *this;}
-
-	inline void set(const LLPlane& p2) { LLVector4::setVec(p2); }
+	
+	inline LLPlane& operator=(const LLVector4& v2) {  mV.set(v2[0],v2[1],v2[2],v2[3]); return *this;}
+	
+	inline LLPlane& operator=(const LLVector4a& v2) {  mV.set(v2[0],v2[1],v2[2],v2[3]); return *this;}	
+	
+	inline void set(const LLPlane& p2) { mV = p2.mV; }
 	
 	// 
 	F32 dist(const LLVector3 &v2) const { return mV[0]*v2[0] + mV[1]*v2[1] + mV[2]*v2[2] + mV[3]; }
 	
+	inline LLSimdScalar dot3(const LLVector4a& b) const { return mV.dot3(b); }
+	
+	// Read-only access a single float in this vector. Do not use in proximity to any function call that manipulates
+	// the data at the whole vector level or you will incur a substantial penalty. Consider using the splat functions instead	
+	inline F32 operator[](const S32 idx) const { return mV[idx]; }
+	
+	// preferable when index is known at compile time
+	template <int N> LL_FORCE_INLINE void getAt(LLSimdScalar& v) const { v = mV.getScalarAt<N>(); } 
+	
 	// reset the vector to 0, 0, 0, 1
-	inline void clear() { LLVector4::setVec(0, 0, 0, 1); }
+	inline void clear() { mV.set(0, 0, 0, 1); }
 	
 	inline void getVector3(LLVector3& vec) const { vec.set(mV[0], mV[1], mV[2]); }
-
+	
 	// Retrieve the mask indicating which of the x, y, or z axis are greater or equal to zero.
 	inline U8 calcPlaneMask() const
-	{
-		U8 mask = 0;
-	
-		if (mV[0] >= 0)
-		{
-			mask |= 1;
-		}
-		if (mV[1] >= 0)
-		{
-			mask |= 2;
-		}
-		if (mV[2] >= 0)
-		{
-			mask |= 4;
-		}
-
-		return mask;
+	{ 
+		return mV.greaterEqual(LLVector4a::getZero()).getGatheredBits() & LLVector4Logical::MASK_XYZ;
 	}
+		
+private:
+	LLVector4a mV;
 };
 
 

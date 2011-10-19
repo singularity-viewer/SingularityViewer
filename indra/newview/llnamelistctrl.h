@@ -72,10 +72,9 @@ public:
 
 	void removeNameItem(const LLUUID& agent_id);
 
-	void refresh(const LLUUID& id, const std::string& first, const std::string& last, BOOL is_group);
+	void refresh(const LLUUID& agent_id, const std::string& full_name);
 
-	static void refreshAll(const LLUUID& id, const std::string& firstname,
-						   const std::string& lastname, BOOL is_group);
+	static void refreshAll(const LLUUID& id, const std::string& full_name);
 
 	virtual BOOL	handleDragAndDrop(S32 x, S32 y, MASK mask,
 									  BOOL drop, EDragAndDropType cargo_type, void *cargo_data,

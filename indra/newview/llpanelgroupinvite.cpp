@@ -39,6 +39,7 @@
 #include "llcombobox.h"
 #include "llgroupmgr.h"
 #include "llnamelistctrl.h"
+#include "llnotificationsutil.h"
 #include "llspinctrl.h"
 #include "lltextbox.h"
 #include "llviewerobject.h"
@@ -161,7 +162,7 @@ void LLPanelGroupInvite::impl::submitInvitations()
 		{
 			LLSD args;
 			args["MESSAGE"] = mOwnerWarning;
-			LLNotifications::instance().add("GenericAlertYesCancel", args, LLSD(), boost::bind(&LLPanelGroupInvite::impl::inviteOwnerCallback, this, _1, _2));
+			LLNotificationsUtil::add("GenericAlertYesCancel", args, LLSD(), boost::bind(&LLPanelGroupInvite::impl::inviteOwnerCallback, this, _1, _2));
 			return; // we'll be called again if user confirms
 		}
 	}
@@ -396,13 +397,10 @@ void LLPanelGroupInvite::addUsers(std::vector<LLUUID>& agent_ids)
 		if(avatarp)
 		{
 			std::string fullname;
-			LLSD args;
 			LLNameValue* nvfirst = avatarp->getNVPair("FirstName");
 			LLNameValue* nvlast = avatarp->getNVPair("LastName");
 			if(nvfirst && nvlast)
 			{
-				args["FIRST"] = std::string(nvfirst->getString());
-				args["LAST"] = std::string(nvlast->getString());
 				fullname = std::string(nvfirst->getString()) + " " + std::string(nvlast->getString());
 			}
 			if (!fullname.empty())

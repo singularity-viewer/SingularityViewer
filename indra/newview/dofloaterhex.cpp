@@ -23,6 +23,7 @@
 #include "llinventorymodel.h" // gInventory.updateItem
 #include "llappviewer.h" // System Folders
 #include "llfloaterperms.h" //get default perms
+#include "llnotificationsutil.h"
 
 std::list<DOFloaterHex*> DOFloaterHex::sInstances;
 S32 DOFloaterHex::sUploadAmount = 10;
@@ -291,7 +292,7 @@ void DOFloaterHex::onClickUpload(void* user_data)
 	{
 		LLSD args;
 		args["ERROR_MESSAGE"] = "Couldn't write data to file";
-		LLNotifications::instance().add("ErrorMessage", args);
+		LLNotificationsUtil::add("ErrorMessage", args);
 		return;
 	}
 	delete[] buffer;
@@ -307,7 +308,7 @@ void DOFloaterHex::onClickUpload(void* user_data)
 			item->getName(), 
 			item->getDescription(), 
 			0, 
-			item->getType(), 
+			LLFolderType::assetTypeToFolderType(item->getType()), 
 			item->getInventoryType(), 
 			LLFloaterPerms::getNextOwnerPerms(), LLFloaterPerms::getGroupPerms(), LLFloaterPerms::getEveryonePerms(),
 			item->getName(),  
@@ -326,7 +327,7 @@ void DOFloaterHex::onClickUpload(void* user_data)
 									fake_asset_id.asString(),
 									item->getType(),
 									item->getInventoryType(),
-									(EWearableType)item->getFlags(),
+									(LLWearableType::EType)item->getFlags(),
 									PERM_ITEM_UNRESTRICTED,
 									new NewResourceItemCallback);
 	}
@@ -366,7 +367,7 @@ void DOFloaterHex::onClickSave(void* user_data)
 	{
 		LLSD args;
 		args["ERROR_MESSAGE"] = "Couldn't write data to file";
-		LLNotifications::instance().add("ErrorMessage", args);
+		LLNotificationsUtil::add("ErrorMessage", args);
 		return;
 	}
 	delete[] buffer;
@@ -431,7 +432,7 @@ void DOFloaterHex::onSaveComplete(const LLUUID& asset_uuid, void* user_data, S32
 	{
 		LLSD args;
 		args["ERROR_MESSAGE"] = llformat("Upload failed with status %d, also %d", status, ext_status);
-		LLNotifications::instance().add("ErrorMessage", args);
+		LLNotificationsUtil::add("ErrorMessage", args);
 	}
 }
 

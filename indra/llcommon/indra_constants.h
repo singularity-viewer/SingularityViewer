@@ -153,6 +153,11 @@ const	char	LAND_LAYER_CODE					= 'L';
 const	char	WATER_LAYER_CODE				= 'W';
 const	char	WIND_LAYER_CODE					= '7';
 const	char	CLOUD_LAYER_CODE				= '8';
+// Extended land layer for Aurora Sim
+const   char    AURORA_LAND_LAYER_CODE          = 'M';
+const	char	AURORA_WATER_LAYER_CODE			= 'X';
+const   char    AURORA_WIND_LAYER_CODE          = '9';
+const   char    AURORA_CLOUD_LAYER_CODE         = ':';
 
 // keys
 // Bit masks for various keyboard modifier keys.
@@ -318,6 +323,14 @@ const F32 CHAT_NORMAL_RADIUS = 20.f;
 const F32 CHAT_SHOUT_RADIUS = 100.f;
 const F32 CHAT_MAX_RADIUS = CHAT_SHOUT_RADIUS;
 const F32 CHAT_MAX_RADIUS_BY_TWO = CHAT_MAX_RADIUS / 2.f;
+
+// squared editions of the above for distance checks
+const F32 CHAT_WHISPER_RADIUS_SQUARED = CHAT_WHISPER_RADIUS * CHAT_WHISPER_RADIUS;
+const F32 CHAT_NORMAL_RADIUS_SQUARED = CHAT_NORMAL_RADIUS * CHAT_NORMAL_RADIUS;
+const F32 CHAT_SHOUT_RADIUS_SQUARED = CHAT_SHOUT_RADIUS * CHAT_SHOUT_RADIUS;
+const F32 CHAT_MAX_RADIUS_SQUARED = CHAT_SHOUT_RADIUS_SQUARED;
+const F32 CHAT_MAX_RADIUS_BY_TWO_SQUARED = CHAT_MAX_RADIUS_BY_TWO * CHAT_MAX_RADIUS_BY_TWO;
+
 
 // this times above gives barely audible radius
 const F32 CHAT_BARELY_AUDIBLE_FACTOR = 2.0f;

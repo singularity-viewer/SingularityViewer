@@ -82,7 +82,7 @@ public:
 		args["REASON"] = reason;
 	
 		
-		LLNotifications::instance().add("CouldNotTeleportReason", args);
+		LLNotificationsUtil::add("CouldNotTeleportReason", args);
 		
 		gAgent.setTeleportState( LLAgent::TELEPORT_NONE );
 	
@@ -131,7 +131,7 @@ public:
 			args["REASON"] = "Place Avatar Failed";
 	
 			//gViewerWindow->alertXml("CouldNotTeleportReason", args);
-			LLNotifications::instance().add("CouldNotTeleportReason",args);
+			LLNotificationsUtil::add("CouldNotTeleportReason",args);
 			
 			gAgent.setTeleportState( LLAgent::TELEPORT_NONE );
 
@@ -164,7 +164,7 @@ public:
 			LLSD args;
 			args["REASON"] = "Failed to resolve host.";
 			//gViewerWindow->alertXml("CouldNotTeleportReason", args);
-			LLNotifications::instance().add("CouldNotTeleportReason", args);
+			LLNotificationsUtil::add("CouldNotTeleportReason", args);
 			gAgent.setTeleportState( LLAgent::TELEPORT_NONE );
 			return;		    
 		}

@@ -48,8 +48,8 @@
 #include "apr_atomic.h"
 #include "llstring.h"
 
-class AIAPRPool;
-class AIVolatileAPRPool;
+class LLAPRPool;
+class LLVolatileAPRPool;
 
 /** 
  * @class LLScopedLock
@@ -140,20 +140,21 @@ class LL_COMMON_API LLAPRFile : boost::noncopyable
 	// make this non copyable since a copy closes the file
 private:
 	apr_file_t* mFile ;
-	AIVolatileAPRPool* mVolatileFilePoolp;	// (Thread local) APR pool currently in use.
-	AIAPRPool* mRegularFilePoolp;		// ...or a regular pool.
+	LLVolatileAPRPool* mVolatileFilePoolp;	// (Thread local) APR pool currently in use.
+	LLAPRPool* mRegularFilePoolp;		// ...or a regular pool.
 
 public:
 	enum access_t {
-		global,		// Use a global pool for long-lived file accesses. This should really only happen from the main thread.
-		local		// Use a thread-local volatile pool for short file accesses.
+		long_lived,		// Use a global pool for long-lived file accesses.
+		short_lived		// Use a volatile pool for short-lived file accesses.
 	};
 
 	LLAPRFile() ;
-	LLAPRFile(const std::string& filename, apr_int32_t flags, access_t access_type);
+	LLAPRFile(const std::string& filename, apr_int32_t flags, S32* sizep = NULL, access_t access_type = short_lived);
 	~LLAPRFile() ;
 
-	apr_status_t open(const std::string& filename, apr_int32_t flags, access_t access_type, S32* sizep = NULL);
+	apr_status_t open(const std::string& filename, apr_int32_t flags, access_t access_type = short_lived, S32* sizep = NULL);
+	apr_status_t open(const std::string& filename, apr_int32_t flags, BOOL use_global_pool); //use global pool.
 	apr_status_t close() ;
 
 	// Returns actual offset, -1 if seek fails

@@ -59,11 +59,16 @@ public:
 	virtual const LLUUID& getAssetUUID() const;
 	virtual const std::string& getName() const;
 	virtual const LLPermissions& getPermissions() const;
+	virtual const bool getIsFullPerm() const; // 'fullperm' in the popular sense: modify-ok & copy-ok & transfer-ok, no special god rules applied
 	virtual const LLUUID& getCreatorUUID() const;
 	virtual const std::string& getDescription() const;
 	virtual const LLSaleInfo& getSaleInfo() const;
 	virtual LLInventoryType::EType getInventoryType() const;
+	virtual bool isWearableType() const;
+	virtual LLWearableType::EType getWearableType() const;
 	virtual U32 getFlags() const;
+	virtual time_t getCreationDate() const;
+	virtual U32 getCRC32() const; // really more of a checksum.
 
 	// construct a complete viewer inventory item
 	LLViewerInventoryItem(const LLUUID& uuid, const LLUUID& parent_uuid,
@@ -123,12 +128,9 @@ public:
 
 	// new methods
 	BOOL isComplete() const { return mIsComplete; }
+	BOOL isFinished() const { return mIsComplete; }
 	void setComplete(BOOL complete) { mIsComplete = complete; }
 	//void updateAssetOnServer() const;
-// [RLVa:KB] - Checked: 2010-09-27 (RLVa-1.1.3a) | Added: RLVa-1.1.3a
-	virtual bool isWearableType() const;
-	virtual EWearableType getWearableType() const;
-// [/RLVa:KB]
 
 	virtual void packMessage(LLMessageSystem* msg) const;
 	virtual void setTransactionID(const LLTransactionID& transaction_id);
@@ -144,7 +146,13 @@ public:
 	bool getIsBrokenLink() const; // true if the baseitem this points to doesn't exist in memory.
 	LLViewerInventoryItem *getLinkedItem() const;
 	LLViewerInventoryCategory *getLinkedCategory() const;
+	
+	// Checks the items permissions (for owner, group, or everyone) and returns true if all mask bits are set.
+	bool checkPermissionsSet(PermissionMask mask) const;
+	PermissionMask getPermissionMask() const;
 
+	// callback
+	void onCallingCardNameLookup(const LLUUID& id, const std::string& name, bool is_group);
 protected:
 	BOOL mIsComplete;
 	LLTransactionID mTransactionID;
@@ -169,7 +177,7 @@ protected:
 	
 public:
 	LLViewerInventoryCategory(const LLUUID& uuid, const LLUUID& parent_uuid,
-							  LLAssetType::EType preferred_type,
+							  LLFolderType::EType preferred_type,
 							  const std::string& name,
 							  const LLUUID& owner_id);
 	LLViewerInventoryCategory(const LLUUID& owner_id);
@@ -263,7 +271,8 @@ public:
 	void fire(U32 callback_id, const LLUUID& item_id);
 	U32 registerCB(LLPointer<LLInventoryCallback> cb);
 private:
-	std::map<U32, LLPointer<LLInventoryCallback> > mMap;
+	typedef std::map<U32, LLPointer<LLInventoryCallback> > callback_map_t;
+	callback_map_t mMap;
 	U32 mLastCallback;
 	static LLInventoryCallbackManager *sInstance;
 public:
@@ -272,13 +281,13 @@ public:
 extern LLInventoryCallbackManager gInventoryCallbacks;
 
 
-#define NOT_WEARABLE (EWearableType)0
+#define NOT_WEARABLE (LLWearableType::EType)0
 
 void create_inventory_item(const LLUUID& agent_id, const LLUUID& session_id,
 						   const LLUUID& parent, const LLTransactionID& transaction_id,
 						   const std::string& name,
 						   const std::string& desc, LLAssetType::EType asset_type,
-						   LLInventoryType::EType inv_type, EWearableType wtype,
+						   LLInventoryType::EType inv_type, LLWearableType::EType wtype,
 						   U32 next_owner_perm,
 						   LLPointer<LLInventoryCallback> cb);
 

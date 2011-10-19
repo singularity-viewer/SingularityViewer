@@ -175,7 +175,7 @@ protected:
 
 	// For use by AIThreadSafeDC
 	AIThreadSafe(void) { }
-	AIThreadSafe(AIAPRPool& parent) : mRWLock(parent) { }
+	AIThreadSafe(LLAPRPool& parent) : mRWLock(parent) { }
 
 public:
 	// Only for use by AITHREADSAFE, see below.
@@ -406,7 +406,7 @@ protected:
 	friend struct AIRegisteredStateMachinesList;
 	// For use by AIThreadSafeSimpleDC and AIRegisteredStateMachinesList.
 	AIThreadSafeSimple(void) { }
-	AIThreadSafeSimple(AIAPRPool& parent) : mMutex(parent) { }
+	AIThreadSafeSimple(LLAPRPool& parent) : mMutex(parent) { }
 
 public:
 	// Only for use by AITHREADSAFESIMPLE, see below.
@@ -471,7 +471,7 @@ public:
 
 protected:
 	// For use by AIThreadSafeSimpleDCRootPool
-	AIThreadSafeSimpleDC(AIAPRPool& parent) : AIThreadSafeSimple<T>(parent) { new (AIThreadSafeSimple<T>::ptr()) T; }
+	AIThreadSafeSimpleDC(LLAPRPool& parent) : AIThreadSafeSimple<T>(parent) { new (AIThreadSafeSimple<T>::ptr()) T; }
 };
 
 // Helper class for AIThreadSafeSimpleDCRootPool to assure initialization of
@@ -479,7 +479,7 @@ protected:
 class AIThreadSafeSimpleDCRootPool_pbase
 {
 protected:
-	AIAPRRootPool mRootPool;
+	LLAPRRootPool mRootPool;
 
 private:
 	template<typename T> friend class AIThreadSafeSimpleDCRootPool;
@@ -489,7 +489,7 @@ private:
 /**
  * @brief A wrapper class for objects that need to be accessed by more than one thread.
  *
- * The same as AIThreadSafeSimpleDC except that this class creates its own AIAPRRootPool
+ * The same as AIThreadSafeSimpleDC except that this class creates its own LLAPRRootPool
  * for the internally used mutexes and condition, instead of using the current threads
  * root pool. The advantage of this is that it can be used for objects that need to
  * be accessed from the destructors of global objects (after main). The disadvantage

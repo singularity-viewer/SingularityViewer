@@ -66,8 +66,6 @@
 
 #include "curl/curl.h"
 
-LLWaterParamManager * LLWaterParamManager::sInstance = NULL;
-
 LLWaterParamManager::LLWaterParamManager() :
 	mFogColor(22.f/255.f, 43.f/255.f, 54.f/255.f, 0.0f, 0.0f, "waterFogColor", "WaterFogColor"),
 	mFogDensity(4, "waterFogDensity", 2),
@@ -226,15 +224,10 @@ void LLWaterParamManager::propagateParameters(void)
 	// bind the variables only if we're using shaders
 	if(gPipeline.canUseVertexShaders())
 	{
-		LLViewerShaderMgr::shader_iter shaders_iter, end_shaders;
-		end_shaders = LLViewerShaderMgr::instance()->endShaders();
-		for(shaders_iter = LLViewerShaderMgr::instance()->beginShaders(); shaders_iter != end_shaders; ++shaders_iter)
+		std::vector<LLGLSLShader*>::iterator shaders_iter=mShaderList.begin();
+		for(; shaders_iter != mShaderList.end(); ++shaders_iter)
 		{
-			if (shaders_iter->mProgramObject != 0
-				&& shaders_iter->mShaderGroup == LLGLSLShader::SG_WATER)
-			{
-				shaders_iter->mUniformsDirty = TRUE;
-			}
+			(*shaders_iter)->mUniformsDirty = TRUE;
 		}
 	}
 
@@ -250,13 +243,35 @@ void LLWaterParamManager::updateShaderUniforms(LLGLSLShader * shader)
 {
 	if (shader->mShaderGroup == LLGLSLShader::SG_WATER)
 	{
-		shader->uniform4fv(LLViewerShaderMgr::LIGHTNORM, 1, LLWLParamManager::instance()->getRotatedLightDir().mV);
+		shader->uniform4fv(LLViewerShaderMgr::LIGHTNORM, 1, LLWLParamManager::getInstance()->getRotatedLightDir().mV);
 		shader->uniform3fv("camPosLocal", 1, LLViewerCamera::getInstance()->getOrigin().mV);
 		shader->uniform4fv("waterFogColor", 1, LLDrawPoolWater::sWaterFogColor.mV);
 		shader->uniform4fv("waterPlane", 1, mWaterPlane.mV);
 		shader->uniform1f("waterFogDensity", getFogDensity());
 		shader->uniform1f("waterFogKS", mWaterFogKS);
 		shader->uniform4f("distance_multiplier", 0, 0, 0, 0);
+	}
+}
+
+void LLWaterParamManager::updateShaderLinks()
+{
+	mShaderList.clear();
+	LLViewerShaderMgr::shader_iter shaders_iter, end_shaders;
+	end_shaders = LLViewerShaderMgr::instance()->endShaders();
+	for(shaders_iter = LLViewerShaderMgr::instance()->beginShaders(); shaders_iter != end_shaders; ++shaders_iter)
+	{
+		if (shaders_iter->mProgramObject != 0
+			&& shaders_iter->mShaderGroup == LLGLSLShader::SG_WATER)
+		{
+			if(	glGetUniformLocationARB(shaders_iter->mProgramObject,"lightnorm")>=0		||
+				glGetUniformLocationARB(shaders_iter->mProgramObject,"camPosLocal")>=0		||
+				glGetUniformLocationARB(shaders_iter->mProgramObject,"waterFogColor")>=0	||
+				glGetUniformLocationARB(shaders_iter->mProgramObject,"waterPlane")>=0		||
+				glGetUniformLocationARB(shaders_iter->mProgramObject,"waterFogDensity")>=0	||
+				glGetUniformLocationARB(shaders_iter->mProgramObject,"waterFogKS")>=0		||
+				glGetUniformLocationARB(shaders_iter->mProgramObject,"distance_multiplier")>=0)
+			mShaderList.push_back(&(*shaders_iter));
+		}
 	}
 }
 
@@ -298,6 +313,11 @@ void LLWaterParamManager::update(LLViewerCamera * cam)
 
 		mWaterPlane = LLVector4(enorm.v[0], enorm.v[1], enorm.v[2], -ep.dot(enorm));
 
+		if((mWaterPlane.mV[3] >= 0.f) == LLViewerCamera::getInstance()->cameraUnderWater()) //Sign borkage..
+		{
+			mWaterPlane.scaleVec(LLVector4(-1.f,-1.f,-1.f,-1.f));
+		}
+
 		LLVector3 sunMoonDir;
 		if (gSky.getSunDirection().mV[2] > LLSky::NIGHTTIME_ELEVATION_COS) 	 
 		{ 	 
@@ -310,31 +330,14 @@ void LLWaterParamManager::update(LLViewerCamera * cam)
 		sunMoonDir.normVec();
 		mWaterFogKS = 1.f/llmax(sunMoonDir.mV[2], WATER_FOG_LIGHT_CLAMP);
 
-		LLViewerShaderMgr::shader_iter shaders_iter, end_shaders;
-		end_shaders = LLViewerShaderMgr::instance()->endShaders();
-		for(shaders_iter = LLViewerShaderMgr::instance()->beginShaders(); shaders_iter != end_shaders; ++shaders_iter)
+		std::vector<LLGLSLShader*>::iterator shaders_iter=mShaderList.begin();
+		for(; shaders_iter != mShaderList.end(); ++shaders_iter)
 		{
-			if (shaders_iter->mProgramObject != 0
-				&& shaders_iter->mShaderGroup == LLGLSLShader::SG_WATER)
-			{
-				shaders_iter->mUniformsDirty = TRUE;
-			}
+			(*shaders_iter)->mUniformsDirty = TRUE;
 		}
 	}
 }
 
-// static
-void LLWaterParamManager::initClass(void)
-{
-	instance();
-}
-
-// static
-void LLWaterParamManager::cleanupClass(void)
-{
-	delete sInstance;
-	sInstance = NULL;
-}
 
 bool LLWaterParamManager::addParamSet(const std::string& name, LLWaterParamSet& param)
 {
@@ -440,16 +443,11 @@ F32 LLWaterParamManager::getFogDensity(void)
 }
 
 // static
-LLWaterParamManager * LLWaterParamManager::instance()
+void LLWaterParamManager::initSingleton()
 {
-	if(NULL == sInstance)
-	{
-		sInstance = new LLWaterParamManager();
+	
+	loadAllPresets(LLStringUtil::null);
 
-		sInstance->loadAllPresets(LLStringUtil::null);
-
-		sInstance->getParamSet("Default", sInstance->mCurParams);
-	}
-
-	return sInstance;
+	getParamSet("Default", mCurParams);
 }
+

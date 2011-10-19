@@ -30,7 +30,7 @@ set(LIBS_SERVER_DIR ${CMAKE_SOURCE_DIR}/${LIBS_SERVER_PREFIX})
 set(SCRIPTS_DIR ${CMAKE_SOURCE_DIR}/${SCRIPTS_PREFIX})
 set(SERVER_DIR ${CMAKE_SOURCE_DIR}/${SERVER_PREFIX})
 set(VIEWER_DIR ${CMAKE_SOURCE_DIR}/${VIEWER_PREFIX})
-set(LL_TESTS ON CACHE BOOL "Build and run unit and integration tests (disable for build timing runs to reduce variation)")
+set(LL_TESTS OFF CACHE BOOL "Build and run unit and integration tests (disable for build timing runs to reduce variation)")
 set(VISTA_ICON OFF CACHE BOOL "Allow vista icon with pre 2008 Visual Studio IDEs. (Assumes replacement old rcdll.dll with new rcdll.dll from win sdk 7.0 or later)")
 
 set(LIBS_PREBUILT_DIR ${CMAKE_SOURCE_DIR}/../libraries CACHE PATH

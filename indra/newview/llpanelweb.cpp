@@ -37,6 +37,7 @@
 
 // project includes
 #include "llcheckboxctrl.h"
+#include "llnotificationsutil.h"
 #include "lluictrlfactory.h"
 #include "llviewercontrol.h"
 #include "llviewermedia.h"
@@ -116,7 +117,7 @@ void LLPanelWeb::cancel()
 // static
 void LLPanelWeb::onClickClearCache(void*)
 {
-	LLNotifications::instance().add("ConfirmClearBrowserCache", LLSD(), LLSD(), callback_clear_browser_cache);
+	LLNotificationsUtil::add("ConfirmClearBrowserCache", LLSD(), LLSD(), callback_clear_browser_cache);
 }
 
 //static
@@ -135,7 +136,7 @@ bool LLPanelWeb::callback_clear_browser_cache(const LLSD& notification, const LL
 // static
 void LLPanelWeb::onClickClearCookies(void*)
 {
-	LLNotifications::instance().add("ConfirmClearCookies", LLSD(), LLSD(), callback_clear_cookies);
+	LLNotificationsUtil::add("ConfirmClearCookies", LLSD(), LLSD(), callback_clear_cookies);
 }
 
 //static

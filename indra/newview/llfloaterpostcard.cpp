@@ -45,6 +45,7 @@
 #include "lllineeditor.h"
 #include "llviewertexteditor.h"
 #include "llbutton.h"
+#include "llnotificationsutil.h"
 #include "llviewercontrol.h"
 #include "llviewernetwork.h"
 #include "lluictrlfactory.h"
@@ -255,20 +256,20 @@ void LLFloaterPostcard::onClickSend(void* data)
 		
 		if (to.empty() || !boost::regex_match(to, emailFormat))
 		{
-			LLNotifications::instance().add("PromptRecipientEmail");
+			LLNotificationsUtil::add("PromptRecipientEmail");
 			return;
 		}
 
 		if (from.empty() || !boost::regex_match(from, emailFormat))
 		{
-			LLNotifications::instance().add("PromptSelfEmail");
+			LLNotificationsUtil::add("PromptSelfEmail");
 			return;
 		}
 
 		std::string subject(self->childGetValue("subject_form").asString());
 		if(subject.empty() || !self->mHasFirstMsgFocus)
 		{
-			LLNotifications::instance().add("PromptMissingSubjMsg", LLSD(), LLSD(), boost::bind(&LLFloaterPostcard::missingSubjMsgAlertCallback, self, _1, _2));
+			LLNotificationsUtil::add("PromptMissingSubjMsg", LLSD(), LLSD(), boost::bind(&LLFloaterPostcard::missingSubjMsgAlertCallback, self, _1, _2));
 			return;
 		}
 
@@ -278,7 +279,7 @@ void LLFloaterPostcard::onClickSend(void* data)
 		}
 		else
 		{
-			LLNotifications::instance().add("ErrorProcessingSnapshot");
+			LLNotificationsUtil::add("ErrorProcessingSnapshot");
 		}
 	}
 }
@@ -294,7 +295,7 @@ void LLFloaterPostcard::uploadCallback(const LLUUID& asset_id, void *user_data, 
 	{
 		LLSD args;
 		args["REASON"] = std::string(LLAssetStorage::getErrorString(result));
-		LLNotifications::instance().add("ErrorUploadingPostcard", args);
+		LLNotificationsUtil::add("ErrorUploadingPostcard", args);
 	}
 	else
 	{
@@ -353,7 +354,7 @@ void LLFloaterPostcard::onMsgFormFocusRecieved(LLFocusableElement* receiver, voi
 
 bool LLFloaterPostcard::missingSubjMsgAlertCallback(const LLSD& notification, const LLSD& response)
 {
-	S32 option = LLNotification::getSelectedOption(notification, response);
+	S32 option = LLNotificationsUtil::getSelectedOption(notification, response);
 	if(0 == option)
 	{
 		// User clicked OK

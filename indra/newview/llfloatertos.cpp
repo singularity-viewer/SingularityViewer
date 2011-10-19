@@ -46,6 +46,7 @@
 #include "llbutton.h"
 #include "llhttpclient.h"
 #include "llhttpstatuscodes.h"	// for HTTP_FOUND
+#include "llnotificationsutil.h"
 #include "llradiogroup.h"
 #include "lltextbox.h"
 #include "llui.h"
@@ -254,7 +255,7 @@ void LLFloaterTOS::onCancel( void* userdata )
 {
 	LLFloaterTOS* self = (LLFloaterTOS*) userdata;
 	llinfos << "User disagrees with TOS." << llendl;
-	LLNotifications::instance().add("MustAgreeToLogIn", LLSD(), LLSD(), login_alert_done);
+	LLNotificationsUtil::add("MustAgreeToLogIn", LLSD(), LLSD(), login_alert_done);
 	LLStartUp::setStartupState( STATE_LOGIN_SHOW );
 	self->mLoadCompleteCount = 0;  // reset counter for next time we come to TOS
 	self->close(); // destroys this object

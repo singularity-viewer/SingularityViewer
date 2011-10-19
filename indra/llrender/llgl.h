@@ -89,11 +89,15 @@ public:
 	BOOL mHasMipMapGeneration;
 	BOOL mHasCompressedTextures;
 	BOOL mHasFramebufferObject;
+	S32 mMaxSamples;
 	BOOL mHasFramebufferMultisample;
 	BOOL mHasBlendFuncSeparate;
 	
 	// ARB Extensions
 	BOOL mHasVertexBufferObject;
+	BOOL mHasSync;
+	BOOL mHasMapBufferRange;
+	BOOL mHasFlushBufferRange;
 	BOOL mHasPBuffer;
 	BOOL mHasShaderObjects;
 	BOOL mHasVertexShader;
@@ -105,6 +109,11 @@ public:
 	BOOL mHasDrawBuffers;
 	BOOL mHasDepthClamp;
 	BOOL mHasTextureRectangle;
+	BOOL mHasTextureMultisample;
+	S32 mMaxSampleMaskWords;
+	S32 mMaxColorTextureSamples;
+	S32 mMaxDepthTextureSamples;
+	S32 mMaxIntegerSamples;
 
 	// Other extensions.
 	BOOL mHasAnisotropic;
@@ -126,6 +135,9 @@ public:
 
 	// Misc extensions
 	BOOL mHasSeparateSpecularColor;
+
+	//whether this GPU is in the debug list.
+	BOOL mDebugGPU;
 	
 	S32 mDriverVersionMajor;
 	S32 mDriverVersionMinor;
@@ -143,6 +155,7 @@ public:
 	void printGLInfoString();
 	void getGLInfo(LLSD& info);
 
+	U32 getNumFBOFSAASamples(U32 desired_samples = 32);
 	// In ALL CAPS
 	std::string mGLVendor;
 	std::string mGLVendorShort;
@@ -154,6 +167,7 @@ private:
 	void initExtensions();
 	void initGLStates();
 	void initGLImages();
+	void setToDebugGPU();
 };
 
 extern LLGLManager gGLManager;

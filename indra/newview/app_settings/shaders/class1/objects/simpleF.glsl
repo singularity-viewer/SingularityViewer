@@ -5,7 +5,7 @@
  * $License$
  */
  
-#version 120
+
 
 void default_lighting();
 

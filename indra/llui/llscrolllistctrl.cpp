@@ -430,7 +430,7 @@ void LLScrollListText::draw(const LLColor4& color, const LLColor4& highlight_col
 	switch(mFontAlignment)
 	{
 	case LLFontGL::LEFT:
-		start_x = 0.f;
+		start_x = (mFontStyle & LLFontGL::ITALIC) ? 2.f : 0.f; //Italic text seems need a little padding.
 		break;
 	case LLFontGL::RIGHT:
 		start_x = (F32)getWidth();
@@ -1301,6 +1301,7 @@ void LLScrollListCtrl::swapWithPrevious(S32 index)
 	if (index <= 0)
 	{
 		// At beginning of list, don't do anything
+		return;
 	}
 
 	LLScrollListItem *cur_itemp = mItemList[index];
@@ -1308,6 +1309,18 @@ void LLScrollListCtrl::swapWithPrevious(S32 index)
 	mItemList[index - 1] = cur_itemp;
 }
 
+void LLScrollListCtrl::moveToFront(S32 index)
+{
+	if(index == 0 || index >= (S32)mItemList.size())
+	{
+		return;
+	}
+	
+	LLScrollListCtrl::item_list::iterator it = mItemList.begin();
+	std::advance(it,index);
+	mItemList.push_front(*it);
+	mItemList.erase(it);
+}
 
 void LLScrollListCtrl::deleteSingleItem(S32 target_index)
 {
@@ -3002,6 +3015,9 @@ LLView* LLScrollListCtrl::fromXML(LLXMLNodePtr node, LLView *parent, LLUICtrlFac
 			std::string imagename;
 			child->getAttributeString("image", imagename);
 
+			std::string imageoverlay;
+			child->getAttributeString("image_overlay", imageoverlay);
+
 			BOOL columndynamicwidth = FALSE;
 			child->getAttributeBOOL("dynamicwidth", columndynamicwidth);
 
@@ -3021,6 +3037,7 @@ LLView* LLScrollListCtrl::fromXML(LLXMLNodePtr node, LLView *parent, LLUICtrlFac
 			columns[index]["sort"] = sortname;
 			columns[index]["sort_ascending"] = sort_ascending;
 			columns[index]["image"] = imagename;
+			columns[index]["image_overlay"] = imageoverlay;
 			columns[index]["label"] = labelname;
 			columns[index]["width"] = columnwidth;
 			columns[index]["relwidth"] = columnrelwidth;
@@ -3228,6 +3245,10 @@ void LLScrollListCtrl::addColumn(const LLSD& column, EAddPosition pos)
 			{
 				//new_column->mHeader->setScaleImage(false);
 				new_column->mHeader->setImage(column["image"].asString());				
+			}
+			else if(column["image_overlay"].asString() != "")
+			{
+				new_column->mHeader->setImageOverlay(column["image_overlay"].asString());			
 			}
 			else
 			{
@@ -3683,6 +3704,9 @@ LLColumnHeader::LLColumnHeader(const std::string& label, const LLRect &rect, LLS
 	addChild(mResizeBar);
 
 	mResizeBar->setEnabled(FALSE);
+
+	mImageOverlayAlignment = LLFontGL::HCENTER;
+	mImageOverlayColor = LLColor4::white;
 }
 
 LLColumnHeader::~LLColumnHeader()
@@ -3706,6 +3730,95 @@ void LLColumnHeader::draw()
 	// Draw children
 	LLComboBox::draw();
 
+	if (mImageOverlay.notNull()) //Ugly dupe code from llbutton...
+	{
+		BOOL pressed_by_keyboard = FALSE;
+		if (mButton->hasFocus())
+		{
+			pressed_by_keyboard = gKeyboard->getKeyDown(' ') || (mButton->getCommitOnReturn() && gKeyboard->getKeyDown(KEY_RETURN));
+		}
+
+		// Unselected image assignments
+		S32 local_mouse_x;
+		S32 local_mouse_y;
+		LLUI::getCursorPositionLocal(mButton, &local_mouse_x, &local_mouse_y);
+
+		BOOL pressed = pressed_by_keyboard
+					|| (mButton->hasMouseCapture() && mButton->pointInView(local_mouse_x, local_mouse_y)) 
+					|| mButton->getToggleState();
+
+		// Now draw special overlay..
+		// let overlay image and text play well together
+		S32 button_width = mButton->getRect().getWidth();
+		S32 button_height = mButton->getRect().getHeight();
+		S32 text_left = mButton->getLeftHPad();
+		S32 text_right = button_width - mButton->getRightHPad();
+		S32 text_width = text_right - text_left;
+
+		// draw overlay image
+
+		// get max width and height (discard level 0)
+		S32 overlay_width = mImageOverlay->getWidth();
+		S32 overlay_height = mImageOverlay->getHeight();
+
+		F32 scale_factor = llmin((F32)button_width / (F32)overlay_width, (F32)button_height / (F32)overlay_height, 1.f);
+		overlay_width = llround((F32)overlay_width * scale_factor);
+		overlay_height = llround((F32)overlay_height * scale_factor);
+
+		S32 center_x = mButton->getLocalRect().getCenterX();
+		S32 center_y = mButton->getLocalRect().getCenterY();
+
+		//FUGLY HACK FOR "DEPRESSED" BUTTONS
+		if (pressed)
+		{
+			center_y--;
+			center_x++;
+		}
+
+		// fade out overlay images on disabled buttons
+		LLColor4 overlay_color = mImageOverlayColor;
+		if (!mButton->getEnabled())
+		{
+			overlay_color.mV[VALPHA] = 0.5f;
+		}
+
+		switch(mImageOverlayAlignment)
+		{
+		case LLFontGL::LEFT:
+			text_left += overlay_width + 1;
+			text_width -= overlay_width + 1;
+			mImageOverlay->draw(
+				text_left,
+				center_y - (overlay_height / 2),
+				overlay_width,
+				overlay_height,
+				overlay_color);
+			break;
+		case LLFontGL::HCENTER:
+			mImageOverlay->draw(
+				center_x - (overlay_width / 2),
+				center_y - (overlay_height / 2),
+				overlay_width,
+				overlay_height,
+				overlay_color);
+			break;
+		case LLFontGL::RIGHT:
+			text_right -= overlay_width + 1;
+			text_width -= overlay_width + 1;
+			mImageOverlay->draw(
+				text_right - overlay_width,
+				center_y - (overlay_height / 2),
+				overlay_width,
+				overlay_height,
+				overlay_color);
+			break;
+		default:
+			// draw nothing
+			break;
+		}
+	}
+
+
 	if (mList->getVisible())
 	{
 		// sync sort order with list selection every frame
@@ -3720,7 +3833,7 @@ BOOL LLColumnHeader::handleDoubleClick(S32 x, S32 y, MASK mask)
 		// reshape column to max content width
 		LLRect column_rect = getRect();
 		column_rect.mRight = column_rect.mLeft + mColumn->mMaxContentWidth;
-		userSetShape(column_rect);
+		setShape(column_rect,true);
 	}
 	else
 	{
@@ -3735,6 +3848,20 @@ void LLColumnHeader::setImage(const std::string &image_name)
 	{
 		mButton->setImageSelected(image_name);
 		mButton->setImageUnselected(image_name);
+	}
+}
+
+void LLColumnHeader::setImageOverlay(const std::string &image_name, LLFontGL::HAlign alignment, const LLColor4& color)
+{
+	if (image_name.empty())
+	{
+		mImageOverlay = NULL;
+	}
+	else
+	{
+		mImageOverlay = LLUI::getUIImage(image_name);
+		mImageOverlayAlignment = alignment;
+		mImageOverlayColor = color;
 	}
 }
 
@@ -3918,7 +4045,7 @@ LLView*	LLColumnHeader::findSnapEdge(S32& new_edge_val, const LLCoordGL& mouse_d
 	return this;
 }
 
-void LLColumnHeader::userSetShape(const LLRect& new_rect)
+void LLColumnHeader::handleReshape(const LLRect& new_rect, bool by_user)
 {
 	S32 new_width = new_rect.getWidth();
 	S32 delta_width = new_width - (getRect().getWidth() /*+ mColumn->mParentCtrl->getColumnPadding()*/);

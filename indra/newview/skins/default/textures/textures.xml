@@ -390,5 +390,10 @@
   <texture name="media_btn_stoploading.png"/>
   <texture name="media_panel_divider.png"/>
   <texture name="media_panel_scrollbg.png"/>
+  
+  <texture name="go-previous-4.png"/>
+  <texture name="go-next-4.png"/>
+  <texture name="view-refresh-5.png"/> 
+  <texture name="go-home-4.png"/>
 
 </textures>

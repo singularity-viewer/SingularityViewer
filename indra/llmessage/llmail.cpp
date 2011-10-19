@@ -56,7 +56,7 @@
 #include "llstring.h"
 #include "lluuid.h"
 #include "net.h"
-#include "aiaprpool.h"
+#include "llaprpool.h"
 
 //
 // constants
@@ -64,7 +64,7 @@
 const size_t LL_MAX_KNOWN_GOOD_MAIL_SIZE = 4096;
 
 static bool gMailEnabled = true;
-static AIAPRPool gMailPool;
+static LLAPRPool gMailPool;
 static apr_sockaddr_t* gSockAddr;
 static apr_socket_t* gMailSocket;
 

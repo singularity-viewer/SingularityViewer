@@ -74,7 +74,6 @@ public:
 	static LLHUDEffect *addHUDEffect(const U8 type);
 	static void updateAll();
 	static void renderAll();
-	static void renderAllForSelect();
 	static void renderAllForTimer();
 
 	static void cleanupHUDObjects();
@@ -106,7 +105,6 @@ protected:
 	~LLHUDObject();
 
 	virtual void render() = 0;
-	virtual void renderForSelect() {}	//Only override when needed.
 	virtual void renderForTimer() {};
 	
 protected:

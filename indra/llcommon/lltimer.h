@@ -39,8 +39,6 @@
 #include <limits.h>
 
 #include "stdtypes.h"
-#include "llpreprocessor.h"
-#include "lldate.h"
 
 #include <string>
 #include <list>
@@ -54,8 +52,6 @@ const U32	USEC_PER_MIN	= USEC_PER_SEC * SEC_PER_MIN;
 const U32	USEC_PER_HOUR	= USEC_PER_MIN * MIN_PER_HOUR;
 const U32	SEC_PER_HOUR	= SEC_PER_MIN * MIN_PER_HOUR;
 const F64 	SEC_PER_USEC 	= 1.0 / (F64) USEC_PER_SEC;
-
-LL_COMMON_API U64 totalTime();					// Returns current system time in microseconds
 
 class LL_COMMON_API LLTimer
 {
@@ -175,4 +171,5 @@ LL_COMMON_API void secondsToTimecodeString(F32 current_time, std::string& tcstri
 LL_COMMON_API void timeToFormattedString(time_t time, std::string format, std::string &timestr);
 LL_COMMON_API void timeStructToFormattedString(struct tm * time, std::string format, std::string &timestr);
 
+U64 LL_COMMON_API totalTime();					// Returns current system time in microseconds
 #endif

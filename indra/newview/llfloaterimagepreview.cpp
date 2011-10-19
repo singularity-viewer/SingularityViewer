@@ -348,24 +348,7 @@ bool LLFloaterImagePreview::loadImage(const std::string& src_filename)
 {
 	std::string exten = gDirUtilp->getExtension(src_filename);
 	
-	U32 codec = IMG_CODEC_INVALID;
-	std::string temp_str;
-	if( exten == "bmp")
-	{
-		codec = IMG_CODEC_BMP;
-	}
-	else if( exten == "tga")
-	{
-		codec = IMG_CODEC_TGA;
-	}
-	else if( exten == "jpg" || exten == "jpeg")
-	{
-		codec = IMG_CODEC_JPEG;
-	}
-	else if( exten == "png" )
-	{
-		codec = IMG_CODEC_PNG;
-	}
+	U32 codec = LLImageBase::getCodecFromExtension(exten);
 
 	LLPointer<LLImageRaw> raw_image = new LLImageRaw;
 
@@ -854,8 +837,8 @@ void LLImagePreviewSculpted::setPreviewTarget(LLImageRaw* imagep, F32 distance)
 	}
 
 	const LLVolumeFace &vf = mVolume->getVolumeFace(0);
-	U32 num_indices = vf.mIndices.size();
-	U32 num_vertices = vf.mVertices.size();
+	U32 num_indices = vf.mNumIndices;
+	U32 num_vertices = vf.mNumVertices;
 
 	mVertexBuffer = new LLVertexBuffer(LLVertexBuffer::MAP_VERTEX | LLVertexBuffer::MAP_NORMAL, 0);
 	mVertexBuffer->allocateBuffer(num_vertices, num_indices, TRUE);
@@ -869,12 +852,12 @@ void LLImagePreviewSculpted::setPreviewTarget(LLImageRaw* imagep, F32 distance)
 	mVertexBuffer->getIndexStrider(index_strider);
 
 	// build vertices and normals
-	for (U32 i = 0; (S32)i < num_vertices; i++)
+	for (U32 i = 0; (U32)i < num_vertices; i++)
 	{
-		*(vertex_strider++) = vf.mVertices[i].mPosition;
-		LLVector3 normal = vf.mVertices[i].mNormal;
-		normal.normalize();
-		*(normal_strider++) = normal;
+		(vertex_strider++)->set(vf.mPositions[i].getF32ptr());
+		LLVector4a normal(vf.mNormals[i]);
+		normal.normalize3fast();
+		(normal_strider++)->set(normal.getF32ptr());
 	}
 
 	// build indices
@@ -936,7 +919,7 @@ BOOL LLImagePreviewSculpted::render()
 	LLViewerCamera::getInstance()->setPerspective(FALSE, mOrigin.mX, mOrigin.mY, mFullWidth, mFullHeight, FALSE);
 
 	const LLVolumeFace &vf = mVolume->getVolumeFace(0);
-	U32 num_indices = vf.mIndices.size();
+	U32 num_indices = (U32)vf.mNumIndices;
 	
 	mVertexBuffer->setBuffer(LLVertexBuffer::MAP_VERTEX | LLVertexBuffer::MAP_NORMAL);
 
@@ -948,8 +931,7 @@ BOOL LLImagePreviewSculpted::render()
 	gGL.color3f(BRIGHTNESS, BRIGHTNESS, BRIGHTNESS);
 	mVertexBuffer->draw(LLRender::TRIANGLES, num_indices, 0);
 
-	gGL.popMatrix();
-		
+	gGL.popMatrix();	
 	return TRUE;
 }
 

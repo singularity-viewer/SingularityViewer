@@ -147,7 +147,6 @@ Hover your mouse over the options for more help.
 		</text>
 		<combo_box length="120" width="175" bottom_delta="-25" follows="left|top" height="20" left_delta="0" name="active_title"
 		     tool_tip="Sets the title that appears in your avatar&apos;s name tag   when this group is active." />
-		</panel>
 	</panel>
 	<string name="incomplete_member_data_str">
 		Retrieving member data

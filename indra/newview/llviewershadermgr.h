@@ -287,9 +287,9 @@ private:
 	std::vector<std::string> mAvatarUniforms;
 
 	// the list of shaders we need to propagate parameters to.
-	// Currently this is replaced with a global list of all shaders
-	//  which isn't quite as efficient. However, if other changes prove
-	//  stable then I will mimic mShaderList on a per-ParamManager basis.
+	// This is no longer needed, as param managers iterate down the global list
+	//  after shaders have been loaded and automagically add relevant shaders to 
+	//  their own local lists.
 	//std::vector<LLGLSLShader *> mShaderList;
 }; //LLViewerShaderMgr
 
@@ -305,19 +305,55 @@ inline bool operator != (LLViewerShaderMgr::shader_iter const & a, LLViewerShade
 
 extern LLVector4			gShinyOrigin;
 
+//utility shaders
+extern LLGLSLShader			gOcclusionProgram;
+extern LLGLSLShader			gCustomAlphaProgram;
+extern LLGLSLShader			gGlowCombineProgram;
+
+//output tex0[tc0] + tex1[tc1]
+extern LLGLSLShader			gTwoTextureAddProgram;
+								
 //object shaders
 extern LLGLSLShader			gObjectSimpleProgram;
+extern LLGLSLShader			gObjectSimpleAlphaMaskProgram;
 extern LLGLSLShader			gObjectSimpleWaterProgram;
+extern LLGLSLShader			gObjectSimpleWaterAlphaMaskProgram;
+extern LLGLSLShader			gObjectSimpleNonIndexedProgram;
+extern LLGLSLShader			gObjectSimpleNonIndexedWaterProgram;
+extern LLGLSLShader			gObjectAlphaMaskNonIndexedProgram;
+extern LLGLSLShader			gObjectAlphaMaskNonIndexedWaterProgram;
 extern LLGLSLShader			gObjectFullbrightProgram;
 extern LLGLSLShader			gObjectFullbrightWaterProgram;
+extern LLGLSLShader			gObjectFullbrightAlphaMaskProgram;
+extern LLGLSLShader			gObjectFullbrightWaterAlphaMaskProgram;
+extern LLGLSLShader			gObjectFullbrightNonIndexedProgram;
+extern LLGLSLShader			gObjectFullbrightNonIndexedWaterProgram;
+extern LLGLSLShader			gObjectBumpProgram;
 
 extern LLGLSLShader			gObjectSimpleLODProgram;
 extern LLGLSLShader			gObjectFullbrightLODProgram;
 
 extern LLGLSLShader			gObjectFullbrightShinyProgram;
 extern LLGLSLShader			gObjectFullbrightShinyWaterProgram;
+extern LLGLSLShader			gObjectFullbrightShinyNonIndexedProgram;
+extern LLGLSLShader			gObjectFullbrightShinyNonIndexedWaterProgram;
+
 extern LLGLSLShader			gObjectShinyProgram;
 extern LLGLSLShader			gObjectShinyWaterProgram;
+extern LLGLSLShader			gObjectShinyNonIndexedProgram;
+extern LLGLSLShader			gObjectShinyNonIndexedWaterProgram;
+
+#if MESH_ENABLED
+extern LLGLSLShader			gSkinnedObjectSimpleProgram;
+extern LLGLSLShader			gSkinnedObjectFullbrightProgram;
+extern LLGLSLShader			gSkinnedObjectFullbrightShinyProgram;
+extern LLGLSLShader			gSkinnedObjectShinySimpleProgram;
+
+extern LLGLSLShader			gSkinnedObjectSimpleWaterProgram;
+extern LLGLSLShader			gSkinnedObjectFullbrightWaterProgram;
+extern LLGLSLShader			gSkinnedObjectFullbrightShinyWaterProgram;
+extern LLGLSLShader			gSkinnedObjectShinySimpleWaterProgram;
+#endif //MESH_ENABLED
 
 //environment shaders
 extern LLGLSLShader			gTerrainProgram;
@@ -335,6 +371,7 @@ extern LLGLSLShader			gAvatarProgram;
 extern LLGLSLShader			gAvatarWaterProgram;
 extern LLGLSLShader			gAvatarEyeballProgram;
 extern LLGLSLShader			gAvatarPickProgram;
+extern LLGLSLShader			gImpostorProgram;
 
 // WindLight shader handles
 extern LLGLSLShader			gWLSkyProgram;
@@ -350,6 +387,14 @@ extern LLGLSLShader			gDeferredImpostorProgram;
 extern LLGLSLShader			gDeferredEdgeProgram;
 extern LLGLSLShader			gDeferredWaterProgram;
 extern LLGLSLShader			gDeferredDiffuseProgram;
+extern LLGLSLShader			gDeferredDiffuseAlphaMaskProgram;
+extern LLGLSLShader			gDeferredNonIndexedDiffuseAlphaMaskProgram;
+extern LLGLSLShader			gDeferredNonIndexedDiffuseProgram;
+extern LLGLSLShader			gDeferredSkinnedDiffuseProgram;
+#if MESH_ENABLED
+extern LLGLSLShader			gDeferredSkinnedBumpProgram;
+extern LLGLSLShader			gDeferredSkinnedAlphaProgram;
+#endif //MESH_ENABLED
 extern LLGLSLShader			gDeferredBumpProgram;
 extern LLGLSLShader			gDeferredTerrainProgram;
 extern LLGLSLShader			gDeferredTreeProgram;
@@ -364,14 +409,20 @@ extern LLGLSLShader			gDeferredBlurLightProgram;
 extern LLGLSLShader			gDeferredAvatarProgram;
 extern LLGLSLShader			gDeferredSoftenProgram;
 extern LLGLSLShader			gDeferredShadowProgram;
+extern LLGLSLShader			gDeferredShadowAlphaMaskProgram;
 extern LLGLSLShader			gDeferredPostGIProgram;
 extern LLGLSLShader			gDeferredPostProgram;
 extern LLGLSLShader			gDeferredPostNoDoFProgram;
 extern LLGLSLShader			gDeferredAvatarShadowProgram;
+#if MESH_ENABLED
+extern LLGLSLShader			gDeferredAttachmentShadowProgram;
+#endif //MESH_ENABLED
 extern LLGLSLShader			gDeferredAlphaProgram;
 extern LLGLSLShader			gDeferredFullbrightProgram;
 extern LLGLSLShader			gDeferredAvatarAlphaProgram;
-
+extern LLGLSLShader			gDeferredWLSkyProgram;
+extern LLGLSLShader			gDeferredWLCloudProgram;
+extern LLGLSLShader			gDeferredStarProgram;
 extern LLGLSLShader			gLuminanceGatherProgram;
 
 //current avatar shader parameter pointer

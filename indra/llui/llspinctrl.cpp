@@ -168,21 +168,15 @@ void LLSpinCtrl::onUpBtn( void *userdata )
 		val = clamp_precision(val, self->mPrecision);
 		val = llmin( val, self->mMaxValue );
 		
-		if( self->mValidateCallback )
+		F32 saved_val = (F32)self->getValue().asReal();
+		self->setValue(val);
+		if( (self->mValidateCallback 	&& !self->mValidateCallback( self, self->mCallbackUserData ) ) ||
+			(self->mValidateSignal		&& !(*(self->mValidateSignal))( self, val ) ))
 		{
-			F32 saved_val = (F32)self->getValue().asReal();
-			self->setValue(val);
-			if( !self->mValidateCallback( self, self->mCallbackUserData ) )
-			{
-				self->setValue( saved_val );
-				self->reportInvalidData();
-				self->updateEditor();
-				return;
-			}
-		}
-		else
-		{
-			self->setValue(val);
+			self->setValue( saved_val );
+			self->reportInvalidData();
+			self->updateEditor();
+			return;
 		}
 
 		self->updateEditor();
@@ -201,21 +195,19 @@ void LLSpinCtrl::onDownBtn( void *userdata )
 		val = clamp_precision(val, self->mPrecision);
 		val = llmax( val, self->mMinValue );
 
-		if( self->mValidateCallback )
+
+		if (val < self->mMinValue) val = self->mMinValue;
+		if (val > self->mMaxValue) val = self->mMaxValue;
+
+		F32 saved_val = (F32)self->getValue().asReal();
+		self->setValue(val);
+		if( (self->mValidateCallback 	&& !self->mValidateCallback( self, self->mCallbackUserData ) ) ||
+			(self->mValidateSignal		&& !(*(self->mValidateSignal))( self, val ) ))
 		{
-			F32 saved_val = (F32)self->getValue().asReal();
-			self->setValue(val);
-			if( !self->mValidateCallback( self, self->mCallbackUserData ) )
-			{
-				self->setValue( saved_val );
-				self->reportInvalidData();
-				self->updateEditor();
-				return;
-			}
-		}
-		else
-		{
-			self->setValue(val);
+			self->setValue( saved_val );
+			self->reportInvalidData();
+			self->updateEditor();
+			return;
 		}
 		
 		self->updateEditor();
@@ -303,31 +295,19 @@ void LLSpinCtrl::onEditorCommit( LLUICtrl* caller, void *userdata )
 		if (val < self->mMinValue) val = self->mMinValue;
 		if (val > self->mMaxValue) val = self->mMaxValue;
 
-		if( self->mValidateCallback )
+		F32 saved_val = self->mValue;
+		self->mValue = val;
+			
+		if(	(!self->mValidateCallback	|| self->mValidateCallback( self, self->mCallbackUserData )) &&
+			(!self->mValidateSignal		|| (*(self->mValidateSignal))(self, val)))
 		{
-			F32 saved_val = self->mValue;
-			self->mValue = val;
-			if( self->mValidateCallback( self, self->mCallbackUserData ) )
-			{
-				success = TRUE;
-				self->onCommit();
-			}
-			else
-			{
-				self->mValue = saved_val;
-			}
+			success = TRUE;
+			self->onCommit();
 		}
 		else
 		{
-			self->mValue = val;
-			self->onCommit();
-			success = TRUE;
+			self->mValue = saved_val;
 		}
-	}
-	else
-	{
-		// We want to update the editor in case it fails while blanking -- MC
-		success = TRUE;
 	}
 
 	if( success )

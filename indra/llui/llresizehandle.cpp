@@ -205,36 +205,37 @@ BOOL LLResizeHandle::handleHover(S32 x, S32 y, MASK mask)
 			LLView* snap_view = NULL;
 			LLView* test_view = NULL;
 
+			static LLCachedControl<S32> snap_margin (*LLUI::sConfigGroup,"SnapMargin", 0);
 			// now do snapping
 			switch(mCorner)
 			{
 			case LEFT_TOP:		
-				snap_view = resizing_view->findSnapEdge(scaled_rect.mLeft, mouse_dir, SNAP_LEFT, SNAP_PARENT_AND_SIBLINGS, LLUI::sConfigGroup->getS32("SnapMargin"));
-				test_view = resizing_view->findSnapEdge(scaled_rect.mTop, mouse_dir, SNAP_TOP, SNAP_PARENT_AND_SIBLINGS, LLUI::sConfigGroup->getS32("SnapMargin"));
+				snap_view = resizing_view->findSnapEdge(scaled_rect.mLeft, mouse_dir, SNAP_LEFT, SNAP_PARENT_AND_SIBLINGS, snap_margin);
+				test_view = resizing_view->findSnapEdge(scaled_rect.mTop, mouse_dir, SNAP_TOP, SNAP_PARENT_AND_SIBLINGS, snap_margin);
 				if (!snap_view)
 				{
 					snap_view = test_view;
 				}
 				break;
 			case LEFT_BOTTOM:	
-				snap_view = resizing_view->findSnapEdge(scaled_rect.mLeft, mouse_dir, SNAP_LEFT, SNAP_PARENT_AND_SIBLINGS, LLUI::sConfigGroup->getS32("SnapMargin"));
-				test_view = resizing_view->findSnapEdge(scaled_rect.mBottom, mouse_dir, SNAP_BOTTOM, SNAP_PARENT_AND_SIBLINGS, LLUI::sConfigGroup->getS32("SnapMargin"));
+				snap_view = resizing_view->findSnapEdge(scaled_rect.mLeft, mouse_dir, SNAP_LEFT, SNAP_PARENT_AND_SIBLINGS, snap_margin);
+				test_view = resizing_view->findSnapEdge(scaled_rect.mBottom, mouse_dir, SNAP_BOTTOM, SNAP_PARENT_AND_SIBLINGS, snap_margin);
 				if (!snap_view)
 				{
 					snap_view = test_view;
 				}
 				break;
 			case RIGHT_TOP:		
-				snap_view = resizing_view->findSnapEdge(scaled_rect.mRight, mouse_dir, SNAP_RIGHT, SNAP_PARENT_AND_SIBLINGS, LLUI::sConfigGroup->getS32("SnapMargin"));
-				test_view = resizing_view->findSnapEdge(scaled_rect.mTop, mouse_dir, SNAP_TOP, SNAP_PARENT_AND_SIBLINGS, LLUI::sConfigGroup->getS32("SnapMargin"));
+				snap_view = resizing_view->findSnapEdge(scaled_rect.mRight, mouse_dir, SNAP_RIGHT, SNAP_PARENT_AND_SIBLINGS, snap_margin);
+				test_view = resizing_view->findSnapEdge(scaled_rect.mTop, mouse_dir, SNAP_TOP, SNAP_PARENT_AND_SIBLINGS, snap_margin);
 				if (!snap_view)
 				{
 					snap_view = test_view;
 				}
 				break;
 			case RIGHT_BOTTOM:	
-				snap_view = resizing_view->findSnapEdge(scaled_rect.mRight, mouse_dir, SNAP_RIGHT, SNAP_PARENT_AND_SIBLINGS, LLUI::sConfigGroup->getS32("SnapMargin"));
-				test_view = resizing_view->findSnapEdge(scaled_rect.mBottom, mouse_dir, SNAP_BOTTOM, SNAP_PARENT_AND_SIBLINGS, LLUI::sConfigGroup->getS32("SnapMargin"));
+				snap_view = resizing_view->findSnapEdge(scaled_rect.mRight, mouse_dir, SNAP_RIGHT, SNAP_PARENT_AND_SIBLINGS, snap_margin);
+				test_view = resizing_view->findSnapEdge(scaled_rect.mBottom, mouse_dir, SNAP_BOTTOM, SNAP_PARENT_AND_SIBLINGS, snap_margin);
 				if (!snap_view)
 				{
 					snap_view = test_view;
@@ -243,13 +244,13 @@ BOOL LLResizeHandle::handleHover(S32 x, S32 y, MASK mask)
 			}
 
 			// register "snap" behavior with snapped view
-			resizing_view->snappedTo(snap_view);
+			resizing_view->setSnappedTo(snap_view);
 
 			// reset parent rect
 			resizing_view->setRect(orig_rect);
 
 			// translate and scale to new shape
-			resizing_view->userSetShape(scaled_rect);
+			resizing_view->setShape(scaled_rect,true);
 			
 			// update last valid mouse cursor position based on resized view's actual size
 			LLRect new_rect = resizing_view->getRect();

@@ -37,7 +37,6 @@
 #include "lldrawable.h"
 #include "llface.h"
 #include "llsky.h"
-#include "llviewerwindow.h"
 #include "llvotree.h"
 #include "pipeline.h"
 #include "llviewercamera.h"
@@ -68,24 +67,25 @@ void LLDrawPoolTree::prerender()
 void LLDrawPoolTree::beginRenderPass(S32 pass)
 {
 	LLFastTimer t(LLFastTimer::FTM_RENDER_TREES);
-	gGL.setAlphaRejectSettings(LLRender::CF_GREATER, 0.5f);
-	
+		
 	if (LLPipeline::sUnderWaterRender)
 	{
-		shader = &gObjectSimpleWaterProgram;
+		shader = &gObjectAlphaMaskNonIndexedWaterProgram;
 	}
 	else
 	{
-		shader = &gObjectSimpleProgram;
+		shader = &gObjectAlphaMaskNonIndexedProgram;
 	}
 
-	if (gPipeline.canUseWindLightShadersOnObjects())
+	if (gPipeline.canUseVertexShaders())
 	{
 		shader->bind();
+		shader->setAlphaRange(0.5f, 1.f);
 	}
 	else
 	{
 		gPipeline.enableLightsDynamic();
+		gGL.setAlphaRejectSettings(LLRender::CF_GREATER, 0.5f);
 	}
 }
 
@@ -98,7 +98,7 @@ void LLDrawPoolTree::render(S32 pass)
 		return;
 	}
 
-	LLGLEnable test(GL_ALPHA_TEST);
+	LLGLState test(GL_ALPHA_TEST, LLGLSLShader::sNoFixedFunction ? 0 : 1);
 	LLOverrideFaceColor color(this, 1.f, 1.f, 1.f, 1.f);
 
 	static const LLCachedControl<bool> render_animate_trees("RenderAnimateTrees",false); 
@@ -128,11 +128,15 @@ void LLDrawPoolTree::render(S32 pass)
 void LLDrawPoolTree::endRenderPass(S32 pass)
 {
 	LLFastTimer t(LLFastTimer::FTM_RENDER_TREES);
-	gGL.setAlphaRejectSettings(LLRender::CF_DEFAULT);
-	
+		
 	if (gPipeline.canUseWindLightShadersOnObjects())
 	{
 		shader->unbind();
+	}
+	
+	if (mVertexShaderLevel <= 0)
+	{
+		gGL.setAlphaRejectSettings(LLRender::CF_DEFAULT);
 	}
 }
 
@@ -142,10 +146,10 @@ void LLDrawPoolTree::endRenderPass(S32 pass)
 void LLDrawPoolTree::beginDeferredPass(S32 pass)
 {
 	LLFastTimer t(LLFastTimer::FTM_RENDER_TREES);
-	gGL.setAlphaRejectSettings(LLRender::CF_GREATER, 0.f);	
-
-	shader = &gDeferredTreeProgram;
+		
+	shader = &gDeferredNonIndexedDiffuseAlphaMaskProgram;
 	shader->bind();
+	shader->setAlphaRange(0.5f, 1.f);
 }
 
 void LLDrawPoolTree::renderDeferred(S32 pass)
@@ -156,7 +160,6 @@ void LLDrawPoolTree::renderDeferred(S32 pass)
 void LLDrawPoolTree::endDeferredPass(S32 pass)
 {
 	LLFastTimer t(LLFastTimer::FTM_RENDER_TREES);
-	gGL.setAlphaRejectSettings(LLRender::CF_DEFAULT);
 	
 	shader->unbind();
 }
@@ -167,12 +170,12 @@ void LLDrawPoolTree::endDeferredPass(S32 pass)
 void LLDrawPoolTree::beginShadowPass(S32 pass)
 {
 	LLFastTimer t(LLFastTimer::FTM_SHADOW_TREE);
-	gGL.setAlphaRejectSettings(LLRender::CF_GREATER, 0.5f);
+
 	static const LLCachedControl<F32> render_deferred_offset("RenderDeferredTreeShadowOffset",1.f);
 	static const LLCachedControl<F32> render_deferred_bias("RenderDeferredTreeShadowBias",1.f);
 	glPolygonOffset(render_deferred_offset,render_deferred_bias);
-
-	gDeferredShadowProgram.bind();
+	gDeferredShadowAlphaMaskProgram.bind();
+	gDeferredShadowAlphaMaskProgram.setAlphaRange(0.5f, 1.f);
 }
 
 void LLDrawPoolTree::renderShadow(S32 pass)
@@ -183,77 +186,10 @@ void LLDrawPoolTree::renderShadow(S32 pass)
 void LLDrawPoolTree::endShadowPass(S32 pass)
 {
 	LLFastTimer t(LLFastTimer::FTM_SHADOW_TREE);
-	gGL.setAlphaRejectSettings(LLRender::CF_DEFAULT);
-	static const LLCachedControl<F32> render_deferred_offset("RenderDeferredTreeShadowOffset",1.f);
-	static const LLCachedControl<F32> render_deferred_bias("RenderDeferredTreeShadowBias",1.f);
+
+	static const LLCachedControl<F32> render_deferred_offset("RenderDeferredSpotShadowOffset",1.f);
+	static const LLCachedControl<F32> render_deferred_bias("RenderDeferredSpotShadowBias",1.f);
 	glPolygonOffset(render_deferred_offset,render_deferred_bias);
-
-	//gDeferredShadowProgram.unbind();
-}
-
-
-void LLDrawPoolTree::renderForSelect()
-{
-	if (mDrawFace.empty())
-	{
-		return;
-	}
-
-	LLOverrideFaceColor color(this, 1.f, 1.f, 1.f, 1.f);
-
-	LLGLSObjectSelectAlpha gls_alpha;
-	gGL.getTexUnit(0)->unbind(LLTexUnit::TT_TEXTURE);
-
-	gGL.setSceneBlendType(LLRender::BT_REPLACE);
-	gGL.setAlphaRejectSettings(LLRender::CF_GREATER, 0.5f);
-
-	gGL.getTexUnit(0)->setTextureColorBlend(LLTexUnit::TBO_REPLACE, LLTexUnit::TBS_PREV_COLOR);
-	gGL.getTexUnit(0)->setTextureAlphaBlend(LLTexUnit::TBO_MULT, LLTexUnit::TBS_TEX_ALPHA, LLTexUnit::TBS_VERT_ALPHA);
-
-	static const LLCachedControl<bool> render_animate_trees("RenderAnimateTrees",false); 
-	if (render_animate_trees)
-	{
-		renderTree(TRUE);
-	}
-	else
-	{
-		gGL.getTexUnit(sDiffTex)->bind(mTexturep);
-				
-		for (std::vector<LLFace*>::iterator iter = mDrawFace.begin();
-			 iter != mDrawFace.end(); iter++)
-		{
-			LLFace *face = *iter;
-			LLDrawable *drawablep = face->getDrawable();
-
-			if (drawablep->isDead() || face->getVertexBuffer())
-			{
-				continue;
-			}
-
-			// Render each of the trees
-			LLVOTree *treep = (LLVOTree *)drawablep->getVObj().get();
-
-			LLColor4U color(255,255,255,255);
-
-			if (treep->mGLName != 0)
-			{
-				S32 name = treep->mGLName;
-				color = LLColor4U((U8)(name >> 16), (U8)(name >> 8), (U8)name, 255);
-				
-				LLFacePool::LLOverrideFaceColor col(this, color);
-				
-				LLVertexBuffer *buff =  face->getVertexBuffer();
-				buff->setBuffer(LLDrawPoolTree::VERTEX_DATA_MASK);
-				buff->drawRange(LLRender::TRIANGLES, 0, buff->getRequestedVerts()-1, buff->getRequestedIndices(), 0); 
-				gPipeline.addTrianglesDrawn(buff->getRequestedIndices()/3);
-			}
-		}
-	}
-
-	gGL.setAlphaRejectSettings(LLRender::CF_DEFAULT);
-	gGL.setSceneBlendType(LLRender::BT_ALPHA);
-
-	gGL.getTexUnit(0)->setTextureBlendType(LLTexUnit::TB_MULT);
 }
 
 void LLDrawPoolTree::renderTree(BOOL selecting)

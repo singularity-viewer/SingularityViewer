@@ -100,6 +100,7 @@ public:
 	void updateAgentCount(F64 time);	// Send an item request for agent count on that region if time's up
 	// Setters
 	void setName(std::string& name) { mName = name; }
+	void setSize(U16 sizeX, U16 sizeY) { mSizeX = sizeX; mSizeY = sizeY; }
 	void setAccess (U8 accesscode) { mAccess = accesscode; }
 	void setRegionFlags (U32 region_flags) { mRegionFlags = region_flags; }
 	void setWaterHeight (F32 water_height) { mWaterHeight = water_height; }
@@ -117,6 +118,8 @@ public:
 	const F32 getWaterHeight() const { return mWaterHeight; }
 	const F32 getAlpha() const { return mAlpha; }
 	const U64 getHandle() const { return mHandle; }
+	const U16 getSizeX() const { return mSizeX; }
+	const U16 getSizeY() const { return mSizeY; }
 	bool isName(const std::string& name) const;
 	bool isDown() { return (mAccess == SIM_ACCESS_DOWN); }
 	bool isPG() { return (mAccess <= SIM_ACCESS_PG); }
@@ -130,7 +133,9 @@ private:
 	U8 mAccess;
 	U32 mRegionFlags;
 	F32 mWaterHeight;
-
+    U16 mSizeX;
+	U16 mSizeY;
+	
 	F32 mAlpha;
 
 public:

@@ -50,6 +50,8 @@
 #include "llfontgl.h"
 #include "llassetstorage.h"
 #include "llinventory.h"
+#include "llinventorydefines.h"
+#include "llnotificationsutil.h"
 
 #include "llagent.h"
 #include "llcallbacklist.h"
@@ -81,6 +83,7 @@
 #include "llviewerobjectlist.h"
 #include "llviewerwindow.h"
 #include "llwearable.h"
+#include "llviewerassettype.h"
 // [RLVa:KB] - Checked: 2010-03-27 (RLVa-1.2.0b)
 #include "rlvhandler.h"
 // [/RLVa:KB]
@@ -231,7 +234,7 @@ void LLTaskInvFVBridge::buyItem()
 	LLViewerObject* obj;
 	if( ( obj = gObjectList.findObject( mPanel->getTaskUUID() ) ) && obj->isAttachment() )
 	{
-		LLNotifications::instance().add("Cannot_Purchase_an_Attachment");
+		LLNotificationsUtil::add("Cannot_Purchase_an_Attachment");
 		llinfos << "Attempt to purchase an attachment" << llendl;
 		delete inv;
 	}
@@ -304,7 +307,7 @@ bool LLTaskInvFVBridge::commitBuyItem(const LLSD& notification, const LLSD& resp
 		msg->addUUIDFast(_PREHASH_ObjectID, notification["payload"]["task_id"].asUUID());
 		msg->addUUIDFast(_PREHASH_ItemID, notification["payload"]["item_id"].asUUID());
 		msg->addUUIDFast(_PREHASH_FolderID,
-			gInventory.findCategoryUUIDForType((LLAssetType::EType)notification["payload"]["type"].asInteger()));
+			gInventory.findCategoryUUIDForType(LLFolderType::assetTypeToFolderType((LLAssetType::EType)notification["payload"]["type"].asInteger())));
 		msg->sendReliable(object->getRegion()->getHost());
 	}
 	return false;
@@ -446,7 +449,7 @@ BOOL LLTaskInvFVBridge::isItemMovable()
 			}
 			else if ( (gRlvHandler.hasBehaviour(RLV_BHVR_UNSIT)) || (gRlvHandler.hasBehaviour(RLV_BHVR_SITTP)) )
 			{
-				LLVOAvatar* pAvatar = gAgent.getAvatarObject();
+				LLVOAvatar* pAvatar = gAgentAvatarp;
 				if ( (pAvatar) && (pAvatar->isSitting()) && (pAvatar->getRoot() == pObj->getRootEdit()) )
 					return FALSE;
 			}
@@ -469,7 +472,7 @@ BOOL LLTaskInvFVBridge::isItemRemovable()
 		}
 		else if ( (gRlvHandler.hasBehaviour(RLV_BHVR_UNSIT)) || (gRlvHandler.hasBehaviour(RLV_BHVR_SITTP)) )
 		{
-			LLVOAvatar* pAvatar = gAgent.getAvatarObject();
+			LLVOAvatar* pAvatar = gAgentAvatarp;
 			if ( (pAvatar) && (pAvatar->isSitting()) && (pAvatar->getRoot() == pObjRoot) )
 				return FALSE;
 		}
@@ -531,7 +534,7 @@ BOOL LLTaskInvFVBridge::removeItem()
 				LLSD payload;
 				payload["task_id"] = mPanel->getTaskUUID();
 				payload["inventory_ids"].append(mUUID);
-				LLNotifications::instance().add("RemoveItemWarn", LLSD(), payload, boost::bind(&remove_task_inventory_callback, _1, _2, mPanel));
+				LLNotificationsUtil::add("RemoveItemWarn", LLSD(), payload, boost::bind(&remove_task_inventory_callback, _1, _2, mPanel));
 				return FALSE;
 			}
 		}
@@ -561,7 +564,7 @@ void LLTaskInvFVBridge::removeBatch(LLDynamicArray<LLFolderViewEventListener*>& 
 			LLTaskInvFVBridge* itemp = (LLTaskInvFVBridge*)batch[i];
 			payload["inventory_ids"].append(itemp->getUUID());
 		}
-		LLNotifications::instance().add("RemoveItemWarn", LLSD(), payload, boost::bind(&remove_task_inventory_callback, _1, _2, mPanel));
+		LLNotificationsUtil::add("RemoveItemWarn", LLSD(), payload, boost::bind(&remove_task_inventory_callback, _1, _2, mPanel));
 		
 	}
 	else
@@ -648,7 +651,7 @@ BOOL LLTaskInvFVBridge::startDrag(EDragAndDropType* type, LLUUID* id) const
 //				   || gAgent.isGodlike())
 
 				{
-					*type = LLAssetType::lookupDragAndDropType(inv->getType());
+					*type = LLViewerAssetType::lookupDragAndDropType(inv->getType());
 
 					*id = inv->getUUID();
 					return TRUE;
@@ -713,7 +716,7 @@ void LLTaskInvFVBridge::buildContextMenu(LLMenuGL& menu, U32 flags)
 	
 	if (!item)
 	{
-		hideContextEntries(menu, items, disabled_items);
+		hide_context_entries(menu, items, disabled_items);
 		return;
 	}
 
@@ -793,7 +796,7 @@ void LLTaskInvFVBridge::buildContextMenu(LLMenuGL& menu, U32 flags)
 	}
 // [/RLVa:KB]
 
-	hideContextEntries(menu, items, disabled_items);
+	hide_context_entries(menu, items, disabled_items);
 }
 
 
@@ -855,7 +858,7 @@ void LLTaskCategoryBridge::buildContextMenu(LLMenuGL& menu, U32 flags)
 	std::vector<std::string> items;
 	std::vector<std::string> disabled_items;
 	items.push_back(std::string("Task Open"));  // *TODO: Translate
-	hideContextEntries(menu, items, disabled_items);
+	hide_context_entries(menu, items, disabled_items);
 }
 
 BOOL LLTaskCategoryBridge::hasChildren() const
@@ -876,7 +879,7 @@ BOOL LLTaskCategoryBridge::startDrag(EDragAndDropType* type, LLUUID* id) const
 			const LLInventoryObject* cat = object->getInventoryObject(mUUID);
 			if ( (cat) && (move_inv_category_world_to_agent(mUUID, LLUUID::null, FALSE)) )
 			{
-				*type = LLAssetType::lookupDragAndDropType(cat->getType());
+				*type = LLViewerAssetType::lookupDragAndDropType(cat->getType());
 				*id = mUUID;
 				return TRUE;
 			}
@@ -1165,7 +1168,7 @@ void LLTaskSoundBridge::buildContextMenu(LLMenuGL& menu, U32 flags)
 									 NULL,
 									 (void*)this));*/
 
-	hideContextEntries(menu, items, disabled_items);
+	hide_context_entries(menu, items, disabled_items);
 }
 
 ///----------------------------------------------------------------------------
@@ -1850,7 +1853,7 @@ void LLPanelInventory::updateInventory()
 	if (objectp)
 	{
 		LLInventoryObject* inventory_root = objectp->getInventoryRoot();
-		InventoryObjectList contents;
+		LLInventoryObject::object_list_t contents;
 		objectp->getInventoryContents(contents);
 		if (inventory_root)
 		{
@@ -1903,7 +1906,7 @@ void LLPanelInventory::updateInventory()
 // leads to an N^2 based on the category count. This could be greatly
 // speeded with an efficient multimap implementation, but we don't
 // have that in our current arsenal.
-void LLPanelInventory::createFolderViews(LLInventoryObject* inventory_root, InventoryObjectList& contents)
+void LLPanelInventory::createFolderViews(LLInventoryObject* inventory_root, LLInventoryObject::object_list_t& contents)
 {
 	if (!inventory_root)
 	{
@@ -1937,8 +1940,8 @@ void LLPanelInventory::createViewsForCategory(LLInventoryObject::object_list_t* 
 	LLTaskInvFVBridge* bridge;
 	LLFolderViewItem* view;
 
-	InventoryObjectList::iterator it = inventory->begin();
-	InventoryObjectList::iterator end = inventory->end();
+	LLInventoryObject::object_list_t::iterator it = inventory->begin();
+	LLInventoryObject::object_list_t::iterator end = inventory->end();
 	for( ; it != end; ++it)
 	{
 		LLInventoryObject* obj = *it;

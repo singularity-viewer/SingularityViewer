@@ -59,17 +59,14 @@
 #include "llhttpclient.h"
 #include "llhttpnode.h"
 #include "llpacketack.h"
+#include "llsingleton.h"
 #include "message_prehash.h"
 #include "llstl.h"
-#include "llmsgvariabletype.h"
 #include "llmsgvariabletype.h"
 #include "llmessagesenderinterface.h"
 
 #include "llstoredmessage.h"
 #include "llsocks5.h"
-// <edit>
-#include "llnetcanary.h"
-// </edit>
 
 const U32 MESSAGE_MAX_STRINGS_LENGTH = 64;
 const U32 MESSAGE_NUMBER_OF_HASH_BUCKETS = 8192;

@@ -29,15 +29,19 @@
  * COMPLETENESS OR PERFORMANCE.
  * $/LicenseInfo$
  */
-
 #include "llviewerprecompiledheaders.h"
+
+#if LL_LINUX && defined(LL_STANDALONE)
+#include <glib.h>
+#endif
+
 #include "llvoiceclient.h"
 
 #include <boost/tokenizer.hpp>
 
 #include "llsdutil.h"
 
-#include "llvoavatar.h"
+#include "llvoavatarself.h"
 #include "llbufferstream.h"
 #include "llfile.h"
 #ifdef LL_STANDALONE
@@ -62,6 +66,7 @@
 #include "llfirstuse.h"
 #include "llviewerwindow.h"
 #include "llviewercamera.h"
+#include "llnotificationsutil.h"
 
 #include "llfloaterfriends.h"  //VIVOX, inorder to refresh communicate panel
 #include "llfloaterchat.h"		// for LLFloaterChat::addChat()
@@ -1120,6 +1125,7 @@ LLVoiceClient::LLVoiceClient()
 	mSpeakerVolume = 0;
 	mMicVolume = 0;
 
+	mNextAudioSession = NULL;
 	mAudioSession = NULL;
 	mAudioSessionChanged = false;
 
@@ -1635,10 +1641,23 @@ void LLVoiceClient::stateMachine()
 				{
 					// Launch the voice daemon
 					
-					// *FIX:Mani - Using the executable dir instead 
-					// of mAppRODataDir, the working directory from which the app
-					// is launched.
-					//std::string exe_path = gDirUtilp->getAppRODataDir();
+#if LL_LINUX && defined(LL_STANDALONE)
+                    // Look for the vivox daemon in the executable path list
+                    // using glib first.
+                    char *voice_path = g_find_program_in_path ("SLVoice");
+                    std::string exe_path;
+                    if (voice_path) {
+                        exe_path = llformat("%s", voice_path);
+                        free(voice_path);
+                    } else {
+                        exe_path = gDirUtilp->getExecutableDir() +
+                                gDirUtilp->getDirDelimiter() + "SLVoice";
+                    }
+#else
+                    // *FIX:Mani - Using the executable dir instead 
+                    // of mAppRODataDir, the working directory from which the
+                    // app is launched.
+                    //std::string exe_path = gDirUtilp->getAppRODataDir();
 					std::string exe_path = gDirUtilp->getExecutableDir();
 					exe_path += gDirUtilp->getDirDelimiter();
 #if LL_WINDOWS
@@ -1647,6 +1666,7 @@ void LLVoiceClient::stateMachine()
 					exe_path += "../Resources/SLVoice";
 #else
 					exe_path += "SLVoice";
+#endif
 #endif
 					// See if the vivox executable exists
 					llstat s;
@@ -5684,7 +5704,7 @@ void LLVoiceClient::updatePosition(void)
 	
 	if(gVoiceClient)
 	{
-		LLVOAvatar *agent = gAgent.getAvatarObject();
+		LLVOAvatar *agent = gAgentAvatarp;
 		LLViewerRegion *region = gAgent.getRegion();
 		if(region && agent)
 		{
@@ -6915,16 +6935,15 @@ void LLVoiceClient::notifyFriendObservers()
 
 void LLVoiceClient::lookupName(const LLUUID &id)
 {
-	gCacheName->getName(id, onAvatarNameLookup);
+	gCacheName->get(id, false, boost::bind(&LLVoiceClient::onAvatarNameLookup,_1,_2));
 }
 
 //static
-void LLVoiceClient::onAvatarNameLookup(const LLUUID& id, const std::string& first, const std::string& last, BOOL is_group, void* user_data)
+void LLVoiceClient::onAvatarNameLookup(const LLUUID& id, const std::string& full_name)
 {
 	if(gVoiceClient)
 	{
-		std::string name = llformat("%s %s", first.c_str(), last.c_str());
-		gVoiceClient->avatarNameResolved(id, name);
+		gVoiceClient->avatarNameResolved(id, full_name);
 	}
 }
 
@@ -7053,7 +7072,7 @@ class LLViewerRequiredVoiceVersion : public LLHTTPNode
 				if (!sAlertedUser)
 				{
 					//sAlertedUser = TRUE;
-					LLNotifications::instance().add("VoiceVersionMismatch");
+					LLNotificationsUtil::add("VoiceVersionMismatch");
 					gSavedSettings.setBOOL("EnableVoiceChat", FALSE); // toggles listener
 				}
 			}

@@ -47,7 +47,7 @@ LLCallbackList gIdleCallbacks;
 // Member functions
 //
 
-LLCallbackList::LLCallbackList() : mLoopingOverCallbackList(false)
+LLCallbackList::LLCallbackList()
 {
 	// nothing
 }
@@ -96,15 +96,7 @@ BOOL LLCallbackList::deleteFunction( callback_t func, void *data)
 	callback_list_t::iterator iter = std::find(mCallbackList.begin(), mCallbackList.end(), t);
 	if (iter != mCallbackList.end())
 	{
-		if (mLoopingOverCallbackList)
-		{
-			iter->first = NULL;		// Mark for removal later (when we return to LLCallbackList::callFunctions).
-			mNeedErase = true;
-		}
-		else
-		{
-			mCallbackList.erase(iter);
-		}
+		mCallbackList.erase(iter);
 		return TRUE;
 	}
 	else
@@ -116,39 +108,82 @@ BOOL LLCallbackList::deleteFunction( callback_t func, void *data)
 
 void LLCallbackList::deleteAllFunctions()
 {
-	llassert(!mLoopingOverCallbackList);		// Only called from unit tests.
 	mCallbackList.clear();
 }
 
 
 void LLCallbackList::callFunctions()
 {
-	llassert(!mLoopingOverCallbackList);
-	mLoopingOverCallbackList = true;
-	mNeedErase = false;
-	for (callback_list_t::iterator iter = mCallbackList.begin(); iter != mCallbackList.end(); ++iter)
+	for (callback_list_t::iterator iter = mCallbackList.begin(); iter != mCallbackList.end();  )
 	{
-		if (iter->first)						// Not pending removal?
+		callback_list_t::iterator curiter = iter++;
+		curiter->first(curiter->second);
+	}
+}
+
+// Shim class to allow arbitrary boost::bind
+// expressions to be run as one-time idle callbacks.
+class OnIdleCallbackOneTime
+{
+public:
+	OnIdleCallbackOneTime(nullary_func_t callable):
+		mCallable(callable)
+	{
+	}
+	static void onIdle(void *data)
+	{
+		gIdleCallbacks.deleteFunction(onIdle, data);
+		OnIdleCallbackOneTime* self = reinterpret_cast<OnIdleCallbackOneTime*>(data);
+		self->call();
+		delete self;
+	}
+	void call()
+	{
+		mCallable();
+	}
+private:
+	nullary_func_t mCallable;
+};
+
+void doOnIdleOneTime(nullary_func_t callable)
+{
+	OnIdleCallbackOneTime* cb_functor = new OnIdleCallbackOneTime(callable);
+	gIdleCallbacks.addFunction(&OnIdleCallbackOneTime::onIdle,cb_functor);
+}
+
+// Shim class to allow generic boost functions to be run as
+// recurring idle callbacks.  Callable should return true when done,
+// false to continue getting called.
+class OnIdleCallbackRepeating
+{
+public:
+	OnIdleCallbackRepeating(bool_func_t callable):
+		mCallable(callable)
+	{
+	}
+	// Will keep getting called until the callable returns true.
+	static void onIdle(void *data)
+	{
+		OnIdleCallbackRepeating* self = reinterpret_cast<OnIdleCallbackRepeating*>(data);
+		bool done = self->call();
+		if (done)
 		{
-			iter->first(iter->second);			// This can theorectically set any iter->first to NULL, which means the entry should be erased.
+			gIdleCallbacks.deleteFunction(onIdle, data);
+			delete self;
 		}
 	}
-	mLoopingOverCallbackList = false;
-	if (mNeedErase)
+	bool call()
 	{
-		callback_list_t::iterator iter = mCallbackList.begin();
-		while (iter != mCallbackList.end())
-		{
-		  if (!iter->first)
-		  {
-			iter = mCallbackList.erase(iter);
-		  }
-		  else
-		  {
-			++iter;
-		  }
-		}
+		return mCallable();
 	}
+private:
+	bool_func_t mCallable;
+};
+
+void doOnIdleRepeating(bool_func_t callable)
+{
+	OnIdleCallbackRepeating* cb_functor = new OnIdleCallbackRepeating(callable);
+	gIdleCallbacks.addFunction(&OnIdleCallbackRepeating::onIdle,cb_functor);
 }
 
 #ifdef _DEBUG

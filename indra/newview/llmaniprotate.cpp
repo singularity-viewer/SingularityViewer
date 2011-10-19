@@ -55,7 +55,7 @@
 #include "llselectmgr.h"
 #include "llstatusbar.h"
 #include "llui.h"
-#include "llvoavatar.h"
+#include "llvoavatarself.h"
 #include "llviewercamera.h"
 #include "llviewerobject.h"
 #include "llviewerobject.h"
@@ -738,7 +738,7 @@ void LLManipRotate::renderSnapGuides()
 	LLVector3 test_axis = constraint_axis;
 
 	BOOL constrain_to_ref_object = FALSE;
-	if (mObjectSelection->getSelectType() == SELECT_TYPE_ATTACHMENT && gAgent.getAvatarObject())
+	if (mObjectSelection->getSelectType() == SELECT_TYPE_ATTACHMENT && gAgentAvatarp)
 	{
 		test_axis = test_axis * ~grid_rotation;
 	}
@@ -765,7 +765,7 @@ void LLManipRotate::renderSnapGuides()
 	}
 
 	LLVector3 projected_snap_axis = world_snap_axis;
-	if (mObjectSelection->getSelectType() == SELECT_TYPE_ATTACHMENT && gAgent.getAvatarObject())
+	if (mObjectSelection->getSelectType() == SELECT_TYPE_ATTACHMENT && gAgentAvatarp)
 	{
 		projected_snap_axis = projected_snap_axis * grid_rotation;
 	}
@@ -1108,8 +1108,11 @@ BOOL LLManipRotate::updateVisiblity()
 		mCenterToProfilePlaneMag = mRadiusMeters * mRadiusMeters / mCenterToCamMag;
 		mCenterToProfilePlane = -mCenterToProfilePlaneMag * mCenterToCamNorm;
 
-		mCenterScreen.set((S32)((0.5f - mRotationCenter.mdV[VY]) / gAgentCamera.mHUDCurZoom * gViewerWindow->getWindowWidth()),
-							(S32)((mRotationCenter.mdV[VZ] + 0.5f) / gAgentCamera.mHUDCurZoom * gViewerWindow->getWindowHeight()));
+		// x axis range is (-aspect * 0.5f, +aspect * 0.5)
+		// y axis range is (-0.5, 0.5)
+		// so use getWorldViewHeightRaw as scale factor when converting to pixel coordinates
+		mCenterScreen.set((S32)((0.5f - center.mV[VY]) / gAgentCamera.mHUDCurZoom * gViewerWindow->getWorldViewHeightScaled()),
+							(S32)((center.mV[VZ] + 0.5f) / gAgentCamera.mHUDCurZoom * gViewerWindow->getWorldViewHeightScaled()));
 		visible = TRUE;
 	}
 	else
@@ -1129,7 +1132,7 @@ BOOL LLManipRotate::updateVisiblity()
 			if (gSavedSettings.getBOOL("LimitSelectDistance"))
 			{
 				F32 max_select_distance = gSavedSettings.getF32("MaxSelectDistance");
-				if (dist_vec(gAgent.getPositionAgent(), center) > max_select_distance)
+				if (dist_vec_squared(gAgent.getPositionAgent(), center) > (max_select_distance * max_select_distance))
 				{
 					visible = FALSE;
 				}
@@ -1279,7 +1282,7 @@ LLQuaternion LLManipRotate::dragConstrained( S32 x, S32 y )
 	LLVector3 axis2;
 
 	LLVector3 test_axis = constraint_axis;
-	if (mObjectSelection->getSelectType() == SELECT_TYPE_ATTACHMENT && gAgent.getAvatarObject())
+	if (mObjectSelection->getSelectType() == SELECT_TYPE_ATTACHMENT && gAgentAvatarp)
 	{
 		test_axis = test_axis * ~grid_rotation;
 	}
@@ -1303,7 +1306,7 @@ LLQuaternion LLManipRotate::dragConstrained( S32 x, S32 y )
 		axis1 = LLVector3::x_axis;
 	}
 
-	if (mObjectSelection->getSelectType() == SELECT_TYPE_ATTACHMENT && gAgent.getAvatarObject())
+	if (mObjectSelection->getSelectType() == SELECT_TYPE_ATTACHMENT && gAgentAvatarp)
 	{
 		axis1 = axis1 * grid_rotation;
 	}
@@ -1625,8 +1628,8 @@ void LLManipRotate::mouseToRay( S32 x, S32 y, LLVector3* ray_pt, LLVector3* ray_
 {
 	if (LLSelectMgr::getInstance()->getSelection()->getSelectType() == SELECT_TYPE_HUD)
 	{
-		F32 mouse_x = (((F32)x / gViewerWindow->getWindowWidth()) - 0.5f) / gAgentCamera.mHUDCurZoom;
-		F32 mouse_y = ((((F32)y) / gViewerWindow->getWindowHeight()) - 0.5f) / gAgentCamera.mHUDCurZoom;
+		F32 mouse_x = (((F32)x / gViewerWindow->getWorldViewRectScaled().getWidth()) - 0.5f) / gAgentCamera.mHUDCurZoom;
+		F32 mouse_y = ((((F32)y) / gViewerWindow->getWorldViewRectScaled().getHeight()) - 0.5f) / gAgentCamera.mHUDCurZoom;
 
 		*ray_pt = LLVector3(-1.f, -mouse_x, mouse_y);
 		*ray_dir = LLVector3(1.f, 0.f, 0.f);
@@ -1700,7 +1703,7 @@ void LLManipRotate::highlightManipulators( S32 x, S32 y )
 	F32 dist_y = mouse_dir_y.normVec();
 	F32 dist_z = mouse_dir_z.normVec();
 
-	F32 distance_threshold = (MAX_MANIP_SELECT_DISTANCE * mRadiusMeters) / gViewerWindow->getWindowHeight();
+	F32 distance_threshold = (MAX_MANIP_SELECT_DISTANCE * mRadiusMeters) / gViewerWindow->getWorldViewHeightScaled();
 
 	if (llabs(dist_x - mRadiusMeters) * llmax(0.05f, proj_rot_x_axis) < distance_threshold)
 	{

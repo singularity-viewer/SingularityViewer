@@ -45,13 +45,13 @@
 #include "llcheckboxctrl.h"
 #include "llcombobox.h"
 #include "lllineeditor.h"
+#include "llnotificationsutil.h"
 #include "llscrolllistctrl.h"
 #include "llstatusbar.h"
 #include "lluiconstants.h"
 #include "lltextbox.h"
 #include "llviewercontrol.h"
 #include "llviewermessage.h"
-#include "llnotify.h"
 
 #include "hippogridmanager.h"
 
@@ -175,7 +175,7 @@ void LLPanelDirLand::performQuery()
 	BOOL inc_adult = childGetValue("incadult").asBoolean();
 	if (!(inc_pg || inc_mature || inc_adult))
 	{
-		LLNotifications::instance().add("NoContentToSearch");
+		LLNotificationsUtil::add("NoContentToSearch");
 		return;
 	}
 

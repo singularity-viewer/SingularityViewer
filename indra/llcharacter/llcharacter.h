@@ -42,7 +42,7 @@
 #include "llmotioncontroller.h"
 #include "llvisualparam.h"
 #include "string_table.h"
-#include "llmemory.h"
+#include "llpointer.h"
 #include "llthread.h"
 
 class LLPolyMesh;
@@ -279,6 +279,7 @@ public:
 	void			setSkeletonSerialNum( U32 num )	{ mSkeletonSerialNum = num; }
 
 	static std::vector< LLCharacter* > sInstances;
+	static BOOL sAllowInstancesChange ; //debug use
 
 protected:
 	LLMotionController	mMotionController;

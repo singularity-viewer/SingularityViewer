@@ -30,6 +30,8 @@ include(Versions)
 
 include(UnixInstall)
 
+set (GCC_DISABLE_FATAL_WARNINGS TRUE)
+
 if (NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE ReleaseSSE2 CACHE STRING
       "Build type.  One of: Debug Release ReleaseSSE2 RelWithDebInfo" FORCE)
@@ -88,7 +90,7 @@ if (VIEWER)
     add_subdirectory(${VIEWER_PREFIX}linux_crash_logger)
     add_dependencies(viewer linux-crash-logger-strip-target)
   elseif (DARWIN)
-    add_subdirectory(${VIEWER_PREFIX}mac_crash_logger)
+	#add_subdirectory(${VIEWER_PREFIX}mac_crash_logger)
 	#add_subdirectory(${VIEWER_PREFIX}mac_updater)
     add_dependencies(viewer mac-crash-logger)
 	#add_dependencies(viewer mac-updater)

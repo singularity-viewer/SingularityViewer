@@ -473,7 +473,7 @@ BOOL LLFloaterTexturePicker::handleKeyHere(KEY key, MASK mask)
 		{
 			if (!root_folder->getCurSelectedItem())
 			{
-				LLFolderViewItem* itemp = root_folder->getItemByID(gAgent.getInventoryRootID());
+				LLFolderViewItem* itemp = root_folder->getItemByID(gInventory.getRootFolderID());
 				if (itemp)
 				{
 					root_folder->setSelection(itemp, FALSE, FALSE);
@@ -1367,7 +1367,7 @@ BOOL LLTextureCtrl::handleMouseDown(S32 x, S32 y, MASK mask)
 		showPicker(FALSE);
 
 		//grab textures first...
-		gInventory.startBackgroundFetch(gInventory.findCategoryUUIDForType(LLAssetType::AT_TEXTURE));
+		gInventory.startBackgroundFetch(gInventory.findCategoryUUIDForType(LLFolderType::FT_TEXTURE));
 		//...then start full inventory fetch.
 		gInventory.startBackgroundFetch();
 	}

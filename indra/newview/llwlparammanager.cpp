@@ -61,9 +61,10 @@
 #include "llfloaterdaycycle.h"
 #include "llfloaterenvsettings.h"
 
-#include "curl/curl.h"
+#include "llviewershadermgr.h"
+#include "llglslshader.h"
 
-LLWLParamManager * LLWLParamManager::sInstance = NULL;
+#include "curl/curl.h"
 
 LLWLParamManager::LLWLParamManager() :
 
@@ -286,6 +287,25 @@ void LLWLParamManager::updateShaderUniforms(LLGLSLShader * shader)
 	
 }
 
+void LLWLParamManager::updateShaderLinks()
+{
+	mShaderList.clear();
+	LLViewerShaderMgr::shader_iter shaders_iter, end_shaders;
+	end_shaders = LLViewerShaderMgr::instance()->endShaders();
+	for(shaders_iter = LLViewerShaderMgr::instance()->beginShaders(); shaders_iter != end_shaders; ++shaders_iter)
+	{
+		if (shaders_iter->mProgramObject != 0
+			&& (gPipeline.canUseWindLightShaders() || shaders_iter->mShaderGroup == LLGLSLShader::SG_WATER))
+		{
+			if(	glGetUniformLocationARB(shaders_iter->mProgramObject,"lightnorm")>=0			||
+				glGetUniformLocationARB(shaders_iter->mProgramObject,"camPosLocal")>=0			||
+				glGetUniformLocationARB(shaders_iter->mProgramObject,"scene_light_strength")>=0	||
+				glGetUniformLocationARB(shaders_iter->mProgramObject,"cloud_pos_density1")>=0)
+			mShaderList.push_back(&(*shaders_iter));
+		}
+	}
+}
+
 void LLWLParamManager::propagateParameters(void)
 {
 	LLFastTimer ftm(LLFastTimer::FTM_UPDATE_WLPARAM);
@@ -337,16 +357,10 @@ void LLWLParamManager::propagateParameters(void)
 	mCurParams.set("lightnorm", mLightDir);
 
 	// bind the variables for all shaders only if we're using WindLight
-	LLViewerShaderMgr::shader_iter shaders_iter, end_shaders;
-	end_shaders = LLViewerShaderMgr::instance()->endShaders();
-	for(shaders_iter = LLViewerShaderMgr::instance()->beginShaders(); shaders_iter != end_shaders; ++shaders_iter) 
+	std::vector<LLGLSLShader*>::iterator shaders_iter=mShaderList.begin();
+	for(; shaders_iter != mShaderList.end(); ++shaders_iter)
 	{
-		if (shaders_iter->mProgramObject != 0
-			&& (gPipeline.canUseWindLightShaders()
-				|| shaders_iter->mShaderGroup == LLGLSLShader::SG_WATER))
-		{
-			shaders_iter->mUniformsDirty = TRUE;
-		}
+		(*shaders_iter)->mUniformsDirty = TRUE;
 	}
 
 	// get the cfr version of the sun's direction
@@ -400,32 +414,14 @@ void LLWLParamManager::update(LLViewerCamera * cam)
 		lightNorm3 *= LLQuaternion(-(camYaw + camYawDelta), LLVector3(0.f, 1.f, 0.f));
 		mRotatedLightDir = LLVector4(lightNorm3, 0.f);
 
-		LLViewerShaderMgr::shader_iter shaders_iter, end_shaders;
-		end_shaders = LLViewerShaderMgr::instance()->endShaders();
-		for(shaders_iter = LLViewerShaderMgr::instance()->beginShaders(); shaders_iter != end_shaders; ++shaders_iter)
+		std::vector<LLGLSLShader*>::iterator shaders_iter=mShaderList.begin();
+		for(; shaders_iter != mShaderList.end(); ++shaders_iter)
 		{
-			if (shaders_iter->mProgramObject != 0
-				&& (gPipeline.canUseWindLightShaders()
-				|| shaders_iter->mShaderGroup == LLGLSLShader::SG_WATER))
-			{
-				shaders_iter->mUniformsDirty = TRUE;
-			}
+			(*shaders_iter)->mUniformsDirty = TRUE;
 		}
 	}
 }
 
-// static
-void LLWLParamManager::initClass(void)
-{
-	instance();
-}
-
-// static
-void LLWLParamManager::cleanupClass()
-{
-	delete sInstance;
-	sInstance = NULL;
-}
 
 void LLWLParamManager::resetAnimator(F32 curTime, bool run)
 {
@@ -537,27 +533,22 @@ bool LLWLParamManager::removeParamSet(const std::string& name, bool delete_from_
 }
 
 
-// static
-LLWLParamManager * LLWLParamManager::instance()
+// virtual static
+void LLWLParamManager::initSingleton()
 {
-	if(NULL == sInstance)
-	{
-		sInstance = new LLWLParamManager();
 
-		sInstance->loadPresets(LLStringUtil::null);
+	loadPresets(LLStringUtil::null);
 
-		// load the day
-		sInstance->mDay.loadDayCycle(gSavedSettings.getString("AscentActiveDayCycle"));
+	// load the day
+	mDay.loadDayCycle(gSavedSettings.getString("AscentActiveDayCycle"));
 
-		// *HACK - sets cloud scrolling to what we want... fix this better in the future
-		sInstance->getParamSet("Default", sInstance->mCurParams);
+	// *HACK - sets cloud scrolling to what we want... fix this better in the future
+	getParamSet("Default", mCurParams);
 
-		// set it to noon
-		sInstance->resetAnimator(0.5, true);
+	// set it to noon
+	resetAnimator(0.5, true);
 
-		// but use linden time sets it to what the estate is
-		sInstance->mAnimator.mUseLindenTime = true;
-	}
+	// but use linden time sets it to what the estate is
+	mAnimator.mUseLindenTime = true;
 
-	return sInstance;
 }

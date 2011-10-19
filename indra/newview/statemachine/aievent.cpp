@@ -40,7 +40,7 @@ struct AIRSData {
 	AIRSData(bool one_shot) : mOneShot(one_shot) { }
 };
 
-// A list of all statemachines registered for a particular event, and and API to work on it.
+// A list of all statemachines registered for a particular event, and an API to work on it.
 struct AIRegisteredStateMachines {
 	typedef std::map<AIStateMachine*, AIRSData> rsm_type;
 	rsm_type mRegisteredStateMachines;

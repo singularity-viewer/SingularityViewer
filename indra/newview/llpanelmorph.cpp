@@ -134,7 +134,7 @@ void LLPanelMorph::onCommitSexChange( void *data)
 {
 //	LLRadioGroup *group = (LLRadioGroup *)data;
 
-//	LLVOAvatar *avatarp = gAgent.getAvatarObject();
+//	LLVOAvatar *avatarp = gAgentAvatarp;
 //	
 //	LLNameValue* avatarSexNV = avatarp->getNVPair("AvatarSex");
 //	if (!avatarSexNV)
@@ -162,7 +162,7 @@ void LLPanelMorph::onCommitSexChange( void *data)
 void LLPanelMorph::onCommitMorphChange( LLUICtrl* ctrl, void* userdata )
 {
 //#ifdef MORPH_PANEL_SHOW_SPINNERS
-//	LLVOAvatar *avatarp = gAgent.getAvatarObject();
+//	LLVOAvatar *avatarp = gAgentAvatarp;
 //
 //	LLPanelMorph* self = (LLPanelMorph*) userdata;
 //
@@ -193,14 +193,14 @@ void LLPanelMorph::updateSpinners(LLPolyMesh *mesh)
 	if (mesh != mMesh) return;
 #ifdef MORPH_PANEL_SHOW_SPINNERS
 
-	for(LLViewerVisualParam *param = (LLViewerVisualParam*)gAgent.getAvatarObject()->getFirstVisualParam();
+	for(LLViewerVisualParam *param = (LLViewerVisualParam*)gAgentAvatarp->getFirstVisualParam();
 		param;
-		param = gAgent.getAvatarObject()->getNextVisualParam())
+		param = gAgentAvatarp->getNextVisualParam())
 	{
 		if (param->getID() == -1 ||
 			param->getGroup() != LLVisualParam::VISUAL_PARAM_GROUP_TWEAKABLE) continue;
 
-		F32 paramWeight = gAgent.getAvatarObject()->getVisualParamWeight(morphTargetp);
+		F32 paramWeight = gAgentAvatarp->getVisualParamWeight(morphTargetp);
 
 		for (S32 i = 0; i < mNumParamSpinners; i++)
 		{
@@ -251,9 +251,9 @@ void LLPanelMorph::createSpinners(LLPolyMesh *mesh)
 #ifdef MORPH_PANEL_SHOW_SPINNERS
 	S32 numSpinners = 0;
 
-	for(LLViewerVisualParam *param = (LLViewerVisualParam*)gAgent.getAvatarObject()->getFirstVisualParam();
+	for(LLViewerVisualParam *param = (LLViewerVisualParam*)gAgentAvatarp->getFirstVisualParam();
 		param;
-		param = gAgent.getAvatarObject()->getNextVisualParam())
+		param = gAgentAvatarp->getNextVisualParam())
 	{
 		if(param->getID() != -1 &&
 			param->getGroup() == LLVisualParam::VISUAL_PARAM_GROUP_TWEAKABLE)
@@ -312,9 +312,9 @@ void LLPanelMorph::createSpinners(LLPolyMesh *mesh)
 #ifdef MORPH_PANEL_SHOW_SPINNERS
 	S32 i = 0;
 
-	for(LLViewerVisualParam *param = (LLViewerVisualParam*)gAgent.getAvatarObject()->getFirstVisualParam();
+	for(LLViewerVisualParam *param = (LLViewerVisualParam*)gAgentAvatarp->getFirstVisualParam();
 		param;
-		param = gAgent.getAvatarObject()->getNextVisualParam())
+		param = gAgentAvatarp->getNextVisualParam())
 	{
 		if (param->getID() == -1 ||
 			param->getGroup() != LLVisualParam::VISUAL_PARAM_GROUP_TWEAKABLE) continue;

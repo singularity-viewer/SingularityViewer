@@ -83,6 +83,9 @@ public:
 		HUD_RENDER		= 0x0008,
 		USE_FACE_COLOR	= 0x0010,
 		TEXTURE_ANIM	= 0x0020, 
+#if MESH_ENABLED
+		RIGGED			= 0x0040,
+#endif //MESH_ENABLED
 	};
 
 	static void initClass();
@@ -98,6 +101,8 @@ public:
 	U16				getGeomCount()		const	{ return mGeomCount; }		// vertex count for this face
 	U16				getGeomIndex()		const	{ return mGeomIndex; }		// index into draw pool
 	U16				getGeomStart()		const	{ return mGeomIndex; }		// index into draw pool
+	void			setTextureIndex(U8 index);
+	U8				getTextureIndex() const		{ return mTextureIndex; }
 	void			setTexture(LLViewerTexture* tex) ;
 	void            switchTexture(LLViewerTexture* new_texture);
 	void            dirtyTexture();
@@ -159,7 +164,8 @@ public:
 	BOOL getGeometryVolume(const LLVolume& volume,
 						const S32 &f,
 						const LLMatrix4& mat_vert, const LLMatrix3& mat_normal,
-						const U16 &index_offset);
+						const U16 &index_offset,
+						bool force_rebuild = false);
 
 	// For avatar
 	U16			 getGeometryAvatar(
@@ -190,7 +196,6 @@ public:
 	void		updateCenterAgent(); // Update center when xform has changed.
 	void		renderSelectedUV();
 
-	void		renderForSelect(U32 data_mask = LLVertexBuffer::MAP_VERTEX | LLVertexBuffer::MAP_TEXCOORD0);
 	void		renderSelected(LLViewerTexture *image, const LLColor4 &color);
 
 	F32			getKey()					const	{ return mDistance; }
@@ -201,8 +206,8 @@ public:
 	BOOL		verify(const U32* indices_array = NULL) const;
 	void		printDebugInfo() const;
 
-	void		setGeomIndex(U16 idx) { mGeomIndex = idx; }
-	void		setIndicesIndex(S32 idx) { mIndicesIndex = idx; }
+	void		setGeomIndex(U16 idx); 
+	void		setIndicesIndex(S32 idx);
 	void		setDrawInfo(LLDrawInfo* draw_info);
 
 	F32         getTextureVirtualSize() ;
@@ -211,6 +216,15 @@ public:
 	void setVertexBuffer(LLVertexBuffer* buffer);
 	void clearVertexBuffer(); //sets mVertexBuffer and mLastVertexBuffer to NULL
 	LLVertexBuffer* getVertexBuffer()	const	{ return mVertexBuffer; }
+#if MESH_ENABLED
+	U32 getRiggedVertexBufferDataMask() const;
+	S32 getRiggedIndex(U32 type) const;
+	void setRiggedIndex(U32 type, S32 index);
+
+	static U32 getRiggedDataMask(U32 type);
+#endif //MESH_ENABLED
+public: //aligned members
+	LLVector4a		mExtents[2];
 
 private:	
 	F32         adjustPartialOverlapPixelArea(F32 cos_angle_to_view_dir, F32 radius );
@@ -223,10 +237,12 @@ public:
 	
 	LLVector3		mCenterLocal;
 	LLVector3		mCenterAgent;
-	LLVector3		mExtents[2];
 	LLVector2		mTexExtents[2];
 	F32				mDistance;
 	F32			mLastUpdateTime;
+#if MESH_ENABLED
+	F32			mLastSkinTime;
+#endif //MESH_ENABLED
 	F32			mLastMoveTime;
 	LLMatrix4*	mTextureMatrix;
 	LLDrawInfo* mDrawInfo;
@@ -245,6 +261,7 @@ private:
 	
 	U16			mGeomCount;			// vertex count for this face
 	U16			mGeomIndex;			// index into draw pool
+	U8			mTextureIndex;		// index of texture channel to use for pseudo-atlasing
 	U32			mIndicesCount;
 	U32			mIndicesIndex;		// index into draw pool for indices (yeah, I know!)
 	S32			mIndexInTex ;
@@ -262,6 +279,10 @@ private:
 	S32			mTEOffset;
 
 	S32			mReferenceIndex;
+#if MESH_ENABLED
+	std::vector<S32> mRiggedIndex;
+#endif //MESH_ENABLED
+
 	F32			mVSize;
 	F32			mPixelArea;
 

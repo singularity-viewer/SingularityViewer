@@ -146,9 +146,16 @@ protected:
 	LLSocket(void);
 
 	/** 
-	 * @brief Set default socket options.
+	 * @brief Set default socket options, with SO_NONBLOCK = 0 and a timeout in us.
+	 * @param timeout Number of microseconds to wait on this socket. Any
+	 * negative number means block-forever. TIMEOUT OF 0 IS NON-PORTABLE.
 	 */
-	void setOptions();
+	void setBlocking(S32 timeout);
+
+	/**
+	 * @brief Set default socket options, with SO_NONBLOCK = 1 and timeout = 0.
+	 */
+	void setNonBlocking();
 
 public:
 	/** 
@@ -161,7 +168,7 @@ protected:
 	apr_socket_t* mSocket;
 
 	// Our memory pool.
-	AIAPRPool mPool;
+	LLAPRPool mPool;
 
 	// The port if we know it.
 	U16 mPort;

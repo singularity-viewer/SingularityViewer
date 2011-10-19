@@ -35,8 +35,6 @@
 
 #include "lldrawpool.h"
 
-class LLViewerFetchedTexture;
-
 class LLDrawPoolTerrain : public LLFacePool
 {
 	LLPointer<LLViewerTexture> mTexturep;
@@ -74,7 +72,6 @@ public:
 	/*virtual*/ void prerender();
 	/*virtual*/ void beginRenderPass( S32 pass );
 	/*virtual*/ void endRenderPass( S32 pass );
-	/*virtual*/ void renderForSelect();
 	/*virtual*/ void dirtyTextures(const std::set<LLViewerFetchedTexture*>& textures);
 	/*virtual*/ LLViewerTexture *getTexture();
 	/*virtual*/ LLViewerTexture *getDebugTexture();

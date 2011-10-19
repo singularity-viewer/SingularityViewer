@@ -36,6 +36,7 @@
 #include "llweb.h"
 
 #include "llviewerwindow.h"
+#include "llwindow.h"
 
 #include "llviewercontrol.h"
 #include "llfloatermediabrowser.h"
@@ -64,7 +65,7 @@ void LLWeb::loadURL(const std::string& url)
 void LLWeb::loadURLExternal(const std::string& url)
 {
 	std::string escaped_url = escapeURL(url);
-	gViewerWindow->getWindow()->spawnWebBrowser(escaped_url);
+	gViewerWindow->getWindow()->spawnWebBrowser(escaped_url,true);
 }
 
 

@@ -59,6 +59,7 @@ public:
 	virtual LLXMLNodePtr getXML(bool save_children = true) const;
 	static  LLView* fromXML(LLXMLNodePtr node, LLView *parent, LLUICtrlFactory *factory);
 
+	virtual ~LLMultiSlider();
 	void			setSliderValue(const std::string& name, F32 value, BOOL from_event = FALSE);
 	F32				getSliderValue(const std::string& name) const;
 
@@ -80,15 +81,17 @@ public:
 	void			setMinValue(F32 min_value) { mMinValue = min_value; }
 	void			setMaxValue(F32 max_value) { mMaxValue = max_value; }
 	void			setIncrement(F32 increment) { mIncrement = increment; }
-	void			setMouseDownCallback( void (*cb)(LLUICtrl* ctrl, void* userdata) ) { mMouseDownCallback = cb; }
-	void			setMouseUpCallback(	void (*cb)(LLUICtrl* ctrl, void* userdata) ) { mMouseUpCallback = cb; }
+
+	boost::signals2::connection setMouseDownCallback( const commit_signal_t::slot_type& cb );
+	boost::signals2::connection setMouseUpCallback(	const commit_signal_t::slot_type& cb );
 
 	bool findUnusedValue(F32& initVal);
 	const std::string&	addSlider();
 	const std::string&	addSlider(F32 val);
-	void			deleteSlider(const std::string& name);
-	void			deleteCurSlider()			{ deleteSlider(mCurSlider); }
-	void			clear();
+	void				addSlider(F32 val, const std::string& name);
+	void				deleteSlider(const std::string& name);
+	void				deleteCurSlider()			{ deleteSlider(mCurSlider); }
+	void				clear();
 
 	virtual BOOL	handleHover(S32 x, S32 y, MASK mask);
 	virtual BOOL	handleMouseUp(S32 x, S32 y, MASK mask);
@@ -112,6 +115,7 @@ protected:
 
 	S32				mMouseOffset;
 	LLRect			mDragStartThumbRect;
+	S32				mThumbWidth;
 
 	std::map<std::string, LLRect>	mThumbRects;
 	LLColor4		mTrackColor;
@@ -121,8 +125,8 @@ protected:
 	LLColor4		mDisabledThumbColor;
 	LLColor4		mTriangleColor;
 	
-	void			(*mMouseDownCallback)(LLUICtrl* ctrl, void* userdata);
-	void			(*mMouseUpCallback)(LLUICtrl* ctrl, void* userdata);
+	commit_signal_t*	mMouseDownSignal;
+	commit_signal_t*	mMouseUpSignal;
 };
 
 #endif  // LL_LLSLIDER_H

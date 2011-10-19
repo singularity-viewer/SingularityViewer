@@ -45,6 +45,7 @@
 #include "llfloater.h"
 #include "llfloaterworldmap.h"
 #include "llinventorymodel.h"
+#include "llnotificationsutil.h"
 #include "llsecondlifeurls.h"
 #include "lltextbox.h"
 #include "llviewertexteditor.h"
@@ -114,24 +115,9 @@ void LLPanelEvent::setEventID(const U32 event_id)
 
 	if (event_id != 0)
 	{
-		sendEventInfoRequest();
+		gEventNotifier.add(event_id);
 	}
 }
-
-
-void LLPanelEvent::sendEventInfoRequest()
-{
-	LLMessageSystem *msg = gMessageSystem;
-
-	msg->newMessageFast(_PREHASH_EventInfoRequest);
-	msg->nextBlockFast(_PREHASH_AgentData);
-	msg->addUUIDFast(_PREHASH_AgentID, gAgent.getID() );
-	msg->addUUIDFast(_PREHASH_SessionID, gAgent.getSessionID() );
-	msg->nextBlockFast(_PREHASH_EventData);
-	msg->addU32Fast(_PREHASH_EventID, mEventID);
-	gAgent.sendReliableMessage();
-}
-
 
 //static 
 void LLPanelEvent::processEventInfoReply(LLMessageSystem *msg, void **)
@@ -277,7 +263,7 @@ void LLPanelEvent::onClickLandmark(void* data)
 // static
 void LLPanelEvent::onClickCreateEvent(void* data)
 {
-	LLNotifications::instance().add("PromptGoToEventsPage", LLSD(), LLSD(), callbackCreateEventWebPage); 
+	LLNotificationsUtil::add("PromptGoToEventsPage", LLSD(), LLSD(), callbackCreateEventWebPage); 
 }
 
 // static

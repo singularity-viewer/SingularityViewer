@@ -38,6 +38,7 @@
 #include "llcachename.h"
 #include "lldbstrings.h"
 #include "llinventory.h"
+#include "llinventorydefines.h"
 
 #include "llagent.h"
 #include "llbutton.h"

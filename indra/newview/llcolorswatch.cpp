@@ -37,12 +37,12 @@
 
 // Linden library includes
 #include "v4color.h"
+#include "llwindow.h"	// setCursor()
 
 // Project includes
 #include "llui.h"
 #include "llrender.h"
 #include "lluiconstants.h"
-#include "llviewerwindow.h"
 #include "llviewercontrol.h"
 #include "llbutton.h"
 #include "lltextbox.h"
@@ -330,7 +330,11 @@ void LLColorSwatchCtrl::showPicker(BOOL take_focus)
 	if (!pickerp)
 	{
 		pickerp = new LLFloaterColorPicker(this, mCanApplyImmediately);
-		gFloaterView->getParentFloater(this)->addDependentFloater(pickerp);
+		LLFloater* parent = gFloaterView->getParentFloater(this);
+		if (parent)
+		{
+			parent->addDependentFloater(pickerp);
+		}
 		mPickerHandle = pickerp->getHandle();
 	}
 

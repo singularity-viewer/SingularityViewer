@@ -36,6 +36,8 @@
 
 #include "u64.h"
 
+#include "lldate.h"
+
 #if LL_WINDOWS
 #	define WIN32_LEAN_AND_MEAN
 #	include <winsock2.h>

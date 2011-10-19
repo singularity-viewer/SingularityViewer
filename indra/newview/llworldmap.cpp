@@ -293,12 +293,27 @@ LLSimInfo* LLWorldMap::simInfoFromPosGlobal(const LLVector3d& pos_global)
 	return simInfoFromHandle(handle);
 }
 
-LLSimInfo* LLWorldMap::simInfoFromHandle(const U64 handle)
+LLSimInfo* LLWorldMap::simInfoFromHandle(const U64 findhandle)
 {
-	sim_info_map_t::iterator it = mSimInfoMap.find(handle);
-	if (it != mSimInfoMap.end())
+	std::map<U64, LLSimInfo*>::const_iterator it;
+	for (it = LLWorldMap::getInstance()->mSimInfoMap.begin(); it != LLWorldMap::getInstance()->mSimInfoMap.end(); ++it)
 	{
-		return it->second;
+		const U64 handle = (*it).first;
+		LLSimInfo* info = (*it).second;
+		if(handle == findhandle)
+		{
+			return info;
+		}
+		U32 x = 0, y = 0;
+		from_region_handle(findhandle, &x, &y);
+		U32 checkRegionX, checkRegionY;
+		from_region_handle(handle, &checkRegionX, &checkRegionY);
+
+		if(x >= checkRegionX && x < (checkRegionX + info->getSizeX()) &&
+			y >= checkRegionY && y < (checkRegionY + info->getSizeY()))
+		{
+			return info;
+		}
 	}
 	return NULL;
 }
@@ -659,6 +674,8 @@ void LLWorldMap::processMapBlockReply(LLMessageSystem* msg, void**)
 	{
 		U16 x_regions;
 		U16 y_regions;
+		U16 x_size = 256;
+		U16 y_size = 256;
 		std::string name;
 		U8 accesscode;
 		U32 region_flags;
@@ -673,9 +690,19 @@ void LLWorldMap::processMapBlockReply(LLMessageSystem* msg, void**)
 		msg->getU8Fast(_PREHASH_Data, _PREHASH_WaterHeight, water_height, block);
 		msg->getU8Fast(_PREHASH_Data, _PREHASH_Agents, agents, block);
 		msg->getUUIDFast(_PREHASH_Data, _PREHASH_MapImageID, image_id, block);
+		if(msg->getNumberOfBlocksFast(_PREHASH_Size) > 0)
+		{
+			msg->getU16Fast(_PREHASH_Size, _PREHASH_SizeX, x_size, block);
+			msg->getU16Fast(_PREHASH_Size, _PREHASH_SizeY, y_size, block);
+		}
+		if(x_size == 0 || (x_size % 16) != 0|| (y_size % 16) != 0)
+		{
+			x_size = 256;
+			y_size = 256;
+		}
 
 		U32 x_meters = x_regions * REGION_WIDTH_UNITS;
-		U32 y_meters = y_regions * REGION_WIDTH_UNITS;
+ 		U32 y_meters = y_regions * REGION_WIDTH_UNITS;
 
 		U64 handle = to_region_handle(x_meters, y_meters);
 
@@ -714,6 +741,7 @@ void LLWorldMap::processMapBlockReply(LLMessageSystem* msg, void**)
 			siminfo->setRegionFlags( region_flags );
 			siminfo->setWaterHeight((F32) water_height);
 			siminfo->setMapImageID( image_id, agent_flags );
+			siminfo->setSize( x_size, y_size );
 
 #ifdef IMMEDIATE_IMAGE_LOAD
 			if (use_web_map_tiles)

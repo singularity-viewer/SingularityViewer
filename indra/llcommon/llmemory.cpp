@@ -276,37 +276,12 @@ void operator delete[] (void *p)
 
 #endif
 
-//----------------------------------------------------------------------------
-
-LLRefCount::LLRefCount() :
-	mRef(0)
-{
-}
-
-LLRefCount::LLRefCount(const LLRefCount& other)
-:   mRef(0)
-{
-}
-
-LLRefCount::~LLRefCount()
-{ 
-	if (mRef != 0)
-	{
-		llerrs << "deleting non-zero reference" << llendl;
-	}
-}
-	
-LLRefCount& LLRefCount::operator=(const LLRefCount&)
-{
-	// do nothing, since ref count is specific to *this* reference
-	return *this;
-}
 
 //----------------------------------------------------------------------------
 
 #if defined(LL_WINDOWS)
 
-U64 getCurrentRSS()
+U64 LLMemory::getCurrentRSS()
 {
 	HANDLE self = GetCurrentProcess();
 	PROCESS_MEMORY_COUNTERS counters;
@@ -318,6 +293,20 @@ U64 getCurrentRSS()
 	}
 
 	return counters.WorkingSetSize;
+}
+
+//static 
+U32 LLMemory::getWorkingSetSize()
+{
+    PROCESS_MEMORY_COUNTERS pmc ;
+	U32 ret = 0 ;
+
+    if (GetProcessMemoryInfo( GetCurrentProcess(), &pmc, sizeof(pmc)) )
+	{
+		ret = pmc.WorkingSetSize ;
+	}
+
+	return ret ;
 }
 
 #elif defined(LL_DARWIN)
@@ -344,7 +333,7 @@ U64 getCurrentRSS()
 // 	}
 // }
 
-U64 getCurrentRSS()
+U64 LLMemory::getCurrentRSS()
 {
 	U64 residentSize = 0;
 	task_basic_info_data_t basicInfo;
@@ -366,9 +355,14 @@ U64 getCurrentRSS()
 	return residentSize;
 }
 
+U32 LLMemory::getWorkingSetSize()
+{
+	return 0 ;
+}
+
 #elif defined(LL_LINUX)
 
-U64 getCurrentRSS()
+U64 LLMemory::getCurrentRSS()
 {
 	static const char statPath[] = "/proc/self/stat";
 	LLFILE *fp = LLFile::fopen(statPath, "r");
@@ -400,6 +394,10 @@ bail:
 	return rss;
 }
 
+U32 LLMemory::getWorkingSetSize()
+{
+	return 0 ;
+}
 #elif LL_SOLARIS
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -407,7 +405,7 @@ bail:
 #define _STRUCTURED_PROC 1
 #include <sys/procfs.h>
 
-U64 getCurrentRSS()
+U64 LLMemory::getCurrentRSS()
 {
 	char path [LL_MAX_PATH];	/* Flawfinder: ignore */ 
 
@@ -428,11 +426,22 @@ U64 getCurrentRSS()
 
 	return((U64)proc_psinfo.pr_rssize * 1024);
 }
+
+U32 LLMemory::getWorkingSetSize()
+{
+	return 0 ;
+}
+
 #else
 
-U64 getCurrentRSS()
+U64 LLMemory::getCurrentRSS()
 {
 	return 0;
+}
+
+U32 LLMemory::getWorkingSetSize()
+{
+	return 0 ;
 }
 
 #endif

@@ -613,7 +613,7 @@ public:
 	virtual void updateBranchParent( LLView* parentp );
 
 	// LLView Functionality
-	virtual void onVisibilityChange( BOOL curVisibilityIn );
+	virtual void handleVisibilityChange( BOOL curVisibilityIn );
 
 	virtual void draw();
 

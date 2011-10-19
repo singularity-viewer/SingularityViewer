@@ -53,6 +53,7 @@
 #include "llstacktrace.h"
 
 #include "llglheaders.h"
+#include "llglslshader.h"
 
 #ifdef _DEBUG
 //#define GL_STATE_VERIFY
@@ -66,6 +67,16 @@ BOOL gNoRender = FALSE;
 BOOL gGLActive = FALSE;
 
 std::ofstream gFailLog;
+
+void* gl_get_proc_address(const char *pStr)
+{
+	void* pPtr = (void*)GLH_EXT_GET_PROC_ADDRESS(pStr);
+	if(!pPtr)
+		llinfos << "Failed to find symbol '" << pStr << "'" << llendl;
+	return pPtr;
+}
+#undef GLH_EXT_GET_PROC_ADDRESS
+#define GLH_EXT_GET_PROC_ADDRESS(p)   gl_get_proc_address(p) 
 
 void ll_init_fail_log(std::string filename)
 {
@@ -127,6 +138,23 @@ PFNGLUNMAPBUFFERARBPROC				glUnmapBufferARB = NULL;
 PFNGLGETBUFFERPARAMETERIVARBPROC	glGetBufferParameterivARB = NULL;
 PFNGLGETBUFFERPOINTERVARBPROC		glGetBufferPointervARB = NULL;
 
+// GL_ARB_map_buffer_range
+PFNGLMAPBUFFERRANGEPROC			glMapBufferRange = NULL;
+PFNGLFLUSHMAPPEDBUFFERRANGEPROC	glFlushMappedBufferRange = NULL;
+
+// GL_ARB_sync
+PFNGLFENCESYNCPROC				glFenceSync = NULL;
+PFNGLISSYNCPROC					glIsSync = NULL;
+PFNGLDELETESYNCPROC				glDeleteSync = NULL;
+PFNGLCLIENTWAITSYNCPROC			glClientWaitSync = NULL;
+PFNGLWAITSYNCPROC				glWaitSync = NULL;
+PFNGLGETINTEGER64VPROC			glGetInteger64v = NULL;
+PFNGLGETSYNCIVPROC				glGetSynciv = NULL;
+
+// GL_APPLE_flush_buffer_range
+PFNGLBUFFERPARAMETERIAPPLEPROC	glBufferParameteriAPPLE = NULL;
+PFNGLFLUSHMAPPEDBUFFERRANGEAPPLEPROC glFlushMappedBufferRangeAPPLE = NULL;
+
 // vertex object prototypes
 PFNGLNEWOBJECTBUFFERATIPROC			glNewObjectBufferATI = NULL;
 PFNGLISOBJECTBUFFERATIPROC			glIsObjectBufferATI = NULL;
@@ -156,27 +184,33 @@ PFNGLGETQUERYOBJECTUIVARBPROC glGetQueryObjectuivARB = NULL;
 PFNGLPOINTPARAMETERFARBPROC glPointParameterfARB = NULL;
 PFNGLPOINTPARAMETERFVARBPROC glPointParameterfvARB = NULL;
 
-// GL_EXT_framebuffer_object
-PFNGLISRENDERBUFFEREXTPROC glIsRenderbufferEXT = NULL;
-PFNGLBINDRENDERBUFFEREXTPROC glBindRenderbufferEXT = NULL;
-PFNGLDELETERENDERBUFFERSEXTPROC glDeleteRenderbuffersEXT = NULL;
-PFNGLGENRENDERBUFFERSEXTPROC glGenRenderbuffersEXT = NULL;
-PFNGLRENDERBUFFERSTORAGEEXTPROC glRenderbufferStorageEXT = NULL;
-PFNGLGETRENDERBUFFERPARAMETERIVEXTPROC glGetRenderbufferParameterivEXT = NULL;
-PFNGLISFRAMEBUFFEREXTPROC glIsFramebufferEXT = NULL;
-PFNGLBINDFRAMEBUFFEREXTPROC glBindFramebufferEXT = NULL;
-PFNGLDELETEFRAMEBUFFERSEXTPROC glDeleteFramebuffersEXT = NULL;
-PFNGLGENFRAMEBUFFERSEXTPROC glGenFramebuffersEXT = NULL;
-PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC glCheckFramebufferStatusEXT = NULL;
-PFNGLFRAMEBUFFERTEXTURE1DEXTPROC glFramebufferTexture1DEXT = NULL;
-PFNGLFRAMEBUFFERTEXTURE2DEXTPROC glFramebufferTexture2DEXT = NULL;
-PFNGLFRAMEBUFFERTEXTURE3DEXTPROC glFramebufferTexture3DEXT = NULL;
-PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC glFramebufferRenderbufferEXT = NULL;
-PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC glGetFramebufferAttachmentParameterivEXT = NULL;
-PFNGLGENERATEMIPMAPEXTPROC glGenerateMipmapEXT = NULL;
-PFNGLBLITFRAMEBUFFEREXTPROC glBlitFramebufferEXT = NULL;
-PFNGLRENDERBUFFERSTORAGEMULTISAMPLEEXTPROC glRenderbufferStorageMultisampleEXT = NULL;
-PFNGLFRAMEBUFFERTEXTURELAYEREXTPROC glFramebufferTextureLayerEXT = NULL;
+// GL_ARB_framebuffer_object
+PFNGLISRENDERBUFFERPROC glIsRenderbuffer = NULL;
+PFNGLBINDRENDERBUFFERPROC glBindRenderbuffer = NULL;
+PFNGLDELETERENDERBUFFERSPROC glDeleteRenderbuffers = NULL;
+PFNGLGENRENDERBUFFERSPROC glGenRenderbuffers = NULL;
+PFNGLRENDERBUFFERSTORAGEPROC glRenderbufferStorage = NULL;
+PFNGLGETRENDERBUFFERPARAMETERIVPROC glGetRenderbufferParameteriv = NULL;
+PFNGLISFRAMEBUFFERPROC glIsFramebuffer = NULL;
+PFNGLBINDFRAMEBUFFERPROC glBindFramebuffer = NULL;
+PFNGLDELETEFRAMEBUFFERSPROC glDeleteFramebuffers = NULL;
+PFNGLGENFRAMEBUFFERSPROC glGenFramebuffers = NULL;
+PFNGLCHECKFRAMEBUFFERSTATUSPROC glCheckFramebufferStatus = NULL;
+PFNGLFRAMEBUFFERTEXTURE1DPROC glFramebufferTexture1D = NULL;
+PFNGLFRAMEBUFFERTEXTURE2DPROC glFramebufferTexture2D = NULL;
+PFNGLFRAMEBUFFERTEXTURE3DPROC glFramebufferTexture3D = NULL;
+PFNGLFRAMEBUFFERRENDERBUFFERPROC glFramebufferRenderbuffer = NULL;
+PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC glGetFramebufferAttachmentParameteriv = NULL;
+PFNGLGENERATEMIPMAPPROC glGenerateMipmap = NULL;
+PFNGLBLITFRAMEBUFFERPROC glBlitFramebuffer = NULL;
+PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC glRenderbufferStorageMultisample = NULL;
+PFNGLFRAMEBUFFERTEXTURELAYERPROC glFramebufferTextureLayer = NULL;
+
+//GL_ARB_texture_multisample
+PFNGLTEXIMAGE2DMULTISAMPLEPROC glTexImage2DMultisample;
+PFNGLTEXIMAGE3DMULTISAMPLEPROC glTexImage3DMultisample;
+PFNGLGETMULTISAMPLEFVPROC glGetMultisamplefv;
+PFNGLSAMPLEMASKIPROC glSampleMaski;
 
 // GL_EXT_blend_func_separate
 PFNGLBLENDFUNCSEPARATEEXTPROC glBlendFuncSeparateEXT = NULL;
@@ -321,10 +355,13 @@ LLGLManager::LLGLManager() :
 	mHasMipMapGeneration(FALSE),
 	mHasCompressedTextures(FALSE),
 	mHasFramebufferObject(FALSE),
+	mMaxSamples(0),
 	mHasFramebufferMultisample(FALSE),
 	mHasBlendFuncSeparate(FALSE),
-
+	mHasSync(FALSE),
 	mHasVertexBufferObject(FALSE),
+	mHasMapBufferRange(FALSE),
+	mHasFlushBufferRange(FALSE),
 	mHasPBuffer(FALSE),
 	mHasShaderObjects(FALSE),
 	mHasVertexShader(FALSE),
@@ -335,6 +372,11 @@ LLGLManager::LLGLManager() :
 	mHasPointParameters(FALSE),
 	mHasDrawBuffers(FALSE),
 	mHasTextureRectangle(FALSE),
+	mHasTextureMultisample(FALSE),
+	mMaxSampleMaskWords(0),
+	mMaxColorTextureSamples(0),
+	mMaxDepthTextureSamples(0),
+	mMaxIntegerSamples(0),
 
 	mHasAnisotropic(FALSE),
 	mHasARBEnvCombine(FALSE),
@@ -352,6 +394,8 @@ LLGLManager::LLGLManager() :
 	mHasRequirements(TRUE),
 
 	mHasSeparateSpecularColor(FALSE),
+
+	mDebugGPU(FALSE),
 
 	mDriverVersionMajor(1),
 	mDriverVersionMinor(0),
@@ -538,11 +582,44 @@ bool LLGLManager::initGL()
 	{
 		GLint num_tex_image_units;
 		glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS_ARB, &num_tex_image_units);
-		mNumTextureImageUnits = num_tex_image_units;
+		mNumTextureImageUnits = llmin(num_tex_image_units, 32);
 	}
+
+	if (mHasTextureMultisample)
+	{
+		glGetIntegerv(GL_MAX_COLOR_TEXTURE_SAMPLES, &mMaxColorTextureSamples);
+		glGetIntegerv(GL_MAX_DEPTH_TEXTURE_SAMPLES, &mMaxDepthTextureSamples);
+		glGetIntegerv(GL_MAX_INTEGER_SAMPLES, &mMaxIntegerSamples);
+		glGetIntegerv(GL_MAX_SAMPLE_MASK_WORDS, &mMaxSampleMaskWords);
+	}
+
+#if LL_WINDOWS
+	if (mIsATI)
+	{ //using multisample textures on ATI results in black screen for some reason
+		mHasTextureMultisample = FALSE;
+	}
+#endif
+
+	if (mHasFramebufferObject)
+	{
+		glGetIntegerv(GL_MAX_SAMPLES, &mMaxSamples);
+	}
+	
+	setToDebugGPU();
 
 	initGLStates();
 	return true;
+}
+
+void LLGLManager::setToDebugGPU()
+{
+	//"MOBILE INTEL(R) 965 EXPRESS CHIP", 
+	if (mGLRenderer.find("INTEL") != std::string::npos && mGLRenderer.find("965") != std::string::npos)
+	{
+		mDebugGPU = TRUE ;
+	}
+
+	return ;
 }
 
 void LLGLManager::getGLInfo(LLSD& info)
@@ -599,6 +676,14 @@ std::string LLGLManager::getRawGLString()
 	std::string gl_string;
 	gl_string = ll_safe_string((char*)glGetString(GL_VENDOR)) + " " + ll_safe_string((char*)glGetString(GL_RENDERER));
 	return gl_string;
+}
+
+U32 LLGLManager::getNumFBOFSAASamples(U32 samples)
+{
+	samples = llmin(samples, (U32) mMaxColorTextureSamples);
+	samples = llmin(samples, (U32) mMaxDepthTextureSamples);
+	samples = llmin(samples, (U32) 4);
+	return samples;
 }
 
 void LLGLManager::shutdownGL()
@@ -686,6 +771,9 @@ void LLGLManager::initExtensions()
 	mHasOcclusionQuery = ExtensionExists("GL_ARB_occlusion_query", gGLHExts.mSysExts);
 	mHasOcclusionQuery2 = ExtensionExists("GL_ARB_occlusion_query2", gGLHExts.mSysExts);
 	mHasVertexBufferObject = ExtensionExists("GL_ARB_vertex_buffer_object", gGLHExts.mSysExts);
+	mHasSync = ExtensionExists("GL_ARB_sync", gGLHExts.mSysExts);
+	mHasMapBufferRange = ExtensionExists("GL_ARB_map_buffer_range", gGLHExts.mSysExts);
+	mHasFlushBufferRange = ExtensionExists("GL_APPLE_flush_buffer_range", gGLHExts.mSysExts);
 	mHasDepthClamp = ExtensionExists("GL_ARB_depth_clamp", gGLHExts.mSysExts) || ExtensionExists("GL_NV_depth_clamp", gGLHExts.mSysExts);
 		// mask out FBO support when packed_depth_stencil isn't there 'cause we need it for LLRenderTarget -Brad
 #ifdef GL_ARB_framebuffer_object
@@ -700,7 +788,10 @@ void LLGLManager::initExtensions()
 	mHasDrawBuffers = ExtensionExists("GL_ARB_draw_buffers", gGLHExts.mSysExts);
 	mHasBlendFuncSeparate = ExtensionExists("GL_EXT_blend_func_separate", gGLHExts.mSysExts);
 	mHasTextureRectangle = ExtensionExists("GL_ARB_texture_rectangle", gGLHExts.mSysExts);
+	mHasTextureMultisample = ExtensionExists("GL_ARB_texture_multisample", gGLHExts.mSysExts);
+#if !LL_DARWIN
 	mHasPointParameters = !mIsATI && ExtensionExists("GL_ARB_point_parameters", gGLHExts.mSysExts);
+#endif
 	mHasShaderObjects = ExtensionExists("GL_ARB_shader_objects", gGLHExts.mSysExts) && ExtensionExists("GL_ARB_shading_language_100", gGLHExts.mSysExts);
 	mHasVertexShader = ExtensionExists("GL_ARB_vertex_program", gGLHExts.mSysExts) && ExtensionExists("GL_ARB_vertex_shader", gGLHExts.mSysExts)
 						&& ExtensionExists("GL_ARB_shading_language_100", gGLHExts.mSysExts);
@@ -879,29 +970,44 @@ void LLGLManager::initExtensions()
 			mHasVertexBufferObject = FALSE;
 		}
 	}
+	if (mHasSync)
+	{
+		glFenceSync = (PFNGLFENCESYNCPROC) GLH_EXT_GET_PROC_ADDRESS("glFenceSync");
+		glIsSync = (PFNGLISSYNCPROC) GLH_EXT_GET_PROC_ADDRESS("glIsSync");
+		glDeleteSync = (PFNGLDELETESYNCPROC) GLH_EXT_GET_PROC_ADDRESS("glDeleteSync");
+		glClientWaitSync = (PFNGLCLIENTWAITSYNCPROC) GLH_EXT_GET_PROC_ADDRESS("glClientWaitSync");
+		glWaitSync = (PFNGLWAITSYNCPROC) GLH_EXT_GET_PROC_ADDRESS("glWaitSync");
+		glGetInteger64v = (PFNGLGETINTEGER64VPROC) GLH_EXT_GET_PROC_ADDRESS("glGetInteger64v");
+		glGetSynciv = (PFNGLGETSYNCIVPROC) GLH_EXT_GET_PROC_ADDRESS("glGetSynciv");
+	}
+	if (mHasMapBufferRange)
+	{
+		glMapBufferRange = (PFNGLMAPBUFFERRANGEPROC) GLH_EXT_GET_PROC_ADDRESS("glMapBufferRange");
+		glFlushMappedBufferRange = (PFNGLFLUSHMAPPEDBUFFERRANGEPROC) GLH_EXT_GET_PROC_ADDRESS("glFlushMappedBufferRange");
+	}
 	if (mHasFramebufferObject)
 	{
 		llinfos << "initExtensions() FramebufferObject-related procs..." << llendl;
-		glIsRenderbufferEXT = (PFNGLISRENDERBUFFEREXTPROC) GLH_EXT_GET_PROC_ADDRESS("glIsRenderbufferEXT");
-		glBindRenderbufferEXT = (PFNGLBINDRENDERBUFFEREXTPROC) GLH_EXT_GET_PROC_ADDRESS("glBindRenderbufferEXT");
-		glDeleteRenderbuffersEXT = (PFNGLDELETERENDERBUFFERSEXTPROC) GLH_EXT_GET_PROC_ADDRESS("glDeleteRenderbuffersEXT");
-		glGenRenderbuffersEXT = (PFNGLGENRENDERBUFFERSEXTPROC) GLH_EXT_GET_PROC_ADDRESS("glGenRenderbuffersEXT");
-		glRenderbufferStorageEXT = (PFNGLRENDERBUFFERSTORAGEEXTPROC) GLH_EXT_GET_PROC_ADDRESS("glRenderbufferStorageEXT");
-		glGetRenderbufferParameterivEXT = (PFNGLGETRENDERBUFFERPARAMETERIVEXTPROC) GLH_EXT_GET_PROC_ADDRESS("glGetRenderbufferParameterivEXT");
-		glIsFramebufferEXT = (PFNGLISFRAMEBUFFEREXTPROC) GLH_EXT_GET_PROC_ADDRESS("glIsFramebufferEXT");
-		glBindFramebufferEXT = (PFNGLBINDFRAMEBUFFEREXTPROC) GLH_EXT_GET_PROC_ADDRESS("glBindFramebufferEXT");
-		glDeleteFramebuffersEXT = (PFNGLDELETEFRAMEBUFFERSEXTPROC) GLH_EXT_GET_PROC_ADDRESS("glDeleteFramebuffersEXT");
-		glGenFramebuffersEXT = (PFNGLGENFRAMEBUFFERSEXTPROC) GLH_EXT_GET_PROC_ADDRESS("glGenFramebuffersEXT");
-		glCheckFramebufferStatusEXT = (PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC) GLH_EXT_GET_PROC_ADDRESS("glCheckFramebufferStatusEXT");
-		glFramebufferTexture1DEXT = (PFNGLFRAMEBUFFERTEXTURE1DEXTPROC) GLH_EXT_GET_PROC_ADDRESS("glFramebufferTexture1DEXT");
-		glFramebufferTexture2DEXT = (PFNGLFRAMEBUFFERTEXTURE2DEXTPROC) GLH_EXT_GET_PROC_ADDRESS("glFramebufferTexture2DEXT");
-		glFramebufferTexture3DEXT = (PFNGLFRAMEBUFFERTEXTURE3DEXTPROC) GLH_EXT_GET_PROC_ADDRESS("glFramebufferTexture3DEXT");
-		glFramebufferRenderbufferEXT = (PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC) GLH_EXT_GET_PROC_ADDRESS("glFramebufferRenderbufferEXT");
-		glGetFramebufferAttachmentParameterivEXT = (PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVEXTPROC) GLH_EXT_GET_PROC_ADDRESS("glGetFramebufferAttachmentParameterivEXT");
-		glGenerateMipmapEXT = (PFNGLGENERATEMIPMAPEXTPROC) GLH_EXT_GET_PROC_ADDRESS("glGenerateMipmapEXT");
-		glBlitFramebufferEXT = (PFNGLBLITFRAMEBUFFEREXTPROC) GLH_EXT_GET_PROC_ADDRESS("glBlitFramebufferEXT");
-		glRenderbufferStorageMultisampleEXT = (PFNGLRENDERBUFFERSTORAGEMULTISAMPLEEXTPROC) GLH_EXT_GET_PROC_ADDRESS("glRenderbufferStorageMultisampleEXT");
-		glFramebufferTextureLayerEXT = (PFNGLFRAMEBUFFERTEXTURELAYEREXTPROC) GLH_EXT_GET_PROC_ADDRESS("glFramebufferTextureLayerEXT");	
+		glIsRenderbuffer = (PFNGLISRENDERBUFFERPROC) GLH_EXT_GET_PROC_ADDRESS("glIsRenderbuffer");
+		glBindRenderbuffer = (PFNGLBINDRENDERBUFFERPROC) GLH_EXT_GET_PROC_ADDRESS("glBindRenderbuffer");
+		glDeleteRenderbuffers = (PFNGLDELETERENDERBUFFERSPROC) GLH_EXT_GET_PROC_ADDRESS("glDeleteRenderbuffers");
+		glGenRenderbuffers = (PFNGLGENRENDERBUFFERSPROC) GLH_EXT_GET_PROC_ADDRESS("glGenRenderbuffers");
+		glRenderbufferStorage = (PFNGLRENDERBUFFERSTORAGEPROC) GLH_EXT_GET_PROC_ADDRESS("glRenderbufferStorage");
+		glGetRenderbufferParameteriv = (PFNGLGETRENDERBUFFERPARAMETERIVPROC) GLH_EXT_GET_PROC_ADDRESS("glGetRenderbufferParameteriv");
+		glIsFramebuffer = (PFNGLISFRAMEBUFFERPROC) GLH_EXT_GET_PROC_ADDRESS("glIsFramebuffer");
+		glBindFramebuffer = (PFNGLBINDFRAMEBUFFERPROC) GLH_EXT_GET_PROC_ADDRESS("glBindFramebuffer");
+		glDeleteFramebuffers = (PFNGLDELETEFRAMEBUFFERSPROC) GLH_EXT_GET_PROC_ADDRESS("glDeleteFramebuffers");
+		glGenFramebuffers = (PFNGLGENFRAMEBUFFERSPROC) GLH_EXT_GET_PROC_ADDRESS("glGenFramebuffers");
+		glCheckFramebufferStatus = (PFNGLCHECKFRAMEBUFFERSTATUSPROC) GLH_EXT_GET_PROC_ADDRESS("glCheckFramebufferStatus");
+		glFramebufferTexture1D = (PFNGLFRAMEBUFFERTEXTURE1DPROC) GLH_EXT_GET_PROC_ADDRESS("glFramebufferTexture1D");
+		glFramebufferTexture2D = (PFNGLFRAMEBUFFERTEXTURE2DPROC) GLH_EXT_GET_PROC_ADDRESS("glFramebufferTexture2D");
+		glFramebufferTexture3D = (PFNGLFRAMEBUFFERTEXTURE3DPROC) GLH_EXT_GET_PROC_ADDRESS("glFramebufferTexture3D");
+		glFramebufferRenderbuffer = (PFNGLFRAMEBUFFERRENDERBUFFERPROC) GLH_EXT_GET_PROC_ADDRESS("glFramebufferRenderbuffer");
+		glGetFramebufferAttachmentParameteriv = (PFNGLGETFRAMEBUFFERATTACHMENTPARAMETERIVPROC) GLH_EXT_GET_PROC_ADDRESS("glGetFramebufferAttachmentParameteriv");
+		glGenerateMipmap = (PFNGLGENERATEMIPMAPPROC) GLH_EXT_GET_PROC_ADDRESS("glGenerateMipmap");
+		glBlitFramebuffer = (PFNGLBLITFRAMEBUFFERPROC) GLH_EXT_GET_PROC_ADDRESS("glBlitFramebuffer");
+		glRenderbufferStorageMultisample = (PFNGLRENDERBUFFERSTORAGEMULTISAMPLEPROC) GLH_EXT_GET_PROC_ADDRESS("glRenderbufferStorageMultisample");
+		glFramebufferTextureLayer = (PFNGLFRAMEBUFFERTEXTURELAYERPROC) GLH_EXT_GET_PROC_ADDRESS("glFramebufferTextureLayer");
 	}
 	if (mHasDrawBuffers)
 	{
@@ -911,6 +1017,13 @@ void LLGLManager::initExtensions()
 	{
 		glBlendFuncSeparateEXT = (PFNGLBLENDFUNCSEPARATEEXTPROC) GLH_EXT_GET_PROC_ADDRESS("glBlendFuncSeparateEXT");
 	}
+	if (mHasTextureMultisample)
+	{
+		glTexImage2DMultisample = (PFNGLTEXIMAGE2DMULTISAMPLEPROC) GLH_EXT_GET_PROC_ADDRESS("glTexImage2DMultisample");
+		glTexImage3DMultisample = (PFNGLTEXIMAGE3DMULTISAMPLEPROC) GLH_EXT_GET_PROC_ADDRESS("glTexImage3DMultisample");
+		glGetMultisamplefv = (PFNGLGETMULTISAMPLEFVPROC) GLH_EXT_GET_PROC_ADDRESS("glGetMultisamplefv");
+		glSampleMaski = (PFNGLSAMPLEMASKIPROC) GLH_EXT_GET_PROC_ADDRESS("glSampleMaski");
+	}	
 #if (!LL_LINUX && !LL_SOLARIS) || LL_LINUX_NV_GL_HEADERS
 	// This is expected to be a static symbol on Linux GL implementations, except if we use the nvidia headers - bah
 	glDrawRangeElements = (PFNGLDRAWRANGEELEMENTSPROC)GLH_EXT_GET_PROC_ADDRESS("glDrawRangeElements");
@@ -1299,6 +1412,7 @@ void LLGLState::checkStates(const std::string& msg)
 
 void LLGLState::checkTextureChannels(const std::string& msg)
 {
+#if 0
 	if (!gDebugGL)
 	{
 		return;
@@ -1329,10 +1443,6 @@ void LLGLState::checkTextureChannels(const std::string& msg)
 			}
 		}
 	}
-
-	GLint maxTextureUnits = 0;
-	glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, &maxTextureUnits);
-	stop_glerror();
 
 	static const char* label[] =
 	{
@@ -1366,7 +1476,7 @@ void LLGLState::checkTextureChannels(const std::string& msg)
 	glh::matrix4f identity;
 	identity.identity();
 
-	for (GLint i = 1; i < maxTextureUnits; i++)
+	for (GLint i = 1; i < gGLManager.mNumTextureUnits; i++)
 	{
 		gGL.getTexUnit(i)->activate();
 		glClientActiveTextureARB(GL_TEXTURE0_ARB+i);
@@ -1426,8 +1536,27 @@ void LLGLState::checkTextureChannels(const std::string& msg)
 				gFailLog << "Texture matrix " << i << " is not identity." << std::endl;
 			}
 		}
+
+		{
+			GLint tex = 0;
+			stop_glerror();
+			glGetIntegerv(GL_TEXTURE_BINDING_2D, &tex);
+			stop_glerror();
+
+			if (tex != 0)
+			{
+				error = TRUE;
+				LL_WARNS("RenderState") << "Texture channel " << i << " still has texture " << tex << " bound." << llendl;
+
+				if (gDebugSession)
+				{
+					gFailLog << "Texture channel " << i << " still has texture " << tex << " bound." << std::endl;
+				}
+			}
+		}
 	}
 
+	stop_glerror();
 	gGL.getTexUnit(0)->activate();
 	glClientActiveTextureARB(GL_TEXTURE0_ARB);
 	stop_glerror();
@@ -1443,11 +1572,12 @@ void LLGLState::checkTextureChannels(const std::string& msg)
 			LL_GL_ERRS << "GL texture state corruption detected.  " << msg << LL_ENDL;
 		}
 	}
+#endif
 }
 
 void LLGLState::checkClientArrays(const std::string& msg, U32 data_mask)
 {
-	if (!gDebugGL)
+	if (!gDebugGL || LLGLSLShader::sNoFixedFunction)
 	{
 		return;
 	}
@@ -1559,7 +1689,7 @@ void LLGLState::checkClientArrays(const std::string& msg, U32 data_mask)
 		}
 	}
 
-	if (glIsEnabled(GL_TEXTURE_2D))
+	/*if (glIsEnabled(GL_TEXTURE_2D))
 	{
 		if (!(data_mask & 0x0008))
 		{
@@ -1582,7 +1712,7 @@ void LLGLState::checkClientArrays(const std::string& msg, U32 data_mask)
 				gFailLog << "GL does not have GL_TEXTURE_2D enabled on channel 1." << std::endl;
 			}
 		}
-	}
+	}*/
 
 	glClientActiveTextureARB(GL_TEXTURE0_ARB);
 	gGL.getTexUnit(0)->activate();
@@ -1625,6 +1755,16 @@ void LLGLState::checkClientArrays(const std::string& msg, U32 data_mask)
 LLGLState::LLGLState(LLGLenum state, S32 enabled) :
 	mState(state), mWasEnabled(FALSE), mIsEnabled(FALSE)
 {
+	if (LLGLSLShader::sNoFixedFunction)
+	{ //always disable state that's deprecated post GL 3.0
+		switch (state)
+		{
+			case GL_ALPHA_TEST:
+			enabled = 0;
+			break;
+		}
+	}
+		
 	stop_glerror();
 	if (state)
 	{
@@ -1983,8 +2123,7 @@ void LLGLNamePool::release(GLuint name)
 //static
 void LLGLNamePool::upkeepPools()
 {
-	tracker_t::LLInstanceTrackerScopedGuard guard;
-	for (tracker_t::instance_iter iter = guard.beginInstances(); iter != guard.endInstances(); ++iter)
+	for (tracker_t::instance_iter iter = beginInstances(); iter != endInstances(); ++iter)
 	{
 		LLGLNamePool & pool = *iter;
 		pool.upkeep();
@@ -1994,8 +2133,7 @@ void LLGLNamePool::upkeepPools()
 //static
 void LLGLNamePool::cleanupPools()
 {
-	tracker_t::LLInstanceTrackerScopedGuard guard;
-	for (tracker_t::instance_iter iter = guard.beginInstances(); iter != guard.endInstances(); ++iter)
+	for (tracker_t::instance_iter iter = beginInstances(); iter != endInstances(); ++iter)
 	{
 		LLGLNamePool & pool = *iter;
 		pool.cleanup();

@@ -23,9 +23,7 @@
  * Linden Research, Inc., 945 Battery Street, San Francisco, CA  94111  USA
  * $/LicenseInfo$
  */
-/*
-Ported to Phoenix by Wolfspirit Magic.
-*/
+
 #include "llviewerprecompiledheaders.h"
 
 #include "llviewerdisplayname.h"
@@ -39,7 +37,7 @@ Ported to Phoenix by Wolfspirit Magic.
 #include "llavatarnamecache.h"
 #include "llhttpclient.h"
 #include "llhttpnode.h"
-#include "llnotifications.h"
+#include "llnotificationsutil.h"
 #include "llui.h"					// getLanguage()
 
 namespace LLViewerDisplayName
@@ -194,7 +192,7 @@ class LLDisplayNameUpdate : public LLHTTPNode
 		args["OLD_NAME"] = old_display_name;
 		args["SLID"] = av_name.mUsername;
 		args["NEW_NAME"] = av_name.mDisplayName;
-		LLNotifications::instance().add("DisplayNameUpdate", args);
+		LLNotificationsUtil::add("DisplayNameUpdate", args);
 		if (agent_id == gAgent.getID())
 		{
 			LLViewerDisplayName::sNameChangedSignal();

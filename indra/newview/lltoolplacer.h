@@ -62,6 +62,7 @@ protected:
 
 private:
 	BOOL addObject( LLPCode pcode, S32 x, S32 y, U8 use_physics );
+	S32  getTreeGrassSpecies(std::map<std::string, S32> &table, const char *control, S32 max);
 	BOOL raycastForNewObjPos( S32 x, S32 y, LLViewerObject** hit_obj, S32* hit_face, 
 							  BOOL* b_hit_land, LLVector3* ray_start_region, LLVector3* ray_end_region, LLViewerRegion** region );
 	BOOL addDuplicate(S32 x, S32 y);

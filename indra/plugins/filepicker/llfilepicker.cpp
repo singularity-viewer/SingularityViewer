@@ -761,7 +761,7 @@ Boolean LLFilePickerBase::navOpenFilterProc(AEDesc *theItem, void *info, void *c
 						}
 						else if (filter == FFLOAD_XML)
 						{
-							if (fileInfo.filetype != 'XML' &&
+							if (fileInfo.filetype != 'XML ' &&
 								(fileInfo.extension && (CFStringCompare(fileInfo.extension, CFSTR("xml"), kCFCompareCaseInsensitive) != kCFCompareEqualTo))
 							)
 							{
@@ -785,7 +785,7 @@ Boolean LLFilePickerBase::navOpenFilterProc(AEDesc *theItem, void *info, void *c
 						}
 						else if (filter == FFLOAD_RAW)
 						{
-							if (fileInfo.filetype != L'\?\?\?\?' && 
+							if (fileInfo.filetype != '\?\?\?\?' && 
 								(fileInfo.extension && (CFStringCompare(fileInfo.extension, CFSTR("raw"), kCFCompareCaseInsensitive) != kCFCompareEqualTo))
 							)
 							{
@@ -952,14 +952,14 @@ OSStatus	LLFilePickerBase::doNavSaveDialog(ESaveFilter filter, std::string const
 			extension = CFSTR(".png");
 			break;
 		case FFSAVE_AVI:
-			type = L'\?\?\?\?';
-			creator = L'\?\?\?\?';
+			type = '\?\?\?\?';
+			creator = '\?\?\?\?';
 			extension = CFSTR(".mov");
 			break;
 
 		case FFSAVE_ANIM:
-			type = L'\?\?\?\?';
-			creator = L'\?\?\?\?';
+			type = '\?\?\?\?';
+			creator = '\?\?\?\?';
 			extension = CFSTR(".xaf");
 			break;
 
@@ -971,26 +971,26 @@ OSStatus	LLFilePickerBase::doNavSaveDialog(ESaveFilter filter, std::string const
 			break;
 #endif		
 		case FFSAVE_RAW:
-			type = L'\?\?\?\?';
-			creator = L'\?\?\?\?';
+			type = '\?\?\?\?';
+			creator = '\?\?\?\?';
 			extension = CFSTR(".raw");
 			break;
 
 		case FFSAVE_J2C:
-			type = L'\?\?\?\?';
+			type = '\?\?\?\?';
 			creator = 'prvw';
 			extension = CFSTR(".j2c");
 			break;
 		
 		case FFSAVE_ALL:
 		default:
-			type = L'\?\?\?\?';
-			creator = L'\?\?\?\?';
+			type = '\?\?\?\?';
+			creator = '\?\?\?\?';
 			extension = CFSTR("");
 			break;
 	}
 
-	NavEventUPP eventUPP = NewNavEventUPP(navSetDefaultFolderProc);
+	NavEventUPP eventUPP = NewNavEventUPP(NULL); //TODO: test filepicker
 	mFolder = folder;
 	
 	// Create the dialog

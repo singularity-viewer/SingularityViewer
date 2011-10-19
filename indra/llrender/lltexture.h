@@ -39,7 +39,7 @@
 #ifndef LL_TEXTURE_H
 #define LL_TEXTURE_H
 
-#include "llmemory.h"
+#include "llrefcount.h"
 class LLImageGL ;
 class LLTexUnit ;
 class LLFontGL ;

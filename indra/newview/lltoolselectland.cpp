@@ -44,6 +44,7 @@
 #include "llstatusbar.h"
 #include "llviewerparcelmgr.h"
 #include "llviewerwindow.h"
+#include "llwindow.h"
 
 //
 // Member functions

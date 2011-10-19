@@ -41,6 +41,7 @@
 
 #include "llcachename.h"
 #include "llbutton.h"
+#include "llnotificationsutil.h"
 #include "lltextbox.h"
 
 #include "llagent.h"			// for agent id
@@ -76,6 +77,28 @@ LLFloaterOpenObject::~LLFloaterOpenObject()
 	sInstance = NULL;
 }
 
+// static
+void LLFloaterOpenObject::show()
+{
+	LLObjectSelectionHandle object_selection = LLSelectMgr::getInstance()->getSelection();
+	if (object_selection->getRootObjectCount() != 1)
+	{
+		LLNotificationsUtil::add("UnableToViewContentsMoreThanOne");
+		return;
+	}
+
+	// Create a new instance only if needed
+	if (!sInstance)
+	{
+		sInstance = new LLFloaterOpenObject();
+		sInstance->center();
+	}
+
+	sInstance->open();		/* Flawfinder: ignore */
+	sInstance->setFocus(TRUE);
+
+	sInstance->mObjectSelection = LLSelectMgr::getInstance()->getEditSelection();
+}
 void LLFloaterOpenObject::refresh()
 {
 	mPanelInventory->refresh();
@@ -104,35 +127,13 @@ void LLFloaterOpenObject::dirty()
 	if (sInstance) sInstance->mDirty = TRUE;
 }
 
-// static
-void LLFloaterOpenObject::show()
-{
-	LLObjectSelectionHandle object_selection = LLSelectMgr::getInstance()->getSelection();
-	if (object_selection->getRootObjectCount() != 1)
-	{
-		LLNotifications::instance().add("UnableToViewContentsMoreThanOne");
-		return;
-	}
-
-	// Create a new instance only if needed
-	if (!sInstance)
-	{
-		sInstance = new LLFloaterOpenObject();
-		sInstance->center();
-	}
-
-	sInstance->open();		/* Flawfinder: ignore */
-	sInstance->setFocus(TRUE);
-
-	sInstance->mObjectSelection = LLSelectMgr::getInstance()->getEditSelection();
-}
 
 
 void LLFloaterOpenObject::moveToInventory(bool wear)
 {
 	if (mObjectSelection->getRootObjectCount() != 1)
 	{
-		LLNotifications::instance().add("OnlyCopyContentsOfSingleItem");
+		LLNotificationsUtil::add("OnlyCopyContentsOfSingleItem");
 		return;
 	}
 
@@ -149,14 +150,14 @@ void LLFloaterOpenObject::moveToInventory(bool wear)
 	if (wear)
 	{
 		parent_category_id = gInventory.findCategoryUUIDForType(
-			LLAssetType::AT_CLOTHING);
+			LLFolderType::FT_CLOTHING);
 	}
 	else
 	{
-		parent_category_id = gAgent.getInventoryRootID();
+		parent_category_id = gInventory.getRootFolderID();
 	}
 	LLUUID category_id = gInventory.createNewCategory(parent_category_id, 
-		LLAssetType::AT_NONE, 
+		LLFolderType::FT_NONE, 
 		name);
 
 	LLCatAndWear* data = new LLCatAndWear;
@@ -173,7 +174,7 @@ void LLFloaterOpenObject::moveToInventory(bool wear)
 		delete data;
 		data = NULL;
 
-		LLNotifications::instance().add("OpenObjectCannotCopy");
+		LLNotificationsUtil::add("OpenObjectCannotCopy");
 	}
 }
 

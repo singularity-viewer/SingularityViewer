@@ -36,8 +36,9 @@
 #define LL_LLSDSERIALIZE_H
 
 #include <iosfwd>
+#include "llpointer.h"
+#include "llrefcount.h"
 #include "llsd.h"
-#include "llmemory.h"
 
 /** 
  * @class LLSDParser
@@ -787,4 +788,9 @@ public:
 	}
 };
 
+#if MESH_ENABLED
+//dirty little zip functions -- yell at davep
+LL_COMMON_API std::string zip_llsd(LLSD& data);
+LL_COMMON_API bool unzip_llsd(LLSD& data, std::istream& is, S32 size);
+#endif //MESH_ENABLED
 #endif // LL_LLSDSERIALIZE_H

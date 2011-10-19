@@ -109,8 +109,12 @@ void process_generic_message(LLMessageSystem* msg, void**)
 				
 				Meta7WindlightPacket* wl = (Meta7WindlightPacket*)buf;
 			
-				LLWaterParamManager * param_mgr = LLWaterParamManager::instance();
+				LLWaterParamManager * param_mgr = LLWaterParamManager::getInstance();
 				LLWaterParamSet & param_set = param_mgr->mCurParams;
+				LLWaterParamSet backup;
+				if(!param_mgr->getParamSet("LightShare-Backup", backup)) {
+					param_mgr->addParamSet("LightShare-Backup", param_set);
+				}
 
 				param_set.set("waterFogColor", wl->waterColor.red / 256.f, wl->waterColor.green / 256.f, wl->waterColor.blue / 256.f);
 				param_set.set("waterFogDensity", pow(2.0f, wl->waterFogDensityExponent));
@@ -147,11 +151,16 @@ void process_generic_message(LLMessageSystem* msg, void**)
 
 				normalMapTexture.set(out);
 
-				param_mgr->setParamSet(	"Meta7CurrentRegion", param_set);
+				param_mgr->setParamSet(	"LightShare-CurrentRegion", param_set);
 				param_mgr->setNormalMapID(normalMapTexture);
 
-				LLWLParamManager * wl_param_mgr = LLWLParamManager::instance();
+				LLWLParamManager * wl_param_mgr = LLWLParamManager::getInstance();
 				LLWLParamSet & wl_param_set = wl_param_mgr->mCurParams;
+				LLWLParamSet wl_backup;
+				if(!wl_param_mgr->getParamSet("LightShare-Backup", wl_backup)) {
+					wl_param_mgr->addParamSet("LightShare-Backup", wl_param_set);
+				}
+				
 				wl_param_set.setSunAngle(F_TWO_PI * wl->sunMoonPosiiton);
 				wl_param_set.setEastAngle(F_TWO_PI * wl->eastAngle);
 				wl_param_set.set("sunlight_color", wl->sunMoonColor.red * 3.0f, wl->sunMoonColor.green * 3.0f, wl->sunMoonColor.blue * 3.0f, wl->sunMoonColor.alpha * 3.0f);
@@ -175,12 +184,12 @@ void process_generic_message(LLMessageSystem* msg, void**)
 				wl_param_set.setEnableCloudScrollX(!wl->cloudScrollXLock);
 				wl_param_set.setEnableCloudScrollY(!wl->cloudScrollYLock);
 				wl_param_set.setStarBrightness(wl->starBrightness);
-				wl_param_mgr->removeParamSet("Meta7-CurrentRegion",true);
-				wl_param_mgr->addParamSet(	"Meta7-CurrentRegion", wl_param_set);
-				wl_param_mgr->savePreset( "Meta7-CurrentRegion");
-				LLWLParamManager::instance()->mAnimator.mIsRunning = false;
-				LLWLParamManager::instance()->mAnimator.mUseLindenTime = false;
-				wl_param_mgr->loadPreset( "Meta7-CurrentRegion",true);	
+				wl_param_mgr->removeParamSet("LightShare-CurrentRegion",true);
+				wl_param_mgr->addParamSet(	"LightShare-CurrentRegion", wl_param_set);
+				wl_param_mgr->savePreset( "LightShare-CurrentRegion");
+				LLWLParamManager::getInstance()->mAnimator.mIsRunning = false;
+				LLWLParamManager::getInstance()->mAnimator.mUseLindenTime = false;
+				wl_param_mgr->loadPreset( "LightShare-CurrentRegion",true);	
 			}
 		}
 	}

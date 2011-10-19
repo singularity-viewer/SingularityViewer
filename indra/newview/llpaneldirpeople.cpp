@@ -34,6 +34,7 @@
 
 #include "llpaneldirpeople.h"
 #include "llviewerwindow.h"
+#include "llnotificationsutil.h"
 
 // linden library includes
 #include "message.h"
@@ -87,7 +88,7 @@ void LLPanelDirPeople::performQuery()
 	// possible we threw away all the short words in the query so check length
 	if ( query_string.length() < mMinSearchChars )
 	{
-		LLNotifications::instance().add("SeachFilteredOnShortWordsEmpty");
+		LLNotificationsUtil::add("SeachFilteredOnShortWordsEmpty");
 		return;
 	};
 
@@ -96,7 +97,7 @@ void LLPanelDirPeople::performQuery()
 	{
 		LLSD args;
 		args["FINALQUERY"] = query_string;
-		LLNotifications::instance().add("SeachFilteredOnShortWords", args);
+		LLNotificationsUtil::add("SeachFilteredOnShortWords", args);
 	};
 
 	setupNewSearch();

@@ -34,6 +34,7 @@
 #define LL_LLCALLBACKLIST_H
 
 #include "llstl.h"
+#include <boost/function.hpp>
 
 class LLCallbackList
 {
@@ -53,12 +54,19 @@ public:
 
 protected:
 	// Use a list so that the callbacks are ordered in case that matters
-	typedef std::pair<callback_t,void*> callback_pair_t;		// callback_t is a (function) pointer. If it is NULL it means that the entry should be considered deleted.
+	typedef std::pair<callback_t,void*> callback_pair_t;
 	typedef std::list<callback_pair_t > callback_list_t;
 	callback_list_t	mCallbackList;
-	bool mLoopingOverCallbackList;								// True while looping over mCallbackList and calling the callback_t functions (see callFunctions).
-	bool mNeedErase;											// True when deleteFunction was called while mLoopingOverCallbackList was true.
 };
+
+typedef boost::function<void ()> nullary_func_t;
+typedef boost::function<bool ()> bool_func_t;
+
+// Call a given callable once in idle loop.
+void doOnIdleOneTime(nullary_func_t callable);
+
+// Repeatedly call a callable in idle loop until it returns true.
+void doOnIdleRepeating(bool_func_t callable);
 
 extern LLCallbackList gIdleCallbacks;
 

@@ -17,9 +17,6 @@
 	     halign="center" height="20" label="Close" label_selected="Close" left="435"
 	     mouse_opaque="true" name="close_btn" scale_image="true" sound_flags="0"
 	     width="60" />
-	<string name="name_format">
-		[FIRST] [LAST]
-	</string>
 	<string name="online_descriptor">
 		(online)
 	</string>

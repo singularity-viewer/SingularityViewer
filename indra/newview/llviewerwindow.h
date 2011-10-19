@@ -44,10 +44,13 @@
 
 #include "v3dmath.h"
 #include "v2math.h"
-#include "llwindow.h"
+#include "llcursortypes.h"
+#include "llwindowcallbacks.h"
 #include "lltimer.h"
 #include "llstat.h"
+#include "llmousehandler.h"
 #include "llalertdialog.h"
+#include "llmousehandler.h"
 #include "llnotifications.h"
 
 class LLView;
@@ -58,8 +61,9 @@ class LLTool;
 class LLVelocityBar;
 class LLTextBox;
 class LLImageRaw;
+class LLImageFormatted;
 class LLHUDIcon;
-class LLMouseHandler;
+class LLWindow;
 class AIFilePicker;
 
 #define PICK_HALF_WIDTH 5
@@ -68,22 +72,6 @@ class AIFilePicker;
 class LLPickInfo
 {
 public:
-	LLPickInfo();
-	LLPickInfo(const LLCoordGL& mouse_pos, 
-		const LLRect& screen_region,
-		MASK keyboard_mask, 
-		BOOL pick_transparent, 
-		BOOL pick_surface_info,
-		void (*pick_callback)(const LLPickInfo& pick_info));
-	~LLPickInfo();
-
-	void fetchResults();
-	LLPointer<LLViewerObject> getObject() const;
-	LLUUID getObjectID() const { return mObjectID; }
-	void drawPickBuffer() const;
-
-	static bool isFlora(LLViewerObject* object);
-
 	typedef enum e_pick_type
 	{
 		PICK_OBJECT,
@@ -93,6 +81,21 @@ public:
 		PICK_PARCEL_WALL,
 		PICK_INVALID
 	} EPickType;
+
+public:
+	LLPickInfo();
+	LLPickInfo(const LLCoordGL& mouse_pos, 
+		MASK keyboard_mask, 
+		BOOL pick_transparent, 
+		BOOL pick_surface_info,
+		void (*pick_callback)(const LLPickInfo& pick_info));
+
+	void fetchResults();
+	LLPointer<LLViewerObject> getObject() const;
+	LLUUID getObjectID() const { return mObjectID; }
+	bool isValid() const { return mPickType != PICK_INVALID; }
+
+	static bool isFlora(LLViewerObject* object);
 
 public:
 	LLCoordGL		mMousePt;
@@ -113,16 +116,12 @@ public:
 	LLVector3		mNormal;
 	LLVector3		mBinormal;
 	BOOL			mPickTransparent;
-	LLRect			mScreenRegion;
 	void		    getSurfaceInfo();
 
 private:
 	void			updateXYCoords();
 
 	BOOL			mWantSurfaceInfo;   // do we populate mUVCoord, mNormal, mBinormal?
-	U8				mPickBuffer[PICK_DIAMETER * PICK_DIAMETER * 4];
-	F32				mPickDepthBuffer[PICK_DIAMETER * PICK_DIAMETER];
-	BOOL			mPickParcelWall;
 
 };
 
@@ -154,6 +153,7 @@ public:
 	/*virtual*/ BOOL handleTranslatedKeyUp(KEY key,  MASK mask);
 	/*virtual*/ void handleScanKey(KEY key, BOOL key_down, BOOL key_up, BOOL key_level);
 	/*virtual*/ BOOL handleUnicodeChar(llwchar uni_char, MASK mask);	// NOT going to handle extended 
+	/*virtual*/ BOOL handleAnyMouseClick(LLWindow *window,  LLCoordGL pos, MASK mask, LLMouseHandler::EClickType clicktype, BOOL down);
 	/*virtual*/ BOOL handleMouseDown(LLWindow *window,  LLCoordGL pos, MASK mask);
 	/*virtual*/ BOOL handleMouseUp(LLWindow *window,  LLCoordGL pos, MASK mask);
 	/*virtual*/ BOOL handleCloseRequest(LLWindow *window);
@@ -190,20 +190,35 @@ public:
 	LLView*			getRootView()		const	{ return mRootView; }
 
 	// Window in raw pixels as seen on screen.
-	const LLRect&	getWindowRect()		const	{ return mWindowRect; };
+	const LLRect&	getWindowRect()		const	{ return mWindowRectRaw; };
 	S32				getWindowDisplayHeight()	const;
 	S32				getWindowDisplayWidth()	const;
+	//Temporary wrappers.
+	const LLRect&	getWindowRectRaw()			const	{ return getWindowRect(); }
+	S32				getWindowHeightRaw()		const	{ return getWindowDisplayHeight(); }
+	S32				getWindowWidthRaw()			const	{ return getWindowDisplayWidth(); }
+	const LLRect&	getWorldViewRectRaw()		const	{ return getWindowRect(); }
+	S32				getWorldViewHeightRaw()		const	{ return getWindowDisplayHeight(); }
+	S32				getWorldViewWidthRaw()		const	{ return getWindowDisplayWidth(); }
 
 	// Window in scaled pixels (via UI scale), use this for
 	// UI elements checking size.
-	const LLRect&	getVirtualWindowRect()		const	{ return mVirtualWindowRect; };
+	const LLRect&	getVirtualWindowRect()		const	{ return mWindowRectScaled; };
 	S32				getWindowHeight()	const;
 	S32				getWindowWidth()	const;
+	//Temporary wrappers.
+	const LLRect&	getWindowRectScaled()		const	{ return getVirtualWindowRect(); }
+	S32				getWindowHeightScaled()		const	{ return getWindowHeight(); };
+	S32				getWindowWidthScaled()		const	{ return getWindowWidth(); };
+	const LLRect&	getWorldViewRectScaled()	const	{ return getVirtualWindowRect(); }
+	S32				getWorldViewHeightScaled()	const	{ return getWindowHeight(); };
+	S32				getWorldViewWidthScaled()	const	{ return getWindowWidth(); };
+
 
 	LLWindow*		getWindow()			const	{ return mWindow; }
-	void*			getPlatformWindow() const	{ return mWindow->getPlatformWindow(); }
-	void*			getMediaWindow() 	const	{ return mWindow->getMediaWindow(); }
-	void			focusClient()		const	{ return mWindow->focusClient(); };
+	void*			getPlatformWindow() const;
+	void*			getMediaWindow() 	const;
+	void			focusClient()		const;
 
 	LLCoordGL		getLastMouse()		const	{ return mLastMousePoint; }
 	S32				getLastMouseX()		const	{ return mLastMousePoint.mX; }
@@ -216,12 +231,14 @@ public:
 	LLCoordGL		getCurrentMouseDelta()	const	{ return mCurrentMouseDelta; }
 	LLStat *		getMouseVelocityStat()		{ return &mMouseVelocityStat; }
 	BOOL			getLeftMouseDown()	const	{ return mLeftMouseDown; }
+	BOOL			getMiddleMouseDown()	const	{ return mMiddleMouseDown; }
 	BOOL			getRightMouseDown()	const	{ return mRightMouseDown; }
 
 	const LLPickInfo&	getLastPick() const { return mLastPick; }
 	const LLPickInfo&	getHoverPick() const { return mHoverPick; }
 
-	void			setupViewport(S32 x_offset = 0, S32 y_offset = 0);
+	void			setup2DViewport(S32 x_offset = 0, S32 y_offset = 0);
+	void			setup3DViewport(S32 x_offset = 0, S32 y_offset = 0);
 	void			setup3DRender();
 	void			setup2DRender();
 
@@ -287,7 +304,6 @@ public:
 	{
 		SNAPSHOT_TYPE_COLOR,
 		SNAPSHOT_TYPE_DEPTH,
-		SNAPSHOT_TYPE_OBJECT_ID
 	};
 	BOOL			saveSnapshot(const std::string&  filename, S32 image_width, S32 image_height, BOOL show_ui = TRUE, BOOL do_rebuild = FALSE, ESnapshotType type = SNAPSHOT_TYPE_COLOR);
 	BOOL			rawSnapshot(LLImageRaw *raw, S32 image_width, S32 image_height, BOOL keep_window_aspect = TRUE, BOOL is_texture = FALSE,
@@ -327,7 +343,9 @@ public:
 									LLVector3 *intersection = NULL,
 									LLVector2 *uv = NULL,
 									LLVector3 *normal = NULL,
-									LLVector3 *binormal = NULL);
+									LLVector3 *binormal = NULL,
+									LLVector3* start = NULL,
+									LLVector3* end = NULL);
 	
 	
 	// Returns a pointer to the last object hit
@@ -359,8 +377,6 @@ public:
 	const LLVector2& getDisplayScale() const { return mDisplayScale; }
 	void			calcDisplayScale();
 
-	void			drawPickBuffer() const;
-
 private:
 	bool                    shouldShowToolTipFor(LLMouseHandler *mh);
 	static bool onAlert(const LLSD& notify);
@@ -382,9 +398,9 @@ protected:
 	BOOL			mActive;
 	BOOL			mWantFullscreen;
 	BOOL			mShowFullscreenProgress;
-	LLRect			mWindowRect;
-	LLRect			mVirtualWindowRect;
-	LLView*			mRootView;					// a view of size mWindowRect, containing all child views
+	LLRect			mWindowRectRaw;
+	LLRect			mWindowRectScaled;
+	LLView*			mRootView;					// a view of size mWindowRectRaw, containing all child views
 	LLVector2		mDisplayScale;
 
 	LLCoordGL		mCurrentMousePoint;			// last mouse position in GL coords
@@ -392,6 +408,7 @@ protected:
 	LLCoordGL		mCurrentMouseDelta;		//amount mouse moved this frame
 	LLStat			mMouseVelocityStat;
 	BOOL			mLeftMouseDown;
+	BOOL			mMiddleMouseDown;
 	BOOL			mRightMouseDown;
 
 	LLProgressView	*mProgressView;
@@ -471,8 +488,6 @@ extern LLViewerWindow*	gViewerWindow;
 extern LLFrameTimer		gMouseIdleTimer;		// how long has it been since the mouse last moved?
 extern LLFrameTimer		gAwayTimer;				// tracks time before setting the avatar away state to true
 extern LLFrameTimer		gAwayTriggerTimer;		// how long the avatar has been away
-
-extern BOOL				gDebugSelect;
 
 extern BOOL				gDebugFastUIRender;
 extern LLViewerObject*  gDebugRaycastObject;

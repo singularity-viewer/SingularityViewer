@@ -34,13 +34,14 @@
 
 #include "linden_common.h"
 
-#include "llkeyboardwin32.h"
-
-#include "llwindow.h"
-
 #define WIN32_LEAN_AND_MEAN
 #include <winsock2.h>
 #include <windows.h>
+
+#include "llkeyboardwin32.h"
+
+#include "llwindowcallbacks.h"
+
 
 LLKeyboardWin32::LLKeyboardWin32()
 {
@@ -63,7 +64,7 @@ LLKeyboardWin32::LLKeyboardWin32()
 	// numpad number keys
 	for (cur_char = 0x60; cur_char <= 0x69; cur_char++)
 	{
-		mTranslateKeyMap[cur_char] = (KEY)('0' + (0x60 - cur_char));
+		mTranslateKeyMap[cur_char] = (KEY)('0' + (cur_char - 0x60));
 	}
 
 
@@ -78,7 +79,7 @@ LLKeyboardWin32::LLKeyboardWin32()
 	mTranslateKeyMap[VK_OEM_COMMA]  = ',';
 	mTranslateKeyMap[VK_OEM_MINUS]  = '-';
 	mTranslateKeyMap[VK_OEM_PERIOD] = '.';
-	mTranslateKeyMap[VK_OEM_2] = KEY_PAD_DIVIDE;
+	mTranslateKeyMap[VK_OEM_2] = '/';//This used to be KEY_PAD_DIVIDE, but that breaks typing into text fields in media prims
 	mTranslateKeyMap[VK_OEM_3] = '`';
 	mTranslateKeyMap[VK_OEM_4] = '[';
 	mTranslateKeyMap[VK_OEM_5] = '\\';

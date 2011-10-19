@@ -52,7 +52,7 @@
 #	include <sys/sysctl.h>
 #	include <sys/utsname.h>
 #	include <stdint.h>
-//#	include <Carbon/Carbon.h>  May be needed?
+#	include <Carbon/Carbon.h>
 #elif LL_LINUX
 #	include <errno.h>
 #	include <sys/utsname.h>

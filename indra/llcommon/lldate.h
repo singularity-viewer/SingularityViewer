@@ -38,6 +38,8 @@
 #include <iosfwd>
 #include <string>
 
+#include "llpreprocessor.h"
+
 #include "stdtypes.h"
 
 /** 

@@ -94,7 +94,7 @@ public:
 	const std::string& getEditGroup();
 	void 			updateScrollingPanelList(BOOL allow_modify);
 
-	void			setWearable(EWearableType type, LLWearable* wearable, U32 perm_mask, BOOL is_complete);
+	void			setWearable(LLWearableType::EType type, LLWearable* wearable, U32 perm_mask, BOOL is_complete);
 	LLPanelEditWearable* getCurrentWearablePanel() { return mWearablePanelList[ sCurrentWearableType ]; }
 
 	virtual BOOL	isDirty() const;
@@ -103,8 +103,8 @@ public:
 
 	void			switchToDefaultSubpart();
 
-	static void		setCurrentWearableType( EWearableType type );
-	static EWearableType getCurrentWearableType()					{ return sCurrentWearableType; }
+	static void		setCurrentWearableType( LLWearableType::EType type );
+	static LLWearableType::EType getCurrentWearableType()					{ return sCurrentWearableType; }
 
 	// Callbacks
 	static void		onBtnOk( void* userdata );
@@ -125,9 +125,9 @@ public:
 	void updateScrollingPanelUI();
 
 protected:
-	LLPanelEditWearable*	mWearablePanelList[ WT_COUNT ];
+	LLPanelEditWearable*	mWearablePanelList[ LLWearableType::WT_COUNT ];
 
-	static EWearableType	sCurrentWearableType;
+	static LLWearableType::EType	sCurrentWearableType;
 
 	LLScrollingPanelList*	mScrollingPanelList;
 	LLScrollableContainerView* mScrollContainer;

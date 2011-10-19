@@ -127,7 +127,7 @@ void process_frozen_message(LLMessageSystem* msg, void**);
 
 void process_derez_container(LLMessageSystem *msg, void**);
 void container_inventory_arrived(LLViewerObject* object,
-								 std::list<LLPointer<LLInventoryObject> >* inventory, //InventoryObjectList
+								 std::list<LLPointer<LLInventoryObject> >* inventory, //LLInventoryObject::object_list_t
 								 S32 serial_num,
 								 void* data);
 
@@ -155,7 +155,7 @@ void send_group_notice(const LLUUID& group_id,
 					   const LLInventoryItem* item);
 
 void handle_lure(const LLUUID& invitee);
-void handle_lure(LLDynamicArray<LLUUID>& ids);
+void handle_lure(const uuid_vec_t& ids);
 
 // always from gAgent and 
 // routes through the gAgent's current simulator

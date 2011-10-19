@@ -196,9 +196,9 @@ BOOL LLOverlayBar::postBuild()
 	sAdvSettingsPopup = gSavedSettings.getBOOL("wlfAdvSettingsPopup");
 	sChatVisible = gSavedSettings.getBOOL("ChatVisible");
 
-	gSavedSettings.getControl("wlfAdvSettingsPopup")->getSignal()->connect(&updateAdvSettingsPopup);
-	gSavedSettings.getControl("ChatVisible")->getSignal()->connect(&updateChatVisible);
-	gSavedSettings.getControl("EnableAORemote")->getSignal()->connect(&updateAORemote);
+	gSavedSettings.getControl("wlfAdvSettingsPopup")->getSignal()->connect(boost::bind(&updateAdvSettingsPopup,_2));
+	gSavedSettings.getControl("ChatVisible")->getSignal()->connect(boost::bind(&updateChatVisible,_2));
+	gSavedSettings.getControl("EnableAORemote")->getSignal()->connect(boost::bind(&updateAORemote,_2));
 	childSetVisible("AdvSettings_container", !sAdvSettingsPopup);
 	childSetVisible("AdvSettings_container_exp", sAdvSettingsPopup);
 	childSetVisible("ao_remote_container", gSavedSettings.getBOOL("EnableAORemote"));	
@@ -324,11 +324,11 @@ void LLOverlayBar::refresh()
 	}
 
 	BOOL sitting = FALSE;
-	if (gAgent.getAvatarObject())
+	if (gAgentAvatarp)
 	{
-//		sitting = gAgent.getAvatarObject()->isSitting();
+//		sitting = gAgentAvatarp->isSitting();
 // [RLVa:KB] - Checked: 2009-07-10 (RLVa-1.0.0g)
-		sitting = gAgent.getAvatarObject()->isSitting() && !gRlvHandler.hasBehaviour(RLV_BHVR_UNSIT);
+		sitting = gAgentAvatarp->isSitting() && !gRlvHandler.hasBehaviour(RLV_BHVR_UNSIT);
 // [/RLVa:KB]
 	}
 	button = getChild<LLButton>("Stand Up");
@@ -450,7 +450,7 @@ void LLOverlayBar::onClickMouselook(void*)
 void LLOverlayBar::onClickStandUp(void*)
 {
 // [RLVa:KB] - Checked: 2009-07-10 (RLVa-1.0.0g)
-	if ( (gRlvHandler.hasBehaviour(RLV_BHVR_UNSIT)) && (gAgent.getAvatarObject()) && (gAgent.getAvatarObject()->isSitting()) )
+	if ( (gRlvHandler.hasBehaviour(RLV_BHVR_UNSIT)) && (gAgentAvatarp) && (gAgentAvatarp->isSitting()) )
 	{
 		return;
 	}
@@ -464,7 +464,7 @@ void LLOverlayBar::onClickStandUp(void*)
 void LLOverlayBar::onClickCancelTP(void* data)
 {
 	LLOverlayBar* self = (LLOverlayBar*)data;
-	self->setCancelTPButtonVisible(FALSE,std::string("Cancel"));
+	self->setCancelTPButtonVisible(FALSE, std::string("Cancel TP"));
 	gAgent.teleportCancel();
 	llinfos << "trying to cancel teleport" << llendl;
 }
@@ -529,6 +529,7 @@ void LLOverlayBar::toggleMediaPlay(void*)
 		LLParcel* parcel = LLViewerParcelMgr::getInstance()->getAgentParcel();
 		if (parcel)
 		{
+			LLViewerParcelMedia::sIsUserAction = true;
 			LLViewerParcelMedia::play(parcel);
 		}
 	}
@@ -554,7 +555,8 @@ void LLOverlayBar::toggleMusicPlay(void*)
 				// stream is stopped, it doesn't return the right thing - commenting out for now.
 	// 			if ( gAudiop->isInternetStreamPlaying() == 0 )
 				{
-					gAudiop->startInternetStream(parcel->getMusicURL());
+					LLViewerParcelMedia::sIsUserAction = true;
+					LLViewerParcelMedia::playStreamingMusic(parcel);
 				}
 			}
 		}

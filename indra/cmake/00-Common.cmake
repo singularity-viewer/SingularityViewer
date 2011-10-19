@@ -31,10 +31,10 @@ if (WINDOWS)
   # Don't build DLLs.
   set(BUILD_SHARED_LIBS OFF)
 
-  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Od /Zi /MDd"
+  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /Od /Zi /MDd /arch:SSE2"
       CACHE STRING "C++ compiler debug options" FORCE)
   set(CMAKE_CXX_FLAGS_RELWITHDEBINFO 
-      "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /Od /Zi /MD /MP"
+      "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} /Od /Zi /MD /MP /arch:SSE2"
       CACHE STRING "C++ compiler release-with-debug options" FORCE)
   set(CMAKE_CXX_FLAGS_RELEASE
       "${CMAKE_CXX_FLAGS_RELEASE} ${LL_CXX_FLAGS} /O2 /Zi /MD /MP /arch:SSE /fp:fast"
@@ -220,14 +220,17 @@ if (LINUX)
 	  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -fomit-frame-pointer -mmmx -msse -mfpmath=sse -msse2 -ffast-math -ftree-vectorize -fweb -fexpensive-optimizations -frename-registers")
 	  set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} -fomit-frame-pointer -mmmx -msse -mfpmath=sse -msse2 -ffast-math -ftree-vectorize -fweb -fexpensive-optimizations -frename-registers")
 	else (${ARCH} STREQUAL "x86_64")
-	  set(CMAKE_CXX_FLAGS_RELEASESSE2 "${CMAKE_CXX_FLAGS_RELEASESSE2} -march=pentium4 -mfpmath=sse -msse2 ${GCC_EXTRA_OPTIMIZATIONS}")
-	  set(CMAKE_C_FLAGS_RELEASESSE2 "${CMAKE_C_FLAGS_RELEASESSE2} -march=pentium4 -mfpmath=sse -msse2 "${GCC_EXTRA_OPTIMIZATIONS})
-	  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -march=pentium4 -mfpmath=sse -msse2 ${GCC_EXTRA_OPTIMIZATIONS}")
-	  set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} -march=pentium4 -mfpmath=sse -msse2 "${GCC_EXTRA_OPTIMIZATIONS})
+	  if (NOT STANDALONE)
+		set(MARCH_FLAG " -march=pentium4")
+	  endif (NOT STANDALONE)
+	  set(CMAKE_CXX_FLAGS_RELEASESSE2 "${CMAKE_CXX_FLAGS_RELEASESSE2}${MARCH_FLAG} -mfpmath=sse -msse2 ${GCC_EXTRA_OPTIMIZATIONS}")
+	  set(CMAKE_C_FLAGS_RELEASESSE2 "${CMAKE_C_FLAGS_RELEASESSE2}${MARCH_FLAG} -mfpmath=sse -msse2 "${GCC_EXTRA_OPTIMIZATIONS})
+	  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO}${MARCH_FLAG} -mfpmath=sse -msse2 ${GCC_EXTRA_OPTIMIZATIONS}")
+	  set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO}${MARCH_FLAG} -mfpmath=sse -msse2 "${GCC_EXTRA_OPTIMIZATIONS})
 	endif (${ARCH} STREQUAL "x86_64")
   endif (VIEWER)
 
-  set(CMAKE_CXX_FLAGS_DEBUG "-fno-inline ${CMAKE_CXX_FLAGS_DEBUG}")
+  set(CMAKE_CXX_FLAGS_DEBUG "-fno-inline ${CMAKE_CXX_FLAGS_DEBUG} -msse2")
   set(CMAKE_CXX_FLAGS_RELEASE "-O3 ${CMAKE_CXX_FLAGS_RELEASE}")
   set(CMAKE_C_FLAGS_RELEASE "-O3 ${CMAKE_C_FLAGS_RELEASE}")
   set(CMAKE_CXX_FLAGS_RELEASESSE2 "-O3 ${CMAKE_CXX_FLAGS_RELEASESSE2}")
@@ -245,8 +248,8 @@ if (DARWIN)
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mlong-branch")
   # NOTE: it's critical that the optimization flag is put in front.
   # NOTE: it's critical to have both CXX_FLAGS and C_FLAGS covered.
-  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O0 ${CMAKE_CXX_FLAGS_RELWITHDEBINFO}")
-  set(CMAKE_C_FLAGS_RELWITHDEBINFO "-O0 ${CMAKE_C_FLAGS_RELWITHDEBINFO}")
+  set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -O3 -msse3 -mtune=generic -mfpmath=sse ${GCC_EXTRA_OPTIMIZATIONS}")
+  set(CMAKE_C_FLAGS_RELWITHDEBINFO "${CMAKE_C_FLAGS_RELWITHDEBINFO} -03 -msse3 -mtune=generic -mfpmath=sse ${GCC_EXTRA_OPTIMIZATIONS}")
   set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -msse3 -mtune=generic -mfpmath=sse ${GCC_EXTRA_OPTIMIZATIONS}")
   set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -03 -msse3 -mtune=generic -mfpmath=sse ${GCC_EXTRA_OPTIMIZATIONS}")
   set(CMAKE_CXX_FLAGS_RELEASESSE2 "${CMAKE_CXX_FLAGS_RELEASESSE2} -O3 -msse2 -mtune=generic -mfpmath=sse ${GCC_EXTRA_OPTIMIZATIONS}")
@@ -278,11 +281,6 @@ endif (LINUX OR DARWIN)
 
 if (STANDALONE)
   add_definitions(-DLL_STANDALONE=1)
-
-  if (LINUX AND ${ARCH} STREQUAL "i686")
-    add_definitions(-march=pentiumpro)
-  endif (LINUX AND ${ARCH} STREQUAL "i686")
-
 else (STANDALONE)
   set(${ARCH}_linux_INCLUDES
       ELFIO
@@ -297,6 +295,7 @@ endif (STANDALONE)
 
 if(1 EQUAL 1)
 	add_definitions(-DOPENSIM_RULES=1)
+	add_definitions(-DMESH_ENABLED=1)
 endif(1 EQUAL 1)
 
 if(SERVER)

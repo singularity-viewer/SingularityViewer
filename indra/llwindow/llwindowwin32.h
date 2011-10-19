@@ -39,6 +39,8 @@
 #include <windows.h>
 
 #include "llwindow.h"
+#include "llwindowcallbacks.h"
+#include "lldragdropwin32.h"
 
 // Hack for async host by name
 #define LL_WM_HOST_RESOLVED      (WM_APP + 1)
@@ -54,6 +56,8 @@ public:
 	/*virtual*/ BOOL getMinimized();
 	/*virtual*/ BOOL getMaximized();
 	/*virtual*/ BOOL maximize();
+	/*virtual*/ void minimize();
+	/*virtual*/ void restore();
 	/*virtual*/ BOOL getFullscreen();
 	/*virtual*/ BOOL getPosition(LLCoordScreen *position);
 	/*virtual*/ BOOL getSize(LLCoordScreen *size);
@@ -100,7 +104,7 @@ public:
 	/*virtual*/ F32 getPixelAspectRatio();
 	/*virtual*/ void setNativeAspectRatio(F32 ratio) { mOverrideAspectRatio = ratio; }
 
-	/*virtual*/	BOOL dialog_color_picker (F32 *r, F32 *g, F32 *b );
+	/*virtual*/	BOOL dialogColorPicker(F32 *r, F32 *g, F32 *b );
 
 	/*virtual*/ void *getPlatformWindow();
 	/*virtual*/ void bringToFront();
@@ -110,13 +114,15 @@ public:
 	/*virtual*/ void setLanguageTextInput( const LLCoordGL & pos );
 	/*virtual*/ void updateLanguageTextInputArea();
 	/*virtual*/ void interruptLanguageTextInput();
-	/*virtual*/ void spawnWebBrowser(const std::string& escaped_url);
-	/*virtual*/ void ShellEx(const std::string& command);
+	void ShellEx(const std::string& command);
+	/*virtual*/ void spawnWebBrowser(const std::string& escaped_url, bool async);
+
+	LLWindowCallbacks::DragNDropResult completeDragNDropRequest( const LLCoordGL gl_coord, const MASK mask, LLWindowCallbacks::DragNDropAction action, const std::string url );
 
 	static std::vector<std::string> getDynamicFallbackFontList();
 
 protected:
-	LLWindowWin32(
+	LLWindowWin32(LLWindowCallbacks* callbacks,
 		const std::string& title, const std::string& name, int x, int y, int width, int height, U32 flags, 
 		BOOL fullscreen, BOOL clearBg, BOOL disable_vsync, BOOL use_gl,
 		BOOL ignore_pixel_depth, U32 fsaa_samples);
@@ -127,7 +133,7 @@ protected:
 	HCURSOR loadColorCursor(LPCTSTR name);
 	BOOL	isValid();
 	void	moveWindow(const LLCoordScreen& position,const LLCoordScreen& size);
-
+	LLSD	getNativeKeyData();
 
 	// Changes display resolution. Returns true if successful
 	BOOL	setDisplayResolution(S32 width, S32 height, S32 bits, S32 refresh);
@@ -137,9 +143,6 @@ protected:
 
 	// Restore the display resolution to its value before we ran the app.
 	BOOL	resetDisplayResolution();
-
-	void	minimize();
-	void	restore();
 
 	BOOL	shouldPostQuit() { return mPostQuit; }
 
@@ -206,6 +209,12 @@ protected:
 	LLRect			mLanguageTextInputAreaGL;
 
 	LLPreeditor		*mPreeditor;
+
+	LLDragDropWin32* mDragDrop;
+
+	U32				mKeyCharCode;
+	U32				mKeyScanCode;
+	U32				mKeyVirtualKey;
 
 	friend class LLWindowManager;
 };

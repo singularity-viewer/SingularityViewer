@@ -107,7 +107,17 @@
 
 #endif
 
-// Deal with the differences on Windows
+
+// Static linking with apr on windows needs to be declared.
+#if LL_WINDOWS && !LL_COMMON_LINK_SHARED
+#ifndef APR_DECLARE_STATIC
+#define APR_DECLARE_STATIC // For APR on Windows
+#endif
+#ifndef APU_DECLARE_STATIC
+#define APU_DECLARE_STATIC // For APR util on Windows
+#endif
+#endif
+
 #if defined(LL_WINDOWS)
 #define BOOST_REGEX_NO_LIB 1
 #define CURL_STATICLIB 1
@@ -159,12 +169,19 @@
 #define LL_DLLIMPORT
 #endif // LL_WINDOWS
 
-#ifdef llcommon_EXPORTS
-// Compiling llcommon (shared)
-#define LL_COMMON_API LL_DLLEXPORT
-#else // llcommon_EXPORTS
-// Using llcommon (shared)
-#define LL_COMMON_API LL_DLLIMPORT
-#endif // llcommon_EXPORTS
+#if LL_COMMON_LINK_SHARED
+// CMake automagically defines llcommon_EXPORTS only when building llcommon
+// sources, and only when llcommon is a shared library (i.e. when
+// LL_COMMON_LINK_SHARED). We must still test LL_COMMON_LINK_SHARED because
+// otherwise we can't distinguish between (non-llcommon source) and (llcommon
+// not shared).
+# if defined(llcommon_EXPORTS)
+#   define LL_COMMON_API LL_DLLEXPORT
+# else //llcommon_EXPORTS
+#   define LL_COMMON_API LL_DLLIMPORT
+# endif //llcommon_EXPORTS
+#else // LL_COMMON_LINK_SHARED
+# define LL_COMMON_API
+#endif // LL_COMMON_LINK_SHARED
 
 #endif	//	not LL_LINDEN_PREPROCESSOR_H

@@ -54,6 +54,11 @@
 					<on_click function="Edit.TakeOff" userdata="tattoo" />
 					<on_enable function="Edit.EnableTakeOff" userdata="tattoo" />
 				</menu_item_call>
+				<menu_item_call bottom="-165" enabled="false" height="19" label="Alpha" left="0"
+				     mouse_opaque="true" name="Self Alpha" width="118">
+					<on_click function="Edit.TakeOff" userdata="alpha" />
+					<on_enable function="Edit.EnableTakeOff" userdata="alpha" />
+				</menu_item_call>
 				<menu_item_call bottom="-162" enabled="false" height="19" label="Underpants" left="0"
 				     mouse_opaque="true" name="Self Underpants" width="118">
 					<on_click function="Edit.TakeOff" userdata="underpants" />

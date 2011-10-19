@@ -56,7 +56,6 @@ set(llmessage_SOURCE_FILES
     llmessagethrottle.cpp
     llmime.cpp
     llnamevalue.cpp
-    llnetcanary.cpp
     llnullcipher.cpp
     llpacketack.cpp
     llpacketbuffer.cpp
@@ -152,7 +151,6 @@ set(llmessage_HEADER_FILES
     llmime.h
     llmsgvariabletype.h
     llnamevalue.h
-    llnetcanary.h
     llnullcipher.h
     llpacketack.h
     llpacketbuffer.h

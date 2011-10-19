@@ -44,7 +44,7 @@
 #include "llcharacter.h"
 #include "llviewercontrol.h"
 #include "llviewervisualparam.h"
-#include "llvoavatar.h"
+#include "llvoavatarself.h"
 #include "lldriverparam.h"
 
 typedef std::map<std::string, std::string> controller_map_t;
@@ -497,9 +497,9 @@ BOOL LLPhysicsMotionController::onUpdate(F32 time, U8* joint_mask)
 {
         // Skip if disabled globally.
 		static const LLCachedControl<bool> avatar_physics("AvatarPhysics",false);
-		bool supports_physics = !avatar_physics || (!((LLVOAvatar*)mCharacter)->isSelf() && !((LLVOAvatar*)mCharacter)->mSupportsPhysics);
+		bool physics_unsupported = !avatar_physics || (!((LLVOAvatar*)mCharacter)->isSelf() && !((LLVOAvatar*)mCharacter)->mSupportsPhysics);
 		//Treat lod 0 as AvatarPhyiscs:FALSE. AvatarPhyiscs setting is superfluous unless we decide to hook it into param sending.
-        if (supports_physics || !LLVOAvatar::sPhysicsLODFactor)
+        if (physics_unsupported || !LLVOAvatar::sPhysicsLODFactor)
         {
 			if(!mIsDefault)
 			{
@@ -510,8 +510,8 @@ BOOL LLPhysicsMotionController::onUpdate(F32 time, U8* joint_mask)
 				}
 				mCharacter->updateVisualParams();
 			}
-			if(!supports_physics) //Only use emerald physics if avatarphysiscs is really off, or the client doesn't seem to support new physics.
-			((LLVOAvatar*)mCharacter)->idleUpdateBoobEffect(); //Fall back to emerald physics	
+			if(physics_unsupported) //Only use emerald physics if avatarphysiscs is really off, or the client doesn't seem to support new physics.
+				((LLVOAvatar*)mCharacter)->idleUpdateBoobEffect(); //Fall back to emerald physics	
 			return TRUE;
 		}
         
@@ -756,9 +756,9 @@ BOOL LLPhysicsMotion::onUpdate(F32 time)
 		const F32 area_for_max_settings = 0.0;
 		const F32 area_for_min_settings = 1400.0;
 		const F32 area_for_this_setting = area_for_max_settings + (area_for_min_settings-area_for_max_settings)*(1.0-lod_factor);
-		const F32 pixel_area = fsqrtf(mCharacter->getPixelArea());
+		const F32 pixel_area = (F32) sqrt(mCharacter->getPixelArea());
         
-		const BOOL is_self = (dynamic_cast<LLVOAvatar *>(mCharacter) != NULL && ((LLVOAvatar*)mCharacter)->isSelf());
+		const BOOL is_self = (dynamic_cast<LLVOAvatarSelf *>(mCharacter) != NULL);
 		if ((pixel_area > area_for_this_setting) || is_self)
 		{
 			const F32 position_diff_local = llabs(mPositionLastUpdate_local-position_new_local_clamped);

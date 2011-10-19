@@ -45,6 +45,8 @@ public:
 	/*virtual*/ BOOL getMinimized() {return FALSE;};
 	/*virtual*/ BOOL getMaximized() {return FALSE;};
 	/*virtual*/ BOOL maximize() {return FALSE;};
+	/*virtual*/ void minimize() {};
+	/*virtual*/ void restore() {};
 	/*virtual*/ BOOL getFullscreen() {return FALSE;};
 	/*virtual*/ BOOL getPosition(LLCoordScreen *position) {return FALSE;};
 	/*virtual*/ BOOL getSize(LLCoordScreen *size) {return FALSE;};
@@ -94,9 +96,12 @@ public:
 	/*virtual*/ void *getPlatformWindow() { return 0; };
 	/*virtual*/ void bringToFront() {};
 	
-	LLWindowHeadless(const std::string& title, const std::string& name, S32 x, S32 y, S32 width, S32 height,
-				  U32 flags,  BOOL fullscreen, BOOL clearBg,
-				  BOOL disable_vsync, BOOL use_gl, BOOL ignore_pixel_depth);
+	LLWindowHeadless(LLWindowCallbacks* callbacks,
+		const std::string& title, const std::string& name,
+		S32 x, S32 y, 
+		S32 width, S32 height,
+		U32 flags,  BOOL fullscreen, BOOL clear_background,
+		BOOL disable_vsync, BOOL use_gl, BOOL ignore_pixel_depth);
 	virtual ~LLWindowHeadless();
 
 private:

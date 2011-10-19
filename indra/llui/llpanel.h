@@ -76,6 +76,7 @@ public:
 	/*virtual*/ BOOL 	isPanel() const;
 	/*virtual*/ void	draw();	
 	/*virtual*/ BOOL	handleKeyHere( KEY key, MASK mask );
+	/*virtual*/ void 	handleVisibilityChange ( BOOL new_visibility );
 	/*virtual*/ LLXMLNodePtr getXML(bool save_children = true) const;
 	// Override to set not found list:
 	virtual LLView* getChildView(const std::string& name, BOOL recurse = TRUE, BOOL create_if_missing = TRUE) const;
@@ -223,11 +224,13 @@ public:
 
 	static LLView*	fromXML(LLXMLNodePtr node, LLView *parent, LLUICtrlFactory *factory);
 	
+	boost::signals2::connection setVisibleCallback( const commit_signal_t::slot_type& cb );
 protected:
 	// Override to set not found list
 	LLButton*		getDefaultButton() { return mDefaultBtn; }
 	LLCallbackMap::map_t mFactoryMap;
 
+	commit_signal_t* mVisibleSignal;		// Called when visibility changes, passes new visibility as LLSD()
 private:
 	// common construction logic
 	void init();

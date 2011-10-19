@@ -67,7 +67,7 @@ this feature is still a work in progress.
 
 /* including to force rebakes when needed */
 #include "llagent.h"
-#include "llvoavatar.h"
+#include "llvoavatarself.h"
 
 /* sculpt refresh */
 #include "llvovolume.h"
@@ -670,7 +670,7 @@ void LocalAssetBrowser::PerformTimedActions(void)
 	// one of the layer bitmaps has been updated, we need to rebake.
 	if ( mLayerUpdated )
 	{
-	    LLVOAvatar* avatar = gAgent.getAvatarObject();
+	    LLVOAvatar* avatar = gAgentAvatarp;
 	    if (avatar) { avatar->forceBakeAllTextures(SLAM_FOR_DEBUG); }
 		
 		mLayerUpdated = false;

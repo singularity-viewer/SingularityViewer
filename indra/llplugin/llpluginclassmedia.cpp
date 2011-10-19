@@ -122,7 +122,10 @@ void LLPluginClassMedia::reset_impl(void)
 	mStatusText.clear();
 	mProgressPercent = 0;	
 	mClickURL.clear();
+	mClickNavType.clear();
 	mClickTarget.clear();
+	mClickUUID.clear();
+	mStatusCode = 0;
 	
 	// media_time class
 	mCurrentTime = 0.0f;
@@ -393,6 +396,94 @@ std::string LLPluginClassMedia::translateModifiers(MASK modifiers)
 	return result;
 }
 
+void LLPluginClassMedia::jsEnableObject( bool enable )
+{
+	if( ! mPlugin || !mPlugin->isRunning() || mPlugin->isBlocked() )
+	{
+		return;
+	}
+
+	LLPluginMessage message(LLPLUGIN_MESSAGE_CLASS_MEDIA, "js_enable_object");
+	message.setValueBoolean( "enable", enable );
+	sendMessage( message );
+}
+
+void LLPluginClassMedia::jsAgentLocationEvent( double x, double y, double z )
+{
+	if( ! mPlugin || !mPlugin->isRunning() || mPlugin->isBlocked() )
+	{
+		return;
+	}
+
+	LLPluginMessage message(LLPLUGIN_MESSAGE_CLASS_MEDIA, "js_agent_location");
+	message.setValueReal( "x", x );
+	message.setValueReal( "y", y );
+	message.setValueReal( "z", z );
+	sendMessage( message );
+}
+
+void LLPluginClassMedia::jsAgentGlobalLocationEvent( double x, double y, double z )
+{
+	if( ! mPlugin || !mPlugin->isRunning() || mPlugin->isBlocked() )
+	{
+		return;
+	}
+
+	LLPluginMessage message(LLPLUGIN_MESSAGE_CLASS_MEDIA, "js_agent_global_location");
+	message.setValueReal( "x", x );
+	message.setValueReal( "y", y );
+	message.setValueReal( "z", z );
+	sendMessage( message );
+}
+
+void LLPluginClassMedia::jsAgentOrientationEvent( double angle )
+{
+	if( ! mPlugin || !mPlugin->isRunning() || mPlugin->isBlocked() )
+	{
+		return;
+	}
+
+	LLPluginMessage message(LLPLUGIN_MESSAGE_CLASS_MEDIA, "js_agent_orientation");
+	message.setValueReal( "angle", angle );
+
+	sendMessage( message );
+}
+
+void LLPluginClassMedia::jsAgentLanguageEvent( const std::string& language )
+{
+	if( ! mPlugin || !mPlugin->isRunning() || mPlugin->isBlocked() )
+	{
+		return;
+	}
+
+	LLPluginMessage message(LLPLUGIN_MESSAGE_CLASS_MEDIA, "js_agent_language");
+	message.setValue( "language", language );
+	sendMessage( message );
+}
+
+void LLPluginClassMedia::jsAgentRegionEvent( const std::string& region )
+{
+	if( ! mPlugin || !mPlugin->isRunning() || mPlugin->isBlocked() )
+	{
+		return;
+	}
+
+	LLPluginMessage message(LLPLUGIN_MESSAGE_CLASS_MEDIA, "js_agent_region");
+	message.setValue( "region", region );
+	sendMessage( message );
+}
+
+void LLPluginClassMedia::jsAgentMaturityEvent( const std::string& maturity )
+{
+	if( ! mPlugin || !mPlugin->isRunning() || mPlugin->isBlocked() )
+	{
+		return;
+	}
+
+	LLPluginMessage message(LLPLUGIN_MESSAGE_CLASS_MEDIA, "js_agent_maturity");
+	message.setValue( "maturity", maturity );
+	sendMessage( message );
+}
 void LLPluginClassMedia::mouseEvent(EMouseEventType type, int button, int x, int y, MASK modifiers)
 {
 	if(type == MOUSE_EVENT_MOVE)
@@ -568,6 +659,32 @@ F64 LLPluginClassMedia::getCPUUsage()
 	return result;
 }
 
+void LLPluginClassMedia::sendPickFileResponse(const std::string &file)
+{
+	LLPluginMessage message(LLPLUGIN_MESSAGE_CLASS_MEDIA, "pick_file_response");
+	message.setValue("file", file);
+	if(mPlugin && mPlugin->isBlocked())
+	{
+		// If the plugin sent a blocking pick-file request, the response should unblock it.
+		message.setValueBoolean("blocking_response", true);
+	}
+	sendMessage(message);
+}
+
+void LLPluginClassMedia::sendAuthResponse(bool ok, const std::string &username, const std::string &password)
+{
+	LLPluginMessage message(LLPLUGIN_MESSAGE_CLASS_MEDIA, "auth_response");
+	message.setValueBoolean("ok", ok);
+	message.setValue("username", username);
+	message.setValue("password", password);
+	if(mPlugin && mPlugin->isBlocked())
+	{
+		// If the plugin sent a blocking pick-file request, the response should unblock it.
+		message.setValueBoolean("blocking_response", true);
+	}
+	sendMessage(message);
+}
+
 void LLPluginClassMedia::cut()
 {
 	LLPluginMessage message(LLPLUGIN_MESSAGE_CLASS_MEDIA, "edit_cut");
@@ -614,6 +731,10 @@ void LLPluginClassMedia::setJavascriptEnabled(const bool enabled)
 	sendMessage(message);
 }
 
+void LLPluginClassMedia::setTarget(const std::string &target)
+{
+	mTarget = target;
+}
 /* virtual */ 
 void LLPluginClassMedia::receivePluginMessage(const LLPluginMessage &message)
 {
@@ -828,6 +949,16 @@ void LLPluginClassMedia::receivePluginMessage(const LLPluginMessage &message)
 			mMediaName = message.getValue("name");
 			mediaEvent(LLPluginClassMediaOwner::MEDIA_EVENT_NAME_CHANGED);
 		}
+		else if(message_name == "pick_file")
+		{
+			mediaEvent(LLPluginClassMediaOwner::MEDIA_EVENT_PICK_FILE_REQUEST);
+		}
+		else if(message_name == "auth_request")
+		{
+			mAuthURL = message.getValue("url");
+			mAuthRealm = message.getValue("realm");
+			mediaEvent(LLPluginClassMediaOwner::MEDIA_EVENT_AUTH_REQUEST);
+		}
 		else
 		{
 			LL_WARNS("Plugin") << "Unknown " << message_name << " class message: " << message_name << LL_ENDL;
@@ -870,13 +1001,20 @@ void LLPluginClassMedia::receivePluginMessage(const LLPluginMessage &message)
 		{
 			mClickURL = message.getValue("uri");
 			mClickTarget = message.getValue("target");
+			mClickUUID = message.getValue("uuid");
 			mediaEvent(LLPluginClassMediaOwner::MEDIA_EVENT_CLICK_LINK_HREF);
 		}
 		else if(message_name == "click_nofollow")
 		{
 			mClickURL = message.getValue("uri");
+			mClickNavType = message.getValue("nav_type");
 			mClickTarget.clear();
 			mediaEvent(LLPluginClassMediaOwner::MEDIA_EVENT_CLICK_LINK_NOFOLLOW);
+		}
+		else if(message_name == "navigate_error_page")
+		{
+			mStatusCode = message.getValueS32("status_code");
+			mediaEvent(LLPluginClassMediaOwner::MEDIA_EVENT_NAVIGATE_ERROR_PAGE);
 		}
 		else if(message_name == "cookie_set")
 		{
@@ -884,6 +1022,29 @@ void LLPluginClassMedia::receivePluginMessage(const LLPluginMessage &message)
 			{
 				mOwner->handleCookieSet(this, message.getValue("cookie"));
 			}
+		}
+		else if(message_name == "close_request")
+		{
+			mediaEvent(LLPluginClassMediaOwner::MEDIA_EVENT_CLOSE_REQUEST);
+		}
+		else if(message_name == "geometry_change")
+		{
+			mClickUUID = message.getValue("uuid");
+			mGeometryX = message.getValueS32("x");
+			mGeometryY = message.getValueS32("y");
+			mGeometryWidth = message.getValueS32("width");
+			mGeometryHeight = message.getValueS32("height");
+				
+			mediaEvent(LLPluginClassMediaOwner::MEDIA_EVENT_GEOMETRY_CHANGE);
+		}
+		else if(message_name == "link_hovered")
+		{
+			// text is not currently used -- the tooltip hover text is taken from the "title".
+			mHoverLink = message.getValue("link");
+			mHoverText = message.getValue("title");
+			// message.getValue("text");
+				
+			mediaEvent(LLPluginClassMediaOwner::MEDIA_EVENT_LINK_HOVERED);
 		}
 		else
 		{
@@ -1022,6 +1183,39 @@ void LLPluginClassMedia::setBrowserUserAgent(const std::string& user_agent)
 
 	message.setValue("user_agent", user_agent);
 
+	sendMessage(message);
+}
+
+void LLPluginClassMedia::proxyWindowOpened(const std::string &target, const std::string &uuid)
+{
+	LLPluginMessage message(LLPLUGIN_MESSAGE_CLASS_MEDIA_BROWSER, "proxy_window_opened");
+
+	message.setValue("target", target);
+	message.setValue("uuid", uuid);
+
+	sendMessage(message);
+}
+
+void LLPluginClassMedia::proxyWindowClosed(const std::string &uuid)
+{
+	LLPluginMessage message(LLPLUGIN_MESSAGE_CLASS_MEDIA_BROWSER, "proxy_window_closed");
+
+	message.setValue("uuid", uuid);
+
+	sendMessage(message);
+}
+
+void LLPluginClassMedia::ignore_ssl_cert_errors(bool ignore)
+{
+	LLPluginMessage message(LLPLUGIN_MESSAGE_CLASS_MEDIA_BROWSER, "ignore_ssl_cert_errors");
+	message.setValueBoolean("ignore", ignore);
+	sendMessage(message);
+}
+
+void LLPluginClassMedia::addCertificateFilePath(const std::string& path)
+{
+	LLPluginMessage message(LLPLUGIN_MESSAGE_CLASS_MEDIA_BROWSER, "add_certificate_file_path");
+	message.setValue("path", path);
 	sendMessage(message);
 }
 

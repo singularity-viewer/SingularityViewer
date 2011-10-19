@@ -62,6 +62,21 @@
 // 
 //----------------------------------------------------------------------------
 
+#if !LL_DARWIN
+U32 ll_thread_local local_thread_ID = 0;
+#endif 
+
+U32 LLThread::sIDIter = 0;
+
+LL_COMMON_API void assert_main_thread()
+{
+	static U32 s_thread_id = LLThread::currentID();
+	if (LLThread::currentID() != s_thread_id)
+	{
+		llerrs << "Illegal execution outside main thread." << llendl;
+	}
+}
+
 //
 // Handed to the APR thread creation function
 //
@@ -73,31 +88,43 @@ void *APR_THREAD_FUNC LLThread::staticRun(apr_thread_t *apr_threadp, void *datap
 
 	LLThread *threadp = (LLThread *)datap;
 
-	// Set thread state to running
-	threadp->mStatus = RUNNING;
+#if !LL_DARWIN
+	local_thread_ID = threadp->mID;
+#endif
 
 	// Create a thread local data.
-	AIThreadLocalData::create(threadp);
+	LLThreadLocalData::create(threadp);
 
 	// Run the user supplied function
 	threadp->run();
 
-	llinfos << "LLThread::staticRun() Exiting: " << threadp->mName << llendl;
+	// Setting mStatus to STOPPED is done non-thread-safe, so it's
+	// possible that the thread is deleted by another thread at
+	// the moment it happens... therefore make a copy here.
+	char const* volatile name = threadp->mName.c_str();
 	
 	// We're done with the run function, this thread is done executing now.
 	threadp->mStatus = STOPPED;
+
+	// Only now print this info [doing that before setting mStatus
+	// to STOPPED makes it much more likely that another thread runs
+	// after the LLCurl::Multi::run() function exits and we actually
+	// change this variable (which really SHOULD have been inside
+	// the critical area of the mSignal lock)].
+	llinfos << "LLThread::staticRun() Exiting: " << name << llendl;
 
 	return NULL;
 }
 
 
 LLThread::LLThread(std::string const& name) :
-	mPaused(FALSE),
+	mPaused(false),
 	mName(name),
 	mAPRThreadp(NULL),
 	mStatus(STOPPED),
 	mThreadLocalData(NULL)
 {
+	mID = ++sIDIter;
 	mRunCondition = new LLCondition;
 }
 
@@ -119,7 +146,7 @@ void LLThread::shutdown()
 			// First, set the flag that indicates that we're ready to die
 			setQuitting();
 
-			llinfos << "LLThread::~LLThread() Killing thread " << mName << " Status: " << mStatus << llendl;
+			llinfos << "LLThread::shutdown() Killing thread " << mName << " Status: " << mStatus << llendl;
 			// Now wait a bit for the thread to exit
 			// It's unclear whether I should even bother doing this - this destructor
 			// should netver get called unless we're already stopped, really...
@@ -142,20 +169,38 @@ void LLThread::shutdown()
 		{
 			// This thread just wouldn't stop, even though we gave it time
 			llwarns << "LLThread::shutdown() exiting thread before clean exit!" << llendl;
+			// Put a stake in its heart.
+			apr_thread_exit(mAPRThreadp, -1);
 			return;
 		}
 		mAPRThreadp = NULL;
 	}
 
 	delete mRunCondition;
+	mRunCondition = 0;
 }
 
 void LLThread::start()
 {
-	apr_thread_create(&mAPRThreadp, NULL, staticRun, (void *)this, tldata().mRootPool());
+	llassert(isStopped());
+	
+	// Set thread state to running
+	mStatus = RUNNING;
 
-	// We won't bother joining
-	apr_thread_detach(mAPRThreadp);
+	apr_status_t status =
+		apr_thread_create(&mAPRThreadp, NULL, staticRun, (void *)this, tldata().mRootPool());
+
+	if(status == APR_SUCCESS)
+	{	
+		// We won't bother joining
+		apr_thread_detach(mAPRThreadp);
+	}
+	else
+	{
+		mStatus = STOPPED;
+		llwarns << "failed to start thread " << mName << llendl;
+		ll_apr_warn_status(status);
+	}
 }
 
 //============================================================================
@@ -168,7 +213,7 @@ void LLThread::pause()
 	if (!mPaused)
 	{
 		// this will cause the thread to stop execution as soon as checkPause() is called
-		mPaused = 1;		// Does not need to be atomic since this is only set/unset from the main thread
+		mPaused = true;		// Does not need to be atomic since this is only set/unset from the main thread
 	}	
 }
 
@@ -176,7 +221,7 @@ void LLThread::unpause()
 {
 	if (mPaused)
 	{
-		mPaused = 0;
+		mPaused = false;
 	}
 
 	wake(); // wake up the thread if necessary
@@ -256,14 +301,14 @@ void LLThread::wakeLocked()
 #ifdef SHOW_ASSERT
 // This allows the use of llassert(is_main_thread()) to assure the current thread is the main thread.
 static apr_os_thread_t main_thread_id;
-LL_COMMON_API bool is_main_thread() { return apr_os_thread_equal(main_thread_id, apr_os_thread_current()); }
+LL_COMMON_API bool is_main_thread(void) { return apr_os_thread_equal(main_thread_id, apr_os_thread_current()); }
 #endif
 
-// The thread private handle to access the AIThreadLocalData instance.
-apr_threadkey_t* AIThreadLocalData::sThreadLocalDataKey;
+// The thread private handle to access the LLThreadLocalData instance.
+apr_threadkey_t* LLThreadLocalData::sThreadLocalDataKey;
 
 //static
-void AIThreadLocalData::init(void)
+void LLThreadLocalData::init(void)
 {
 	// Only do this once.
 	if (sThreadLocalDataKey)
@@ -271,13 +316,13 @@ void AIThreadLocalData::init(void)
 		return;
 	}
 
-	apr_status_t status = apr_threadkey_private_create(&sThreadLocalDataKey, &AIThreadLocalData::destroy, AIAPRRootPool::get()());
+	apr_status_t status = apr_threadkey_private_create(&sThreadLocalDataKey, &LLThreadLocalData::destroy, LLAPRRootPool::get()());
 	ll_apr_assert_status(status);   // Or out of memory, or system-imposed limit on the
-	                                // total number of keys per process {PTHREAD_KEYS_MAX}
+									// total number of keys per process {PTHREAD_KEYS_MAX}
 									// has been exceeded.
 
 	// Create the thread-local data for the main thread (this function is called by the main thread).
-	AIThreadLocalData::create(NULL);
+	LLThreadLocalData::create(NULL);
 
 #ifdef SHOW_ASSERT
 	// This function is called by the main thread.
@@ -287,15 +332,15 @@ void AIThreadLocalData::init(void)
 
 // This is called once for every thread when the thread is destructed.
 //static
-void AIThreadLocalData::destroy(void* thread_local_data)
+void LLThreadLocalData::destroy(void* thread_local_data)
 {
-	delete reinterpret_cast<AIThreadLocalData*>(thread_local_data);
+	delete static_cast<LLThreadLocalData*>(thread_local_data);
 }
 
 //static
-void AIThreadLocalData::create(LLThread* threadp)
+void LLThreadLocalData::create(LLThread* threadp)
 {
-	AIThreadLocalData* new_tld = new AIThreadLocalData;
+	LLThreadLocalData* new_tld = new LLThreadLocalData;
 	if (threadp)
 	{
 		threadp->mThreadLocalData = new_tld;
@@ -305,35 +350,26 @@ void AIThreadLocalData::create(LLThread* threadp)
 }
 
 //static
-AIThreadLocalData& AIThreadLocalData::tldata(void)
+LLThreadLocalData& LLThreadLocalData::tldata(void)
 {
 	if (!sThreadLocalDataKey)
-		AIThreadLocalData::init();
+	{
+		LLThreadLocalData::init();
+	}
 
 	void* data;
 	apr_status_t status = apr_threadkey_private_get(&data, sThreadLocalDataKey);
 	llassert_always(status == APR_SUCCESS);
-	return *static_cast<AIThreadLocalData*>(data);
+	return *static_cast<LLThreadLocalData*>(data);
 }
 
 //============================================================================
 
-bool LLMutexBase::isLocked()
-{
-  	if (!tryLock())
-	{
-		return true;
-	}
-	apr_thread_mutex_unlock(mAPRMutexp);
-	return false;
-}
-
-//============================================================================
-
-LLCondition::LLCondition(AIAPRPool& parent) : LLMutex(parent)
+LLCondition::LLCondition(LLAPRPool& parent) : LLMutex(parent)
 {
 	apr_thread_cond_create(&mAPRCondp, mPool());
 }
+
 
 LLCondition::~LLCondition()
 {
@@ -357,7 +393,45 @@ void LLCondition::broadcast()
 }
 
 //============================================================================
+LLMutexBase::LLMutexBase() :
+	mLockingThread(NO_THREAD),
+	mCount(0)
+{
+}
 
+void LLMutexBase::lock() 
+{ 
+#if LL_DARWIN
+	if (mLockingThread == LLThread::currentID())
+#else
+	if (mLockingThread == local_thread_ID)
+#endif
+	{ //redundant lock
+		mCount++;
+		return;
+	}
+
+	apr_thread_mutex_lock(mAPRMutexp);
+	
+#if LL_DARWIN
+	mLockingThread = LLThread::currentID();
+#else
+	mLockingThread = local_thread_ID;
+#endif
+}
+
+void LLMutexBase::unlock()
+{
+	if (mCount > 0)
+	{ //not the root unlock
+		mCount--;
+		return;
+	}
+	mLockingThread = NO_THREAD;
+
+	apr_thread_mutex_unlock(mAPRMutexp);
+}
+	
 //----------------------------------------------------------------------------
 
 //static

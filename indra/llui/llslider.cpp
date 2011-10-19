@@ -70,8 +70,8 @@ LLSlider::LLSlider(
 	mTrackColor(		LLUI::sColorsGroup->getColor( "SliderTrackColor" ) ),
 	mThumbOutlineColor(	LLUI::sColorsGroup->getColor( "SliderThumbOutlineColor" ) ),
 	mThumbCenterColor(	LLUI::sColorsGroup->getColor( "SliderThumbCenterColor" ) ),
-	mMouseDownCallback( NULL ),
-	mMouseUpCallback( NULL )
+	mMouseDownSignal( NULL ),
+	mMouseUpSignal( NULL )
 {
 	mThumbImage = LLUI::getUIImage("icn_slide-thumb_dark.tga");
 	mTrackImage = LLUI::getUIImage("icn_slide-groove_dark.tga");
@@ -87,6 +87,11 @@ LLSlider::LLSlider(
 	mDragStartThumbRect = mThumbRect;
 }
 
+LLSlider::~LLSlider()
+{
+	delete mMouseDownSignal;
+	delete mMouseUpSignal;
+}
 
 void LLSlider::setValue(F32 value, BOOL from_event)
 {
@@ -109,10 +114,11 @@ void LLSlider::setValue(F32 value, BOOL from_event)
 
 void LLSlider::updateThumbRect()
 {
+	const S32 DEFAULT_THUMB_SIZE = 16;
 	F32 t = (mValue - mMinValue) / (mMaxValue - mMinValue);
 
-	S32 thumb_width = mThumbImage->getWidth();
-	S32 thumb_height = mThumbImage->getHeight();
+	S32 thumb_width = mThumbImage ? mThumbImage->getWidth() : DEFAULT_THUMB_SIZE;
+	S32 thumb_height = mThumbImage ? mThumbImage->getHeight() : DEFAULT_THUMB_SIZE;
 	S32 left_edge = (thumb_width / 2);
 	S32 right_edge = getRect().getWidth() - (thumb_width / 2);
 
@@ -169,10 +175,9 @@ BOOL LLSlider::handleMouseUp(S32 x, S32 y, MASK mask)
 	{
 		gFocusMgr.setMouseCapture( NULL );
 
-		if( mMouseUpCallback )
-		{
-			mMouseUpCallback( this, mCallbackUserData );
-		}
+		if (mMouseUpSignal)
+			(*mMouseUpSignal)( this, getValueF32() );
+
 		handled = TRUE;
 		make_ui_sound("UISndClickRelease");
 	}
@@ -191,10 +196,8 @@ BOOL LLSlider::handleMouseDown(S32 x, S32 y, MASK mask)
 	{
 		setFocus(TRUE);
 	}
-	if( mMouseDownCallback )
-	{
-		mMouseDownCallback( this, mCallbackUserData );
-	}
+	if (mMouseDownSignal)
+		(*mMouseDownSignal)( this, getValueF32() );
 
 	if (MASK_CONTROL & mask) // if CTRL is modifying
 	{
@@ -309,6 +312,17 @@ LLXMLNodePtr LLSlider::getXML(bool save_children) const
 	return node;
 }
 
+boost::signals2::connection LLSlider::setMouseDownCallback( const commit_signal_t::slot_type& cb ) 
+{ 
+	if (!mMouseDownSignal) mMouseDownSignal = new commit_signal_t();
+	return mMouseDownSignal->connect(cb); 
+}
+
+boost::signals2::connection LLSlider::setMouseUpCallback(	const commit_signal_t::slot_type& cb )   
+{ 
+	if (!mMouseUpSignal) mMouseUpSignal = new commit_signal_t();
+	return mMouseUpSignal->connect(cb); 
+}
 
 //static
 LLView* LLSlider::fromXML(LLXMLNodePtr node, LLView *parent, class LLUICtrlFactory *factory)

@@ -255,7 +255,6 @@ public:
 	BOOL				mOpenEnrollment;
 	S32					mMembershipFee;
 	BOOL				mAllowPublish;
-	BOOL				mListInProfile;
 	BOOL				mMaturePublish;
 	BOOL				mChanged;
 	S32					mMemberCount;

@@ -68,11 +68,7 @@ include_directories(
     )
 
 set(viewer_SOURCE_FILES
-	llfloatermessagebuilder.cpp
-	lleasymessagesender.cpp
-    llimportobject.cpp
-    llfloaterexport.cpp
-    llfloaterimport.cpp
+    llviewerobjectbackup.cpp
     slfloatermediafilter.cpp
     floaterlocalassetbrowse.cpp
     aoremotectrl.cpp
@@ -104,12 +100,14 @@ set(viewer_SOURCE_FILES
     jcfloaterareasearch.cpp
     chatbar_as_cmdline.cpp
     qtoolalign.cpp
+    llaccountingcostmanager.cpp
     llagent.cpp
     llagentaccess.cpp
     llagentcamera.cpp
     llagentdata.cpp
     llagentlanguage.cpp
     llagentpilot.cpp
+    llagentui.cpp
     llagentwearables.cpp
     llanimstatelabels.cpp
     llappviewer.cpp
@@ -118,7 +116,6 @@ set(viewer_SOURCE_FILES
     llassetuploadqueue.cpp
     llattachmentsmgr.cpp
     llaudiosourcevo.cpp
-    llbbox.cpp
     llbox.cpp
     llbuildnewviewsscheduler.cpp
     llcallbacklist.cpp
@@ -212,7 +209,6 @@ set(viewer_SOURCE_FILES
     llfloaterhud.cpp
     llfloaterimagepreview.cpp
     llfloaterinspect.cpp
-	llfloaterinterceptor.cpp
     llfloaterjoystick.cpp
     llfloaterlagmeter.cpp
     llfloaterland.cpp
@@ -236,6 +232,7 @@ set(viewer_SOURCE_FILES
     llfloaterproperties.cpp
     llfloaterregioninfo.cpp
     llfloaterreporter.cpp
+    llfloatersearchreplace.cpp
     llfloaterscriptdebug.cpp
     llfloatersellland.cpp
     llfloatersettingsdebug.cpp
@@ -298,6 +295,7 @@ set(viewer_SOURCE_FILES
     llmediaremotectrl.cpp
     llmemoryview.cpp
     llmenucommands.cpp
+    llmeshrepository.cpp
     llmimetypes.cpp
     llmorphview.cpp
     llmoveview.cpp
@@ -430,6 +428,7 @@ set(viewer_SOURCE_FILES
     llvelocitybar.cpp
     llviewchildren.cpp
     llviewerassetstorage.cpp
+    llviewerassettype.cpp
     llvieweraudio.cpp
     llviewercamera.cpp
     llviewercontrol.cpp
@@ -480,6 +479,7 @@ set(viewer_SOURCE_FILES
     llvlmanager.cpp
     llvoavatar.cpp
     llvoavatardefines.cpp
+    llvoavatarself.cpp
     llvocache.cpp
     llvoclouds.cpp
     llvograss.cpp
@@ -501,6 +501,7 @@ set(viewer_SOURCE_FILES
     llwaterparamset.cpp
     llwearable.cpp
     llwearablelist.cpp
+    llwearabletype.cpp
     llweb.cpp
     llmediactrl.cpp
     llwind.cpp
@@ -551,11 +552,7 @@ set(viewer_HEADER_FILES
     CMakeLists.txt
     ViewerInstall.cmake
 
-	llfloatermessagebuilder.h
-	lleasymessagesender.h
-    llimportobject.h
-    llfloaterexport.h
-    llfloaterimport.h
+    llviewerobjectbackup.h
     slfloatermediafilter.h
     floaterlocalassetbrowse.h
     aoremotectrl.h
@@ -585,12 +582,14 @@ set(viewer_HEADER_FILES
     lgghunspell_wrapper.h
     chatbar_as_cmdline.h
     qtoolalign.h
+    llaccountingcostmanager.h
     llagent.h
     llagentaccess.h
     llagentcamera.h
     llagentdata.h
     llagentlanguage.h
     llagentpilot.h
+    llagentui.h
     llagentwearables.h
     llanimstatelabels.h
     llappearance.h
@@ -600,7 +599,6 @@ set(viewer_HEADER_FILES
     llassetuploadqueue.h
     llattachmentsmgr.h
     llaudiosourcevo.h
-    llbbox.h
     llbox.h
     llbuildnewviewsscheduler.h
     llcallbacklist.h
@@ -695,7 +693,6 @@ set(viewer_HEADER_FILES
     llfloaterhud.h
     llfloaterimagepreview.h
     llfloaterinspect.h
-	llfloaterinterceptor.h
     llfloaterjoystick.h
     llfloaterlagmeter.h
     llfloaterland.h
@@ -719,6 +716,7 @@ set(viewer_HEADER_FILES
     llfloaterproperties.h
     llfloaterregioninfo.h
     llfloaterreporter.h
+    llfloatersearchreplace.h
     llfloaterscriptdebug.h
     llfloatersellland.h
     llfloatersettingsdebug.h
@@ -780,6 +778,7 @@ set(viewer_HEADER_FILES
     llmediaremotectrl.h
     llmemoryview.h
     llmenucommands.h
+    llmeshrepository.h
     llmimetypes.h
     llmorphview.h
     llmoveview.h
@@ -916,6 +915,7 @@ set(viewer_HEADER_FILES
     llvelocitybar.h
     llviewchildren.h
     llviewerassetstorage.h
+    llviewerassettype.h
     llvieweraudio.h
     llviewerbuild.h
     llviewercamera.h
@@ -964,6 +964,7 @@ set(viewer_HEADER_FILES
     llvlmanager.h
     llvoavatar.h
     llvoavatardefines.h
+    llvoavatarself.h
     llvocache.h
     llvoclouds.h
     llvograss.h
@@ -986,6 +987,7 @@ set(viewer_HEADER_FILES
     llwaterparamset.h
     llwearable.h
     llwearablelist.h
+    llwearabletype.h
     llweb.h
     llmediactrl.h
     llwind.h
@@ -1234,6 +1236,7 @@ set_source_files_properties(${viewer_XUI_FILES}
 list(APPEND viewer_SOURCE_FILES ${viewer_XUI_FILES})
 
 set(viewer_APPSETTINGS_FILES
+    viewer_manifest.py
     app_settings/anim.ini
     app_settings/cmd_line.xml
     app_settings/grass.xml
@@ -1615,6 +1618,13 @@ endif (LL_TESTS)
 if (WINDOWS)
 
   get_target_property(BUILT_LLCOMMON llcommon LOCATION)
+
+    set_target_properties(llcommon
+        PROPERTIES
+        LINK_FLAGS "/debug /NODEFAULTLIB:LIBCMT"
+        LINK_FLAGS_DEBUG "/NODEFAULTLIB:\"LIBCMT;LIBCMTD;MSVCRT\""
+        )
+
   add_custom_command(
       TARGET ${VIEWER_BINARY_NAME} POST_BUILD
       COMMAND ${CMAKE_COMMAND}

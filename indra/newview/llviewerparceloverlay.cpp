@@ -43,21 +43,23 @@
 
 // newview includes
 #include "llagentcamera.h"
+#include "llviewertexture.h"
 #include "llviewercontrol.h"
 #include "llsurface.h"
 #include "llviewerregion.h"
-#include "llagent.h"
 #include "llviewercamera.h"
 #include "llviewertexturelist.h"
 #include "llselectmgr.h"
 #include "llfloatertools.h"
 #include "llglheaders.h"
+#include "pipeline.h"
 
 const U8  OVERLAY_IMG_COMPONENTS = 4;
 
 LLViewerParcelOverlay::LLViewerParcelOverlay(LLViewerRegion* region, F32 region_width_meters)
 :	mRegion( region ),
 	mParcelGridsPerEdge( S32( region_width_meters / PARCEL_GRID_STEP_METERS ) ),
+	mRegionSize(S32(region_width_meters)),
 	mDirty( FALSE ),
 	mTimeSinceLastUpdate(),
 	mOverlayTextureIdx(-1),
@@ -148,6 +150,120 @@ BOOL LLViewerParcelOverlay::isOwnedOther(const LLVector3& pos) const
 	return (PARCEL_OWNED == overlay || PARCEL_FOR_SALE == overlay);
 }
 
+bool LLViewerParcelOverlay::encroachesOwned(const std::vector<LLBBox>& boxes) const
+{
+	// boxes are expected to already be axis aligned
+	for (U32 i = 0; i < boxes.size(); ++i)
+	{
+		LLVector3 min = boxes[i].getMinAgent();
+		LLVector3 max = boxes[i].getMaxAgent();
+		
+		S32 left   = S32(llclamp((min.mV[VX] / PARCEL_GRID_STEP_METERS), 0.f, REGION_WIDTH_METERS - 1));
+		S32 right  = S32(llclamp((max.mV[VX] / PARCEL_GRID_STEP_METERS), 0.f, REGION_WIDTH_METERS - 1));
+		S32 top    = S32(llclamp((min.mV[VY] / PARCEL_GRID_STEP_METERS), 0.f, REGION_WIDTH_METERS - 1));
+		S32 bottom = S32(llclamp((max.mV[VY] / PARCEL_GRID_STEP_METERS), 0.f, REGION_WIDTH_METERS - 1));
+	
+		for (S32 row = top; row <= bottom; row++)
+		{
+			for (S32 column = left; column <= right; column++)
+			{
+				U8 type = ownership(row, column);
+				if ((PARCEL_SELF == type)
+					|| (PARCEL_GROUP == type))
+				{
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+bool LLViewerParcelOverlay::encroachesOnUnowned(const std::vector<LLBBox>& boxes) const
+{
+	// boxes are expected to already be axis aligned
+	for (U32 i = 0; i < boxes.size(); ++i)
+	{
+		LLVector3 min = boxes[i].getMinAgent();
+		LLVector3 max = boxes[i].getMaxAgent();
+		
+		S32 left   = S32(llclamp((min.mV[VX] / PARCEL_GRID_STEP_METERS), 0.f, REGION_WIDTH_METERS - 1));
+		S32 right  = S32(llclamp((max.mV[VX] / PARCEL_GRID_STEP_METERS), 0.f, REGION_WIDTH_METERS - 1));
+		S32 top    = S32(llclamp((min.mV[VY] / PARCEL_GRID_STEP_METERS), 0.f, REGION_WIDTH_METERS - 1));
+		S32 bottom = S32(llclamp((max.mV[VY] / PARCEL_GRID_STEP_METERS), 0.f, REGION_WIDTH_METERS - 1));
+		
+		for (S32 row = top; row <= bottom; row++)
+		{
+			for (S32 column = left; column <= right; column++)
+			{
+				U8 type = ownership(row, column);
+				if ((PARCEL_SELF != type))
+				{
+					return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+
+bool LLViewerParcelOverlay::encroachesOnNearbyParcel(const std::vector<LLBBox>& boxes) const
+{
+	// boxes are expected to already be axis aligned
+	for (U32 i = 0; i < boxes.size(); ++i)
+	{
+		LLVector3 min = boxes[i].getMinAgent();
+		LLVector3 max = boxes[i].getMaxAgent();
+
+		// If an object crosses region borders it crosses a parcel
+		if (   min.mV[VX] < 0
+			|| min.mV[VY] < 0
+			|| max.mV[VX] > REGION_WIDTH_METERS
+			|| max.mV[VY] > REGION_WIDTH_METERS)
+		{
+			return true;
+		}
+
+		S32 left   = S32(llclamp((min.mV[VX] / PARCEL_GRID_STEP_METERS), 0.f, REGION_WIDTH_METERS - 1));
+		S32 right  = S32(llclamp((max.mV[VX] / PARCEL_GRID_STEP_METERS), 0.f, REGION_WIDTH_METERS - 1));
+		S32 bottom = S32(llclamp((min.mV[VY] / PARCEL_GRID_STEP_METERS), 0.f, REGION_WIDTH_METERS - 1));
+		S32 top    = S32(llclamp((max.mV[VY] / PARCEL_GRID_STEP_METERS), 0.f, REGION_WIDTH_METERS - 1));
+
+		const S32 GRIDS_PER_EDGE = mParcelGridsPerEdge;
+
+		for (S32 row = bottom; row <= top; row++)
+		{
+			for (S32 col = left; col <= right; col++)
+			{
+				// This is not the rightmost column
+				if (col < GRIDS_PER_EDGE-1)
+				{
+					U8 east_overlay = mOwnership[row*GRIDS_PER_EDGE+col+1];
+					// If the column to the east of the current one marks
+					// the other parcel's west edge and the box extends
+					// to the west it crosses the parcel border.
+					if ((east_overlay & PARCEL_WEST_LINE) && col < right)
+					{
+						return true;
+					}
+				}
+
+				// This is not the topmost column
+				if (row < GRIDS_PER_EDGE-1)
+				{
+					U8 north_overlay = mOwnership[(row+1)*GRIDS_PER_EDGE+col];
+					// If the row to the north of the current one marks
+					// the other parcel's south edge and the box extends
+					// to the south it crosses the parcel border.
+					if ((north_overlay & PARCEL_SOUTH_LINE) && row < top)
+					{
+						return true;
+					}
+				}
+			}
+		}
+	}
+	return false;
+}
 BOOL LLViewerParcelOverlay::isSoundLocal(const LLVector3& pos) const
 {
 	S32 row =    S32(pos.mV[VY] / PARCEL_GRID_STEP_METERS);
@@ -202,12 +318,12 @@ void LLViewerParcelOverlay::updateOverlayTexture()
 		return;
 	}
 	// Can do this because gColors are actually stored as LLColor4U
-	const LLColor4U avail = gColors.getColor4U("PropertyColorAvail");
-	const LLColor4U owned = gColors.getColor4U("PropertyColorOther");
-	const LLColor4U group = gColors.getColor4U("PropertyColorGroup");
-	const LLColor4U self  = gColors.getColor4U("PropertyColorSelf");
-	const LLColor4U for_sale  = gColors.getColor4U("PropertyColorForSale");
-	const LLColor4U auction  = gColors.getColor4U("PropertyColorAuction");
+	const LLColor4U avail = gColors.getColor4("PropertyColorAvail");
+	const LLColor4U owned = gColors.getColor4("PropertyColorOther");
+	const LLColor4U group = gColors.getColor4("PropertyColorGroup");
+	const LLColor4U self  = gColors.getColor4("PropertyColorSelf");
+	const LLColor4U for_sale  = gColors.getColor4("PropertyColorForSale");
+	const LLColor4U auction  = gColors.getColor4("PropertyColorAuction");
 
 	// Create the base texture.
 	U8 *raw = mImageRaw->getData();
@@ -298,7 +414,8 @@ void LLViewerParcelOverlay::uncompressLandOverlay(S32 chunk, U8 *packed_overlay)
 {
 	// Unpack the message data into the ownership array
 	S32	size	= mParcelGridsPerEdge * mParcelGridsPerEdge;
-	S32 chunk_size = size / PARCEL_OVERLAY_CHUNKS;
+	S32 mParcelOverLayChunks = mRegionSize * mRegionSize / (128 * 128);
+	S32 chunk_size = size / mParcelOverLayChunks; 
 
 	memcpy(mOwnership + chunk*chunk_size, packed_overlay, chunk_size);		/*Flawfinder: ignore*/
 
@@ -315,11 +432,11 @@ void LLViewerParcelOverlay::updatePropertyLines()
 	S32 row, col;
 
 	// Can do this because gColors are actually stored as LLColor4U
-	const LLColor4U self_coloru  = gColors.getColor4U("PropertyColorSelf");
-	const LLColor4U other_coloru = gColors.getColor4U("PropertyColorOther");
-	const LLColor4U group_coloru = gColors.getColor4U("PropertyColorGroup");
-	const LLColor4U for_sale_coloru = gColors.getColor4U("PropertyColorForSale");
-	const LLColor4U auction_coloru = gColors.getColor4U("PropertyColorAuction");
+	const LLColor4U self_coloru  = gColors.getColor4("PropertyColorSelf");
+	const LLColor4U other_coloru = gColors.getColor4("PropertyColorOther");
+	const LLColor4U group_coloru = gColors.getColor4("PropertyColorGroup");
+	const LLColor4U for_sale_coloru = gColors.getColor4("PropertyColorForSale");
+	const LLColor4U auction_coloru = gColors.getColor4("PropertyColorAuction");
 
 	// Build into dynamic arrays, then copy into static arrays.
 	LLDynamicArray<LLVector3, 256> new_vertex_array;
@@ -807,7 +924,7 @@ S32 LLViewerParcelOverlay::renderPropertyLines	()
 	F32* vertexp;
 	U8* colorp;
 
-	const F32 PROPERTY_LINE_CLIP_DIST = 256.f;
+	const F32 PROPERTY_LINE_CLIP_DIST_SQUARED = 256.f * 256.f;
 
 	for (i = 0; i < mVertexCount; i += vertex_per_edge)
 	{
@@ -818,7 +935,7 @@ S32 LLViewerParcelOverlay::renderPropertyLines	()
 		vertex.mV[VY] = *(vertexp+1);
 		vertex.mV[VZ] = *(vertexp+2);
 
-		if (dist_vec_squared2D(vertex, camera_region) > PROPERTY_LINE_CLIP_DIST*PROPERTY_LINE_CLIP_DIST)
+		if (dist_vec_squared2D(vertex, camera_region) > PROPERTY_LINE_CLIP_DIST_SQUARED)
 		{
 			continue;
 		}

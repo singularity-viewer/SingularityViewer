@@ -38,6 +38,7 @@
 
 // project includes
 #include "llcombobox.h"
+#include "llnotificationsutil.h"
 #include "llurlhistory.h"
 #include "lluictrlfactory.h"
 #include "llwindow.h"
@@ -263,13 +264,13 @@ void LLFloaterURLEntry::onBtnCancel( void* userdata )
 //-----------------------------------------------------------------------------
 void LLFloaterURLEntry::onBtnClear( void* userdata )
 {
-	LLNotifications::instance().add( "ConfirmClearMediaUrlList", LLSD(), LLSD(), 
+	LLNotificationsUtil::add( "ConfirmClearMediaUrlList", LLSD(), LLSD(), 
 									boost::bind(&LLFloaterURLEntry::callback_clear_url_list, (LLFloaterURLEntry*)userdata, _1, _2) );
 }
 
 bool LLFloaterURLEntry::callback_clear_url_list(const LLSD& notification, const LLSD& response)
 {
-	S32 option = LLNotification::getSelectedOption(notification, response);
+	S32 option = LLNotificationsUtil::getSelectedOption(notification, response);
 	if ( option == 0 ) // YES
 	{
 		// clear saved list

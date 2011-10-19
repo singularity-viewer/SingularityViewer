@@ -95,7 +95,7 @@ public:
 	// the returned LLWString contains it.
 
 	virtual const LLWString & getWText() const = 0;
-
+	const LLWString & getPreeditString() const {return getWText();}
 	// Handle a UTF-32 char on this preeditor, i.e., add the character
 	// to the contents.
 	// This is a back door of the method of same name of LLWindowCallback.

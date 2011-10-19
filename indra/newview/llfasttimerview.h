@@ -47,6 +47,7 @@ public:
 	virtual BOOL handleMouseUp(S32 x, S32 y, MASK mask);
 	virtual BOOL handleHover(S32 x, S32 y, MASK mask);
 	virtual BOOL handleScrollWheel(S32 x, S32 y, S32 clicks);
+	virtual void onClose(bool app_quitting);
 	virtual void draw();
 
 	S32 getLegendIndex(S32 y);

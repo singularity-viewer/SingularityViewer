@@ -7,7 +7,7 @@
 	<check_box bottom="-23" enabled="true" follows="left|top" font="SansSerifSmall"
 	     height="16" initial_value="false"
 	     label="Run viewer in a window" left="10" mouse_opaque="true"
-	     name="windowed mode" radio_style="false" width="100" />
+	     name="windowed mode" radio_style="false" width="120" />
 	<text_editor type="string" length="1" allow_html="false" bg_readonly_color="0 0 0 0" bottom="-43"
 	     embedded_items="false" enabled="false" follows="left|top"
 	     font="SansSerifSmall" height="20" hide_border="true"
@@ -163,8 +163,8 @@
 	     follows="left|top" font="SansSerifSmall" height="16"
 	     initial_value="true" label="Custom" left="385" mouse_opaque="true"
 	     name="CustomSettings" radio_style="false" width="256" />
-	<view_border bevel_style="none" border_thickness="1" bottom="-405" follows="top|left"
-	     height="290" left="5" name="GraphicsBorder" width="485" />
+	<view_border bevel_style="none" border_thickness="1" bottom="-395" follows="top|left"
+	     height="280" left="5" name="GraphicsBorder" width="485" />
 	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
 	     bottom="-130" drop_shadow_visible="true" enabled="true" follows="left|top"
 	     font="SansSerifSmall" h_pad="0" halign="left" height="12"
@@ -274,9 +274,14 @@
 	     follows="left|top" font="SansSerifSmall" height="16" initial_value="true"
 	     label="Avatar Impostors" left_delta="0" mouse_opaque="true"
 	     name="AvatarImpostors" radio_style="false" width="256" />
-	<check_box bottom_delta="-17" control_name="RenderAvatarVP" enabled="true"
+	<slider bottom_delta="-17" can_edit_text="false" control_name="RenderAvatarMaxVisible"
+	     decimal_digits="0" enabled="true" follows="left|top" height="16"
+	     increment="1" initial_val="35" label="Max non-impostors"
+	     label_width="100" left_delta="8" max_val="50" min_val="1" mouse_opaque="true"
+	     name="AvatarMaxVisible" show_text="true" width="195" />
+	<check_box bottom_delta="-20" control_name="RenderAvatarVP" enabled="true"
 	     follows="left|top" font="SansSerifSmall" height="16" initial_value="true"
-	     label="Hardware Skinning" left_delta="0" mouse_opaque="true"
+	     label="Hardware Skinning" left="10" mouse_opaque="true"
 	     name="AvatarVertexProgram" radio_style="false" width="256" />
 	<check_box bottom_delta="-17" control_name="RenderAvatarCloth" enabled="true"
 	     follows="left|top" font="SansSerifSmall" height="16" initial_value="true"
@@ -412,7 +417,7 @@
 	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
 	     bottom="-352" drop_shadow_visible="true" enabled="true" follows="left|top"
 	     font="SansSerifSmall" h_pad="0" halign="left" height="12"
-	     left="210" mouse_opaque="true" name="LightingDetailText" v_pad="0"
+	     left="215" mouse_opaque="true" name="LightingDetailText" v_pad="0"
 	     width="128">
 		Lighting Detail:
 	</text>
@@ -430,7 +435,7 @@
 	</radio_group>
 	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
 	     bottom="-352" drop_shadow_visible="true" enabled="true" follows="left|top"
-	     font="SansSerifSmall" h_pad="0" halign="left" height="12" left="360"
+	     font="SansSerifSmall" h_pad="0" halign="left" height="12" left="370"
 	     mouse_opaque="true" name="TerrainDetailText" v_pad="0" width="128">
 		Terrain Detail:
 	</text>

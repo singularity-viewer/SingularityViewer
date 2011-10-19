@@ -122,15 +122,14 @@ struct WLFloatControl {
 };
 
 /// WindLight parameter manager class - what controls all the wind light shaders
-class LLWLParamManager
+class LLWLParamManager : public LLSingleton<LLWLParamManager>
 {
+	LOG_CLASS(LLWLParamManager);
+
 public:
 
-	LLWLParamManager();
-	~LLWLParamManager();
+	void updateShaderLinks();
 
-	/// load a preset file
-	void loadPresets(const std::string & fileName);
 
 	/// save the preset file
 	void savePresets(const std::string & fileName);
@@ -193,8 +192,8 @@ public:
 	/// returns true if successful
 	bool removeParamSet(const std::string& name, bool delete_from_disk);
 
-	// singleton pattern implementation
-	static LLWLParamManager * instance();
+	/// @return all named windlight presets.
+	const std::map<std::string, LLWLParamSet>& getPresets() const { return mParamList; }
 
 public:
 
@@ -249,13 +248,22 @@ public:
 	F32 mDomeOffset;
 	F32 mDomeRadius;
 	
-	// list of all the parameters, listed by name
-	std::map<std::string, LLWLParamSet> mParamList;
 	
 	
 private:
-	// our parameter manager singleton instance
-	static LLWLParamManager * sInstance;
+	/// load a preset file
+	friend class LLWLAnimator;
+	void loadPresets(const std::string & fileName);
+
+	friend class LLSingleton<LLWLParamManager>;
+	/*virtual*/ void initSingleton();
+	LLWLParamManager();
+	~LLWLParamManager();
+
+	// list of all the parameters, listed by name
+	std::map<std::string, LLWLParamSet> mParamList;
+
+	std::vector<LLGLSLShader *> mShaderList;
 
 };
 

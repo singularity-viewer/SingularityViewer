@@ -123,6 +123,8 @@ LLNetMap::LLNetMap(const std::string& name) :
 	(new mmsetblue())->registerListener(this, "MiniMap.setblue");
 	(new mmsetyellow())->registerListener(this, "MiniMap.setyellow");
 	(new mmsetcustom())->registerListener(this, "MiniMap.setcustom");
+	(new mmsetunmark())->registerListener(this, "MiniMap.setunmark");
+	(new mmenableunmark())->registerListener(this, "MiniMap.enableunmark");
 
 	LLUICtrlFactory::getInstance()->buildPanel(this, "panel_mini_map.xml");
 
@@ -176,18 +178,15 @@ void LLNetMap::translatePan( F32 delta_x, F32 delta_y )
 
 
 ///////////////////////////////////////////////////////////////////////////////////
-LLColor4 mm_mapcols[1024];
-LLUUID mm_mapkeys[1024];
-U32 mm_netmapnum;
+std::size_t hash_value(const LLUUID& uuid)
+{
+    return (std::size_t)uuid.getCRC32();
+}
+boost::unordered_map<const LLUUID,LLColor4> mm_MarkerColors;
 
-void LLNetMap::mm_setcolor(LLUUID key,LLColor4 col){
-	if(mm_netmapnum>1023){
-		llinfos << "Minimap color buffer filled, relog or something to clear it" << llendl;
-		return;
-	}
-	mm_mapcols[mm_netmapnum]=col;
-	mm_mapkeys[mm_netmapnum]=key;
-	mm_netmapnum+=1;
+void LLNetMap::mm_setcolor(LLUUID key,LLColor4 col)
+{
+	mm_MarkerColors[key] = col;
 }
 void LLNetMap::draw()
 {
@@ -241,7 +240,6 @@ void LLNetMap::draw()
 		}
 
 		// figure out where agent is
-		S32 region_width = llround(LLWorld::getInstance()->getRegionWidthInMeters());
 		LLColor4 this_region_color = gColors.getColor( "NetMapThisRegion" );
 		LLColor4 live_region_color = gColors.getColor( "NetMapLiveRegion" );
 		LLColor4 dead_region_color = gColors.getColor( "NetMapDeadRegion" );
@@ -250,6 +248,7 @@ void LLNetMap::draw()
 			 iter != LLWorld::getInstance()->getRegionList().end(); ++iter)
 		{
 			LLViewerRegion* regionp = *iter;
+			S32 region_width = llround(regionp->getWidth());
 			// Find x and y position relative to camera's center.
 			LLVector3 origin_agent = regionp->getOriginAgent();
 			LLVector3 rel_region_pos = origin_agent - gAgentCamera.getCameraPositionAgent();
@@ -329,8 +328,6 @@ void LLNetMap::draw()
 
 		LLVector3 map_center_agent = gAgent.getPosAgentFromGlobal(mObjectImageCenterGlobal);
 		map_center_agent -= gAgentCamera.getCameraPositionAgent();
-		map_center_agent.mV[VX] *= mScale/region_width;
-		map_center_agent.mV[VY] *= mScale/region_width;
 
 		gGL.getTexUnit(0)->bind(mObjectImagep);
 		F32 image_half_width = 0.5f*mObjectMapPixels;
@@ -363,7 +360,7 @@ void LLNetMap::draw()
 		// Draw avatars
 //		LLColor4 mapcolor = gAvatarMapColor;
 
-		static const LLCachedControl<LLColor4>	standard_color("MapAvatar",LLColor4(0.f,1.f,0.f,1.f),gColors);
+		static const LLCachedControl<LLColor4>	standard_color(gColors,"MapAvatar",LLColor4(0.f,1.f,0.f,1.f));
 		static const LLCachedControl<LLColor4>	friend_color_stored("AscentFriendColor",LLColor4(1.f,1.f,0.f,1.f));
 		static const LLCachedControl<LLColor4>	em_color("AscentEstateOwnerColor",LLColor4(1.f,0.6f,1.f,1.f));
 		static const LLCachedControl<LLColor4>	linden_color("AscentLindenColor",LLColor4(0.f,0.f,1.f,1.f));
@@ -376,7 +373,6 @@ void LLNetMap::draw()
 		std::vector<LLUUID> avatar_ids;
 		std::vector<LLVector3d> positions;
 		LLWorld::getInstance()->getAvatars(&avatar_ids, &positions);
-		U32 a;
 		for(U32 i=0; i<avatar_ids.size(); i++)
 		{
 			LLColor4 avColor = standard_color;
@@ -416,12 +412,10 @@ void LLNetMap::draw()
 			else 
 			{
 				// MOYMOD Minimap custom av colors.
-				for(a=0;a<mm_netmapnum;a+=1)
+				boost::unordered_map<const LLUUID,LLColor4>::const_iterator it = mm_MarkerColors.find(avatar_ids[i]);
+				if(it != mm_MarkerColors.end())
 				{
-					if(avatar_ids[i]==mm_mapkeys[a])
-					{
-						avColor = mm_mapcols[a];
-					}
+					avColor = it->second;
 				}
 			}
 
@@ -642,33 +636,22 @@ BOOL LLNetMap::handleToolTip( S32 x, S32 y, std::string& msg, LLRect* sticky_rec
             }
             else
             {
-#ifdef LL_RRINTERFACE_H //MK
-    			if (gRRenabled && gAgent.mRRInterface.mContainsShownames)
+				if (LLAvatarNameCache::useDisplayNames())
     			{
-	    			fullname = gAgent.mRRInterface.getDummyName(fullname);
-		    	}
-			    else
-			    {
-#endif //mk
-				    if (LLAvatarNameCache::useDisplayNames())
-    				{
-	    				LLAvatarName avatar_name;
-		    			if (LLAvatarNameCache::get(mClosestAgentToCursor, &avatar_name))
-			    		{
-							static const LLCachedControl<S32> phoenix_name_system("PhoenixNameSystem", 0);
-    						if (phoenix_name_system == 2 || (phoenix_name_system == 1 && avatar_name.mIsDisplayNameDefault))
-					    	{
-						    	fullname = avatar_name.mDisplayName;
-    						}
-	    					else
-		    				{
-			    				fullname = avatar_name.getCompleteName(true);
-				    		}
-					    }
-    				}
-#ifdef LL_RRINTERFACE_H //MK
-			    }
-#endif //mk
+					LLAvatarName avatar_name;
+					if (LLAvatarNameCache::get(mClosestAgentToCursor, &avatar_name))
+					{
+						static const LLCachedControl<S32> phoenix_name_system("PhoenixNameSystem", 0);
+						if (phoenix_name_system == 2 || (phoenix_name_system == 1 && avatar_name.mIsDisplayNameDefault))
+						{
+							fullname = avatar_name.mDisplayName;
+						}
+						else
+						{
+							fullname = avatar_name.getCompleteName(true);
+						}
+					}
+				}
                 msg.append(fullname);
             }
             // [/Ansariel: Display name support]
@@ -700,7 +683,7 @@ BOOL LLNetMap::handleToolTip( S32 x, S32 y, std::string& msg, LLRect* sticky_rec
 // [/RLVa:KB]
 		//msg.append( region->getName() );
 
-#ifndef LL_RELEASE_FOR_DOWNLOAD
+//#ifndef LL_RELEASE_FOR_DOWNLOAD
 		std::string buffer;
 		msg.append("\n");
 		buffer = region->getHost().getHostName();
@@ -708,7 +691,7 @@ BOOL LLNetMap::handleToolTip( S32 x, S32 y, std::string& msg, LLRect* sticky_rec
 		msg.append("\n");
 		buffer = region->getHost().getString();
 		msg.append(buffer);
-#endif
+//#endif
 		msg.append("\n");
 		msg.append(getToolTip());
 
@@ -1088,6 +1071,18 @@ bool LLNetMap::mmsetcustom::handleEvent(LLPointer<LLEvent> event, const LLSD& us
 	//if(self->mClosestAgentAtLastRightClick){
 		mm_setcolor(self->mClosestAgentAtLastRightClick,gSavedSettings.getColor4("MoyMiniMapCustomColor"));
 	//}
+	return true;
+}
+bool LLNetMap::mmsetunmark::handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
+{
+	mm_MarkerColors.erase(mPtr->mClosestAgentAtLastRightClick);
+	return true;
+}
+bool LLNetMap::mmenableunmark::handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
+{
+	LLNetMap *self = mPtr;
+	BOOL enabled = mPtr->mClosestAgentAtLastRightClick.notNull() && mm_MarkerColors.find(mPtr->mClosestAgentAtLastRightClick) != mm_MarkerColors.end();
+	self->findControl(userdata["control"].asString())->setValue(enabled);
 	return true;
 }
 bool LLNetMap::LLCenterMap::handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)

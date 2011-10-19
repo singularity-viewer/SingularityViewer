@@ -127,7 +127,7 @@ LLChatBar::LLChatBar()
 
 LLChatBar::~LLChatBar()
 {
-	gGestureManager.removeObserver(mObserver);
+	LLGestureMgr::instance().removeObserver(mObserver);
 	delete mObserver;
 	mObserver = NULL;
 	// LLView destructor cleans up children
@@ -247,8 +247,8 @@ void LLChatBar::refreshGestures()
 
 		// collect list of unique gestures
 		std::map <std::string, BOOL> unique;
-		LLGestureManager::item_map_t::iterator it;
-		for (it = gGestureManager.mActive.begin(); it != gGestureManager.mActive.end(); ++it)
+		LLGestureMgr::item_map_t::const_iterator it;
+		for (it = LLGestureMgr::instance().getActiveGestures().begin(); it != LLGestureMgr::instance().getActiveGestures().end(); ++it)
 		{
 			LLMultiGesture* gesture = (*it).second;
 			if (gesture)
@@ -334,7 +334,7 @@ void LLChatBar::setGestureCombo(LLComboBox* combo)
 
 		// now register observer since we have a place to put the results
 		mObserver = new LLChatBarGestureObserver(this);
-		gGestureManager.addObserver(mObserver);
+		LLGestureMgr::instance().addObserver(mObserver);
 
 		// refresh list from current active gestures
 		refreshGestures();
@@ -469,7 +469,7 @@ void LLChatBar::sendChat( EChatType type )
 					}
 				}
 				// discard returned "found" boolean
-				gGestureManager.triggerAndReviseString(utf8text, &utf8_revised_text);
+				LLGestureMgr::instance().triggerAndReviseString(utf8text, &utf8_revised_text);
 			}
 			else
 			{
@@ -486,7 +486,7 @@ void LLChatBar::sendChat( EChatType type )
 			{
 				// Chat with animation
 #if SHY_MOD //Command handler
-				if(!SHCommandHandler::handleCommand(true, utf8_revised_text, gAgentID, (LLViewerObject*)gAgent.getAvatarObject()))//returns true if handled
+				if(!SHCommandHandler::handleCommand(true, utf8_revised_text, gAgentID, (LLViewerObject*)gAgentAvatarp))//returns true if handled
 #endif //shy_mod
 				sendChatFromViewer(utf8_revised_text, nType, TRUE);
 			}
@@ -601,7 +601,7 @@ void LLChatBar::onInputEditorKeystroke( LLLineEditor* caller, void* userdata )
 		std::string utf8_trigger = wstring_to_utf8str(raw_text);
 		std::string utf8_out_str(utf8_trigger);
 
-		if (gGestureManager.matchPrefix(utf8_trigger, &utf8_out_str))
+		if (LLGestureMgr::instance().matchPrefix(utf8_trigger, &utf8_out_str))
 		{
 			if (self->mInputEditor)
 			{
@@ -826,7 +826,7 @@ void LLChatBar::onCommitGesture(LLUICtrl* ctrl, void* data)
 		// substitution and logging.
 		std::string text(trigger);
 		std::string revised_text;
-		gGestureManager.triggerAndReviseString(text, &revised_text);
+		LLGestureMgr::instance().triggerAndReviseString(text, &revised_text);
 
 		revised_text = utf8str_trim(revised_text);
 		if (!revised_text.empty())

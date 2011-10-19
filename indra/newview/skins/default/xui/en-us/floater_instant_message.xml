@@ -39,8 +39,8 @@
 	</string>
 	<button bottom="-40" follows="left|top" height="20" label="Profile" left="5"
 	     name="profile_callee_btn" width="80" />
-	<!--button bottom="-40" follows="left|top" halign="center" height="20" label="Teleport" left_delta="80"
-		 name="profile_tele_btn" width="80" /-->
+	<button bottom="-40" follows="left|top" halign="center" height="20" label="Teleport" left_delta="80"
+		 name="profile_tele_btn" width="80" />
   <button bottom="-40" follows="left|top" halign="center" height="20" label="History" left_delta="80"
           name="history_btn" visible="true" width="80" />
   <check_box bottom="-40" follows="left|top" halign="center" height="20" left_delta="80"

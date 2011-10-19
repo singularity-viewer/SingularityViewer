@@ -111,7 +111,7 @@ void LLFloaterBump::add(LLScrollListCtrl* list, LLMeanCollisionData* mcd)
 		new LLFloaterBump();
 	}
 	
-	if (mcd->mFirstName.empty() || list->getItemCount() >= 20)
+	if (mcd->mFullName.empty() || list->getItemCount() >= 20)
 	{
 		return;
 	}
@@ -152,8 +152,7 @@ void LLFloaterBump::add(LLScrollListCtrl* list, LLMeanCollisionData* mcd)
 	// All above action strings are in XML file
 	LLUIString text = sInstance->getString(action);
 	text.setArg("[TIME]", time);
-	text.setArg("[FIRST]", mcd->mFirstName);
-	text.setArg("[LAST]", mcd->mLastName);
+	text.setArg("[NAME]", mcd->mFullName);
 
 	LLSD row;
 	row["id"] = mcd->mPerp;

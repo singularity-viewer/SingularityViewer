@@ -244,7 +244,7 @@ inline bool RlvHandler::canSit(LLViewerObject* pObj, const LLVector3& posOffset 
 		( (pObj) && (LL_PCODE_VOLUME == pObj->getPCode()) ) &&
 		(!hasBehaviour(RLV_BHVR_SIT)) && 
 		( ((!hasBehaviour(RLV_BHVR_UNSIT)) && (!hasBehaviour(RLV_BHVR_STANDTP))) || 
-		  ((gAgent.getAvatarObject()) && (!gAgent.getAvatarObject()->isSitting())) ) &&
+		  ((gAgentAvatarp) && (!gAgentAvatarp->isSitting())) ) &&
 		( ((NULL == getCurrentCommand() || (RLV_BHVR_SIT != getCurrentCommand()->getBehaviourType()))
 			? ((!hasBehaviour(RLV_BHVR_SITTP)) && (!hasBehaviour(RLV_BHVR_FARTOUCH)))	// [regular sit]
 			: (!hasBehaviourExcept(RLV_BHVR_SITTP, getCurrentObject()))) ||				// [force sit]
@@ -255,7 +255,7 @@ inline bool RlvHandler::canSit(LLViewerObject* pObj, const LLVector3& posOffset 
 inline bool RlvHandler::canStand() const
 {
 	// NOTE: return FALSE only if we're @unsit=n restricted and the avie is currently sitting on something and TRUE for everything else
-	return (!hasBehaviour(RLV_BHVR_UNSIT)) || ((gAgent.getAvatarObject()) && (!gAgent.getAvatarObject()->isSitting()));
+	return (!hasBehaviour(RLV_BHVR_UNSIT)) || ((gAgentAvatarp) && (!gAgentAvatarp->isSitting()));
 }
 
 // Checked: 2010-12-11 (RLVa-1.2.2c) | Added: RLVa-1.2.2c

@@ -140,7 +140,7 @@ namespace tut
 	{
 		int results = mCG->loadFromFile(mTestConfigFile.c_str());
 		ensure("number of settings", (results == 1));
-		mCG->getControl("TestSetting")->getSignal()->connect(boost::bind(&this->handleListenerTest, _1));
+		mCG->getControl("TestSetting")->getSignal()->connect(boost::bind(&this->handleListenerTest, _2));
 		mCG->setU32("TestSetting", 13);
 		ensure("listener fired on changed setting", mListenerFired);	   
 	}

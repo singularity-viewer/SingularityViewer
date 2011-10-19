@@ -640,6 +640,9 @@ Only large parcels can be listed in search.
 			<string name="search_disabled_permissions_tooltip">
 				This option is disabled because you cannot modify this parcel&apos;s options.
 			</string>
+			<string name="see_avs_text">
+				See and chat with residents on this parcel
+			</string>
 			<combo_box allow_text_entry="false" bottom="-140" enabled="false" follows="left|top"
 			     height="18" left="255" max_chars="20" mouse_opaque="true"
 			     name="land category with adult" width="130" visible="false">
@@ -754,17 +757,28 @@ Only large parcels can be listed in search.
 				Your parcel information or content is considered adult.
 			</string>
 			<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
-			     bottom="-180" drop_shadow_visible="true" enabled="true" follows="left|top"
+			     bottom="-178" drop_shadow_visible="true" enabled="true" follows="left|top"
+			     font="SansSerifSmall" h_pad="0" halign="left" height="16" left="4"
+			     mouse_opaque="true" name="allow_label5" v_pad="0" width="278">
+				Allow Residents on other parcels to:
+			</text>
+			<check_box bottom="-196" enabled="false" follows="left|top" font="SansSerifSmall"
+			     height="16" initial_value="false" label="See Avatars" left="14"
+			     mouse_opaque="true" name="SeeAvatarsCheck" radio_style="false"
+			     tool_tip="Allows residents on other parcels to see and chat with residents on this parcel, and you to see and chat with them."
+			     width="107" />
+			<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+			     bottom="-212" drop_shadow_visible="true" enabled="true" follows="left|top"
 			     font="SansSerifSmall" h_pad="0" halign="left" height="16" left="4"
 			     mouse_opaque="true" name="Snapshot:" v_pad="0" width="278">
 				Snapshot:
 			</text>
-			<texture_picker allow_no_texture="false" bottom="-299" can_apply_immediately="false"
+			<texture_picker allow_no_texture="false" bottom="-349" can_apply_immediately="false"
 			     default_image_name="" enabled="true" follows="left|top" height="135"
-			     label="" left="76" mouse_opaque="true" name="snapshot_ctrl"
+			     label="" left="10" mouse_opaque="true" name="snapshot_ctrl"
 			     tool_tip="Click to choose a picture" width="180" />
 			<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
-			     bottom="-303" drop_shadow_visible="true" enabled="true" follows="left|top"
+			     bottom="-353" drop_shadow_visible="true" enabled="true" follows="left|top"
 			     font="SansSerifSmall" h_pad="0" halign="left" height="16" left="4"
 			     mouse_opaque="true" name="landing_point" v_pad="0" width="278">
 				Landing Point: [LANDING]
@@ -772,22 +786,22 @@ Only large parcels can be listed in search.
 			<string name="landing_point_none">
 				(none)
 			</string>
-			<button bottom="-303" enabled="true" follows="left|top" font="SansSerifSmall"
+			<button bottom="-353" enabled="true" follows="left|top" font="SansSerifSmall"
 			     halign="center" height="16" label="Set" label_selected="Set" left="236"
 			     mouse_opaque="true" name="Set" scale_image="true"
 			     tool_tip="Sets the landing point where visitors arrive. Sets to your avatar&apos;s location inside this parcel."
 			     width="50" />
-			<button bottom="-303" enabled="true" follows="left|top" font="SansSerifSmall"
+			<button bottom="-353" enabled="true" follows="left|top" font="SansSerifSmall"
 			     halign="center" height="16" label="Clear" label_selected="Clear" left="291"
 			     mouse_opaque="true" name="Clear" scale_image="true"
 			     tool_tip="Clear the landing point." width="50" />
 			<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
-			     bottom="-323" drop_shadow_visible="true" enabled="true" follows="left|top"
+			     bottom="-373" drop_shadow_visible="true" enabled="true" follows="left|top"
 			     font="SansSerifSmall" h_pad="0" halign="left" height="16" left="4"
 			     mouse_opaque="true" name="Teleport Routing: " v_pad="0" width="278">
 				Teleport Routing:
 			</text>
-			<combo_box allow_text_entry="false" bottom="-325" enabled="true" follows="left|top"
+			<combo_box allow_text_entry="false" bottom="-375" enabled="true" follows="left|top"
 			     height="18" left="120" max_chars="20" mouse_opaque="true"
 			     name="landing type"
 			     tool_tip="Teleport Routing -- select how to handle teleports onto your land."
@@ -1321,12 +1335,12 @@ Select the thumbnail to choose a different texture.
 				Sound:
 			</text>
 			<check_box
-				 bottom_delta="0"
+				 bottom_delta="-16"
 				 follows="left|top"
 				 height="16"
 				 label="Restrict gesture and object sounds to this parcel"
 				 layout="topleft"
-				 left_delta="70"
+				 left_delta="20"
 				 name="check_sound_local"
 				 width="200" />
 			<button
@@ -1340,7 +1354,37 @@ Select the thumbnail to choose a different texture.
 				 name="?"
 				 width="18" />
 			<text
-				 bottom_delta="-65"
+				 bottom_delta="-30"
+				 follows="left|top"
+				 height="16"
+				 layout="topleft"
+				 left="10"
+				 length="1"
+				 name="Avatar Sounds:"
+				 type="string"
+				 width="364">
+				Avatar Sounds:
+			</text>
+			<check_box
+				 bottom_delta="-16"
+				 follows="left|top"
+				 height="16"
+				 label="Everyone"
+				 layout="topleft"
+				 left_delta="20"
+				 name="all av sound check"
+				 width="200" />
+			<check_box
+				 bottom_delta="-16"
+				 follows="left|top"
+				 height="16"
+				 label="Group"
+				 layout="topleft"
+				 left_delta="0"
+				 name="group av sound check"
+				 width="200" />
+			<text
+				 bottom_delta="-30"
 				 follows="left|top"
 				 height="16"
 				 layout="topleft"
@@ -1353,12 +1397,12 @@ Select the thumbnail to choose a different texture.
 				Voice:
 			</text>
 			<radio_group
-				 bottom_delta="-40"
+				 bottom_delta="-56"
 				 draw_border="false"
 				 enabled="true"
 				 follows="left|top"
 				 height="60"
-				 left="80"
+				 left_delta="20"
 				 mouse_opaque="true"
 				 name="parcel_voice_channel"
 				 tab_stop="true"

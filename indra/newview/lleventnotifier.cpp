@@ -34,6 +34,7 @@
 
 #include "lleventnotifier.h"
 
+#include "llnotificationsutil.h"
 #include "message.h"
 
 #include "llnotify.h"
@@ -78,22 +79,40 @@ void LLEventNotifier::update()
 		{
 			LLEventNotification *np = iter->second;
 
+			iter++;
 			if (np->getEventDate() < (alert_time))
 			{
 				LLSD args;
 				args["NAME"] = np->getEventName();
 				args["DATE"] = np->getEventDateStr();
-				LLNotifications::instance().add("EventNotification", args, LLSD(),
-					boost::bind(&LLEventNotification::handleResponse, np, _1, _2));
-				mEventNotifications.erase(iter++);
-			}
-			else
-			{
-				iter++;
+				LLNotificationsUtil::add("EventNotification", args, LLSD(),
+					boost::bind(&LLEventNotifier::handleResponse, this, np->getEventID(), np->getEventPosGlobal(), _1, _2));
+				remove(np->getEventID());
 			}
 		}
 		mNotificationTimer.reset();
 	}
+}
+
+bool LLEventNotifier::handleResponse(U32 eventId, LLVector3d eventPos, const LLSD& notification, const LLSD& response)
+{
+	S32 option = LLNotificationsUtil::getSelectedOption(notification, response);
+	switch (option)
+	{
+	case 0:
+		gAgent.teleportViaLocation(eventPos);
+		gFloaterWorldMap->trackLocation(eventPos);
+		break;
+	case 1:
+		gDisplayEventHack = TRUE;
+		LLFloaterDirectory::showEvents(eventId);
+		break;
+	case 2:
+		break;
+	}
+
+	// We could clean up the notification on the server now if we really wanted to.
+	return true;
 }
 
 void LLEventNotifier::load(const LLUserAuth::options_t& event_options)
@@ -117,6 +136,19 @@ void LLEventNotifier::load(const LLUserAuth::options_t& event_options)
 	}
 }
 
+void LLEventNotifier::add(U32 eventId)
+{
+	
+	gMessageSystem->newMessageFast(_PREHASH_EventInfoRequest);
+	gMessageSystem->nextBlockFast(_PREHASH_AgentData);
+	gMessageSystem->addUUIDFast(_PREHASH_AgentID, gAgent.getID() );
+	gMessageSystem->addUUIDFast(_PREHASH_SessionID, gAgent.getSessionID() );
+	gMessageSystem->nextBlockFast(_PREHASH_EventData);
+	gMessageSystem->addU32Fast(_PREHASH_EventID, eventId);
+	gAgent.sendReliableMessage();
+
+}
+
 BOOL LLEventNotifier::hasNotification(const U32 event_id)
 {
 	if (mEventNotifications.find(event_id) != mEventNotifications.end())
@@ -137,14 +169,7 @@ void LLEventNotifier::add(LLEventInfo &event_info)
 		return;
 	}
 
-	// Push up a message to tell the server we have this notification.
-	gMessageSystem->newMessage("EventNotificationAddRequest");
-	gMessageSystem->nextBlockFast(_PREHASH_AgentData);
-	gMessageSystem->addUUIDFast(_PREHASH_AgentID, gAgent.getID() );
-	gMessageSystem->addUUIDFast(_PREHASH_SessionID, gAgent.getSessionID());
-	gMessageSystem->nextBlock("EventData");
-	gMessageSystem->addU32("EventID", event_info.mID);
-	gAgent.sendReliableMessage();
+	serverPushRequest(event_info.mID, true);
 
 	LLEventNotification *enp = new LLEventNotification;
 	enp->load(event_info);
@@ -161,17 +186,22 @@ void LLEventNotifier::remove(const U32 event_id)
 		return;
 	}
 
-	// Push up a message to tell the server to remove this notification.
-	gMessageSystem->newMessage("EventNotificationRemoveRequest");
+	serverPushRequest(event_id, false);
+	delete iter->second;
+	mEventNotifications.erase(iter);
+}
+
+
+void LLEventNotifier::serverPushRequest(U32 event_id, bool add)
+{
+	// Push up a message to tell the server we have this notification.
+	gMessageSystem->newMessage(add?"EventNotificationAddRequest":"EventNotificationRemoveRequest");
 	gMessageSystem->nextBlockFast(_PREHASH_AgentData);
 	gMessageSystem->addUUIDFast(_PREHASH_AgentID, gAgent.getID() );
 	gMessageSystem->addUUIDFast(_PREHASH_SessionID, gAgent.getSessionID());
 	gMessageSystem->nextBlock("EventData");
 	gMessageSystem->addU32("EventID", event_id);
 	gAgent.sendReliableMessage();
-	
-	delete iter->second;
-	mEventNotifications.erase(iter);
 }
 
 LLEventNotification::LLEventNotification() :
@@ -185,26 +215,6 @@ LLEventNotification::~LLEventNotification()
 {
 }
 
-bool LLEventNotification::handleResponse(const LLSD& notification, const LLSD& response)
-{
-	S32 option = LLNotification::getSelectedOption(notification, response);
-	switch (option)
-	{
-	case 0:
-		gAgent.teleportViaLocation(getEventPosGlobal());
-		gFloaterWorldMap->trackLocation(getEventPosGlobal());
-		break;
-	case 1:
-		gDisplayEventHack = TRUE;
-		LLFloaterDirectory::showEvents(getEventID());
-		break;
-	case 2:
-		break;
-	}
-
-	// We could clean up the notification on the server now if we really wanted to.
-	return false;
-}
 
 BOOL LLEventNotification::load(const LLUserAuth::response_t &response)
 {

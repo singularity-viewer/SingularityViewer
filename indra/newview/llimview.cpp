@@ -980,7 +980,7 @@ void LLIMMgr::inviteToSession(
 	{
 		if (caller_name.empty())
 		{
-			gCacheName->getName(caller_id, onInviteNameLookup, new LLSD(payload));
+			gCacheName->get(caller_id, true, boost::bind(&LLIMMgr::onInviteNameLookup,_1,_2,_3,payload));
 		}
 		else
 		{
@@ -999,16 +999,13 @@ void LLIMMgr::inviteToSession(
 }
 
 //static 
-void LLIMMgr::onInviteNameLookup(const LLUUID& id, const std::string& first, const std::string& last, BOOL is_group, void* userdata)
+void LLIMMgr::onInviteNameLookup(const LLUUID& id, const std::string& full_name, bool is_group, LLSD payload)
 {
-	LLSD payload = *(LLSD*)userdata;
-	delete (LLSD*)userdata;
-
-	payload["caller_name"] = first + " " + last;
-	payload["session_name"] = payload["caller_name"].asString();
+	payload["caller_name"] = full_name;
+	payload["session_name"] = full_name;
 
 	LLSD args;
-	args["NAME"] = payload["caller_name"].asString();
+	args["NAME"] = full_name;
 
 	LLNotifications::instance().add(
 		payload["notify_box_type"].asString(),
@@ -1246,13 +1243,12 @@ void LLIMMgr::noteOfflineUsers(
 		for(S32 i = 0; i < count; ++i)
 		{
 			info = at.getBuddyInfo(ids.get(i));
-			std::string first, last;
+			std::string full_name;
 			if(info && !info->isOnline()
-			   && gCacheName->getName(ids.get(i), first, last))
+			   && gCacheName->getFullName(ids.get(i), full_name))
 			{
 				LLUIString offline = sOfflineMessage;
-				offline.setArg("[FIRST]", first);
-				offline.setArg("[LAST]", last);
+				offline.setArg("[NAME]", full_name);
 				floater->addHistoryLine(offline, gSavedSettings.getColor4("SystemChatColor"));
 			}
 		}

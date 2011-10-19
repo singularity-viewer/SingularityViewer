@@ -13,8 +13,8 @@
         width="400" />
       <check_box bottom_delta="-20" control_name="AscentDisableTeleportScreens" enabled="true"
         follows="left|top" font="SansSerifSmall" height="16" initial_value="true"
-        label="Show the Teleport progress screens" left="10"
-        tool_tip="If turned off, the viewer will not hide your UI while teleporting, allowing you to continue to read IMs."
+        label="Hide the Teleport progress screens" left="10"
+        tool_tip="If checked, the viewer will hide the teleport progress screen, allowing you to continue to read IMs."
         mouse_opaque="true" name="disable_tp_screen_check" radio_style="false"
         width="400" />
       <check_box bottom_delta="-20" control_name="OptionPlayTpSound" enabled="true"
@@ -25,8 +25,8 @@
         width="400" />
       <check_box bottom_delta="-20" control_name="AscentDisableLogoutScreens" enabled="true"
         follows="left|top" font="SansSerifSmall" height="16" initial_value="true"
-        label="Show the Login/Logout progress screens" left="10"
-        tool_tip="If turned off, the viewer does not hide the UI when logging in or out."
+        label="Hide the Login/Logout progress screens" left="10"
+        tool_tip="If checked, the viewer will hide the login/logout progress screen."
         mouse_opaque="true" name="disable_logout_screen_check" radio_style="false"
         width="400" />
     </panel>

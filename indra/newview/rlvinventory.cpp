@@ -16,6 +16,7 @@
 
 #include "llviewerprecompiledheaders.h"
 #include "llagent.h"
+#include "llcallbacklist.h"
 #include "llstartup.h"
 #include "llviewerobject.h"
 #include "llvoavatar.h"
@@ -140,15 +141,15 @@ void RlvInventory::fetchWornItems()
 	uuid_vec_t idItems;
 
 	// Fetch all currently worn clothing layers and body parts
-	for (int type = 0; type < WT_COUNT; type++)
+	for (int type = 0; type < LLWearableType::WT_COUNT; type++)
 	{
-		const LLUUID& idItem = gAgentWearables.getWearableItemID((EWearableType)type);
+		const LLUUID idItem = gAgentWearables.getWearableItemID((LLWearableType::EType)type);
 		if (idItem.notNull())
 			idItems.push_back(idItem);
 	}
 
 	// Fetch all currently worn attachments
-	LLVOAvatar* pAvatar = gAgent.getAvatarObject();
+	LLVOAvatar* pAvatar = gAgentAvatarp;
 	if (pAvatar)
 	{
 		for (LLVOAvatar::attachment_map_t::const_iterator itAttachPt = pAvatar->mAttachmentPoints.begin(); 
@@ -231,7 +232,7 @@ LLViewerInventoryCategory* RlvInventory::getSharedRoot() const
 	if (gInventory.isInventoryUsable())
 	{
 		LLInventoryModel::cat_array_t* pFolders; LLInventoryModel::item_array_t* pItems;
-		gInventory.getDirectDescendentsOf(gAgent.getInventoryRootID(), pFolders, pItems);
+		gInventory.getDirectDescendentsOf(gInventory.getRootFolderID(), pFolders, pItems);
 		if (pFolders)
 		{
 			// NOTE: we might have multiple #RLV folders so we'll just go with the first one we come across
@@ -307,7 +308,7 @@ std::string RlvInventory::getSharedPath(const LLViewerInventoryCategory* pFolder
 		return std::string();
 
 	const LLUUID& idRLV  = pRlvRoot->getUUID();
-	const LLUUID& idRoot = gAgent.getInventoryRootID();
+	const LLUUID& idRoot = gInventory.getRootFolderID();
 	std::string strPath;
 
 	// Walk up the tree until we reach the top
@@ -363,7 +364,7 @@ void RlvRenameOnWearObserver::done()
 // Checked: 2010-03-14 (RLVa-1.1.3a) | Added: RLVa-1.2.0a
 void RlvRenameOnWearObserver::doneIdle()
 {
-	const LLViewerInventoryCategory* pRlvRoot = NULL; LLVOAvatar* pAvatar = gAgent.getAvatarObject();
+	const LLViewerInventoryCategory* pRlvRoot = NULL; LLVOAvatar* pAvatar = gAgentAvatarp;
 	if ( (RlvSettings::getEnableSharedWear()) || (!RlvSettings::getSharedInvAutoRename()) || (LLStartUp::getStartupState() < STATE_STARTED) || 
 		 (!pAvatar) || ((pRlvRoot = RlvInventory::instance().getSharedRoot()) == NULL) )
 	{
@@ -438,7 +439,7 @@ void RlvRenameOnWearObserver::doneIdle()
 					else
 					{
 						// "No modify" item with a non-renameable parent: create a new folder named and move the item into it
-						LLUUID idAttachFolder = gInventory.createNewCategory(pFolder->getUUID(), LLAssetType::AT_NONE, strFolderName);
+						LLUUID idAttachFolder = gInventory.createNewCategory(pFolder->getUUID(), LLFolderType::FT_NONE, strFolderName);
 						move_inventory_item(gAgent.getID(), gAgent.getSessionID(), pItem->getUUID(), idAttachFolder, std::string(), NULL);
 					}
 				}
@@ -616,7 +617,7 @@ RlvForceWear::EWearAction RlvWearableItemCollector::getWearAction(const LLUUID& 
 	while ((itCurFolder = m_WearActionMap.find(idCurFolder)) == m_WearActionMap.end())
 	{
 		const LLViewerInventoryCategory* pFolder = gInventory.getCategory(idCurFolder);
-		if ((!pFolder) || (gAgent.getInventoryRootID() == pFolder->getParentUUID()))
+		if ((!pFolder) || (gInventory.getRootFolderID() == pFolder->getParentUUID()))
 			break;
 		idCurFolder = pFolder->getParentUUID();
 	}
@@ -712,7 +713,7 @@ bool RlvWearableItemCollector::onCollectItem(const LLInventoryItem* pItem)
 				const LLUUID& idLinkedFolder = pItem->getLinkedUUID();
 				LLViewerInventoryCategory* pLinkedFolder = gInventory.getCategory(idLinkedFolder);
 				// Link can't point to an outfit folder, or start a second level of indirection, or have the base folder as an ancestor
-				if ( (pLinkedFolder) && (LLAssetType::AT_OUTFIT != pLinkedFolder->getPreferredType()) &&
+				if ( (pLinkedFolder) && (LLFolderType::FT_OUTFIT != pLinkedFolder->getPreferredType()) &&
 					 (gInventory.isObjectDescendentOf(pItem->getUUID(), m_idFolder)) && 
 					 (!gInventory.isObjectDescendentOf(idLinkedFolder, m_idFolder)) )
 				{

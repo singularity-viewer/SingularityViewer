@@ -74,7 +74,7 @@ LLVOWater::LLVOWater(const LLUUID &id,
 {
 	// Terrain must draw during selection passes so it can block objects behind it.
 	mbCanSelect = FALSE;
-	setScale(LLVector3(256.f, 256.f, 0.f)); // Hack for setting scale for bounding boxes/visibility.
+	setScale(LLVector3(mRegionp->getWidth(), mRegionp->getWidth(), 0.f)); // Hack for setting scale for bounding boxes/visibility.
 
 	mUseTexture = TRUE;
 	mIsEdgePatch = FALSE;
@@ -267,19 +267,30 @@ void LLVOWater::setIsEdgePatch(const BOOL edge_patch)
 	mIsEdgePatch = edge_patch;
 }
 
-void LLVOWater::updateSpatialExtents(LLVector3 &newMin, LLVector3& newMax)
+void LLVOWater::updateSpatialExtents(LLVector4a &newMin, LLVector4a& newMax)
 {
-	LLVector3 pos = getPositionAgent();
-	LLVector3 scale = getScale();
+	LLVector4a pos;
+	pos.load3(getPositionAgent().mV);
+	LLVector4a scale;
+	scale.load3(getScale().mV);
+	scale.mul(0.5f);
 
-	newMin = pos - scale * 0.5f;
-	newMax = pos + scale * 0.5f;
+	newMin.setSub(pos, scale);
+	newMax.setAdd(pos, scale);
+	
+	pos.setAdd(newMin,newMax);
+	pos.mul(0.5f);
 
-	mDrawable->setPositionGroup((newMin + newMax) * 0.5f);
+	mDrawable->setPositionGroup(pos);
 }
 
 U32 LLVOWater::getPartitionType() const
 { 
+	if (mIsEdgePatch)
+	{
+		//return LLViewerRegion::PARTITION_VOIDWATER;
+	}
+
 	return LLViewerRegion::PARTITION_WATER; 
 }
 
@@ -298,6 +309,7 @@ LLWaterPartition::LLWaterPartition()
 
 LLVoidWaterPartition::LLVoidWaterPartition()
 {
+	//mOcclusionEnabled = FALSE;
 	mDrawableType = LLPipeline::RENDER_TYPE_VOIDWATER;
 	mPartitionType = LLViewerRegion::PARTITION_VOIDWATER;
 }

@@ -343,10 +343,8 @@ public:
 	// llmessage/llcachename.h:LLCacheNameCallback
 	static void callbackCacheName(
 		const LLUUID& id,
-		const std::string& first,
-		const std::string& last,
-		BOOL is_group,
-		void*);
+		const std::string& full_name,
+		bool is_group);
 
 protected:
 	virtual BOOL sendUpdate();

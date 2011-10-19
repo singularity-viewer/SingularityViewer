@@ -48,7 +48,8 @@ class LLUICtrlFactory;
 class LLMediaCtrl :
 	public LLUICtrl,
 	public LLViewerMediaObserver,
-	public LLViewerMediaEventEmitter
+	public LLViewerMediaEventEmitter,
+	public LLInstanceTracker<LLMediaCtrl, LLUUID>
 {
 	public:
 		LLMediaCtrl( const std::string& name, const LLRect& rect );
@@ -69,6 +70,8 @@ class LLMediaCtrl :
 		virtual BOOL handleHover( S32 x, S32 y, MASK mask );
 		virtual BOOL handleMouseUp( S32 x, S32 y, MASK mask );
 		virtual BOOL handleMouseDown( S32 x, S32 y, MASK mask );
+		virtual BOOL handleRightMouseDown(S32 x, S32 y, MASK mask);
+		virtual BOOL handleRightMouseUp(S32 x, S32 y, MASK mask);
 		virtual BOOL handleDoubleClick( S32 x, S32 y, MASK mask );
 		virtual BOOL handleScrollWheel( S32 x, S32 y, S32 clicks );
 
@@ -112,10 +115,17 @@ class LLMediaCtrl :
 		void setForceUpdate(bool force_update) { mForceUpdate = force_update; }
 		bool getForceUpdate() { return mForceUpdate; }
 
+		bool ensureMediaSourceExists();
+		void unloadMediaSource();
+		
 		LLPluginClassMedia* getMediaPlugin();
 
 		bool setCaretColor( unsigned int red, unsigned int green, unsigned int blue );
+		
+		void setDecoupleTextureSize(bool decouple) { mDecoupleTextureSize = decouple; }
+		bool getDecoupleTextureSize() { return mDecoupleTextureSize; }
 
+		void setTextureSize(S32 width, S32 height);
 
 		// over-rides
 		virtual BOOL handleKeyHere( KEY key, MASK mask);
@@ -123,7 +133,7 @@ class LLMediaCtrl :
 		virtual BOOL handleUnicodeCharHere(llwchar uni_char);
 		virtual void reshape( S32 width, S32 height, BOOL called_from_parent = TRUE);
 		virtual void draw();
-		virtual void onVisibilityChange ( BOOL curVisibilityIn );
+		virtual BOOL postBuild();
 
 		// focus overrides
 		void onFocusLost();
@@ -140,9 +150,11 @@ class LLMediaCtrl :
 		void convertInputCoords(S32& x, S32& y);
 
 	private:
+		void onVisibilityChange ( const LLSD& new_visibility );
 		static bool onClickLinkExternalTarget( const LLSD&, const LLSD& );
 
 		const S32 mTextureDepthBytes;
+		LLUUID mMediaTextureID;
 		LLPointer<LLWebBrowserTexture> mWebBrowserImage;
 		LLViewBorder* mBorder;
 		bool mFrequentUpdates;
@@ -161,6 +173,9 @@ class LLMediaCtrl :
 		bool mStretchToFill;
 		bool mMaintainAspectRatio;
 		bool mHideLoading;
+		bool mDecoupleTextureSize;
+		S32 mTextureWidth;
+		S32 mTextureHeight;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

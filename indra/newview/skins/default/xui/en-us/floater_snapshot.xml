@@ -151,9 +151,6 @@
 		<combo_item name="Depth" value="depth">
 			Depth
 		</combo_item>
-		<combo_item name="ObjectMattes" value="objects">
-			Object Mattes
-		</combo_item>
 	</combo_box>
 	<check_box bottom_delta="-20" follows="left|top" label="Show interface in snapshot"
 	     left="10" name="ui_check" />

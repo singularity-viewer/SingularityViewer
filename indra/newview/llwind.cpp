@@ -121,12 +121,12 @@ void LLWind::decompress(LLBitPack &bitpack, LLGroupHeader *group_headerp)
 	set_group_of_patch_header(group_headerp);
 
 	// X component
-	decode_patch_header(bitpack, &patch_header);
+	decode_patch_header(bitpack, &patch_header, FALSE);
 	decode_patch(bitpack, buffer);
 	decompress_patch(mVelX, buffer, &patch_header);
 
 	// Y component
-	decode_patch_header(bitpack, &patch_header);
+	decode_patch_header(bitpack, &patch_header, FALSE);
 	decode_patch(bitpack, buffer);
 	decompress_patch(mVelY, buffer, &patch_header);
 

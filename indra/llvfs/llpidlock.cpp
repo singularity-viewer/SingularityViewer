@@ -167,7 +167,7 @@ bool LLPidLockFile::requestLock(LLNameTable<void *> *name_table, bool autosave,
 
 	if (!mWaiting)				//Not presently waiting to save.  Queue up.
 	{
-		mTimer.resetWithExpiry(timeout);
+		mTimer.reset(timeout);
 		mWaiting=TRUE;
 	}
 

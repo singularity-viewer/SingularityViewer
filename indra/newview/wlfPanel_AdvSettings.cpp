@@ -96,8 +96,8 @@ BOOL wlfPanel_AdvSettings::postBuild()
 	LLComboBox* comboBoxSky = getChild<LLComboBox>("WLSkyPresetsCombo");
 	if(comboBoxSky != NULL) 
 	{
-		std::map<std::string, LLWLParamSet>::iterator mIt = LLWLParamManager::instance()->mParamList.begin();
-		for(; mIt != LLWLParamManager::instance()->mParamList.end(); mIt++) 
+		std::map<std::string, LLWLParamSet>::const_iterator mIt = LLWLParamManager::getInstance()->getPresets().begin();
+		for(; mIt != LLWLParamManager::getInstance()->getPresets().end(); mIt++) 
 		{
 			if (mIt->first.length() > 0)
 				comboBoxSky->add(mIt->first);
@@ -110,8 +110,8 @@ BOOL wlfPanel_AdvSettings::postBuild()
 	LLComboBox* comboBoxWater = getChild<LLComboBox>("WLWaterPresetsCombo");
 	if(comboBoxWater != NULL) 
 	{
-		std::map<std::string, LLWaterParamSet>::iterator mIt = LLWaterParamManager::instance()->mParamList.begin();
-		for(; mIt != LLWaterParamManager::instance()->mParamList.end(); mIt++) 
+		std::map<std::string, LLWaterParamSet>::const_iterator mIt = LLWaterParamManager::getInstance()->getPresets().begin();
+		for(; mIt != LLWaterParamManager::getInstance()->getPresets().end(); mIt++) 
 		{
 			if (mIt->first.length() > 0)
 				comboBoxWater->add(mIt->first);
@@ -155,8 +155,8 @@ void wlfPanel_AdvSettings::onClickExpandBtn(void* user_data)
 }
 void wlfPanel_AdvSettings::onChangePresetName(LLUICtrl* ctrl, void * userData)
 {
-	LLWLParamManager::instance()->mAnimator.mIsRunning = false;
-	LLWLParamManager::instance()->mAnimator.mUseLindenTime = false;
+	LLWLParamManager::getInstance()->mAnimator.mIsRunning = false;
+	LLWLParamManager::getInstance()->mAnimator.mUseLindenTime = false;
 
 	LLComboBox * combo_box = static_cast<LLComboBox*>(ctrl);
 	llinfos << "Combobox is " << combo_box->getControlName() << " aka " << combo_box->getName() << llendl;
@@ -167,7 +167,7 @@ void wlfPanel_AdvSettings::onChangePresetName(LLUICtrl* ctrl, void * userData)
 			return;
 		}
 		current_preset = combo_box->getSelectedValue().asString();
-		LLWLParamManager::instance()->loadPreset(current_preset);
+		LLWLParamManager::getInstance()->loadPreset(current_preset);
 	}
 	else if (combo_box->getName() == "WLWaterPresetsCombo")
 	{
@@ -176,6 +176,6 @@ void wlfPanel_AdvSettings::onChangePresetName(LLUICtrl* ctrl, void * userData)
 			return;
 		}
 		current_preset = combo_box->getSelectedValue().asString();
-		LLWaterParamManager::instance()->loadPreset(current_preset);
+		LLWaterParamManager::getInstance()->loadPreset(current_preset);
 	}
 }

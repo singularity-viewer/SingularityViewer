@@ -24,11 +24,11 @@ else (STANDALONE)
   endif (LINUX)
 endif (STANDALONE)
 
-if (GOOGLE_PERFTOOLS_FOUND)
+if (GOOGLE_PERFTOOLS_FOUND AND STANDALONE)
   set(USE_GOOGLE_PERFTOOLS ON CACHE BOOL "Build with Google PerfTools support.")
-else (GOOGLE_PERFTOOLS_FOUND)
+else ()
   set(USE_GOOGLE_PERFTOOLS OFF)
-endif (GOOGLE_PERFTOOLS_FOUND)
+endif ()
 
 # XXX Disable temporarily, until we have compilation issues on 64-bit
 # Etch sorted.

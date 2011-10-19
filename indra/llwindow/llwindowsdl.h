@@ -62,6 +62,8 @@ public:
 	/*virtual*/ BOOL getMinimized();
 	/*virtual*/ BOOL getMaximized();
 	/*virtual*/ BOOL maximize();
+	/*virtual*/ void minimize();
+	/*virtual*/ void restore();
 	/*virtual*/ BOOL getFullscreen();
 	/*virtual*/ BOOL getPosition(LLCoordScreen *position);
 	/*virtual*/ BOOL getSize(LLCoordScreen *size);
@@ -80,9 +82,15 @@ public:
 	/*virtual*/ void captureMouse();
 	/*virtual*/ void releaseMouse();
 	/*virtual*/ void setMouseClipping( BOOL b );
+
 	/*virtual*/ BOOL isClipboardTextAvailable();
 	/*virtual*/ BOOL pasteTextFromClipboard(LLWString &dst);
 	/*virtual*/ BOOL copyTextToClipboard(const LLWString & src);
+
+	/*virtual*/ BOOL isPrimaryTextAvailable();
+	/*virtual*/ BOOL pasteTextFromPrimary(LLWString &dst);
+	/*virtual*/ BOOL copyTextToPrimary(const LLWString & src);
+
 	/*virtual*/ void flashIcon(F32 seconds);
 	/*virtual*/ F32 getGamma();
 	/*virtual*/ BOOL setGamma(const F32 gamma); // Set the gamma
@@ -112,12 +120,12 @@ public:
 	/*virtual*/ void beforeDialog();
 	/*virtual*/ void afterDialog();
 
-	/*virtual*/ BOOL dialog_color_picker(F32 *r, F32 *g, F32 *b);
+	/*virtual*/ BOOL dialogColorPicker(F32 *r, F32 *g, F32 *b);
 
 	/*virtual*/ void *getPlatformWindow();
 	/*virtual*/ void bringToFront();
 
-	/*virtual*/ void spawnWebBrowser(const std::string& escaped_url);
+	/*virtual*/ void spawnWebBrowser(const std::string& escaped_url, bool async);
 	
 	static std::vector<std::string> getDynamicFallbackFontList();
 
@@ -141,26 +149,24 @@ public:
 #endif // LL_X11	
 
 protected:
-	LLWindowSDL(
+	LLWindowSDL(LLWindowCallbacks* callbacks,
 		const std::string& title, int x, int y, int width, int height, U32 flags,
 		BOOL fullscreen, BOOL clearBg, BOOL disable_vsync, BOOL use_gl,
 		BOOL ignore_pixel_depth, U32 fsaa_samples);
 	~LLWindowSDL();
 
+	/*virtual*/ BOOL	isValid();
+	/*virtual*/ LLSD    getNativeKeyData();
+
 	void	initCursors();
 	void	quitCursors();
-	BOOL	isValid();
 	void	moveWindow(const LLCoordScreen& position,const LLCoordScreen& size);
-
 
 	// Changes display resolution. Returns true if successful
 	BOOL	setDisplayResolution(S32 width, S32 height, S32 bits, S32 refresh);
 
 	// Go back to last fullscreen display resolution.
 	BOOL	setFullscreenResolution();
-
-	void	minimize();
-	void	restore();
 
 	BOOL	shouldPostQuit() { return mPostQuit; }
 
@@ -199,12 +205,16 @@ protected:
 
 	friend class LLWindowManager;
 
-#if LL_X11
 private:
+#if LL_X11
 	void x11_set_urgent(BOOL urgent);
 	BOOL mFlashing;
 	LLTimer mFlashTimer;
 #endif //LL_X11
+	
+	U32 mKeyScanCode;
+        U32 mKeyVirtualKey;
+	SDLMod mKeyModifiers;
 };
 
 

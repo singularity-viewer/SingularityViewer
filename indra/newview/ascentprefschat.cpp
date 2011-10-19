@@ -491,6 +491,8 @@ void LLPrefsAscentChat::cancel()
 // Update local copy so cancel has no effect
 void LLPrefsAscentChat::apply()
 {
+    gSavedPerAccountSettings.setString("AscentInstantMessageResponse", childGetValue("im_response"));
+
     refreshValues();
     refresh();
 }

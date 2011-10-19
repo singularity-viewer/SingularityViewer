@@ -66,7 +66,7 @@ std::string LLLogChat::makeLogFileName(std::string filename)
 
 std::string LLLogChat::cleanFileName(std::string filename)
 {
-	std::string invalidChars = "\"\'\\/?*:<>|";
+	std::string invalidChars = "\"\'\\/?*:<>|[]{}~"; // Cannot match glob or illegal filename chars
 	S32 position = filename.find_first_of(invalidChars);
 	while (position != filename.npos)
 	{

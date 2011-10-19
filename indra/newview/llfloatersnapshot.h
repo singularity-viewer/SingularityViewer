@@ -56,6 +56,7 @@ public:
 	/*virtual*/ BOOL postBuild();
 	/*virtual*/ void draw();
 	/*virtual*/ void onClose(bool app_quitting);
+	/*virtual*/ void onOpen();
 
 	static void show(void*);
 	static void hide(void*);
