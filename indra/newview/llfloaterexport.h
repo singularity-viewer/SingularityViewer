@@ -6,6 +6,7 @@
 #include "llselectmgr.h"
 #include "llvoavatar.h"
 #include "llvoavatardefines.h"
+#include "statemachine/aifilepicker.h"
 
 //class LLExportObject
 //{
@@ -92,6 +93,7 @@ public:
 	static void onClickSelectObjects(void* user_data);
 	static void onClickSelectWearables(void* user_data);
 	static void onClickSaveAs(void* user_data);
+	static void onClickSaveAs_Callback(LLFloaterExport* floater, AIFilePicker* filepicker);
 	static void onClickMakeCopy(void* user_data);
 	
 private:

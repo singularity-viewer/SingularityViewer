@@ -35,6 +35,13 @@
 #ifndef LL_LLVIEWERPRECOMPILEDHEADERS_H
 #define LL_LLVIEWERPRECOMPILEDHEADERS_H
 
+//  Force the compiler to include this file only once, may help stop compiler running out
+// out of heap space during a compile. Note this is a WINDOWS ONLY option and should be
+// really added to ALL header files to reduce the load on the compiler.
+#if defined( LL_WINDOWS ) && defined( _MSC_VER )
+#pragma once
+#endif
+
 // This file MUST be the first one included by each .cpp file
 // in viewer.
 // It is used to precompile headers for improved build speed.

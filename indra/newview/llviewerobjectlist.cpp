@@ -257,9 +257,7 @@ void LLViewerObjectList::processUpdateCore(LLViewerObject* objectp,
 	{
 		gPipeline.addObject(objectp);
 	}
-	else if( LLXmlImport::sImportInProgress 
-		&& objectp->permYouOwner()
-		&& LLXmlImport::sExpectedUpdate == objectp->getID()) 
+	else
 	{
 		LLXmlImport::onUpdatePrim(objectp);
 	}
@@ -307,15 +305,7 @@ void LLViewerObjectList::processUpdateCore(LLViewerObject* objectp,
 		gViewerWindow->getWindow()->setCursor( UI_CURSOR_ARROW );
 		
 		// <edit>
-		if(LLXmlImport::sImportInProgress)
-		{
-			if( objectp->permYouOwner()
-				&& (objectp->getPCode() == LLXmlImport::sSupplyParams->getPCode())
-				&& (objectp->getScale() == LLXmlImport::sSupplyParams->getScale()))
-			{
-				LLXmlImport::onNewPrim(objectp);
-			}
-		}
+		LLXmlImport::onNewPrim(objectp);
 		// </edit>	
 	}
 }

@@ -37,7 +37,6 @@
 // static vars
 bool LLXmlImport::sImportInProgress = false;
 bool LLXmlImport::sImportHasAttachments = false;
-eImportObjectState LLXmlImport::sState = IMPORT_INIT;
 LLUUID LLXmlImport::sExpectedUpdate;
 LLUUID LLXmlImport::sFolderID;
 LLViewerObject* LLXmlImport::sSupplyParams;
@@ -58,50 +57,6 @@ LLXmlImportOptions* LLXmlImport::sXmlImportOptions;
 std::map<LLUUID,LLUUID> LLXmlImport::sTextureReplace;
 int LLXmlImport::sTotalAssets = 0;
 int LLXmlImport::sUploadedAssets = 0;
-// timer for watching link
-class LLLinkTimer : public LLEventTimer
-{
-public: 
-	LLLinkTimer(std::vector<LLUUID> roots) : LLEventTimer(0.05f)
-	{
-		mOptions = LLXmlImport::sXmlImportOptions;
-		mRoots = roots;
-	}
-	virtual BOOL tick()
-	{
-		// Import for this timer has been cancled :<
-		if(!LLXmlImport::sImportInProgress || (LLXmlImport::sXmlImportOptions && mOptions && mOptions != LLXmlImport::sXmlImportOptions)) return TRUE;
-		// LET US CONTINUE
-		std::vector<LLUUID> unlinked_roots;
-		for(std::vector<LLUUID>::iterator itr = mRoots.begin();itr != mRoots.end();itr++)
-		{
-			LLViewerObject* object = gObjectList.findObject((*itr));
-			if(object)
-			{
-				if(object->numChildren() == 0)
-				{
-					llinfos << "WAIT " << (*itr).asString() << llendl;
-					unlinked_roots.push_back((*itr));
-
-				}
-			}
-		}
-		if(unlinked_roots.size() > 0)
-		{
-			mRoots = unlinked_roots;
-			return FALSE;
-		}
-		else
-		{
-			LLXmlImport::finish_link();
-			return TRUE;
-		}
-	}
-	
-protected:
-	LLXmlImportOptions* mOptions;
-	std::vector<LLUUID> mRoots;
-};
 bool	operator==(const LLXmlImportOptions &a, const LLXmlImportOptions &b)
 {
 	return (a.mID == b.mID);
@@ -682,8 +637,6 @@ void LLXmlImport::import(LLXmlImportOptions* import_options)
 			sXmlImportOptions->mRootObjects[i]->setPosition(sXmlImportOptions->mRootObjects[i]->getPosition() + difference, FALSE);
 		}
 	}
-
-	sState = IMPORT_INIT;
 	// Make the actual importable list
 	sPrims.clear();
 	// Clear these attachment-related maps
@@ -853,9 +806,10 @@ void LLXmlImport::finish_init()
 // static
 void LLXmlImport::onNewPrim(LLViewerObject* object)
 {
-	if(sState != IMPORT_INIT)
+	if(!object && !LLXmlImport::sImportInProgress && !( object->permYouOwner()
+		&& (object->getPCode() == LLXmlImport::sSupplyParams->getPCode())
+		&& (object->getScale() == LLXmlImport::sSupplyParams->getScale())))
 	{
-		llwarns << "called onNewPrim without getting back to IMPORT_INIT" << llendl;
 		return;
 	}
 	
@@ -910,166 +864,140 @@ void LLXmlImport::onNewPrim(LLViewerObject* object)
 }
 void LLXmlImport::onUpdatePrim(LLViewerObject* object)
 {
+	if(object != NULL)
+		if( !(LLXmlImport::sImportInProgress
+			&& LLXmlImport::sExpectedUpdate == object->getID()))
+				return;
+
 	LLImportObject* from = sPrims[sPrimIndex];
 	LLSelectMgr::getInstance()->selectObjectAndFamily(object);
-	sState = (eImportObjectState) ((int)sState + 1);
-	// Huge state machine
-	switch(sState)
+	// Volume params
+	LLVolumeParams params = from->getVolume()->getParams();
+	object->setVolume(params, 0, false);
+	object->sendShapeUpdate();
+
+	// Extra params
+	if(from->isFlexible())
 	{
-	case IMPORT_VOLUME:
-		{
-			// Volume params
-			LLVolumeParams params = from->getVolume()->getParams();
-			object->setVolume(params, 0, false);
-			object->sendShapeUpdate();
-			break;
-		}
-	case IMPORT_EXTRA:
-		{
-			// Extra params
-			if(from->isFlexible())
-			{
-				LLFlexibleObjectData flex = *((LLFlexibleObjectData*)from->getParameterEntry(LLNetworkData::PARAMS_FLEXIBLE));
-				object->setParameterEntry(LLNetworkData::PARAMS_FLEXIBLE, flex, true);
-				object->setParameterEntryInUse(LLNetworkData::PARAMS_FLEXIBLE, TRUE, true);
-				object->parameterChanged(LLNetworkData::PARAMS_FLEXIBLE, true);
-			}
-			else
-			{
-				// send param not in use in case the supply prim has it
-				object->setParameterEntryInUse(LLNetworkData::PARAMS_FLEXIBLE, FALSE, true);
-				object->parameterChanged(LLNetworkData::PARAMS_FLEXIBLE, true);
-			}
-			if (from->getParameterEntryInUse(LLNetworkData::PARAMS_LIGHT))
-			{
-				LLLightParams light = *((LLLightParams*)from->getParameterEntry(LLNetworkData::PARAMS_LIGHT));
-				object->setParameterEntry(LLNetworkData::PARAMS_LIGHT, light, true);
-				object->setParameterEntryInUse(LLNetworkData::PARAMS_LIGHT, TRUE, true);
-				object->parameterChanged(LLNetworkData::PARAMS_LIGHT, true);
-			}
-			else
-			{
-				// send param not in use in case the supply prim has it
-				object->setParameterEntryInUse(LLNetworkData::PARAMS_LIGHT, FALSE, true);
-				object->parameterChanged(LLNetworkData::PARAMS_LIGHT, true);
-			}
-			if (from->getParameterEntryInUse(LLNetworkData::PARAMS_SCULPT))
-			{
-				LLSculptParams sculpt = *((LLSculptParams*)from->getParameterEntry(LLNetworkData::PARAMS_SCULPT));
-				if(sXmlImportOptions->mReplaceTexture && sTextureReplace.find(sculpt.getSculptTexture()) != sTextureReplace.end())
-					sculpt.setSculptTexture(sTextureReplace[sculpt.getSculptTexture()]);
-				object->setParameterEntry(LLNetworkData::PARAMS_SCULPT, sculpt, true);
-				object->setParameterEntryInUse(LLNetworkData::PARAMS_SCULPT, TRUE, true);
-				object->parameterChanged(LLNetworkData::PARAMS_SCULPT, true);
-			}
-			else
-			{
-				// send param not in use in case the supply prim has it
-				object->setParameterEntryInUse(LLNetworkData::PARAMS_SCULPT, FALSE, true);
-				object->parameterChanged(LLNetworkData::PARAMS_SCULPT, true);
-			}
-			break;
-		}
-	case IMPORT_TEXTURE:
-		{
-			// Textures
-			U8 te_count = from->getNumTEs();
-			for (U8 i = 0; i < te_count; i++)
-			{
-				const LLTextureEntry* wat = from->getTE(i);
-				LLTextureEntry te = *wat;
-				if(sXmlImportOptions->mReplaceTexture && sTextureReplace.find(te.getID()) != sTextureReplace.end())
-					te.setID(sTextureReplace[te.getID()]);
-				object->setTE(i, te);
-			}
-			object->sendTEUpdate();	
-			break;
-		}
-	case IMPORT_FINISH:
-		{
-			// Name
-			std::string name = from->mPrimName;
-			if(name.empty())
-				name = "Object";
-			LLSelectMgr::getInstance()->selectionSetObjectName(from->mPrimName);
+		LLFlexibleObjectData flex = *((LLFlexibleObjectData*)from->getParameterEntry(LLNetworkData::PARAMS_FLEXIBLE));
+		object->setParameterEntry(LLNetworkData::PARAMS_FLEXIBLE, flex, true);
+		object->setParameterEntryInUse(LLNetworkData::PARAMS_FLEXIBLE, TRUE, true);
+		object->parameterChanged(LLNetworkData::PARAMS_FLEXIBLE, true);
+	}
+	else
+	{
+		// send param not in use in case the supply prim has it
+		object->setParameterEntryInUse(LLNetworkData::PARAMS_FLEXIBLE, FALSE, true);
+		object->parameterChanged(LLNetworkData::PARAMS_FLEXIBLE, true);
+	}
+	if (from->getParameterEntryInUse(LLNetworkData::PARAMS_LIGHT))
+	{
+		LLLightParams light = *((LLLightParams*)from->getParameterEntry(LLNetworkData::PARAMS_LIGHT));
+		object->setParameterEntry(LLNetworkData::PARAMS_LIGHT, light, true);
+		object->setParameterEntryInUse(LLNetworkData::PARAMS_LIGHT, TRUE, true);
+		object->parameterChanged(LLNetworkData::PARAMS_LIGHT, true);
+	}
+	else
+	{
+		// send param not in use in case the supply prim has it
+		object->setParameterEntryInUse(LLNetworkData::PARAMS_LIGHT, FALSE, true);
+		object->parameterChanged(LLNetworkData::PARAMS_LIGHT, true);
+	}
+	if (from->getParameterEntryInUse(LLNetworkData::PARAMS_SCULPT))
+	{
+		LLSculptParams sculpt = *((LLSculptParams*)from->getParameterEntry(LLNetworkData::PARAMS_SCULPT));
+		if(sXmlImportOptions->mReplaceTexture && sTextureReplace.find(sculpt.getSculptTexture()) != sTextureReplace.end())
+			sculpt.setSculptTexture(sTextureReplace[sculpt.getSculptTexture()]);
+		object->setParameterEntry(LLNetworkData::PARAMS_SCULPT, sculpt, true);
+		object->setParameterEntryInUse(LLNetworkData::PARAMS_SCULPT, TRUE, true);
+		object->parameterChanged(LLNetworkData::PARAMS_SCULPT, true);
+	}
+	else
+	{
+		// send param not in use in case the supply prim has it
+		object->setParameterEntryInUse(LLNetworkData::PARAMS_SCULPT, FALSE, true);
+		object->parameterChanged(LLNetworkData::PARAMS_SCULPT, true);
+	}
+
+	// Textures
+	U8 te_count = from->getNumTEs();
+	for (U8 i = 0; i < te_count; i++)
+	{
+		const LLTextureEntry* wat = from->getTE(i);
+		LLTextureEntry te = *wat;
+		if(sXmlImportOptions->mReplaceTexture && sTextureReplace.find(te.getID()) != sTextureReplace.end())
+			te.setID(sTextureReplace[te.getID()]);
+		object->setTE(i, te);
+	}
+	object->sendTEUpdate();	
+
+	// Name
+	std::string name = from->mPrimName;
+	if(name.empty())
+		name = "Object";
+	LLSelectMgr::getInstance()->selectionSetObjectName(from->mPrimName);
 			
-			//Description
-			if(from->importIsAttachment) //special description tracker
+	//Description
+	if(from->importIsAttachment) //special description tracker
+	{
+		LLSelectMgr::getInstance()->selectionSetObjectDescription(from->mId);
+	}
+	else
+	{	
+		std::string desc = from->mPrimDescription;
+		if(desc.empty())
+			desc = "(No Description)";
+		LLSelectMgr::getInstance()->selectionSetObjectDescription(desc);
+	}
+	sExpectedUpdate = LLUUID::null;
+	sPrimIndex++;
+	/////// finished block /////////
+	if(sPrimIndex >= (int)sPrims.size())
+	{
+		// Link time
+		for(std::map<U32, std::vector<LLViewerObject*> >::iterator itr = sLinkSets.begin();itr != sLinkSets.end();++itr)
+		{
+			std::vector<LLViewerObject*> linkset = (*itr).second;
+			LLSelectMgr::getInstance()->deselectAll();
+			LLSelectMgr::getInstance()->selectObjectAndFamily(linkset, true);
+			LLSelectMgr::getInstance()->sendLink(); 
+		}
+
+		if(sId2attachpt.size() == 0)
+		{
+			sImportInProgress = false;
+			std::string msg = "Imported " + sXmlImportOptions->mName;
+			LLChat chat(msg);
+			LLFloaterChat::addChat(chat);
+			LLFloaterImportProgress::update();
+		}
+		else
+		{
+			// Take attachables into inventory
+			sAttachmentsDone = 0;
+			if(sLinkSets.size() > 0)
 			{
-				LLSelectMgr::getInstance()->selectionSetObjectDescription(from->mId);
-			}
-			else
-			{	
-				std::string desc = from->mPrimDescription;
-				if(desc.empty())
-					desc = "(No Description)";
-				LLSelectMgr::getInstance()->selectionSetObjectDescription(desc);
-			}
-			sExpectedUpdate = LLUUID::null;
-			sPrimIndex++;
-			/////// finished block /////////
-			if(sPrimIndex >= (int)sPrims.size())
-			{
-				// Link time
+				U32 ip = gAgent.getRegionHost().getAddress();
+				U32 port = gAgent.getRegionHost().getPort();
+				std::vector<LLUUID> roots;
+				roots.resize(sLinkSets.size());
 				for(std::map<U32, std::vector<LLViewerObject*> >::iterator itr = sLinkSets.begin();itr != sLinkSets.end();++itr)
 				{
-					std::vector<LLViewerObject*> linkset = (*itr).second;
-					LLSelectMgr::getInstance()->deselectAll();
-					LLSelectMgr::getInstance()->selectObjectAndFamily(linkset, true);
-					LLSelectMgr::getInstance()->sendLink(); 
-				}
-
-				if(sId2attachpt.size() == 0)
-				{
-					sImportInProgress = false;
-					std::string msg = "Imported " + sXmlImportOptions->mName;
-					LLChat chat(msg);
-					LLFloaterChat::addChat(chat);
-					LLFloaterImportProgress::update();
-				}
-				else
-				{
-					// Take attachables into inventory
-					std::string msg = "Wait a few moments for the attachments to link and attach...";
-					LLChat chat(msg);
-					LLFloaterChat::addChat(chat);
-					sAttachmentsDone = 0;
-					if(sLinkSets.size() > 0)
+					LLUUID id = LLUUID::null;
+					LLViewerObjectList::getUUIDFromLocal(id,itr->first,ip,port);
+					if(id.notNull())
 					{
-						U32 ip = gAgent.getRegionHost().getAddress();
-						U32 port = gAgent.getRegionHost().getPort();
-						std::vector<LLUUID> roots;
-						roots.resize(sLinkSets.size());
-						for(std::map<U32, std::vector<LLViewerObject*> >::iterator itr = sLinkSets.begin();itr != sLinkSets.end();++itr)
-						{
-							LLUUID id = LLUUID::null;
-							LLViewerObjectList::getUUIDFromLocal(id,itr->first,ip,port);
-							if(id.notNull())
-							{
-								roots.push_back(id);
-							}
-						}
-						new LLLinkTimer(roots);
-					}
-					else
-					{
-						finish_link();
+						roots.push_back(id);
 					}
 				}
 			}
-			else
-			{
-				LLFloaterImportProgress::update();
-				rez_supply();
-				sState = IMPORT_INIT;
-			}
-			break;
+			finish_link();
 		}
-	default:
-		{
-			llwarns << "got default state in state machine, resetting to IMPORT_INIT" << llendl;
-			sState = IMPORT_INIT;
-		}
+	}
+	else
+	{
+		LLFloaterImportProgress::update();
+		rez_supply();
 	}
 	LLSelectMgr::getInstance()->deselectAll();
 }

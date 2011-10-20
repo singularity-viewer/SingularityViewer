@@ -11,15 +11,6 @@
 #include "llvoavatardefines.h"
 #include <lleventtimer.h>
 
-typedef enum e_import_object_state
-	{
-		IMPORT_INIT,
-		//IMPORT_TRANSFORM, Done when new prim is seen.
-		IMPORT_VOLUME,
-		IMPORT_EXTRA,
-		IMPORT_TEXTURE,
-		IMPORT_FINISH //moves on to next prim or links.
-	} eImportObjectState;
 class LLImportAssetData
 {
 public:
@@ -106,7 +97,6 @@ public:
 
 	static bool sImportInProgress;
 	static bool sImportHasAttachments;
-	static eImportObjectState sState;
 	static LLUUID sExpectedUpdate;
 	static LLUUID sFolderID;
 	static LLViewerObject* sSupplyParams;

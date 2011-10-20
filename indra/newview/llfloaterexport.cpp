@@ -666,8 +666,14 @@ LLSD LLFloaterExport::getLLSD()
 	}
 	return sd;
 }
-static void onClickSaveAs_Callback(LLFloaterExport* floater, AIFilePicker* filepicker)
+/*static*/
+void LLFloaterExport::onClickSaveAs_Callback(LLFloaterExport* floater, AIFilePicker* filepicker)
 {
+	if(!filepicker->hasFilename())
+	{
+		// User canceled save.
+		return;
+	}
 	std::string file_name = filepicker->getFilename();
 	std::string path = file_name.substr(0,file_name.find_last_of(".")) + "_assets";
 	BOOL download_texture = floater->childGetValue("download_textures");
@@ -754,6 +760,8 @@ static void onClickSaveAs_Callback(LLFloaterExport* floater, AIFilePicker* filep
 	if(download_texture) msg.append(" (Content might take some time to download)");
 	LLChat chat(msg);
 	LLFloaterChat::addChat(chat);
+
+	floater->close();
 }
 //static
 void LLFloaterExport::onClickSaveAs(void* user_data)
@@ -819,7 +827,7 @@ void LLFloaterExport::onClickSaveAs(void* user_data)
 		}
 		AIFilePicker* filepicker = AIFilePicker::create();
 		filepicker->open(LLDir::getScrubbedFileName(default_filename + ".xml"), FFSAVE_XML);
-		filepicker->run(boost::bind(&onClickSaveAs_Callback, floater, filepicker));
+		filepicker->run(boost::bind(&LLFloaterExport::onClickSaveAs_Callback, floater, filepicker));
 	}
 	else
 	{
@@ -827,9 +835,7 @@ void LLFloaterExport::onClickSaveAs(void* user_data)
 		LLChat chat(msg);
 		LLFloaterChat::addChat(chat);
 		return;
-	}
-	
-	floater->close();
+	}	
 }
 
 //static
