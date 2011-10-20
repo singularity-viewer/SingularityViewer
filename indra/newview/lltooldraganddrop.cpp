@@ -2473,8 +2473,9 @@ EAcceptance LLToolDragAndDrop::dad3dTextureObject(
 	LLViewerInventoryCategory* cat;
 	locateInventory(item, cat);
 	// <edit>
-	//if(!item || !item->isComplete()) return ACCEPT_NO;
-	if( !item || (!item->isComplete() && !(gInventory.isObjectDescendentOf(item->getUUID(), gSystemFolderRoot))) ) return ACCEPT_NO;
+	//re-edited bitches, I want to drag crap out of my temp inventory :|
+	if(!item || !item->isComplete()) return ACCEPT_NO;
+	//if( !item || (!item->isComplete() && !(gInventory.isObjectDescendentOf(item->getUUID(), gSystemFolderRoot))) ) return ACCEPT_NO;
 	// </edit>
 	EAcceptance rv = willObjectAcceptInventory(obj, item);
 	if((mask & MASK_CONTROL))
