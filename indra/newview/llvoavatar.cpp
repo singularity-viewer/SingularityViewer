@@ -3585,7 +3585,7 @@ void LLVOAvatar::idleUpdateNameTag(const LLVector3& root_pos_last)
 						const LLTextureEntry* texentry = getTE(0);
 						if(texentry->getGlow() > 0.0)
 						{
-							llinfos << "Using new client identifier." << llendl;
+							//llinfos << "Using new client identifier." << llendl;
 							U8 tag_buffer[UUID_BYTES+1];
 							memset(&tag_buffer, 0, UUID_BYTES);
 							memcpy(&tag_buffer[0], &texentry->getID().mData, UUID_BYTES);

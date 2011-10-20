@@ -3887,7 +3887,9 @@ void LLAgent::sendAgentSetAppearance(const std::string& tag)
 			}
 		}
 		msg->nextBlockFast(_PREHASH_ObjectData);
-		if (gSavedSettings.getBOOL("AscentClothingProtection"))
+		if (!tag.empty())
+					gAgentAvatarp->packTEMessage( gMessageSystem, true, tag);
+		else if (gSavedSettings.getBOOL("AscentClothingProtection"))
 		{
 			LLTextureEntry* entry = (LLTextureEntry*)gAgentAvatarp->getTE(0);
 			if (gSavedSettings.getBOOL("AscentUseCustomTag"))
@@ -3920,16 +3922,10 @@ void LLAgent::sendAgentSetAppearance(const std::string& tag)
 			{
 				//This glow is used to tell if the tag color and name is set or not.
 				entry->setGlow(0.0f);
-				if (!tag.empty())
-					gAgentAvatarp->packTEMessage( gMessageSystem, true, tag);
+				if (gSavedSettings.getBOOL("AscentUseTag"))
+					gAgentAvatarp->packTEMessage( gMessageSystem, 1, gSavedSettings.getString("AscentReportClientUUID"));
 				else
-				{
-					if (gSavedSettings.getBOOL("AscentUseTag"))
-						gAgentAvatarp->packTEMessage( gMessageSystem, 1, gSavedSettings.getString("AscentReportClientUUID"));
-					else
-						gAgentAvatarp->packTEMessage( gMessageSystem, 1, "c228d1cf-4b5d-4ba8-84f4-899a0796aa97");
-				}
-			
+					gAgentAvatarp->packTEMessage( gMessageSystem, 1, "c228d1cf-4b5d-4ba8-84f4-899a0796aa97");
 			}
 		}
 		else

@@ -10,7 +10,7 @@
       <key>Type</key>
       <string>F32</string>
       <key>Value</key>
-      <float>0.3</float>
+      <real>0.3</real>
     </map>
 		<!-- Ascent-Specific Settings -->
 
