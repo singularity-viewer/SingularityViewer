@@ -69,7 +69,7 @@ Singularity
       <!-- End of Left Side -->
       <check_box bottom_delta="87" control_name="AscentUseCustomTag" enabled="true"
         follows="left|top" font="SansSerifSmall" height="16" initial_value="true"
-        label="Use a custom color and label (Local only)" left_delta="230"
+        label="Use a custom color and label" left_delta="230"
         tool_tip="Enabling this will let you set your own name tag to show up with your custom client and tag color. This only shows up to yourself."
         mouse_opaque="true" name="customize_own_tag_check" radio_style="false"
         width="400" />
@@ -93,7 +93,7 @@ Color:
         can_apply_immediately="false" color="1 1 1 1"
         enabled="true" follows="left|top" height="34" label="" left_delta="35"
         mouse_opaque="true" name="custom_tag_color_swatch" control_name="AscentCustomTagColor"
-        tool_tip="The custom color you would like to replace your client color with (Local only)" width="30" />
+        tool_tip="The custom color you would like to replace your client color with" width="30" />
       <check_box bottom_delta="-8" control_name="AscentShowOthersTag" enabled="true"
         follows="left|top" font="SansSerifSmall" height="16" initial_value="true"
         label="Display client tag for others" left_delta="-205"
