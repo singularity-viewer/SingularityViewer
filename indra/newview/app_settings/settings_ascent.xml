@@ -10,7 +10,7 @@
       <key>Type</key>
       <string>F32</string>
       <key>Value</key>
-      <integer>0.3</integer>
+      <float>0.3</float>
     </map>
 		<!-- Ascent-Specific Settings -->
 
@@ -301,6 +301,17 @@
 			<key>Value</key>
 			<integer>1</integer>
 		</map>
+    <key>AscentClothingProtection</key>
+    <map>
+      <key>Comment</key>
+      <string>Broadcast client tag</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
 		<key>AscentUseTag</key>
 		<map>
 			<key>Comment</key>

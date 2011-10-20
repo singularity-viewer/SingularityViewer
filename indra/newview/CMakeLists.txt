@@ -68,7 +68,8 @@ include_directories(
     )
 
 set(viewer_SOURCE_FILES
-    llviewerobjectbackup.cpp
+    llimportobject.cpp
+    llfloaterexport.cpp
     slfloatermediafilter.cpp
     floaterlocalassetbrowse.cpp
     aoremotectrl.cpp
@@ -153,6 +154,7 @@ set(viewer_SOURCE_FILES
     lldrawpoolwlsky.cpp
     lldriverparam.cpp
     lldynamictexture.cpp
+    lleasymessagesender.cpp
     llemote.cpp
     lleventinfo.cpp
     lleventnotifier.cpp
@@ -208,7 +210,9 @@ set(viewer_SOURCE_FILES
     llfloaterhtmlsimple.cpp
     llfloaterhud.cpp
     llfloaterimagepreview.cpp
+    llfloaterimport.cpp
     llfloaterinspect.cpp
+    llfloaterinterceptor.cpp
     llfloaterjoystick.cpp
     llfloaterlagmeter.cpp
     llfloaterland.cpp
@@ -216,6 +220,7 @@ set(viewer_SOURCE_FILES
     llfloaterlandmark.cpp
     llfloatermap.cpp
     llfloatermemleak.cpp
+    llfloatermessagebuilder.cpp
     llfloatermessagelog.cpp
     llfloatermute.cpp
     llfloaternamedesc.cpp
@@ -552,7 +557,8 @@ set(viewer_HEADER_FILES
     CMakeLists.txt
     ViewerInstall.cmake
 
-    llviewerobjectbackup.h
+    llimportobject.h
+    llfloaterexport.h
     slfloatermediafilter.h
     floaterlocalassetbrowse.h
     aoremotectrl.h
@@ -637,6 +643,7 @@ set(viewer_HEADER_FILES
     lldrawpoolwlsky.h
     lldriverparam.h
     lldynamictexture.h
+    lleasymessagesender.h
     llemote.h
     lleventinfo.h
     lleventnotifier.h
@@ -692,7 +699,9 @@ set(viewer_HEADER_FILES
     llfloaterhtmlsimple.h
     llfloaterhud.h
     llfloaterimagepreview.h
+    llfloaterimport.h
     llfloaterinspect.h
+    llfloaterinterceptor.h
     llfloaterjoystick.h
     llfloaterlagmeter.h
     llfloaterland.h
@@ -700,6 +709,7 @@ set(viewer_HEADER_FILES
     llfloaterlandmark.h
     llfloatermap.h
     llfloatermemleak.h
+    llfloatermessagebuilder.h
     llfloatermessagelog.h
     llfloatermute.h
     llfloaternamedesc.h

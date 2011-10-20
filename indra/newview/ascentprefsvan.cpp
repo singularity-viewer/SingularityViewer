@@ -146,10 +146,10 @@ void LLPrefsAscentVan::onManualClientUpdate(void* data)
 			client_uuid = combo->getSelectedValue().asString();
 			gSavedSettings.setString("AscentReportClientUUID",  client_uuid);
 			gSavedSettings.setU32("AscentReportClientIndex",  client_index);
-			LLVOAvatar* avatar = gAgent.getAvatarObject();
-			if (!avatar) return;
-
-			gAgent.sendAgentSetAppearance();
+			if (gAgentAvatarp)
+			{
+				gAgent.sendAgentSetAppearance();
+			}
 		}
 	}
 
@@ -379,4 +379,9 @@ void LLPrefsAscentVan::apply()
 {
     refreshValues();
     refresh();
+	if (gAgentAvatarp) //check if we got inworld
+	{
+		gAgent.resetClientTag();
+		gAgent.sendAgentSetAppearance();
+	}
 }

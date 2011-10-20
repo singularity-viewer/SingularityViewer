@@ -16,6 +16,7 @@
 #include "llimportobject.h"
 #include "llviewerobjectlist.h"
 #include "llviewerregion.h"
+#include "llwearabletype.h"
 #include "llwindow.h"
 #include "llviewertexturelist.h"
 #include "lltexturecache.h"
@@ -24,6 +25,8 @@
 #include "llsdutil_math.h"
 #include "llimagej2c.h"
 std::vector<LLFloaterExport*> LLFloaterExport::instances;
+
+using namespace LLVOAvatarDefines;
 
 class CacheReadResponder : public LLTextureCache::ReadResponder
 {
@@ -96,7 +99,7 @@ LLExportable::LLExportable(LLViewerObject* object, std::string name, std::map<U3
 {
 }
 
-LLExportable::LLExportable(LLVOAvatar* avatar, EWearableType type, std::map<U32,std::pair<std::string, std::string> >& primNameMap)
+LLExportable::LLExportable(LLVOAvatar* avatar, LLWearableType::EType type, std::map<U32,std::pair<std::string, std::string> >& primNameMap)
 :	mAvatar(avatar),
 	mType(EXPORTABLE_WEARABLE),
 	mWearableType(type),
@@ -217,7 +220,7 @@ LLSD LLExportable::asLLSD()
 		item_sd["type"] = "wearable";
 
 		S32 type_s32 = (S32)mWearableType;
-		std::string wearable_name = LLWearable::typeToTypeName( mWearableType );
+		std::string wearable_name = LLWearableType::getTypeName( mWearableType );
 
 		item_sd["name"] = mAvatar->getFullname() + " " + wearable_name;
 		item_sd["wearabletype"] = type_s32;
@@ -240,7 +243,7 @@ LLSD LLExportable::asLLSD()
 
 		for( S32 te = 0; te < LLVOAvatarDefines::TEX_NUM_INDICES; te++ )
 		{
-			if( LLVOAvatar::getTEWearableType( (LLVOAvatarDefines::ETextureIndex)te ) == mWearableType )
+			if( LLVOAvatarDictionary::getTEWearableType( (LLVOAvatarDefines::ETextureIndex)te ) == mWearableType )
 			{
 				LLViewerTexture* te_image = mAvatar->getTEImage( te );
 				if( te_image )
@@ -410,16 +413,17 @@ BOOL LLFloaterExport::postBuild(void)
 void LLFloaterExport::addAvatarStuff(LLVOAvatar* avatarp)
 {
 	LLScrollListCtrl* list = getChild<LLScrollListCtrl>("export_list");
-	for( S32 type = WT_SHAPE; type < WT_COUNT; type++ )
+	for( S32 type_itr = 0; type_itr < LLWearableType::WT_COUNT; type_itr++ )
 	{
+		const LLWearableType::EType type = (LLWearableType::EType)type_itr;
 		// guess whether this wearable actually exists
 		// by checking whether it has any textures that aren't default
 		bool exists = false;
-		if(type == WT_SHAPE)
+		if(type == LLWearableType::WT_SHAPE)
 		{
 			exists = true;
 		}
-		else if (type == WT_ALPHA || type == WT_TATTOO) //alpha layers and tattos are unsupported for now
+		else if (type == LLWearableType::WT_ALPHA || type == LLWearableType::WT_TATTOO) //alpha layers and tattos are unsupported for now
 		{
 			continue;
 		}
@@ -427,7 +431,7 @@ void LLFloaterExport::addAvatarStuff(LLVOAvatar* avatarp)
 		{
 			for( S32 te = 0; te < LLVOAvatarDefines::TEX_NUM_INDICES; te++ )
 			{
-				if( (S32)LLVOAvatar::getTEWearableType( (LLVOAvatarDefines::ETextureIndex)te ) == type )
+				if( LLVOAvatarDictionary::getTEWearableType( (LLVOAvatarDefines::ETextureIndex)te ) == type )
 				{
 					LLViewerTexture* te_image = avatarp->getTEImage( te );
 					if( te_image->getID() != IMG_DEFAULT_AVATAR)
@@ -441,7 +445,7 @@ void LLFloaterExport::addAvatarStuff(LLVOAvatar* avatarp)
 
 		if(exists)
 		{
-			std::string wearable_name = LLWearable::typeToTypeName( (EWearableType)type );
+			std::string wearable_name = LLWearableType::getTypeName( type );
 			std::string name = avatarp->getFullname() + " " + wearable_name;
 			LLUUID myid;
 			myid.generate();
@@ -467,7 +471,7 @@ void LLFloaterExport::addAvatarStuff(LLVOAvatar* avatarp)
 			avatarid_column["column"] = "avatarid";
 			avatarid_column["value"] = avatarp->getID();
 
-			LLExportable* exportable = new LLExportable(avatarp, (EWearableType)type, mPrimNameMap);
+			LLExportable* exportable = new LLExportable(avatarp, type, mPrimNameMap);
 			mExportables[myid] = exportable->asLLSD();
 
 			list->addElement(element, ADD_BOTTOM);

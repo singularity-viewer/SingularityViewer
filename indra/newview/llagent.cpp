@@ -3809,7 +3809,7 @@ void LLAgent::requestLeaveGodMode()
 //-----------------------------------------------------------------------------
 // sendAgentSetAppearance()
 //-----------------------------------------------------------------------------
-void LLAgent::sendAgentSetAppearance()
+void LLAgent::sendAgentSetAppearance(const std::string& tag)
 {
 	if (!isAgentAvatarValid()) return;
 
@@ -3818,7 +3818,7 @@ void LLAgent::sendAgentSetAppearance()
 		return;
 	}
 
-
+	if (!tag.empty())
 	llinfos << "TAT: Sent AgentSetAppearance: " << gAgentAvatarp->getBakedStatusForPrintout() << llendl;
 	//dumpAvatarTEs( "sendAgentSetAppearance()" );
 
@@ -3871,6 +3871,7 @@ void LLAgent::sendAgentSetAppearance()
 	// only update cache entries if we have all our baked textures
 	if (textures_current)
 	{
+		if (!tag.empty())
 		llinfos << "TAT: Sending cached texture data" << llendl;
 		for (U8 baked_index = 0; baked_index < BAKED_NUM_INDICES; baked_index++)
 		{
@@ -3886,45 +3887,54 @@ void LLAgent::sendAgentSetAppearance()
 			}
 		}
 		msg->nextBlockFast(_PREHASH_ObjectData);
-
-		/*if (gSavedSettings.getBOOL("AscentUseCustomTag"))
+		if (gSavedSettings.getBOOL("AscentClothingProtection"))
 		{
-			LLColor4 color;
-			if (!gSavedSettings.getBOOL("AscentStoreSettingsPerAccount"))
+			LLTextureEntry* entry = (LLTextureEntry*)gAgentAvatarp->getTE(0);
+			if (gSavedSettings.getBOOL("AscentUseCustomTag"))
 			{
-				color = gSavedSettings.setColor4("AscentCustomTagColor");
+				LLColor4 color;
+				std::string tag_client = "Singularity";
+				if (!gSavedSettings.getBOOL("AscentStoreSettingsPerAccount"))
+				{
+					tag_client = gSavedSettings.getString("AscentCustomTagLabel");
+					color = gSavedSettings.getColor4("AscentCustomTagColor");
+				}
+				else
+				{
+					tag_client = gSavedPerAccountSettings.getString("AscentCustomTagLabel");
+					color = gSavedPerAccountSettings.getColor4("AscentCustomTagColor");
+				}
+				U8 client_buffer[UUID_BYTES];
+				memset(&client_buffer, 0, UUID_BYTES);
+				//You edit this to change the tag in your client. Yes.
+				strncpy((char*)&client_buffer[0], tag_client.c_str(), UUID_BYTES);
+				LLUUID duh_key ;
+				memcpy(&duh_key.mData, &client_buffer[0], UUID_BYTES);
+				entry->setColor(color);
+				//This glow is used to tell if the tag color and name is set or not.
+				entry->setGlow(0.1f);
+				entry->setID(duh_key);
+				gAgentAvatarp->packTEMessage( gMessageSystem, 1, duh_key.asString() );
 			}
 			else
 			{
-				color = gSavedPerAccountSettings.getColor4("AscentCustomTagColor");
-			}
-			LLUUID old_teid;
-			U8 client_buffer[UUID_BYTES];
-			memset(&client_buffer, 0, UUID_BYTES);
-			LLTextureEntry* entry = (LLTextureEntry*)gAgentAvatarp->getTE(0);
-			old_teid = entry->getID();
-			//You edit this to change the tag in your client. Yes.
-			const char* tag_client = "Ascent";
-			strncpy((char*)&client_buffer[0], tag_client, UUID_BYTES);
-			LLUUID part_a;
-			memcpy(&part_a.mData, &client_buffer[0], UUID_BYTES);
-			entry->setColor(color);
-			//This glow is used to tell if the tag color and name is set or not.
-			entry->setGlow(0.1f);
-			entry->setID(part_a);
-			gAgentAvatarp->packTEMessage( gMessageSystem, 1, gSavedSettings.getString("AscentReportClientUUID") );
-			entry->setID(old_teid);
+				//This glow is used to tell if the tag color and name is set or not.
+				entry->setGlow(0.0f);
+				if (!tag.empty())
+					gAgentAvatarp->packTEMessage( gMessageSystem, true, tag);
+				else
+				{
+					if (gSavedSettings.getBOOL("AscentUseTag"))
+						gAgentAvatarp->packTEMessage( gMessageSystem, 1, gSavedSettings.getString("AscentReportClientUUID"));
+					else
+						gAgentAvatarp->packTEMessage( gMessageSystem, 1, "c228d1cf-4b5d-4ba8-84f4-899a0796aa97");
+				}
 			
+			}
 		}
 		else
-		{*/
-			if (gSavedSettings.getBOOL("AscentUseTag"))
-				gAgentAvatarp->packTEMessage( gMessageSystem, 1, gSavedSettings.getString("AscentReportClientUUID"));
-			else
-				gAgentAvatarp->packTEMessage( gMessageSystem, 1, "c228d1cf-4b5d-4ba8-84f4-899a0796aa97");
-		//}
+			gAgentAvatarp->packTEMessage( gMessageSystem );
 		resetClientTag();
-		
 	}
 	else
 	{

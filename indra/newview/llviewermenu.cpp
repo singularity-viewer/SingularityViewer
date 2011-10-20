@@ -64,9 +64,12 @@
 #include "llsdutil.h"
 // <edit>
 #include "lllocalinventory.h"
+#include "llfloaterimport.h"
+#include "llfloaterexport.h"
 #include "llfloaterexploreanimations.h"
 #include "llfloaterexploresounds.h"
 #include "llfloaterblacklist.h"
+#include "llfloaterinterceptor.h"
 // </edit>
 #include "lltimer.h"
 #include "llvfile.h"
@@ -247,6 +250,7 @@
 #include "llfloatermessagelog.h"
 #include "llfloatervfs.h"
 #include "llfloatervfsexplorer.h"
+#include "lleventtimer.h"
 // </edit>
 
 #include "scriptcounter.h"
@@ -254,7 +258,6 @@
 #include "llavatarnamecache.h"
 #include "floaterao.h"
 #include "slfloatermediafilter.h"
-#include "llviewerobjectbackup.h"
 #include "llagentui.h"
 
 #include "hippogridmanager.h"
@@ -431,6 +434,7 @@ void handle_leave_god_mode(void*);
 // <edit>
 void handle_fake_away_status(void*);
 void handle_area_search(void*);
+void handle_interceptor(void*);
 
 // <dogmode> for pose stand
 LLUUID current_pose = LLUUID::null;
@@ -481,10 +485,14 @@ BOOL handle_check_pose(void* userdata) {
 
 void handle_force_ground_sit(void*);
 void handle_phantom_avatar(void*);
+BOOL check_phantom_avatar(void*);
+void handle_rainbow_tag(void*);
+BOOL check_rainbow_tag(void*);
 void handle_hide_typing_notification(void*);
 void handle_close_all_notifications(void*);
 void handle_reopen_with_hex_editor(void*);
 void handle_open_message_log(void*);
+void handle_open_message_builder(void*);
 void handle_edit_ao(void*);
 void handle_local_assets(void*);
 void handle_vfs_explorer(void*);
@@ -802,13 +810,20 @@ void init_menus()
 	// TomY TODO convert these two
 	LLMenuGL*menu;
 
-	menu = new LLMenuGL("Singularity");
+	menu = new LLMenuGL("Party Hat");
 	menu->append(new LLMenuItemCallGL(	"Close All Dialogs", 
 										&handle_close_all_notifications, NULL, NULL, 'D', MASK_CONTROL | MASK_ALT | MASK_SHIFT));
 	menu->appendSeparator();
 	menu->append(new LLMenuItemCallGL(  "Fake Away Status", &handle_fake_away_status, NULL));
 	menu->append(new LLMenuItemCallGL(  "Force Ground Sit", &handle_force_ground_sit, NULL));
-	menu->append(new LLMenuItemCallGL(  "Phantom Avatar", &handle_phantom_avatar, NULL));
+	menu->append(new LLMenuItemCheckGL( "Phantom Avatar",
+										 &handle_phantom_avatar,
+										  NULL,
+										  &check_phantom_avatar,
+										  NULL));
+	menu->appendSeparator();
+	menu->append(new LLMenuItemCallGL(	"Interceptor",
+						&handle_interceptor, NULL, NULL, 'I', MASK_CONTROL | MASK_ALT | MASK_SHIFT));//kind-of-a big deal -TF2Scout
 	menu->appendSeparator();
 	menu->append(new LLMenuItemCallGL( "Animation Override...",
 									&handle_edit_ao, NULL));
@@ -822,9 +837,11 @@ void init_menus()
 										NULL,
 										&menu_check_control,
 										(void*)"ReSit"));
+	menu->append(new LLMenuItemCheckGL(  "Rainbow Tag", &handle_rainbow_tag, NULL,&check_rainbow_tag,NULL));
 	menu->appendSeparator();
 	menu->append(new LLMenuItemCallGL(	"Object Area Search", &handle_area_search, NULL));
-	menu->append(new LLMenuItemCallGL(  "Message Log", &handle_open_message_log, NULL));	
+	menu->append(new LLMenuItemCallGL(  "Message Log", &handle_open_message_log, NULL));
+	menu->append(new LLMenuItemCallGL(	"Message Builder", &handle_open_message_builder, NULL));
 
 	menu->append(new LLMenuItemCallGL(	"Sound Explorer",
 											&handle_sounds_explorer, NULL));
@@ -2820,53 +2837,26 @@ class LLGoToObject : public view_listener_t
 };
 
 //---------------------------------------------------------------------------
-// Object backup
+// Object import / export
 //---------------------------------------------------------------------------
 
-class LLObjectEnableExport : public view_listener_t
+class LLObjectEnableSaveAs : public view_listener_t
 {
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
 	{
 		LLViewerObject* object = LLSelectMgr::getInstance()->getSelection()->getPrimaryObject();
 		bool new_value = (object != NULL);
-		if (new_value)
-		{
-			struct ff : public LLSelectedNodeFunctor
-			{
-				ff(const LLSD& data) : LLSelectedNodeFunctor(), userdata(data)
-				{
-				}
-				const LLSD& userdata;
-				virtual bool apply(LLSelectNode* node)
-				{
-					// Note: the actual permission checking algorithm depends on the grid TOS and must be
-					// performed for each prim and texture. This is done later in llviewerobjectbackup.cpp.
-					// This means that even if the item is enabled in the menu, the export may fail should
-					// the permissions not be met for each exported asset. The permissions check below
-					// therefore only corresponds to the minimal permissions requirement common to all grids.
-					LLPermissions *item_permissions = node->mPermissions;
-					return (gAgent.getID() == item_permissions->getOwner() &&
-							(gAgent.getID() == item_permissions->getCreator() ||
-							 (item_permissions->getMaskOwner() & PERM_ITEM_UNRESTRICTED) == PERM_ITEM_UNRESTRICTED));
-				}
-			};
-			ff * the_ff = new ff(userdata);
-			new_value = LLSelectMgr::getInstance()->getSelection()->applyToNodes(the_ff, false);
-		}
 		gMenuHolder->findControl(userdata["control"].asString())->setValue(new_value);
 		return true;
 	}
 };
 
-class LLObjectExport : public view_listener_t
+class LLObjectSaveAs : public view_listener_t
 {
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
 	{
-		LLViewerObject* object = LLSelectMgr::getInstance()->getSelection()->getPrimaryObject();
-		if (object)
-		{
-			LLObjectBackup::getInstance()->exportObject();
-		}
+		LLFloaterExport* floater = new LLFloaterExport();
+		floater->center();
 		return true;
 	}
 };
@@ -2875,7 +2865,22 @@ class LLObjectEnableImport : public view_listener_t
 {
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
 	{
-		gMenuHolder->findControl(userdata["control"].asString())->setValue(TRUE);
+		LLViewerObject* object = LLSelectMgr::getInstance()->getSelection()->getPrimaryObject();
+		bool new_value = (object != NULL);
+		if(object)
+		{
+			if(!object->permCopy())
+				new_value = false;
+			else if(!object->permModify())
+				new_value = false;
+			else if(!object->permMove())
+				new_value = false;
+			else if(object->numChildren() != 0)
+				new_value = false;
+			else if(object->getParent())
+				new_value = false;
+		}
+		gMenuHolder->findControl(userdata["control"].asString())->setValue(new_value);
 		return true;
 	}
 };
@@ -2884,17 +2889,38 @@ class LLObjectImport : public view_listener_t
 {
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
 	{
-		LLObjectBackup::getInstance()->importObject(FALSE);
+		LLViewerObject* object = LLSelectMgr::getInstance()->getSelection()->getPrimaryObject();
+		bool new_value = (object != NULL);
+		if(object)
+		{
+			if(!object->permCopy())
+				new_value = false;
+			else if(!object->permModify())
+				new_value = false;
+			else if(!object->permMove())
+				new_value = false;
+			else if(object->numChildren() != 0)
+				new_value = false;
+			else if(object->getParent())
+				new_value = false;
+		}
+		if(new_value == false) return true;
+		
+		AIFilePicker* filepicker = AIFilePicker::create();
+		filepicker->open(FFLOAD_XML, "", "openfile");
+		filepicker->run(boost::bind(&LLObjectImport::callback, filepicker, object));
 		return true;
 	}
-};
-
-class LLObjectImportUpload : public view_listener_t
-{
-	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
+private:
+	static void callback(AIFilePicker* filepicker, LLViewerObject* object)
 	{
-		LLObjectBackup::getInstance()->importObject(TRUE);
-		return true;
+		if(filepicker->hasFilename() && !LLXmlImport::sImportInProgress) //stop multiple imports
+		{
+			std::string file_name = filepicker->getFilename();
+			LLXmlImportOptions* options = new LLXmlImportOptions(file_name);
+			options->mSupplier = object;
+			new LLFloaterXmlImportOptions(options);
+		}
 	}
 };
 
@@ -3687,6 +3713,17 @@ void handle_open_message_log(void*)
 	LLFloaterMessageLog::show();
 }
 
+void handle_open_message_builder(void*)
+{
+	LLFloaterMessageBuilder::show(std::string(""));
+}
+
+void handle_interceptor(void*)
+{
+	if(LLFloaterInterceptor::sInstance) LLFloaterInterceptor::sInstance->close(false);
+	else LLFloaterInterceptor::show();
+}
+
 void handle_edit_ao(void*)
 {
 	LLFloaterAO::show(NULL);
@@ -3760,7 +3797,10 @@ void handle_force_ground_sit(void*)
 		}
 	}
 }
-
+BOOL check_phantom_avatar(void*)
+{
+	return LLAgent::getPhantom();
+}
 void handle_phantom_avatar(void*)
 {
 	BOOL ph = LLAgent::getPhantom();
@@ -3777,7 +3817,94 @@ void handle_phantom_avatar(void*)
 	chat.mText = llformat("%s%s","Phantom ",(ph ? "On" : "Off"));
 	LLFloaterChat::addChat(chat);
 }
+class RainbowTagTimer : public LLEventTimer
+{
+public:
+	RainbowTagTimer(F32 interval):
+	  LLEventTimer(interval),
+	  running(TRUE)
+	  {
+		  gSavedSettings.getControl("RainbowTagInterval")->getSignal()->connect(boost::bind(&RainbowTagTimer::update,this,_2));
+		  itr = LLVOAvatar::sClientResolutionList.beginMap();
+	  }
+	~RainbowTagTimer()
+	{
+	}
+	void setPeriod(F32 period)
+	{
+		mPeriod = period;
+	}
+	static void update(RainbowTagTimer* timer, const LLSD& newvalue)
+	{
+		F32 rainbow_tag_interval = newvalue.asFloat();
+		if(timer)
+		{
+			timer->setPeriod(rainbow_tag_interval);
+		}
+	}
+	BOOL tick()
+	{
+		if(running)
+		{
+			if(itr == LLVOAvatar::sClientResolutionList.endMap())
+			{
+				itr = LLVOAvatar::sClientResolutionList.beginMap();
+			}
+			std::string uuid = (*itr).first;
+			LLSD value = (*itr).second;
+			if(value.has("name"))
+			{
+				std::string name = value.get("name");
+				LLColor4 color = LLColor4(value.get("color"));
+				if(value["multiple"].asReal() != 0)
+				{
+					color *= 1.0/(value["multiple"].asReal()+1.0f);
+				}
+				gAgentAvatarp->mClientTag = name;
+				gAgentAvatarp->mClientColor = color;
+				gAgent.sendAgentSetAppearance(uuid);
+			}
+			itr++;
+		}
+		else
+		{
+			gAgent.sendAgentSetAppearance();
+		}
+		return !running;
+	}
+	void stop()
+	{
+		running = FALSE;
+	}
+	LLSD::map_iterator itr;
+	BOOL running;
+};
+RainbowTagTimer* rainbow_timer = NULL;
+BOOL check_rainbow_tag(void*)
+{
+	return !(rainbow_timer == NULL);
+}
+void handle_rainbow_tag(void*)
+{
+	static const LLCachedControl<F32> rainbow_tag_interval("RainbowTagInterval", 0.3f);
+	BOOL rt = check_rainbow_tag(NULL);
 
+	if (rt)
+	{
+		rainbow_timer->stop();
+		rainbow_timer = NULL;
+	}
+	else
+	{
+		rainbow_timer = new RainbowTagTimer(rainbow_tag_interval);
+	}
+	//flip
+	rt = !rt;
+	LLChat chat;
+	chat.mSourceType = CHAT_SOURCE_SYSTEM;
+	chat.mText = llformat("%s%s","Rainbow Tag is ",(rt ? "On" : "Off"));
+	LLFloaterChat::addChat(chat);
+}
 // </edit>
 
 /*
@@ -7327,6 +7454,10 @@ class LLObjectEnableWear : public view_listener_t
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
 	{
 		bool is_wearable = object_selected_and_point_valid(NULL);
+		// <edit> Don't allow attaching objects while importing attachments
+		if(LLXmlImport::sImportInProgress && LLXmlImport::sImportHasAttachments)
+			is_wearable = false;
+		// </edit>
 		gMenuHolder->findControl(userdata["control"].asString())->setValue(is_wearable);
 		return TRUE;
 	}
@@ -7558,6 +7689,11 @@ void handle_selected_texture_info(void*)
 		map_t::iterator it;
 		for (it = faces_per_texture.begin(); it != faces_per_texture.end(); ++it)
 		{
+			LLUUID image_id = it->first;
+			// <edit>
+			std::string uuid_str;
+			image_id.toString(uuid_str);
+			// </edit>
 			U8 te = it->second[0];
 			LLViewerTexture* img = node->getObject()->getTEImage(te);
 			S32 height = img->getHeight();
@@ -7565,7 +7701,9 @@ void handle_selected_texture_info(void*)
 			S32 components = img->getComponents();
 			// <edit>
 			//msg = llformat("%dx%d %s on face ",
-			msg = llformat("%dx%d %s on face ",
+			msg = llformat("%s, %dx%d %s on face ",
+								uuid_str.c_str(),
+			// </edit>
 								width,
 								height,
 								(components == 4 ? "alpha" : "opaque"));
@@ -7576,12 +7714,38 @@ void handle_selected_texture_info(void*)
 			LLChat chat(msg);
 			LLFloaterChat::addChat(chat);
 		}
+		// <edit>
+		if(node->getObject()->isSculpted())
+		{
+			LLSculptParams *sculpt_params = (LLSculptParams *)(node->getObject()->getParameterEntry(LLNetworkData::PARAMS_SCULPT));
+			LLUUID sculpt_id = sculpt_params->getSculptTexture();
+			std::string uuid_str;
+			sculpt_id.toString(uuid_str);
+			msg.assign("Sculpt texture: ");
+			msg.append(uuid_str.c_str());
+			LLChat chat(msg);
+			LLFloaterChat::addChat(chat);
+
+			unique_textures[sculpt_id] = true;
+		}
+		if(node->getObject()->isParticleSource())
+		{
+			//LLUUID particle_id = node->getObject()->mPartSourcep->getImage()->getID();
+		}
+		// </edit>
+	}
+	// <edit>
+	typedef std::map<LLUUID, bool>::iterator map_iter;
+	for(map_iter i = unique_textures.begin(); i != unique_textures.end(); ++i)
+	{
+		LLUUID asset_id = (*i).first;
+		LLLocalInventory::addItem(asset_id.asString(), (int)LLAssetType::AT_TEXTURE, asset_id, true);
 	}
 
 	// Show total widthxheight
-	F32 memory = (F32)total_memory;
-	memory = memory / 1000000;
-	std::string msg = llformat("Total uncompressed: %f MB", memory);
+	F32 memoriez = (F32)total_memory;
+	memoriez = memoriez / 1000000;
+	std::string msg = llformat("Total uncompressed: %f MB", memoriez);
 	LLChat chat(msg);
 	LLFloaterChat::addChat(chat);
 	// </edit>
@@ -9593,9 +9757,10 @@ void initialize_menus()
 	addMenu(new LLObjectInspect(), "Object.Inspect");
 	// <dogmode> Visual mute, originally by Phox.
 	addMenu(new LLObjectDerender(), "Object.DERENDER");
-	addMenu(new LLObjectExport(), "Object.Export");
+	// <edit>
+	addMenu(new LLObjectSaveAs(), "Object.SaveAs");
 	addMenu(new LLObjectImport(), "Object.Import");
-	addMenu(new LLObjectImportUpload(), "Object.ImportUpload");
+	// </edit>
 	
 
 	addMenu(new LLObjectEnableOpen(), "Object.EnableOpen");
@@ -9607,8 +9772,10 @@ void initialize_menus()
 	addMenu(new LLObjectEnableReportAbuse(), "Object.EnableReportAbuse");
 	addMenu(new LLObjectEnableMute(), "Object.EnableMute");
 	addMenu(new LLObjectEnableBuy(), "Object.EnableBuy");
-	addMenu(new LLObjectEnableExport(), "Object.EnableExport");
+	// <edit>
+	addMenu(new LLObjectEnableSaveAs(), "Object.EnableSaveAs");
 	addMenu(new LLObjectEnableImport(), "Object.EnableImport");
+	// </edit>
 
 	/*addMenu(new LLObjectVisibleTouch(), "Object.VisibleTouch");
 	addMenu(new LLObjectVisibleCustomTouch(), "Object.VisibleCustomTouch");

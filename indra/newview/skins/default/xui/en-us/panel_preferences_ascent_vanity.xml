@@ -81,7 +81,7 @@ Label:
       </text>
       <line_editor bottom_delta="-6" enabled="true" follows="left|top" font="SansSerif"
         height="18" left_delta="35" name="custom_tag_label_box"
-        tool_tip="The custom string you would like to replace your client tag with (Local only)"
+        tool_tip="The custom string you would like to replace your client tag with"
         width="100" />
       <text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
         bottom_delta="6" left_delta="110" drop_shadow_visible="true" enabled="true" follows="left|top"

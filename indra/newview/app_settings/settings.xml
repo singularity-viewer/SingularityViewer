@@ -10898,6 +10898,50 @@
       <key>Value</key>
       <integer>0</integer>
     </map>
+    <key>SpecifyMAC</key>
+    <map>
+      <key>Comment</key>
+      <string>Spoof Mac</string>
+      <key>Persist</key>
+      <integer>0</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>0</integer>
+    </map>
+    <key>SpecifyID0</key>
+    <map>
+      <key>Comment</key>
+      <string>Spoof HW ID</string>
+      <key>Persist</key>
+      <integer>0</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>0</integer>
+    </map>
+    <key>SpecifiedMAC</key>
+    <map>
+      <key>Comment</key>
+      <string>What the viewer identifies itself as</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>String</string>
+      <key>Value</key>
+      <string></string>
+    </map>
+    <key>SpecifiedID0</key>
+    <map>
+      <key>Comment</key>
+      <string>What the viewer identifies itself as</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>String</string>
+      <key>Value</key>
+      <string></string>
+    </map>
     <key>SpecifiedChannel</key>
     <map>
       <key>Comment</key>
@@ -10907,7 +10951,7 @@
       <key>Type</key>
       <string>String</string>
       <key>Value</key>
-      <string>AscentViewer</string>
+      <string>Singularity</string>
     </map>
     <key>SpecifiedVersionMaj</key>
     <map>
@@ -10929,7 +10973,7 @@
       <key>Type</key>
       <string>U32</string>
       <key>Value</key>
-      <integer>4</integer>
+      <integer>6</integer>
     </map>
     <key>SpecifiedVersionPatch</key>
     <map>
@@ -10951,7 +10995,7 @@
       <key>Type</key>
       <string>U32</string>
       <key>Value</key>
-      <integer>100000</integer>
+      <integer>1</integer>
     </map>
     <key>RenderQualityPerformance</key>
     <map>

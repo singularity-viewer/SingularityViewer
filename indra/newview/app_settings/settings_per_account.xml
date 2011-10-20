@@ -381,6 +381,67 @@
 			<real>1.0</real>
 		</array>
 	</map>
+	<!-- Ascent Account-Specific (If active) -->
+	<key>AscentUseCustomTag</key>
+	<map>
+		<key>Comment</key>
+		<string>Show a custom local tag.</string>
+		<key>Persist</key>
+		<integer>1</integer>
+		<key>Type</key>
+		<string>Boolean</string>
+		<key>Value</key>
+		<integer>0</integer>
+	</map>
+	<key>AscentCustomTagColor</key>
+	<map>
+		<key>Comment</key>
+		<string>Color of custom local tag.</string>
+		<key>Persist</key>
+		<integer>1</integer>
+		<key>Type</key>
+		<string>Color4</string>
+		<key>Value</key>
+		<array>
+			<real>0.5</real>
+			<real>1.0</real>
+			<real>0.25</real>
+			<real>1.0</real>
+		</array>
+	</map>
+	<key>AscentCustomTagLabel</key>
+	<map>
+		<key>Comment</key>
+		<string>Label for the custom local tag</string>
+		<key>Persist</key>
+		<integer>1</integer>
+		<key>Type</key>
+		<string>String</string>
+		<key>Value</key>
+		<string>Custom</string>
+	</map>
+	<key>AscentReportClientIndex</key>
+	<map>
+		<key>Comment</key>
+		<string>Show your own tag</string>
+		<key>Persist</key>
+		<integer>1</integer>
+		<key>Type</key>
+		<string>U32</string>
+		<key>Value</key>
+		<integer>1</integer>
+	</map>
+	<key>AscentReportClientUUID</key>
+	<map>
+		<key>Comment</key>
+		<string>Broadcasted Client Key</string>
+		<key>Persist</key>
+		<integer>1</integer>
+		<key>Type</key>
+		<string>String</string>
+		<key>Value</key>
+		<string>f25263b7-6167-4f34-a4ef-af65213b2e39</string>
+	</map>
 	<!-- Ascent Account-Specific (Always) -->
     <!-- General additions -->
     <key>rkeastInventoryPreviousCount</key>

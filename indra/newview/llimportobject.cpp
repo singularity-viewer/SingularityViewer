@@ -5,6 +5,9 @@
  */
 
 #include "llviewerprecompiledheaders.h"
+
+#include "llapr.h"
+
 #include "roles_constants.h"
 #include "llimportobject.h"
 #include "llsdserialize.h"
@@ -17,6 +20,7 @@
 #include "llfloater.h"
 #include "lllineeditor.h"
 #include "llinventorymodel.h"
+#include "llinventorydefines.h"
 #include "lluictrlfactory.h"
 #include "llscrolllistctrl.h"
 #include "llviewercontrol.h"
@@ -300,7 +304,7 @@ public:
 				}
 				S32 file_size;
 				LLAPRFile infile ;
-				infile.open(data->filename, LL_APR_RB, LLAPRFile::global, &file_size);
+				infile.open(data->filename, LL_APR_RB, LLAPRFile::short_lived, &file_size);
 				if (infile.getFileHandle())
 				{
 					LLVFile file(gVFS, data->assetid, data->type, LLVFile::WRITE);
@@ -751,11 +755,11 @@ void LLXmlImport::import(LLXmlImportOptions* import_options)
 	// Create folder
 	if((sXmlImportOptions->mWearables.size() > 0) || (sId2attachpt.size() > 0) || (sTotalAssets > 0))
 	{
-		sFolderID = gInventory.createNewCategory( gAgent.getInventoryRootID(), LLAssetType::AT_NONE, sXmlImportOptions->mName);
+		sFolderID = gInventory.createNewCategory( gInventory.getRootFolderID(), LLFolderType::FT_NONE, sXmlImportOptions->mName);
 	}
 	if(sXmlImportOptions->mReplaceTexture && sTotalAssets > 0 && !sXmlImportOptions->mAssetDir.empty())
 	{
-		LLUUID folder_id = gInventory.createNewCategory( sFolderID, LLAssetType::AT_NONE, "Textures");
+		LLUUID folder_id = gInventory.createNewCategory( sFolderID, LLFolderType::FT_NONE, "Textures");
 		//starting up the texture uploading
 		LLImportAssetData* data = sXmlImportOptions->mAssets[0];
                 data->folderid = folder_id;
@@ -770,7 +774,7 @@ void LLXmlImport::import(LLXmlImportOptions* import_options)
 			}
 			S32 file_size;
 			LLAPRFile infile ;
-			infile.open(data->filename, LL_APR_RB, LLAPRFile::global, &file_size);
+			infile.open(data->filename, LL_APR_RB, LLAPRFile::short_lived, &file_size);
 			if (infile.getFileHandle())
 			{
 				LLVFile file(gVFS, data->assetid, data->type, LLVFile::WRITE);

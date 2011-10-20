@@ -24,17 +24,17 @@ class LLImportAssetData
 {
 public:
 	LLImportAssetData(std::string infilename,LLUUID inassetid,LLAssetType::EType intype);
-        U32 localid;
-        LLAssetType::EType type;
-        LLInventoryType::EType inv_type;
-	EWearableType wear_type;
-        LLTransactionID tid;
-        LLUUID assetid;
+    U32 localid;
+    LLAssetType::EType type;
+    LLInventoryType::EType inv_type;
+	//LLWearableType::EType wear_type; unused
+    LLTransactionID tid;
+    LLUUID assetid;
 	LLUUID folderid;
 	LLUUID oldassetid;
-        std::string name;
-        std::string description;
-        std::string filename;
+    std::string name;
+    std::string description;
+    std::string filename;
 };
 
 class LLImportWearable

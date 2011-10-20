@@ -3268,14 +3268,16 @@ void LLVOAvatar::getClientInfo(std::string& client, LLColor4& color, BOOL useCom
 		static const LLCachedControl<bool>			ascent_use_tag("AscentUseTag",true);
 		static const LLCachedControl<std::string>	ascent_report_client_uuid("AscentReportClientUUID","f25263b7-6167-4f34-a4ef-af65213b2e39");
 
-		if (ascent_use_custom_tag)
+		if (ascent_use_tag)
 		{
-			color = ascent_custom_tag_color;
-			client = ascent_custom_tag_label;
-			return;
-		}
-		else if (ascent_use_tag)
+			if (ascent_use_custom_tag)
+			{
+				color = ascent_custom_tag_color;
+				client = ascent_custom_tag_label;
+				return;
+			}
 			uuid_str = ascent_report_client_uuid;
+		}
 	}
 	//newer
 	if(tex->getGlow() > 0.0f)
@@ -3294,7 +3296,7 @@ void LLVOAvatar::getClientInfo(std::string& client, LLColor4& color, BOOL useCom
 	if(uuid_str.compare(IMG_DEFAULT_AVATAR.asString()) == 0)
 	{
 		BOOL res = FALSE;
-		if(!mIsSelf)
+		if(!isSelf())
 		{
 			for(int ti = TEX_UPPER_SHIRT; ti < TEX_NUM_INDICES; ti++)
 			{

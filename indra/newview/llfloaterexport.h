@@ -57,12 +57,12 @@ class LLExportable
 
 public:
 	LLExportable(LLViewerObject* object, std::string name, std::map<U32,std::pair<std::string, std::string> >& primNameMap);
-	LLExportable(LLVOAvatar* avatar, EWearableType type, std::map<U32,std::pair<std::string, std::string> >& primNameMap);
+	LLExportable(LLVOAvatar* avatar, LLWearableType::EType type, std::map<U32,std::pair<std::string, std::string> >& primNameMap);
 
 	LLSD asLLSD();
 
 	EXPORTABLE_TYPE mType;
-	EWearableType mWearableType;
+	LLWearableType::EType mWearableType;
 	LLViewerObject* mObject;
 	LLVOAvatar* mAvatar;
 	std::map<U32,std::pair<std::string, std::string> >* mPrimNameMap;

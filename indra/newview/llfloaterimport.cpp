@@ -48,7 +48,7 @@ BOOL LLFloaterXmlImportOptions::postBuild()
 		LLSD& type_column = element["columns"][LIST_TYPE];
 		type_column["column"] = "type";
 		type_column["type"] = "icon";
-		type_column["value"] = "inv_item_" + LLWearable::typeToTypeName((EWearableType)(wearablep->mType)) + ".tga";
+		type_column["value"] = "inv_item_" + LLWearableType::getTypeName((LLWearableType::EType)(wearablep->mType)) + ".tga";
 		LLSD& name_column = element["columns"][LIST_NAME];
 		name_column["column"] = "name";
 		name_column["value"] = wearablep->mName;
