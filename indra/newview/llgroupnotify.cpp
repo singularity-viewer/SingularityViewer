@@ -46,7 +46,7 @@
 #include "llui.h"
 #include "llviewercontrol.h"
 #include "llfloatergroupinfo.h"
-#include "llinventoryview.h"
+#include "llinventoryicon.h"
 #include "llinventory.h"
 
 #include "llglheaders.h"
@@ -218,7 +218,7 @@ LLGroupNotifyBox::LLGroupNotifyBox(const std::string& subject,
 	{
 			addChild(new NoticeText(std::string("subjecttitle"),LLRect(x,y,x + LABEL_WIDTH,y - LINE_HEIGHT),std::string("Attached: "),LLFontGL::getFontSansSerif()));
 
-			LLUIImagePtr item_icon = get_item_icon(mInventoryOffer->mType,
+			LLUIImagePtr item_icon = LLInventoryIcon::getIcon(mInventoryOffer->mType,
 													LLInventoryType::IT_TEXTURE,
 													0, FALSE);
 

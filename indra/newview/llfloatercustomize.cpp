@@ -53,7 +53,7 @@
 #include "lltabcontainervertical.h"
 #include "llviewerwindow.h"
 #include "llinventorymodel.h"
-#include "llinventoryview.h"
+#include "llinventoryicon.h"
 #include "lltextbox.h"
 #include "lllineeditor.h"
 #include "llviewertexturelist.h"
@@ -511,7 +511,7 @@ BOOL LLPanelEditWearable::postBuild()
 	/*std::string icon_name = (asset_type == LLAssetType::AT_CLOTHING ?
 										 "inv_item_clothing.tga" :
 										 "inv_item_skin.tga" );*/
-	std::string icon_name = get_item_icon_name(asset_type,LLInventoryType::IT_WEARABLE,mType,FALSE);
+	std::string icon_name = LLInventoryIcon::getIconName(asset_type,LLInventoryType::IT_WEARABLE,mType,FALSE);
 
 	childSetValue("icon", icon_name);
 

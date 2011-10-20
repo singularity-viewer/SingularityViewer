@@ -29,6 +29,7 @@
 
 #include "llassettype.h"
 #include "lldictionary.h"
+#include "llinventoryicon.h"
 #include "llsingleton.h"
 
 class LLWearableType
@@ -63,6 +64,9 @@ public:
 	static const std::string& 			getTypeLabel(EType type);
 	static LLAssetType::EType 			getAssetType(EType type);
 	static EType 						typeNameToType(const std::string& type_name);
+	static LLInventoryIcon::EIconName 	getIconName(EType type);
+	static BOOL 						getDisableCameraSwitch(EType type);
+	static BOOL 						getAllowMultiwear(EType type);
 
 protected:
 	LLWearableType() {}

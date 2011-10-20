@@ -545,6 +545,8 @@ bool LLGLManager::initGL()
 	// This is called here because it depends on the setting of mIsGF2or4MX, and sets up mHasMultitexture.
 	initExtensions();
 
+	S32 old_vram = mVRAM;
+
 	if (mHasATIMemInfo)
 	{ //ask the gl how much vram is free at startup and attempt to use no more than half of that
 		S32 meminfo[4];
@@ -559,6 +561,16 @@ bool LLGLManager::initGL()
 		mVRAM = dedicated_memory/1024;
 	}
 
+	if (mVRAM < 256)
+	{ //something likely went wrong using the above extensions, fall back to old method
+		mVRAM = old_vram;
+	}
+	if (mHasFragmentShader)
+	{
+		GLint num_tex_image_units;
+		glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS_ARB, &num_tex_image_units);
+		mNumTextureImageUnits = llmin(num_tex_image_units, 32);
+	}
 	if (mHasMultitexture)
 	{
 		GLint num_tex_units;		
@@ -578,12 +590,6 @@ bool LLGLManager::initGL()
 		return false;
 	}
 	
-	if (mHasFragmentShader)
-	{
-		GLint num_tex_image_units;
-		glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS_ARB, &num_tex_image_units);
-		mNumTextureImageUnits = llmin(num_tex_image_units, 32);
-	}
 
 	if (mHasTextureMultisample)
 	{
@@ -1311,9 +1317,6 @@ void LLGLState::initClass()
 	// sStateMap[GL_TEXTURE_2D] = GL_TRUE;
 	
 	//make sure multisample defaults to disabled
-	sStateMap[GL_MULTISAMPLE_ARB] = GL_FALSE;
-	glDisable(GL_MULTISAMPLE_ARB);
-
 	sStateMap[GL_MULTISAMPLE_ARB] = GL_FALSE;
 	glDisable(GL_MULTISAMPLE_ARB);
 

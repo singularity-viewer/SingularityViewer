@@ -37,6 +37,7 @@
 #include "llinventoryview.h"
 #include "llinventorybridge.h"
 #include "llinventorydefines.h"
+#include "llinventoryicon.h"
 
 #include "message.h"
 
@@ -122,6 +123,18 @@
 #include "llattachmentsmgr.h"
 // [/RLVa:KB]
 
+typedef std::pair<LLUUID, LLUUID> two_uuids_t;
+typedef std::list<two_uuids_t> two_uuids_list_t;
+
+struct LLMoveInv
+{
+	LLUUID mObjectID;
+	LLUUID mCategoryID;
+	two_uuids_list_t mMoveList;
+	void (*mCallback)(S32, void*);
+	void* mUserData;
+};
+
 // Helpers
 // bug in busy count inc/dec right now, logic is complex... do we really need it?
 void inc_busy_count()
@@ -161,47 +174,6 @@ void gotAssetForSaveItemAs(LLVFS *vfs,
 									   LLAssetType::EType type,
 									   void* user_data, S32 status, LLExtStat ext_status);
 // </edit>
-
-std::string ICON_NAME[ICON_NAME_COUNT] =
-{
-	"inv_item_texture.tga",
-	"inv_item_sound.tga",
-	"inv_item_callingcard_online.tga",
-	"inv_item_callingcard_offline.tga",
-	"inv_item_landmark.tga",
-	"inv_item_landmark_visited.tga",
-	"inv_item_script.tga",
-	"inv_item_clothing.tga",
-	"inv_item_object.tga",
-	"inv_item_object_multi.tga",
-	"inv_item_notecard.tga",
-	"inv_item_skin.tga",
-	"inv_item_snapshot.tga",
-
-	"inv_item_shape.tga",
-	"inv_item_skin.tga",
-	"inv_item_hair.tga",
-	"inv_item_eyes.tga",
-	"inv_item_shirt.tga",
-	"inv_item_pants.tga",
-	"inv_item_shoes.tga",
-	"inv_item_socks.tga",
-	"inv_item_jacket.tga",
-	"inv_item_gloves.tga",
-	"inv_item_undershirt.tga",
-	"inv_item_underpants.tga",
-	"inv_item_skirt.tga",
-	"inv_item_alpha.tga",
-	"inv_item_tattoo.tga",
-	"inv_item_physics.png",
-
-	"inv_item_animation.tga",
-	"inv_item_gesture.tga",
-
-	"inv_link_item.tga",
-	"inv_link_folder.tga"
-	"inv_item_mesh.png"
-};
 
 struct LLWearInfo
 {
@@ -1051,7 +1023,7 @@ LLInvFVBridge* LLInvFVBridge::createBridge(LLAssetType::EType asset_type,
 		{
 				llwarns << LLAssetType::lookup(asset_type) << " asset has inventory type " << LLInventoryType::lookupHumanReadable(inv_type) << " on uuid " << uuid << llendl;
 		}
-		new_listener = new LLScriptBridge(inventory, uuid);
+		new_listener = new LLItemBridge(inventory, uuid);
 		break;
 
 	case LLAssetType::AT_OBJECT:
@@ -1332,13 +1304,12 @@ LLUIImagePtr LLItemBridge::getIcon() const
 	LLInventoryObject *obj = getInventoryObject();
 	if (obj) 
 	{
-		return get_item_icon(	obj->getType(),
-								LLInventoryType::IT_NONE,
-								0,
-								mIsLink);
+		return LLInventoryIcon::getIcon(obj->getType(),
+										LLInventoryType::IT_NONE,
+										mIsLink);
 	}
 	
-	return LLUI::getUIImage(ICON_NAME[OBJECT_ICON_NAME]);
+	return LLInventoryIcon::getIcon(LLInventoryIcon::ICONNAME_OBJECT);
 }
 
 PermissionMask LLItemBridge::getPermissionMask() const
@@ -3168,21 +3139,12 @@ BOOL LLFolderBridge::dragItemIntoFolder(LLInventoryItem* inv_item,
 }
 
 // +=================================================+
-// |        LLScriptBridge (DEPRECATED)              |
-// +=================================================+
-
-LLUIImagePtr LLScriptBridge::getIcon() const
-{
-	return get_item_icon(LLAssetType::AT_SCRIPT, LLInventoryType::IT_LSL, 0, FALSE);
-}
-
-// +=================================================+
 // |        LLTextureBridge                          |
 // +=================================================+
 
 LLUIImagePtr LLTextureBridge::getIcon() const
 {
-	return get_item_icon(LLAssetType::AT_TEXTURE, mInvType, 0, FALSE);
+	return LLInventoryIcon::getIcon(LLAssetType::AT_TEXTURE, mInvType);
 }
 	
 void open_texture(const LLUUID& item_id, 
@@ -3333,7 +3295,7 @@ LLLandmarkBridge::LLLandmarkBridge(LLInventoryPanel* inventory,
 
 LLUIImagePtr LLLandmarkBridge::getIcon() const
 {
-	return get_item_icon(LLAssetType::AT_LANDMARK, LLInventoryType::IT_LANDMARK, mVisited, FALSE);
+	return LLInventoryIcon::getIcon(LLAssetType::AT_LANDMARK, LLInventoryType::IT_LANDMARK, mVisited, FALSE);
 }
 
 void LLLandmarkBridge::buildContextMenu(LLMenuGL& menu, U32 flags)
@@ -3538,7 +3500,7 @@ LLUIImagePtr LLCallingCardBridge::getIcon() const
 	{
 		online = LLAvatarTracker::instance().isBuddyOnline(item->getCreatorUUID());
 	}
-	return get_item_icon(LLAssetType::AT_CALLINGCARD, LLInventoryType::IT_CALLINGCARD, online, FALSE);
+	return LLInventoryIcon::getIcon(LLAssetType::AT_CALLINGCARD, LLInventoryType::IT_CALLINGCARD, online, FALSE);
 }
 
 std::string LLCallingCardBridge::getLabelSuffix() const
@@ -4020,7 +3982,7 @@ BOOL LLObjectBridge::isItemRemovable()
 
 LLUIImagePtr LLObjectBridge::getIcon() const
 {
-	return get_item_icon(LLAssetType::AT_OBJECT, mInvType, mAttachPt, mIsMultiObject );
+	return LLInventoryIcon::getIcon(LLAssetType::AT_OBJECT, mInvType, mAttachPt, mIsMultiObject );
 }
 
 LLInventoryObject* LLObjectBridge::getObject() const
@@ -5255,7 +5217,7 @@ std::string LLWearableBridge::getLabelSuffix() const
 
 LLUIImagePtr LLWearableBridge::getIcon() const
 {
-	return get_item_icon(mAssetType, mInvType, mWearableType, FALSE);
+	return LLInventoryIcon::getIcon(mAssetType, mInvType, mWearableType, FALSE);
 }
 
 // virtual
@@ -5618,9 +5580,9 @@ LLUIImagePtr LLLinkItemBridge::getIcon() const
 		U32 attachment_point = (item->getFlags() & 0xff); // low byte of inventory flags
 		bool is_multi =  LLInventoryItemFlags::II_FLAGS_OBJECT_HAS_MULTIPLE_ITEMS & item->getFlags();
 
-		return get_item_icon(item->getActualType(), item->getInventoryType(), attachment_point, is_multi);
+		return LLInventoryIcon::getIcon(item->getActualType(), item->getInventoryType(), attachment_point, is_multi);
 	}
-	return get_item_icon(LLAssetType::AT_LINK, LLInventoryType::IT_NONE, 0, FALSE);
+	return LLInventoryIcon::getIcon(LLAssetType::AT_LINK, LLInventoryType::IT_NONE, 0, FALSE);
 }
 
 void LLLinkItemBridge::buildContextMenu(LLMenuGL& menu, U32 flags)
@@ -5721,7 +5683,7 @@ const LLUUID &LLLinkFolderBridge::getFolderID() const
 
 LLUIImagePtr LLMeshBridge::getIcon() const
 {
-	return get_item_icon(LLAssetType::AT_TEXTURE, LLInventoryType::IT_TEXTURE, 0, FALSE);
+	return LLInventoryIcon::getIcon(LLAssetType::AT_MESH, LLInventoryType::IT_MESH, 0, FALSE);
 }
 
 void LLMeshBridge::openItem()

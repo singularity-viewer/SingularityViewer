@@ -38,7 +38,7 @@
 //============================================================================
 
 // MAIN THREAD
-LLQueuedThread::LLQueuedThread(const std::string& name, bool threaded) :
+LLQueuedThread::LLQueuedThread(const std::string& name, bool threaded, bool should_pause) :
 	LLThread(name),
 	mThreaded(threaded),
 	mIdleThread(TRUE),
@@ -47,6 +47,11 @@ LLQueuedThread::LLQueuedThread(const std::string& name, bool threaded) :
 {
 	if (mThreaded)
 	{
+		if(should_pause)
+		{
+			pause() ; //call this before start the thread.
+		}
+
 		start();
 	}
 }
