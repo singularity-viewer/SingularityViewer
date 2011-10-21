@@ -79,6 +79,7 @@ LLIconDictionary::LLIconDictionary()
 	addEntry(LLInventoryIcon::ICONNAME_CLOTHING_SKIRT, 			new IconEntry("inv_item_skirt.tga"));
 	addEntry(LLInventoryIcon::ICONNAME_CLOTHING_ALPHA, 			new IconEntry("inv_item_alpha.tga"));
 	addEntry(LLInventoryIcon::ICONNAME_CLOTHING_TATTOO, 		new IconEntry("inv_item_tattoo.tga"));
+	addEntry(LLInventoryIcon::ICONNAME_CLOTHING_PHYSICS			new IconEntry("inv_item_physics.png"));
 	addEntry(LLInventoryIcon::ICONNAME_ANIMATION, 				new IconEntry("inv_item_animation.tga"));
 	addEntry(LLInventoryIcon::ICONNAME_GESTURE, 				new IconEntry("inv_item_gesture.tga"));
 
