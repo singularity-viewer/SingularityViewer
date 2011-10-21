@@ -68,7 +68,7 @@ LLIconDictionary::LLIconDictionary()
 	addEntry(LLInventoryIcon::ICONNAME_BODYPART_HAIR, 			new IconEntry("inv_item_hair.tga"));
 	addEntry(LLInventoryIcon::ICONNAME_BODYPART_EYES, 			new IconEntry("inv_item_eyes.tga"));
 
-	addEntry(LLInventoryIcon::ICONNAME_CLOTHING_SHIRT, 			new IconEntry("inv_item_skirt.tga"));
+	addEntry(LLInventoryIcon::ICONNAME_CLOTHING_SHIRT, 			new IconEntry("inv_item_shirt.tga"));
 	addEntry(LLInventoryIcon::ICONNAME_CLOTHING_PANTS, 			new IconEntry("inv_item_pants.tga"));
 	addEntry(LLInventoryIcon::ICONNAME_CLOTHING_SHOES, 			new IconEntry("inv_item_shoes.tga"));
 	addEntry(LLInventoryIcon::ICONNAME_CLOTHING_SOCKS, 			new IconEntry("inv_item_socks.tga"));
