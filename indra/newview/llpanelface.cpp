@@ -1207,7 +1207,7 @@ void LLPanelFace::onClickCopy(void* userdata)
 		LLInventoryItem* itemp = gInventory.getItem(objectp->getTE(i)->getID());
 		LLUUID tex = tex_params["imageid"];
 		tex_params["imageid"] = LLUUID::null;
-		gSavedPerAccountSettings.setLLSD("Image.Settings", tex_params);
+		//gSavedPerAccountSettings.setLLSD("Image.Settings", tex_params);
 		if (itemp)
 		{
 			LLPermissions perms = itemp->getPermissions();

@@ -281,7 +281,7 @@ void LLDrawPoolWLSky::renderHeavenlyBodies()
 
 	if (gSky.mVOSkyp->getMoon().getDraw() && face->getGeomCount())
 	{
-		if (gPipeline.canUseVertexShaders())
+		if (LLGLSLShader::sNoFixedFunction)
 		{
 			gUIProgram.bind();
 		}
@@ -301,7 +301,7 @@ void LLDrawPoolWLSky::renderHeavenlyBodies()
 		LLFacePool::LLOverrideFaceColor color_override(this, color);
 		face->renderIndexed();
 
-		if (gPipeline.canUseVertexShaders())
+		if (LLGLSLShader::sNoFixedFunction)
 		{
 			gUIProgram.unbind();
 		}

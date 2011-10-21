@@ -1967,11 +1967,10 @@ void LLPipeline::updateCull(LLCamera& camera, LLCullResult& result, S32 water_cl
 
 	LLGLDepthTest depth(GL_TRUE, GL_FALSE);
 
-	bool bound_shader = false;
-	if (gPipeline.canUseVertexShaders() && LLGLSLShader::sCurBoundShader == 0)
+	bool bind_shader = LLGLSLShader::sNoFixedFunction && LLGLSLShader::sCurBoundShader == 0;
+	if (bind_shader)
 	{ //if no shader is currently bound, use the occlusion shader instead of fixed function if we can
 		// (shadow render uses a special shader that clamps to clip planes)
-		bound_shader = true;
 		gOcclusionProgram.bind();
 	}
 	
@@ -2002,7 +2001,7 @@ void LLPipeline::updateCull(LLCamera& camera, LLCullResult& result, S32 water_cl
 		}
 	}
 
-	if (bound_shader)
+	if (bind_shader)
 	{
 		gOcclusionProgram.unbind();
 	}
@@ -8102,7 +8101,7 @@ void LLPipeline::renderShadow(glh::matrix4f& view, glh::matrix4f& proj, LLCamera
 	LLVertexBuffer::unbind();
 
 	{
-		if (!use_shader)
+		if (!use_shader && LLGLSLShader::sNoFixedFunction)
 		{ //occlusion program is general purpose depth-only no-textures
 			gOcclusionProgram.bind();
 		}
@@ -8113,7 +8112,7 @@ void LLPipeline::renderShadow(glh::matrix4f& view, glh::matrix4f& proj, LLCamera
 			renderObjects(types[i], LLVertexBuffer::MAP_VERTEX, FALSE);
 		}
 		gGL.getTexUnit(0)->enable(LLTexUnit::TT_TEXTURE);
-		if (!use_shader)
+		if (!use_shader && LLGLSLShader::sNoFixedFunction)
 		{
 			gOcclusionProgram.unbind();
 		}

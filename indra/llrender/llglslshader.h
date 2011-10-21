@@ -77,6 +77,7 @@ public:
 
 	static GLhandleARB sCurBoundShader;
 	static LLGLSLShader* sCurBoundShaderPtr;
+	static S32 sIndexedTextureChannels;
 	static bool sNoFixedFunction;
 
 	void unload();

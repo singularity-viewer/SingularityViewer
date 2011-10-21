@@ -536,6 +536,8 @@ void LLFace::renderSelected(LLViewerTexture *imagep, const LLColor4& color)
 		else
 #endif //MESH_ENABLED
 		{
+			LLGLEnable poly_offset(GL_POLYGON_OFFSET_FILL);
+			glPolygonOffset(-1.f,-1.f);
 			mVertexBuffer->setBuffer(LLVertexBuffer::MAP_VERTEX | LLVertexBuffer::MAP_TEXCOORD0);
 	#if !LL_RELEASE_FOR_DOWNLOAD
 			LLGLState::checkClientArrays("", LLVertexBuffer::MAP_VERTEX | LLVertexBuffer::MAP_TEXCOORD0);

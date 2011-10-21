@@ -250,7 +250,7 @@ BOOL LLShaderMgr::attachShaderFeatures(LLGLSLShader * shader)
 						return FALSE;
 					}
 				}
-				shader->mFeatures.mIndexedTextureChannels = gGLManager.mNumTextureImageUnits-1;
+				shader->mFeatures.mIndexedTextureChannels = llmax(LLGLSLShader::sIndexedTextureChannels-1, 1);
 			}
 		}
 		
@@ -289,7 +289,7 @@ BOOL LLShaderMgr::attachShaderFeatures(LLGLSLShader * shader)
 						return FALSE;
 					}
 				}
-				shader->mFeatures.mIndexedTextureChannels = gGLManager.mNumTextureImageUnits-1;
+				shader->mFeatures.mIndexedTextureChannels = llmax(LLGLSLShader::sIndexedTextureChannels-1, 1);
 			}
 		}		
 	}
@@ -313,7 +313,7 @@ BOOL LLShaderMgr::attachShaderFeatures(LLGLSLShader * shader)
 				{
 					return FALSE;
 				}
-				shader->mFeatures.mIndexedTextureChannels = gGLManager.mNumTextureImageUnits-1;
+				shader->mFeatures.mIndexedTextureChannels = llmax(LLGLSLShader::sIndexedTextureChannels-1, 1);
 			}
 		}
 		else if (features->hasWaterFog)
@@ -345,7 +345,7 @@ BOOL LLShaderMgr::attachShaderFeatures(LLGLSLShader * shader)
 				{
 					return FALSE;
 				}
-				shader->mFeatures.mIndexedTextureChannels = gGLManager.mNumTextureImageUnits-1;
+				shader->mFeatures.mIndexedTextureChannels = llmax(LLGLSLShader::sIndexedTextureChannels-1, 1);
 			}
 		}
 		
@@ -364,7 +364,7 @@ BOOL LLShaderMgr::attachShaderFeatures(LLGLSLShader * shader)
 				{
 					return FALSE;
 				}
-				shader->mFeatures.mIndexedTextureChannels = gGLManager.mNumTextureImageUnits-1;
+				shader->mFeatures.mIndexedTextureChannels = llmax(LLGLSLShader::sIndexedTextureChannels-1, 1);
 			}
 		}
 		
@@ -404,7 +404,7 @@ BOOL LLShaderMgr::attachShaderFeatures(LLGLSLShader * shader)
 						return FALSE;
 					}
 				}
-				shader->mFeatures.mIndexedTextureChannels = gGLManager.mNumTextureImageUnits-1;
+				shader->mFeatures.mIndexedTextureChannels = llmax(LLGLSLShader::sIndexedTextureChannels-1, 1);
 			}
 		}
 	}
@@ -428,7 +428,7 @@ BOOL LLShaderMgr::attachShaderFeatures(LLGLSLShader * shader)
 				{
 					return FALSE;
 				}
-				shader->mFeatures.mIndexedTextureChannels = gGLManager.mNumTextureImageUnits-1;
+				shader->mFeatures.mIndexedTextureChannels = llmax(LLGLSLShader::sIndexedTextureChannels-1, 1);
 			}
 		}
 		
@@ -447,7 +447,7 @@ BOOL LLShaderMgr::attachShaderFeatures(LLGLSLShader * shader)
 				{
 					return FALSE;
 				}
-				shader->mFeatures.mIndexedTextureChannels = gGLManager.mNumTextureImageUnits-1;
+				shader->mFeatures.mIndexedTextureChannels = llmax(LLGLSLShader::sIndexedTextureChannels-1, 1);
 			}
 		}
 	}

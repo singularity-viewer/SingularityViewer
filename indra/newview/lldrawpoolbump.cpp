@@ -793,8 +793,7 @@ void LLDrawPoolBump::endBump(U32 pass)
 	else
 	{
 		// Disable texture blending on unit 1
-		gGL.getTexUnit(1)->activate();
-                gGL.getTexUnit(1)->disable();
+		gGL.getTexUnit(1)->disable();
 		gGL.getTexUnit(1)->setTextureBlendType(LLTexUnit::TB_MULT);
 
 		// Disable texture blending on unit 0
@@ -1429,7 +1428,7 @@ void LLDrawPoolInvisible::render(S32 pass)
 { //render invisiprims
 	LLFastTimer t(LLFastTimer::FTM_RENDER_INVISIBLE);
   
-	if (gPipeline.canUseVertexShaders())
+	if (LLGLSLShader::sNoFixedFunction)
 	{
 		gOcclusionProgram.bind();
 	}
@@ -1441,7 +1440,7 @@ void LLDrawPoolInvisible::render(S32 pass)
 	gGL.setColorMask(true, false);
 	glStencilMask(0xFFFFFFFF);
 
-	if (gPipeline.canUseVertexShaders())
+	if (LLGLSLShader::sNoFixedFunction)
 	{
 		gOcclusionProgram.unbind();
 	}

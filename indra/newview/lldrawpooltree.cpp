@@ -190,6 +190,7 @@ void LLDrawPoolTree::endShadowPass(S32 pass)
 	static const LLCachedControl<F32> render_deferred_offset("RenderDeferredSpotShadowOffset",1.f);
 	static const LLCachedControl<F32> render_deferred_bias("RenderDeferredSpotShadowBias",1.f);
 	glPolygonOffset(render_deferred_offset,render_deferred_bias);
+	gDeferredShadowAlphaMaskProgram.unbind();
 }
 
 void LLDrawPoolTree::renderTree(BOOL selecting)

@@ -259,8 +259,8 @@ void LLDrawPoolAlpha::render(S32 pass)
 		}
 	}
 
-	LLGLDepthTest depth(GL_TRUE, LLDrawPoolWater::sSkipScreenCopy || 
-				(deferred_render && pass == 1) ? GL_TRUE : GL_FALSE);
+	LLGLDepthTest depth(GL_TRUE, (LLDrawPoolWater::sSkipScreenCopy || 
+				(deferred_render && pass == 1)) ? GL_TRUE : GL_FALSE);
 
 	if (deferred_render && pass == 1)
 	{

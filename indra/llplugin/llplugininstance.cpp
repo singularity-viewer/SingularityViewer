@@ -90,7 +90,7 @@ int LLPluginInstance::load(std::string &plugin_file)
 #if LL_LINUX && defined(LL_STANDALONE)
     void *dso_handle = dlopen(plugin_file.c_str(), RTLD_NOW | RTLD_GLOBAL);
     int result = (!dso_handle)?APR_EDSOOPEN:apr_os_dso_handle_put(&mDSOHandle,
-            dso_handle, AIAPRRootPool::get()());
+            dso_handle, LLAPRRootPool::get()());
 #else
 	int result = apr_dso_load(&mDSOHandle,
 					  plugin_file.c_str(),
