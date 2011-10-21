@@ -99,6 +99,14 @@ ATI Mobility Radeon HD 5500		.*ATI.*Mobility *HD *55.*			2		1
 ATI Mobility Radeon HD 5600		.*ATI.*Mobility *HD *56.*			2		1
 ATI Mobility Radeon HD 5700		.*ATI.*Mobility *HD *57.*			3		1
 ATI Mobility Radeon HD 5800		.*ATI.*Mobility *HD *58.*			3		1
+ATI Mobility Radeon HD 6200		.*ATI.*Mobility.*HD *62.*					3		1
+ATI Mobility Radeon HD 6300		.*ATI.*Mobility.*HD *63.*					3		1
+ATI Mobility Radeon HD 6400M	.*ATI.*Mobility.*HD *64.*					3		1
+ATI Mobility Radeon HD 6500M	.*ATI.*Mobility.*HD *65.*					3		1
+ATI Mobility Radeon HD 6600M	.*ATI.*Mobility.*HD *66.*					3		1
+ATI Mobility Radeon HD 6700M	.*ATI.*Mobility.*HD *67.*					3		1
+ATI Mobility Radeon HD 6800M	.*ATI.*Mobility.*HD *68.*					3		1
+ATI Mobility Radeon HD 6900M	.*ATI.*Mobility.*HD *69.*					3		1
 ATI Mobility Radeon X1xxx		.*ATI.*Mobility.*X1.*				0		1
 ATI Mobility Radeon X2xxx		.*ATI.*Mobility.*X2.*				0		1
 ATI Mobility Radeon X3xx		.*ATI.*Mobility.*X3.*				1		1

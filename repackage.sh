@@ -15,6 +15,10 @@ LIBPATH=""
 INCPATH=""
 PWD=`pwd`
 
+if [ -z "$1" ]; then
+	usage
+fi
+
 shopt -s nocasematch
 case "$1" in
 	--windows|-w|windows|win)
@@ -40,6 +44,7 @@ case "$1" in
 		INCPATH="libraries/x86_64-linux/include"
 		;;
 	*)
+		echo ERROR: No mode specified
 		usage
 		;;
 esac
@@ -51,14 +56,14 @@ case "$2" in
 		;;
 esac
 
-test -n "$2" && FILEIN=`readlink -e $2`
-test -n "$3" && FILEOUT=`readlink -f $3`
-
-if [ -z $FILEIN ]; then
+FILEIN=$2
+if [ -z "$FILEIN" ]; then
+	echo ERROR: No input file specified
 	usage
 fi
 
-if [ -z $FILEOUT ]; then
+test -n "$3" && FILEOUT=`readlink -f $3`
+if [ -z "$FILEOUT" ]; then
 	FILEOUT=`readlink -m package.tar.bz2`
 fi
 
@@ -66,7 +71,7 @@ mkdir "$TMP"
 cd "$TMP"
 
 case "$FILEIN" in
-	http\:\/\/|https\:\/\/)
+	http\:\/\/*|https\:\/\/*)
 		echo "	Downloading..."
 		wget "$FILEIN" -O package.tar.bz2
 		echo "	Unpacking..."
@@ -74,6 +79,11 @@ case "$FILEIN" in
 		rm package.tar.bz2
 		;;
 	*)
+		FILEIN=`readlink -e $FILEIN`
+		if [ -z "$FILEIN"  ]; then
+			echo ERROR: Input file not found
+			usage
+		fi
 		echo "	Unpacking..."
 		tar -xjvf "$FILEIN"
 		;;
