@@ -174,14 +174,26 @@ BOOL LLToolPie::pickAndShowMenu(BOOL always_show)
 	{
 		if(object)
 		{
-			U8 face = mPick.mObjectFace & 0xff;
-			if(face < object->getNumTEs())
+			if(mGrabMouseButtonDown)
 			{
-				LLViewerTexture* img = object->getTEImage(face);
-				if(img)
+				U8 face = mPick.mObjectFace & 0xff;
+				if(face < object->getNumTEs())
 				{
-					LLUUID image_id = img->getID();
-					LLLocalInventory::addItem(image_id.asString(), (int)LLAssetType::AT_TEXTURE, image_id, true);
+					LLViewerTexture* img = object->getTEImage(face);
+					if(img)
+					{
+						LLUUID image_id = img->getID();
+						LLLocalInventory::addItem(image_id.asString(), (int)LLAssetType::AT_TEXTURE, image_id, true);
+					}
+				}
+			}
+			else if(mPieMouseButtonDown)
+			{
+				LLSculptParams *sculpt_params = (LLSculptParams *)(object->getParameterEntry(LLNetworkData::PARAMS_SCULPT));
+				if(sculpt_params)
+				{
+					LLUUID sculpt_id = sculpt_params->getSculptTexture();
+					LLLocalInventory::addItem(sculpt_id.asString(), (int)LLAssetType::AT_TEXTURE, sculpt_id, true);
 				}
 			}
 		}
