@@ -289,37 +289,54 @@ void LLVOPartGroup::getGeometry(S32 idx,
 	U32 vert_offset = mDrawable->getFace(idx)->getGeomIndex();
 
 	
-	LLVector3 part_pos_agent(part.mPosAgent);
-	LLVector3 camera_agent = getCameraPosition(); 
-	LLVector3 at = part_pos_agent - camera_agent;
-	LLVector3 up;
-	LLVector3 right;
+	LLVector4a part_pos_agent;
+	part_pos_agent.load3(part.mPosAgent.mV);
+	LLVector4a camera_agent;
+	camera_agent.load3(getCameraPosition().mV); 
+	LLVector4a at;
+	at.setSub(part_pos_agent, camera_agent);
+	LLVector4a up(0, 0, 1);
+	LLVector4a right;
 
-	right = at % LLVector3(0.f, 0.f, 1.f);
-	right.normalize();
-	up = right % at;
-	up.normalize();
+	right.setCross3(at, up);
+	right.normalize3fast();
+	up.setCross3(right, at);
+	up.normalize3fast();
 
 	if (part.mFlags & LLPartData::LL_PART_FOLLOW_VELOCITY_MASK)
 	{
-		LLVector3 normvel = part.mVelocity;
-		normvel.normalize();
+		LLVector4a normvel;
+		normvel.load3(part.mVelocity.mV);
+		normvel.normalize3fast();
 		LLVector2 up_fracs;
-		up_fracs.mV[0] = normvel*right;
-		up_fracs.mV[1] = normvel*up;
+		up_fracs.mV[0] = normvel.dot3(right).getF32();
+		up_fracs.mV[1] = normvel.dot3(up).getF32();
 		up_fracs.normalize();
-		LLVector3 new_up;
-		LLVector3 new_right;
-		new_up = up_fracs.mV[0] * right + up_fracs.mV[1]*up;
-		new_right = up_fracs.mV[1] * right - up_fracs.mV[0]*up;
+		LLVector4a new_up;
+		LLVector4a new_right;
+
+		//new_up = up_fracs.mV[0] * right + up_fracs.mV[1]*up;
+		LLVector4a t = right;
+		t.mul(up_fracs.mV[0]);
+		new_up = up;
+		new_up.mul(up_fracs.mV[1]);
+		new_up.add(t);
+
+		//new_right = up_fracs.mV[1] * right - up_fracs.mV[0]*up;
+		t = right;
+		t.mul(up_fracs.mV[1]);
+		new_right = up;
+		new_right.mul(up_fracs.mV[0]);
+		t.sub(new_right);
+
 		up = new_up;
-		right = new_right;
-		up.normalize();
-		right.normalize();
+		right = t;
+		up.normalize3fast();
+		right.normalize3fast();
 	}
 
-	right *= 0.5f*part.mScale.mV[0];
-	up *= 0.5f*part.mScale.mV[1];
+	right.mul(0.5f*part.mScale.mV[0]);
+	up.mul(0.5f*part.mScale.mV[1]);
 
 
 	LLVector3 normal = -LLViewerCamera::getInstance()->getXAxis();
@@ -328,14 +345,31 @@ void LLVOPartGroup::getGeometry(S32 idx,
 	// this works because there is actually a 4th float stored after the vertex position which is used as a texture index
 	// also, somebody please VECTORIZE THIS
 
-	*(verticesp->mV+3) = 0.f;
-	*verticesp++ = part_pos_agent + up - right;
-	*(verticesp->mV+3) = 0.f;
-	*verticesp++ = part_pos_agent - up - right;
-	*(verticesp->mV+3) = 0.f;
-	*verticesp++ = part_pos_agent + up + right;
-	*(verticesp->mV+3) = 0.f;
-	*verticesp++ = part_pos_agent - up + right;
+	LLVector4a ppapu;
+	LLVector4a ppamu;
+
+	ppapu.setAdd(part_pos_agent, up);
+	ppamu.setSub(part_pos_agent, up);
+
+	LLVector4a vtx[4];
+	vtx[0].setSub(ppapu, right);
+	vtx[1].setSub(ppamu, right);
+	vtx[2].setAdd(ppapu, right);
+	vtx[3].setAdd(ppamu, right);
+
+	verticesp->set(vtx[0].getF32ptr());
+	*((verticesp++)->mV+3) = 0.f;
+	verticesp->set(vtx[1].getF32ptr());
+	*((verticesp++)->mV+3) = 0.f;
+	verticesp->set(vtx[2].getF32ptr());
+	*((verticesp++)->mV+3) = 0.f;
+	verticesp->set(vtx[3].getF32ptr());
+	*((verticesp++)->mV+3) = 0.f;
+
+	//*verticesp++ = part_pos_agent + up - right;
+	//*verticesp++ = part_pos_agent - up - right;
+	//*verticesp++ = part_pos_agent + up + right;
+	//*verticesp++ = part_pos_agent - up + right;
 
 	*colorsp++ = part.mColor;
 	*colorsp++ = part.mColor;

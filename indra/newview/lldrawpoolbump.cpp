@@ -1374,11 +1374,16 @@ void LLDrawPoolBump::pushBatch(LLDrawInfo& params, U32 mask, BOOL texture, BOOL 
 			}
 			else
 			{
-				gGL.getTexUnit(1)->activate();
+				if (!gPipeline.canUseVertexShaders())
+				{
+					gGL.getTexUnit(1)->activate();
+					glMatrixMode(GL_TEXTURE);
+					glLoadMatrixf((GLfloat*) params.mTextureMatrix->mMatrix);
+				}
+				gGL.getTexUnit(0)->activate();
 				glMatrixMode(GL_TEXTURE);
 				glLoadMatrixf((GLfloat*) params.mTextureMatrix->mMatrix);
 				gPipeline.mTextureMatrixOps++;
-				gGL.getTexUnit(0)->activate();
 			}
 
 			glLoadMatrixf((GLfloat*) params.mTextureMatrix->mMatrix);
@@ -1415,9 +1420,14 @@ void LLDrawPoolBump::pushBatch(LLDrawInfo& params, U32 mask, BOOL texture, BOOL 
 		}
 		else
 		{
-			gGL.getTexUnit(1)->activate();
-			glLoadIdentity();
+			if (!gPipeline.canUseVertexShaders())
+			{
+				gGL.getTexUnit(1)->activate();
+				glMatrixMode(GL_TEXTURE);
+				glLoadIdentity();
+			}
 			gGL.getTexUnit(0)->activate();
+			glMatrixMode(GL_TEXTURE);
 		}
 		glLoadIdentity();
 		glMatrixMode(GL_MODELVIEW);

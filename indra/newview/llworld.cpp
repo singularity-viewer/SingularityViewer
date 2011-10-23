@@ -136,6 +136,12 @@ void LLWorld::destroyClass()
 		LLVOCache::getInstance()->destroyClass() ;
 	}
 	LLViewerPartSim::getInstance()->destroyClass();
+
+	mDefaultWaterTexturep = NULL ;
+	for (S32 i = 0; i < 8; i++)
+	{
+		mEdgeWaterObjects[i] = NULL;
+	}
 }
 
 
@@ -172,11 +178,11 @@ LLViewerRegion* LLWorld::addRegion(const U64 &region_handle, const LLHost &host,
 
 	U32 iindex = 0;
 	U32 jindex = 0;
-	mWidth = region_size_x;
-	mWidthInMeters = mWidth * mScale; 
+	mWidth = region_size_x;	//MegaRegion
+	mWidthInMeters = mWidth * mScale; //MegaRegion
 	from_region_handle(region_handle, &iindex, &jindex);
-	S32 x = (S32)(iindex/256);
-	S32 y = (S32)(jindex/256);
+	S32 x = (S32)(iindex/256); //MegaRegion
+	S32 y = (S32)(jindex/256); //MegaRegion
 	llinfos << "Adding new region (" << x << ":" << y << ")" << llendl;
 	llinfos << "Host: " << host << llendl;
 
@@ -194,6 +200,7 @@ LLViewerRegion* LLWorld::addRegion(const U64 &region_handle, const LLHost &host,
 		llerrs << "Unable to create new region!" << llendl;
 	}
 
+	//Classic clouds
 	regionp->mCloudLayer.create(regionp);
 	regionp->mCloudLayer.setWidth((F32)mWidth);
 	regionp->mCloudLayer.setWindPointer(&regionp->mWind);
@@ -597,25 +604,25 @@ void LLWorld::updateVisibilities()
 {
 	F32 cur_far_clip = LLViewerCamera::getInstance()->getFar();
 
-	LLViewerCamera::getInstance()->setFar(mLandFarClip);
-
-	F32 diagonal_squared = F_SQRT2 * F_SQRT2 * mWidth * mWidth;
 	// Go through the culled list and check for visible regions
 	for (region_list_t::iterator iter = mCulledRegionList.begin();
-		 iter != mCulledRegionList.end(); )
+			iter != mCulledRegionList.end(); )
 	{
 		region_list_t::iterator curiter = iter++;
 		LLViewerRegion* regionp = *curiter;
-		F32 height = regionp->getLand().getMaxZ() - regionp->getLand().getMinZ();
-		F32 radius = 0.5f*(F32) sqrt(height * height + diagonal_squared);
-		if (!regionp->getLand().hasZData()
-			|| LLViewerCamera::getInstance()->sphereInFrustum(regionp->getCenterAgent(), radius))
+                
+		LLSpatialPartition* part = regionp->getSpatialPartition(LLViewerRegion::PARTITION_TERRAIN);
+		if (part)
 		{
-			mCulledRegionList.erase(curiter);
-			mVisibleRegionList.push_back(regionp);
+			LLSpatialGroup* group = (LLSpatialGroup*) part->mOctree->getListener(0);
+			if (LLViewerCamera::getInstance()->AABBInFrustum(group->mBounds[0], group->mBounds[1]))
+			{
+				mCulledRegionList.erase(curiter);
+				mVisibleRegionList.push_back(regionp);
+			}
 		}
-	}
-	
+    }
+        
 	// Update all of the visible regions 
 	for (region_list_t::iterator iter = mVisibleRegionList.begin();
 		 iter != mVisibleRegionList.end(); )
@@ -627,20 +634,23 @@ void LLWorld::updateVisibilities()
 			continue;
 		}
 
-		F32 height = regionp->getLand().getMaxZ() - regionp->getLand().getMinZ();
-		F32 radius = 0.5f*(F32) sqrt(height * height + diagonal_squared);
-		if (LLViewerCamera::getInstance()->sphereInFrustum(regionp->getCenterAgent(), radius))
+    	LLSpatialPartition* part = regionp->getSpatialPartition(LLViewerRegion::PARTITION_TERRAIN);
+		if (part)
 		{
-			regionp->calculateCameraDistance();
-			if (!gNoRender)
+			LLSpatialGroup* group = (LLSpatialGroup*) part->mOctree->getListener(0);
+			if (LLViewerCamera::getInstance()->AABBInFrustum(group->mBounds[0], group->mBounds[1]))
 			{
-				regionp->getLand().updatePatchVisibilities(gAgent);
+				regionp->calculateCameraDistance();
+				if (!gNoRender)
+				{
+					regionp->getLand().updatePatchVisibilities(gAgent);
+				}
 			}
-		}
-		else
-		{
-			mVisibleRegionList.erase(curiter);
-			mCulledRegionList.push_back(regionp);
+			else
+			{
+				mVisibleRegionList.erase(curiter);
+				mCulledRegionList.push_back(regionp);
+			}
 		}
 	}
 

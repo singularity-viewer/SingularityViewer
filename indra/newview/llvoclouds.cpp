@@ -213,12 +213,13 @@ void LLVOClouds::getGeometry(S32 te,
 	color.setVec(float_color);
 	facep->setFaceColor(float_color);
 		
-	
-	LLVector3 up;
-	LLVector3 right;
-	LLVector3 at;
+	LLVector4a puff_pos_agent;
+	puff_pos_agent.load3(facep->mCenterLocal.mV);	
+	LLVector4a at;
+	at.load3(LLViewerCamera::getInstance()->getAtAxis().mV);
+	LLVector4a up(0, 0, 1);
+	LLVector4a right;
 
-	const LLVector3& puff_pos_agent = facep->mCenterLocal;
 	LLVector2 uvs[4];
 
 	uvs[0].setVec(0.f, 1.f);
@@ -226,34 +227,43 @@ void LLVOClouds::getGeometry(S32 te,
 	uvs[2].setVec(1.f, 1.f);
 	uvs[3].setVec(1.f, 0.f);
 
-	LLVector3 vtx[4];
-
-	at = LLViewerCamera::getInstance()->getAtAxis();
-	right = at % LLVector3(0.f, 0.f, 1.f);
-	right.normVec();
-	up = right % at;
-	up.normVec();
-	right *= 0.5f*CLOUD_PUFF_WIDTH;
-	up *= 0.5f*CLOUD_PUFF_HEIGHT;;
+	right.setCross3(at, up);
+	right.normalize3fast();
+	up.setCross3(right, at);
+	up.normalize3fast();
+	right.mul(0.5f*CLOUD_PUFF_WIDTH);
+	up.mul(0.5f*CLOUD_PUFF_HEIGHT);
 		
 	*colorsp++ = color;
 	*colorsp++ = color;
 	*colorsp++ = color;
 	*colorsp++ = color;
 
-	vtx[0] = puff_pos_agent - right + up;
-	vtx[1] = puff_pos_agent - right - up;
-	vtx[2] = puff_pos_agent + right + up;
-	vtx[3] = puff_pos_agent + right - up;
+	LLVector4a ppapu;
+	LLVector4a ppamu;
+	
+	ppapu.setAdd(puff_pos_agent, up);
+	ppamu.setSub(puff_pos_agent, up);
+	
+	LLVector4a vtx[4];
+	vtx[0].setSub(ppapu, right);
+	vtx[1].setSub(ppamu, right);
+	vtx[2].setAdd(ppapu, right);
+	vtx[3].setAdd(ppamu, right);
 
-	*(verticesp->mV+3) = 0.f;
-	*verticesp++  = vtx[0];
-	*(verticesp->mV+3) = 0.f;
-	*verticesp++  = vtx[1];
-	*(verticesp->mV+3) = 0.f;
-	*verticesp++  = vtx[2];
-	*(verticesp->mV+3) = 0.f;
-	*verticesp++  = vtx[3];;
+	verticesp->set(vtx[0].getF32ptr());
+	*((verticesp++)->mV+3) = 0.f;
+	verticesp->set(vtx[1].getF32ptr());
+	*((verticesp++)->mV+3) = 0.f;
+	verticesp->set(vtx[2].getF32ptr());
+	*((verticesp++)->mV+3) = 0.f;
+	verticesp->set(vtx[3].getF32ptr());
+	*((verticesp++)->mV+3) = 0.f;
+
+	//*verticesp++ = puff_pos_agent - right + up;
+	//*verticesp++ = puff_pos_agent - right - up;
+	//*verticesp++ = puff_pos_agent + right + up;
+	//*verticesp++ = puff_pos_agent + right - up;
 
 	*texcoordsp++ = uvs[0];
 	*texcoordsp++ = uvs[1];

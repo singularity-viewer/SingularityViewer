@@ -1109,9 +1109,9 @@ anguage Infrstructure (CLI) international standard</string>
           <key>linux</key>
           <map>
             <key>md5sum</key>
-            <string>c8223e9454223e3d519fe40d71c3ddd2</string>
+            <string>01cff9a641348bb15856b808a4e9ccc6</string>
             <key>url</key>
-            <uri>http://s3.amazonaws.com/viewer-source-downloads/install_pkgs/openal-linux-20091216-56cc0386.tar.bz2</uri>
+            <uri>https://github.com/downloads/siana/SingularityViewer/openal-linux-111022.tar.bz2</uri>
           </map>
           <key>linux64</key>
           <map>

@@ -31,7 +31,7 @@
         width="400" />
     </panel>
     <panel border="true" left="1" bottom="-190" height="180" width="500" mouse_opaque="true"
-      follows="left|top|right|bottom" label="Tags\Colors" name="Tags\Colors">
+      follows="left|top|right|bottom" label="Tags/Colors" name="TagsColors">
       <!-- Client tag options -->
       <check_box bottom_delta="-25" control_name="AscentUseTag" enabled="true"
         follows="left|top" font="SansSerifSmall" height="16" initial_value="true"
