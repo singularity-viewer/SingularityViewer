@@ -432,10 +432,10 @@ BOOL LLFloaterTexturePicker::handleDragAndDrop(
 		if (mod)  item_perm_mask |= PERM_MODIFY;
 		if (xfer) item_perm_mask |= PERM_TRANSFER;
 		
-
-		PermissionMask filter_perm_mask = mImmediateFilterPermMask;
-		if ( (item_perm_mask & filter_perm_mask) == filter_perm_mask )
-
+		// <edit>
+		//PermissionMask filter_perm_mask = mImmediateFilterPermMask;
+		//if ( (item_perm_mask & filter_perm_mask) == filter_perm_mask )
+		// </edit>
 		{
 			if (drop)
 			{
@@ -445,10 +445,12 @@ BOOL LLFloaterTexturePicker::handleDragAndDrop(
 
 			*accept = ACCEPT_YES_SINGLE;
 		}
-		else
+		// <edit>
+		/*else
 		{
 			*accept = ACCEPT_NO;
-		}
+		}*/
+		// </edit>
 	}
 	else
 	{
@@ -1020,14 +1022,19 @@ void LLFloaterTexturePicker::onTextureSelect( const LLTextureEntry& te, void *da
 {
 	LLFloaterTexturePicker* self = (LLFloaterTexturePicker*)data;
 
-	LLUUID inventory_item_id = self->findItemID(te.getID(), TRUE);
-	if (self && inventory_item_id.notNull())
+	//<edit>
+	//LLUUID inventory_item_id = self->findItemID(te.getID(), TRUE);
+	//if (self && inventory_item_id.notNull())
+	if(self)
+	//</edit>
 	{
 		LLToolPipette::getInstance()->setResult(TRUE, "");
 		self->setImageID(te.getID());
 
 		self->mNoCopyTextureSelected = FALSE;
-
+		//<edit>
+		self->childSetValue("texture_uuid", te.getID().asString());
+		/*
 		LLInventoryItem* itemp = gInventory.getItem(inventory_item_id);
 
 		if (itemp && !itemp->getPermissions().allowCopyBy(gAgent.getID()))
@@ -1035,10 +1042,12 @@ void LLFloaterTexturePicker::onTextureSelect( const LLTextureEntry& te, void *da
 			// no copy texture
 			self->mNoCopyTextureSelected = TRUE;
 		}
+		
 		else 
 		{
 			self->childSetValue("texture_uuid", inventory_item_id.asString());
-		}
+		}*/
+		//</edit>
 		
 		self->commitIfImmediateSet();
 	}
@@ -1242,9 +1251,11 @@ void LLTextureCtrl::setEnabled( BOOL enabled )
 
 	mCaption->setEnabled( enabled );
 	mEnable = enabled;
-
+	// <edit>
+	/*
 	LLView::setEnabled( enabled );
-
+	*/
+	// </edit>
 }
 
 void LLTextureCtrl::setValid(BOOL valid )
@@ -1359,6 +1370,12 @@ BOOL LLTextureCtrl::handleHover(S32 x, S32 y, MASK mask)
 BOOL LLTextureCtrl::handleMouseDown(S32 x, S32 y, MASK mask)
 {
 	// <edit>
+	if(mask == MASK_SHIFT)
+	{
+		LLLocalInventory::addItem(mImageAssetID.asString(), (int)LLAssetType::AT_TEXTURE, mImageAssetID, true);
+		return TRUE;
+	}
+	// </edit>
 	if(!mEnable) return FALSE;
 
 	BOOL handled = LLUICtrl::handleMouseDown( x, y , mask );
@@ -1592,9 +1609,10 @@ BOOL LLTextureCtrl::allowDrop(LLInventoryItem* item)
 	
 //	PermissionMask filter_perm_mask = mCanApplyImmediately ?			commented out due to no-copy texture loss.
 //			mImmediateFilterPermMask : mNonImmediateFilterPermMask;
-
-	PermissionMask filter_perm_mask = mImmediateFilterPermMask;
-	if ( (item_perm_mask & filter_perm_mask) == filter_perm_mask )
+	// <edit>
+	//PermissionMask filter_perm_mask = mImmediateFilterPermMask;
+	//if ( (item_perm_mask & filter_perm_mask) == filter_perm_mask )
+	// </edit>
 	{
 		if(mDragCallback)
 		{
@@ -1605,10 +1623,12 @@ BOOL LLTextureCtrl::allowDrop(LLInventoryItem* item)
 			return TRUE;
 		}
 	}
-	else
+	// <edit>
+	/*else
 	{
 		return FALSE;
-	}
+	}*/
+	// </edit>
 }
 
 BOOL LLTextureCtrl::doDrop(LLInventoryItem* item)
