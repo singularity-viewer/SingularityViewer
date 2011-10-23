@@ -43,19 +43,19 @@
   <font name="DejaVu"
 	comment="Name of DejaVu font (bold)"
 	font_style="BOLD">
-    <file>DejaVuSansBold.ttf</file>
+    <file>DejaVuSans-Bold.ttf</file>
   </font>
 
   <font name="DejaVu"
 	comment="Name of DejaVu font (italic)"
 	font_style="ITALIC">
-    <file>DejaVuSansOblique.ttf</file>
+    <file>DejaVuSans-Oblique.ttf</file>
   </font>
 
   <font name="DejaVu"
 	comment="Name of DejaVu font (bold italic)"
 	font_style="BOLD|ITALIC">
-    <file>DejaVuSansBoldOblique.ttf</file>
+    <file>DejaVuSerif-BoldItalic.ttf</file>
   </font>
 
   <font name="Helvetica"

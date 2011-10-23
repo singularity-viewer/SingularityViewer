@@ -63,6 +63,9 @@
 			<on_click function="Object.Inspect" />
 			<on_enable function="Object.EnableInspect" />
 		</menu_item_call>
+    <menu_item_call enabled="true" label="Anims" mouse_opaque="true" name="Avatar Anims">
+      <on_click function="Avatar.Anims" />
+    </menu_item_call>
 	</pie_menu>
 	<menu_item_call enabled="false" label="Send IM..." mouse_opaque="true" name="Send IM...">
 		<on_click function="Avatar.SendIM" />
