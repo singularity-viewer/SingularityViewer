@@ -238,6 +238,7 @@ void LLPrefsAscentVan::refreshValues()
     mShowTPScreen			= !gSavedSettings.getBOOL("AscentDisableTeleportScreens");
     mPlayTPSound			= gSavedSettings.getBOOL("OptionPlayTpSound");
     mShowLogScreens			= !gSavedSettings.getBOOL("AscentDisableLogoutScreens");
+	mMiniMapPrimMaxRadius	= gSavedSettings.getF32("MiniMapPrimMaxRadius");
 
     //Tags\Colors ----------------------------------------------------------------------------
     mAscentUseTag           = gSavedSettings.getBOOL("AscentUseTag");
@@ -341,6 +342,7 @@ void LLPrefsAscentVan::cancel()
     gSavedSettings.setBOOL("AscentDisableTeleportScreens", !mShowTPScreen);
     gSavedSettings.setBOOL("OptionPlayTpSound",             mPlayTPSound);
     gSavedSettings.setBOOL("AscentDisableLogoutScreens",   !mShowLogScreens);
+	gSavedSettings.setF32("MiniMapPrimMaxRadius",			mMiniMapPrimMaxRadius);
 
     //Tags\Colors ----------------------------------------------------------------------------
     gSavedSettings.setBOOL("AscentUseTag",               mAscentUseTag);
