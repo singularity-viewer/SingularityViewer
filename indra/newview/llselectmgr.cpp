@@ -98,6 +98,7 @@
 // [/RLVa:KB]
 
 #include "llfloaterexport.h"
+#include "llfloaterattachments.h"
 
 LLViewerObject* getSelectedParentObject(LLViewerObject *object) ;
 //
@@ -4739,7 +4740,12 @@ void LLSelectMgr::processObjectProperties(LLMessageSystem* msg, void** user_data
 			// <edit>
 			LLFloaterExport::receiveObjectProperties(id, name, desc);
 			// </edit>
+
 		}
+
+		if(!node)
+			LLFloaterAttachments::dispatchHUDObjectProperties(new LLHUDAttachment(name, desc, owner_id, id, from_task_id, texture_ids, 0, inv_serial));
+
 	}
 
 	dialog_refresh_all();
