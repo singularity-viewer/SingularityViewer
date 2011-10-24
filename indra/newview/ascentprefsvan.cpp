@@ -278,6 +278,9 @@ void LLPrefsAscentVan::refreshValues()
 void LLPrefsAscentVan::refresh()
 {
     //General --------------------------------------------------------------------------------
+	LLComboBox* combo_fonts = getChild<LLComboBox>("fonts_selector");
+	std::string fontxml = gSavedSettings.getString("FontSettingsFile");
+	combo_fonts->selectByValue(fontxml);
 
     //Tags\Colors ----------------------------------------------------------------------------
     //Colors ---------------------------------------------------------------------------------

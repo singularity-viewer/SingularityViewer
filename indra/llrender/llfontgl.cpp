@@ -219,9 +219,9 @@ bool findOrCreateFont(LLFontGL*& fontp, const LLFontDescriptor& desc)
 BOOL LLFontGL::initDefaultFonts(F32 screen_dpi, F32 x_scale, F32 y_scale,
 								const std::string& app_dir,
 								const std::vector<std::string>& xui_paths,
+								const std::string& fonts_file,
 								bool create_gl_textures)
 {
-	bool succ = true;
 	sVertDPI = (F32)llfloor(screen_dpi * y_scale);
 	sHorizDPI = (F32)llfloor(screen_dpi * x_scale);
 	sScaleX = x_scale;
@@ -232,27 +232,28 @@ BOOL LLFontGL::initDefaultFonts(F32 screen_dpi, F32 x_scale, F32 y_scale,
 	if (!sFontRegistry)
 	{
 		sFontRegistry = new LLFontRegistry(xui_paths,create_gl_textures);
-		sFontRegistry->parseFontInfo("fonts.xml");
+		// Allow the user to pick the fonts
+		if (!sFontRegistry->parseFontInfo(fonts_file))
+		{
+			// fall back to default if specifed font settings file is not found -KC
+			sFontRegistry->parseFontInfo("fonts.xml");
+		}
 	}
 	else
 	{
 		sFontRegistry->reset();
 	}
 
-	// Force standard fonts to get generated up front.
-	// This is primarily for error detection purposes.
- 	succ &= (NULL != getFontSansSerifSmall());
- 	succ &= (NULL != getFontSansSerif());
- 	succ &= (NULL != getFontSansSerifBig());
- 	succ &= (NULL != getFontSansSerifHuge());
- 	succ &= (NULL != getFontSansSerifBold());
- 	succ &= (NULL != getFontMonospace());
+	BOOL succ = true;
+	succ &= (NULL != getFontSansSerifSmall());
+	succ &= (NULL != getFontSansSerif());
+	succ &= (NULL != getFontSansSerifBig());
+	succ &= (NULL != getFontSansSerifHuge());
+	succ &= (NULL != getFontSansSerifBold());
+	succ &= (NULL != getFontMonospace());
 	succ &= (NULL != getFontExtChar());
-	
 	return succ;
 }
-
-
 
 // static
 void LLFontGL::destroyDefaultFonts()

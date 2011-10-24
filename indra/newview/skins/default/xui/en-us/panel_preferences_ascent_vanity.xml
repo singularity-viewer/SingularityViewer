@@ -29,6 +29,38 @@
         tool_tip="If checked, the viewer will hide the login/logout progress screen."
         mouse_opaque="true" name="disable_logout_screen_check" radio_style="false"
         width="400" />
+      
+      <text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+        bottom_delta="-25" left="10" drop_shadow_visible="true" enabled="true" follows="left|top"
+        font="SansSerifSmall" h_pad="0" halign="left" height="10"
+        mouse_opaque="true" name="font_combo_text" v_pad="0" width="394">
+        Font: 
+      </text>
+      <combo_box allow_text_entry="false" control_name="FontSettingsFile" enabled="true" follows="left|top"
+        bottom_delta="-5" height="18" hidden="false" left_delta="30" max_chars="20" mouse_opaque="true"
+        tool_tip="Changes the font that viewer uses to show text (restart required)"
+        name="fonts_selector" width="130">
+        <combo_item type="string" length="1" enabled="true" name="Deja Vu"
+          value="fonts.xml">
+          Deja Vu
+        </combo_item>
+        <combo_item type="string" length="1" enabled="true" name="Ubuntu Font Family"
+          value="fonts_ubuntu.xml">
+          Ubuntu Font Family
+        </combo_item>
+        <combo_item type="string" length="1" enabled="true" name="Liberation"
+          value="fonts_liberation.xml">
+          Liberation
+        </combo_item>
+        <combo_item type="string" length="1" enabled="true" name="Droid Sans"
+          value="fonts_droid.xml">
+          Droid Sans
+        </combo_item>
+        <combo_item type="string" length="1" enabled="true" name="Mobi Sans"
+          value="fonts_mobi.xml">
+          Mobi Sans
+        </combo_item>
+      </combo_box>
     </panel>
     <panel border="true" left="1" bottom="-190" height="180" width="500" mouse_opaque="true"
       follows="left|top|right|bottom" label="Tags/Colors" name="TagsColors">

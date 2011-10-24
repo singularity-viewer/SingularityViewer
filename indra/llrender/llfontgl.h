@@ -96,8 +96,8 @@ public:
 	static BOOL initDefaultFonts(F32 screen_dpi, F32 x_scale, F32 y_scale,
 								 const std::string& app_dir,
 								 const std::vector<std::string>& xui_paths,
+								 const std::string& fonts_file,
 								 bool create_gl_textures = true);
-
 	static void	destroyDefaultFonts();
 	static void destroyAllGL();
 	void destroyGL();

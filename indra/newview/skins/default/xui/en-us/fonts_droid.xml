@@ -2,7 +2,7 @@
 <fonts>
 
   <font name="default" comment="default font files (global fallbacks)">
-    <file>DejaVuSans.ttf</file>
+    <file>DroidSans.ttf</file>
     <os name="Windows">
       <file>MSGOTHIC.TTC</file>
       <file>gulim.ttc</file>
@@ -20,7 +20,7 @@
 
   <font name="SansSerifBold"
 	comment="Name of bold sans-serif font">
-    <file>DejaVuSans-Bold.ttf</file>
+    <file>DroidSans-Bold.ttf</file>
     <os name="Windows">
       <file>arialbd.ttf</file>
       </os>
@@ -30,7 +30,7 @@
   </font>
 
   <font name="SansSerif" comment="Name of san-serif font (Truetype file name)">
-    <file>DejaVuSans.ttf</file>
+    <file>DroidSans.ttf</file>
     <os name="Windows">
       <file>arial.ttf</file>
       </os>
@@ -42,52 +42,52 @@
   <font name="SansSerif"
 	comment="Name of bold sans-serif font"
 	font_style="BOLD">
-    <file>DejaVuSans-Bold.ttf</file>
+    <file>DroidSans-Bold.ttf</file>
   </font>
 
   <font name="SansSerif"
 	comment="Name of italic sans-serif font"
 	font_style="ITALIC">
-    <file>DejaVuSans-Oblique.ttf</file>
+    <file>DroidSerif-Italic.ttf</file>
   </font>
 
   <font name="SansSerif"
 	comment="Name of bold italic sans-serif font"
 	font_style="BOLD|ITALIC">
-    <file>DejaVuSans-BoldOblique.ttf</file>
+    <file>DroidSerif-BoldItalic.ttf</file>
   </font>
 
   <font name="Monospace"
 	comment="Name of monospace font">
-    <file>DejaVuSansMono.ttf</file>
+    <file>DroidSansMono.ttf</file>
   </font>
 
   <font name="DejaVu"
 	comment="Name of DejaVu font">
-    <file>DejaVuSans.ttf</file>
+    <file>DroidSans.ttf</file>
   </font>
 
   <font name="DejaVu"
 	comment="Name of DejaVu font (bold)"
 	font_style="BOLD">
-    <file>DejaVuSans-Bold.ttf</file>
+    <file>DroidSans-Bold.ttf</file>
   </font>
 
   <font name="DejaVu"
 	comment="Name of DejaVu font (italic)"
 	font_style="ITALIC">
-    <file>DejaVuSans-Oblique.ttf</file>
+    <file>DroidSerif-Italic.ttf</file>
   </font>
 
   <font name="DejaVu"
 	comment="Name of DejaVu font (bold italic)"
 	font_style="BOLD|ITALIC">
-    <file>DejaVuSans-BoldOblique.ttf</file>
+    <file>DroidSerif-BoldItalic.ttf</file>
   </font>
 
   <font name="Helvetica"
 	comment="Name of Helvetica font">
-    <file>DejaVuSans.ttf</file>
+    <file>DroidSans.ttf</file>
     <os name="Windows">
       <file>arial.ttf</file>
       </os>
@@ -99,7 +99,7 @@
   <font name="Helvetica"
 	comment="Name of Helvetica font (bold)"
 	font_style="BOLD">
-    <file>DejaVuSans-Bold.ttf</file>
+    <file>DroidSans-Bold.ttf</file>
     <os name="Windows">
       <file>arialbd.ttf</file>
       </os>
@@ -111,7 +111,7 @@
   <font name="Helvetica"
 	comment="Name of Helvetica font (italic)"
 	font_style="ITALIC">
-    <file>DejaVuSans-Oblique.ttf</file>
+    <file>DroidSerif-Italic.ttf</file>
     <os name="Windows">
       <file>ariali.ttf</file>
       </os>
@@ -123,7 +123,7 @@
   <font name="Helvetica"
 	comment="Name of Helvetica font (bold italic)"
 	font_style="BOLD|ITALIC">
-    <file>DejaVuSans-BoldOblique.ttf</file>
+    <file>DroidSerif-BoldItalic.ttf</file>
     <os name="Windows">
       <file>arialbi.ttf</file>
       </os>
@@ -135,7 +135,7 @@
   <font name="OverrideTest"
 	comment="Name of font to test overriding">
     <file>times.ttf</file>
-    <file>DejaVuSans.ttf</file>
+    <file>DroidSans.ttf</file>
   </font>
 
   <font_size name="Monospace"

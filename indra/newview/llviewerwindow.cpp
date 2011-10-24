@@ -4784,7 +4784,8 @@ void LLViewerWindow::initFonts(F32 zoom_factor)
 								mDisplayScale.mV[VX] * zoom_factor,
 								mDisplayScale.mV[VY] * zoom_factor,
 								gDirUtilp->getAppRODataDir(),
-								LLUICtrlFactory::getXUIPaths());
+								LLUICtrlFactory::getXUIPaths(),
+								gSavedSettings.getString("FontSettingsFile"));
 }
 void LLViewerWindow::toggleFullscreen(BOOL show_progress)
 {
