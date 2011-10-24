@@ -3809,7 +3809,7 @@ void LLAgent::requestLeaveGodMode()
 //-----------------------------------------------------------------------------
 // sendAgentSetAppearance()
 //-----------------------------------------------------------------------------
-void LLAgent::sendAgentSetAppearance(const std::string& tag, bool is_new = false, const LLColor4& color)
+void LLAgent::sendAgentSetAppearance(const std::string& tag, bool is_new, const LLColor4& color)
 {
 	if (!isAgentAvatarValid()) return;
 
