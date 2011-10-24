@@ -57,6 +57,7 @@ protected:
     BOOL mShowTPScreen;
     BOOL mPlayTPSound;
     BOOL mShowLogScreens;
+	F32 mMiniMapPrimMaxRadius;
     //Tags\Colors
     BOOL mAscentUseTag;
     std::string mReportClientUUID;

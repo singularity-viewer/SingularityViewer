@@ -303,8 +303,8 @@
 	</text>
 	<slider bottom="-135" can_edit_text="false" control_name="RenderFarClip"
 	     decimal_digits="0" enabled="true" follows="left|top" height="16"
-	     increment="8" initial_val="160" label="Draw Distance:"
-	     label_width="140" left="215" max_val="1024" min_val="64" mouse_opaque="true"
+	     increment="16" initial_val="160" label="Draw Distance:"
+	     label_width="140" left="215" max_val="4096" min_val="16" mouse_opaque="true"
 	     name="DrawDistance" show_text="true" width="255" />
 	<slider bottom_delta="-20" can_edit_text="false" control_name="RenderMaxPartCount"
 	     decimal_digits="0" enabled="true" follows="left|top" height="16"

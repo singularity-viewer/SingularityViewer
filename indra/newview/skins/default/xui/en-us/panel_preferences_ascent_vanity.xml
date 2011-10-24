@@ -61,6 +61,9 @@
           Mobi Sans
         </combo_item>
       </combo_box>
+      <!--<slider bottom_delta="-16" can_edit_text="false" enabled="true" width="400" height="16" mouse_opaque="true"
+  	     decimal_digits="0" increment="16" initial_val="16" left_delta="0" min_val="16" max_val="4096"
+  	     name="mini_map_max_prim_radius" show_text="true" value="1" control_name="MiniMapMaxPrimRadius" />-->
     </panel>
     <panel border="true" left="1" bottom="-190" height="180" width="500" mouse_opaque="true"
       follows="left|top|right|bottom" label="Tags/Colors" name="TagsColors">
