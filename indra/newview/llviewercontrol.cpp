@@ -145,12 +145,6 @@ static bool handleSetShaderChanged(const LLSD& newvalue)
 	return true;
 }
 
-static bool handleMiniMapPrimMaxRadiusChanged(const LLSD& newvalue)
-{
-	gSavedSettings.setF32("MiniMapPrimMaxRadius", newvalue.asFloat());
-	return true;
-}
-
 static bool handleAvatarBoobMassChanged(const LLSD& newvalue)
 {
 	LLVOAvatar::sBoobConfig.mass = EmeraldBoobUtils::convertMass((F32) newvalue.asReal());
@@ -824,8 +818,6 @@ void settings_setup_listeners()
 	gSavedSettings.getControl("AscentAvatarXModifier")->getSignal()->connect(boost::bind(&handleAscentAvatarModifier, _2));
 	gSavedSettings.getControl("AscentAvatarYModifier")->getSignal()->connect(boost::bind(&handleAscentAvatarModifier, _2));
 	gSavedSettings.getControl("AscentAvatarZModifier")->getSignal()->connect(boost::bind(&handleAscentAvatarModifier, _2));
-
-	gSavedSettings.getControl("MiniMapPrimMaxRadius")->getSignal()->connect(boost::bind(&handleMiniMapPrimMaxRadiusChanged, _2));
 
     // [Ansariel: Display name support]
 	gSavedSettings.getControl("PhoenixNameSystem")->getSignal()->connect(boost::bind(&handlePhoenixNameSystemChanged, _2));
