@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<floater can_close="true" can_drag_on_left="false" can_minimize="true"
+     can_resize="true" height="400" width="400" min_width="400" min_height="200"  
+     name="floater_attachments" title="Attachments...">
+	<scroll_list bottom="76" can_resize="true" column_padding="0" draw_heading="true"
+	     follows="left|top|bottom|right" left="10" multi_select="true"
+	     name="attachment_list" right="-10" search_column="2" top="-25">
+		<column name="type" width="20" />
+		<column width="150" label="Name" name="name" />
+		<column dynamicwidth="true" label="Description" name="desc" />
+	</scroll_list>
+	
+	<button bottom="8" follows="bottom|left" height="20" label="Inventory"
+		left="10" width="110" name="inventory_btn" enabled="false" />
+	<button bottom="8" follows="bottom|left" height="20" label="Textures"
+		left="130" width="110"  name="textures_btn" enabled="false" />
+	<button bottom="8" follows="bottom|left" height="20" label="Children..."
+		left="250" width="110"  name="view_children_btn" enabled="false" />
+</floater>

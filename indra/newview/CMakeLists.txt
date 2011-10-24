@@ -68,6 +68,10 @@ include_directories(
     )
 
 set(viewer_SOURCE_FILES
+	llfloatertextdump.cpp
+	llkeytool.cpp
+    llfloaterattachments.cpp
+    llfloaterkeytool.cpp
     llimportobject.cpp
     llfloaterexport.cpp
     slfloatermediafilter.cpp
@@ -558,6 +562,10 @@ set(viewer_HEADER_FILES
     CMakeLists.txt
     ViewerInstall.cmake
 
+	llfloatertextdump.h
+	llkeytool.h
+    llfloaterattachments.h
+    llfloaterkeytool.h
     llimportobject.h
     llfloaterexport.h
     slfloatermediafilter.h
@@ -1711,7 +1719,6 @@ if (WINDOWS)
 	 ${mime_types_dest}/mime_types.xml
       COMMENT "Copying mime_types_windows.xml to mime_types.xml."
       )
-  
 endif (WINDOWS)
 
 if (DARWIN)

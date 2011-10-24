@@ -97,6 +97,8 @@
 #include "rlvhandler.h"
 // [/RLVa:KB]
 
+#include "llfloaterexport.h"
+
 LLViewerObject* getSelectedParentObject(LLViewerObject *object) ;
 //
 // Consts
@@ -4733,6 +4735,10 @@ void LLSelectMgr::processObjectProperties(LLMessageSystem* msg, void** user_data
 			node->mInventorySerial = inv_serial;
 			node->mSitName.assign(sit_name);
 			node->mTouchName.assign(touch_name);
+
+			// <edit>
+			LLFloaterExport::receiveObjectProperties(id, name, desc);
+			// </edit>
 		}
 	}
 

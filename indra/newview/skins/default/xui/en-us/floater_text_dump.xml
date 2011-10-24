@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<floater can_close="true" can_drag_on_left="false" can_minimize="true"
+     can_resize="true" height="200" width="580" min_width="580" min_height="128"  
+     name="floater_text_dump" title="Text Dump" rect_control="FloaterTextDumpRect">
+	<simple_text_editor name="text_editor" follows="left|top|right|bottom" left="10" top="-20" right="-10" bottom="10" max_length="2147483647" embedded_items="true" visible="true"/>
+</floater>

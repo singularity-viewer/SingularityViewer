@@ -247,6 +247,8 @@
 // <edit>
 #include "dofloaterhex.h"
 #include "hgfloatertexteditor.h"
+#include "llfloaterattachments.h"
+#include "llfloaterkeytool.h"
 #include "llfloatermessagelog.h"
 #include "llfloatervfs.h"
 #include "llfloatervfsexplorer.h"
@@ -498,6 +500,7 @@ void handle_local_assets(void*);
 void handle_vfs_explorer(void*);
 void handle_sounds_explorer(void*);
 void handle_blacklist(void*);
+void handle_keytool_from_clipboard(void*);
 // </edit>
 
 BOOL is_inventory_visible( void* user_data );
@@ -842,11 +845,16 @@ void init_menus()
 	menu->append(new LLMenuItemCallGL(	"Object Area Search", &handle_area_search, NULL));
 	menu->append(new LLMenuItemCallGL(  "Message Log", &handle_open_message_log, NULL));
 	menu->append(new LLMenuItemCallGL(	"Message Builder", &handle_open_message_builder, NULL));
-
+	menu->append(new LLMenuItemCallGL(	"Local Assets...",
+												&handle_local_assets, NULL));
+	menu->append(new LLMenuItemCallGL(	"VFS Explorer",
+												&handle_vfs_explorer, NULL));
 	menu->append(new LLMenuItemCallGL(	"Sound Explorer",
 											&handle_sounds_explorer, NULL));
 	menu->append(new LLMenuItemCallGL(	"Asset Blacklist",
 											&handle_blacklist, NULL));
+	menu->append(new LLMenuItemCallGL(	"KeyTool from Clipboard",
+											&handle_keytool_from_clipboard, NULL, NULL, 'K', MASK_CONTROL | MASK_ALT | MASK_SHIFT));
 	
 	
 	
@@ -3095,7 +3103,28 @@ class LLAvatarDebug : public view_listener_t
 		return true;
 	}
 };
+//<edit>
+class LLAvatarEnableAttachmentList : public view_listener_t
+{
+	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
+	{
+		LLViewerObject* object = LLSelectMgr::getInstance()->getSelection()->getPrimaryObject();
+		bool new_value = (object != NULL);
+		gMenuHolder->findControl(userdata["control"].asString())->setValue(new_value);
+		return true;
+	}
+};
 
+class LLAvatarAttachmentList : public view_listener_t
+{
+	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
+	{
+		LLFloaterAttachments* floater = new LLFloaterAttachments();
+		floater->center();
+		return true;
+	}
+};
+//</edit>
 bool callback_eject(const LLSD& notification, const LLSD& response)
 {
 	S32 option = LLNotification::getSelectedOption(notification, response);
@@ -3275,7 +3304,8 @@ class LLAvatarEnableFreezeEject : public view_listener_t
 		return true;
 	}
 };
-
+//<edit>
+/*
 class LLAvatarGiveCard : public view_listener_t
 {
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
@@ -3328,8 +3358,8 @@ class LLAvatarGiveCard : public view_listener_t
 	}
 };
 
-
-
+*/
+//</edit>
 void login_done(S32 which, void *user)
 {
 	llinfos << "Login done " << which << llendl;
@@ -3703,9 +3733,31 @@ void process_grant_godlike_powers(LLMessageSystem* msg, void**)
 
 // <edit>
 
+void handle_keytool_from_clipboard(void*)
+{
+	std::string clipstr = utf8str_trim(wstring_to_utf8str(gClipboard.getPasteWString()));
+	LLUUID key = LLUUID(clipstr);
+	if(key.notNull())
+	{
+		LLFloaterKeyTool::show(key);
+	}
+}
+
 void handle_reopen_with_hex_editor(void*)
 {
-
+	LLFloater* top = gFloaterView->getFrontmost();
+	if (top)
+	{
+		LLUUID item_id = top->getItemID();
+		if(item_id.notNull())
+		{
+			LLInventoryItem* item = gInventory.getItem(item_id);
+			if(item)
+			{
+				DOFloaterHex::show(item_id);
+			}
+		}
+	}
 }
 
 void handle_open_message_log(void*)
@@ -3731,12 +3783,12 @@ void handle_edit_ao(void*)
 
 void handle_local_assets(void*)
 {
-
+	LLFloaterVFS::show();
 }
 
 void handle_vfs_explorer(void*)
 {
-
+	LLFloaterVFSExplorer::show();
 }
 
 void handle_sounds_explorer(void*)
@@ -9721,7 +9773,10 @@ void initialize_menus()
 	addMenu(new LLAvatarVisibleDebug(), "Avatar.VisibleDebug");
 	addMenu(new LLAvatarEnableDebug(), "Avatar.EnableDebug");
 	addMenu(new LLAvatarInviteToGroup(), "Avatar.InviteToGroup");
-	addMenu(new LLAvatarGiveCard(), "Avatar.GiveCard");
+	//<edit>
+	//addMenu(new LLAvatarGiveCard(), "Avatar.GiveCard");
+	addMenu(new LLAvatarAttachmentList(), "Avatar.AttachmentList");
+	//</edit>
 	addMenu(new LLAvatarEject(), "Avatar.Eject");
 	addMenu(new LLAvatarSendIM(), "Avatar.SendIM");
 	addMenu(new LLAvatarReportAbuse(), "Avatar.ReportAbuse");

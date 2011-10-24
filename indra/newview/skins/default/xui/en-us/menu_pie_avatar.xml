@@ -26,8 +26,8 @@
 			<on_click function="Avatar.Freeze" />
 			<on_enable function="Avatar.EnableFreezeEject" />
 		</menu_item_call>
-		<menu_item_call enabled="false" label="Give Card" mouse_opaque="true" name="Give Card">
-			<on_click function="Avatar.GiveCard" />
+		<menu_item_call enabled="true" label="HUDs" mouse_opaque="true" name="Attachments">
+			<on_click function="Avatar.AttachmentList" />
 		</menu_item_call>
 		<menu_item_call enabled="true" label="Group Invite..." mouse_opaque="true" name="Invite...">
 			<on_click function="Avatar.InviteToGroup" />

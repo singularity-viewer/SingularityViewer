@@ -2,5 +2,92 @@
 <floater can_close="true" can_drag_on_left="false" can_minimize="true"
      can_resize="false" width="320" min_width="320" height="320" min_height="320"
      name="floater_vfs" title="Local Assets" rect_control="FloaterVFSRect">
-	
+	<button name="add_btn" follows="left|top" width="100" bottom="-45" left="10" height="20" label="Add..."/>
+	<button name="clear_btn" follows="left|top" width="100" left_delta="100" bottom_delta="0" height="20" label="Clear"/>
+	<button name="reload_all_btn" follows="left|top" width="100" left_delta="100" bottom_delta="0" height="20" label="Reload All"/>
+	<check_box name="create_pretend_item" follows="left|top|bottom" width="100" bottom_delta="-20" left="10" label="Create Pretend Inventory Item" initial_value="true" enabled="true"/>
+	<scroll_list bottom="75" can_resize="true" column_padding="0" draw_heading="true"
+	     follows="left|top|bottom|right" left="10" multi_select="true"
+	     name="file_list" right="-10" search_column="0" top="-70">
+		<column dynamicwidth="true" name="name" label="name" />
+		<column name="type" label="type" width="100" />
+	</scroll_list>
+	<line_editor name="name_edit" follows="left|bottom|right" bottom="53" left="10" width="300" height="20"/>
+	<line_editor name="id_edit" follows="left|bottom|right" bottom_delta="-23" left="10" width="200" height="20"/>
+	<combo_box allow_text_entry="false" bottom_delta="-1" follows="left|bottom|right" height="20"
+					 left="210" max_chars="20" mouse_opaque="true" name="type_combo" width="100">
+		<combo_item name="texture" value="texture">
+			texture
+		</combo_item>
+		<combo_item name="sound" value="sound">
+			sound
+		</combo_item>
+		<combo_item name="callcard" value="callcard">
+			callcard
+		</combo_item>
+		<combo_item name="landmark" value="landmark">
+			landmark
+		</combo_item>
+		<combo_item name="script" value="script">
+			script
+		</combo_item>
+		<combo_item name="clothing" value="clothing">
+			clothing
+		</combo_item>
+		<combo_item name="object" value="object">
+			object
+		</combo_item>
+		<combo_item name="notecard" value="notecard">
+			notecard
+		</combo_item>
+		<combo_item name="category" value="category">
+			category
+		</combo_item>
+		<combo_item name="root" value="root">
+			root
+		</combo_item>
+		<combo_item name="lsltext" value="lsltext">
+			lsltext
+		</combo_item>
+		<combo_item name="lslbyte" value="lslbyte">
+			lslbyte
+		</combo_item>
+		<combo_item name="txtr_tga" value="txtr_tga">
+			txtr_tga
+		</combo_item>
+		<combo_item name="bodypart" value="bodypart">
+			bodypart
+		</combo_item>
+		<combo_item name="trash" value="trash">
+			trash
+		</combo_item>
+		<combo_item name="snapshot" value="snapshot">
+			snapshot
+		</combo_item>
+		<combo_item name="lstndfnd" value="lstndfnd">
+			lstndfnd
+		</combo_item>
+		<combo_item name="snd_wav" value="snd_wav">
+			snd_wav
+		</combo_item>
+		<combo_item name="img_tga" value="img_tga">
+			img_tga
+		</combo_item>
+		<combo_item name="jpeg" value="jpeg">
+			jpeg
+		</combo_item>
+		<combo_item name="animatn" value="animatn">
+			animatn
+		</combo_item>
+		<combo_item name="gesture" value="gesture">
+			gesture
+		</combo_item>
+		<combo_item name="simstate" value="simstate">
+			simstate
+		</combo_item>
+	</combo_box>
+	<button name="copy_uuid_btn" follows="left|bottom" width="75" bottom="7" left="10" height="20" label="Copy UUID"/>
+	<button name="item_btn" follows="left|bottom" width="75" bottom_delta="0" left_delta="75" height="20" label="Item"/>
+	<button name="reload_btn" follows="left|bottom" width="75" bottom_delta="0" left_delta="75" height="20" label="Reload"/>
+	<button name="remove_btn" follows="left|bottom" width="75" bottom_delta="0" left_delta="75" height="20" label="Remove"/>
 </floater>

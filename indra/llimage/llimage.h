@@ -40,11 +40,11 @@
 #include "aithreadsafe.h"
 
 const S32 MIN_IMAGE_MIP =  2; // 4x4, only used for expand/contract power of 2
-const S32 MAX_IMAGE_MIP = 11; // 2048x2048
+const S32 MAX_IMAGE_MIP = 12; // 4096x4096 //2048x2048
 const S32 MAX_DISCARD_LEVEL = 5;
 
 const S32 MIN_IMAGE_SIZE = (1<<MIN_IMAGE_MIP); // 4, only used for expand/contract power of 2
-const S32 MAX_IMAGE_SIZE = (1<<MAX_IMAGE_MIP); // 2048
+const S32 MAX_IMAGE_SIZE = (1<<MAX_IMAGE_MIP); // 4096
 const S32 MIN_IMAGE_AREA = MIN_IMAGE_SIZE * MIN_IMAGE_SIZE;
 const S32 MAX_IMAGE_AREA = MAX_IMAGE_SIZE * MAX_IMAGE_SIZE;
 const S32 MAX_IMAGE_COMPONENTS = 8;

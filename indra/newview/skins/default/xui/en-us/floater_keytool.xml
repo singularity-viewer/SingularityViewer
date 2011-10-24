@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<floater can_close="true" can_drag_on_left="false" can_minimize="true"
+     can_resize="false" height="316" width="154" min_width="154" min_height="316"  
+     name="floater_keytool" title="KeyTool" rect_control="FloaterKeyToolRect">
+	<!--<check_box name="automatic" control_name="KeyToolAutomaticOpen" follows="bottom|left" left="10" bottom="10" label="Open automatically"/>-->
+</floater>
