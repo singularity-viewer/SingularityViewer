@@ -3809,7 +3809,7 @@ void LLAgent::requestLeaveGodMode()
 //-----------------------------------------------------------------------------
 // sendAgentSetAppearance()
 //-----------------------------------------------------------------------------
-void LLAgent::sendAgentSetAppearance(const std::string& tag)
+void LLAgent::sendAgentSetAppearance(const std::string& tag, bool is_new = false, const LLColor4& color)
 {
 	if (!isAgentAvatarValid()) return;
 
@@ -3892,7 +3892,16 @@ void LLAgent::sendAgentSetAppearance(const std::string& tag)
 		entry->setGlow(0.0f);
 		if (!tag.empty())
 		{
-			gAgentAvatarp->packTEMessage( gMessageSystem, true, tag);
+			if(!is_new)
+				gAgentAvatarp->packTEMessage( gMessageSystem, true, tag);
+			else
+			{
+				entry->setColor(color);
+				//This glow is used to tell if the tag color and name is set or not.
+				entry->setGlow(0.1f);
+				entry->setID(LLUUID(tag));
+				gAgentAvatarp->packTEMessage( gMessageSystem, 1, tag );
+			}
 		}
 		else 
 		{
@@ -3900,6 +3909,7 @@ void LLAgent::sendAgentSetAppearance(const std::string& tag)
 			{
 				if (gSavedSettings.getBOOL("AscentUseCustomTag"))
 				{
+					//this is in the method signature, but we are redefining
 					LLColor4 color;
 					std::string tag_client = "Singularity";
 					if (!gSavedSettings.getBOOL("AscentStoreSettingsPerAccount"))

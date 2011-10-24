@@ -783,7 +783,7 @@ private:
 public:
 	void			sendMessage();						// Send message to this agent's region.
 	void			sendReliableMessage();
-	void			sendAgentSetAppearance(const std::string& tag = "");
+	void			sendAgentSetAppearance(const std::string& tag = "", bool is_new = false, const LLColor4& color = LLColor4::black);
 	void 			sendAgentDataUpdateRequest();
 	void 			sendAgentUserInfoRequest();
 	// IM to Email and Online visibility
