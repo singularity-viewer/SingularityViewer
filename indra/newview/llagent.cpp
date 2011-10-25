@@ -527,7 +527,7 @@ void LLAgent::resetClientTag()
 {
 	if (gAgentAvatarp)
 	{
-		llinfos << "Resetting mClientTag." << llendl;
+		//llinfos << "Resetting mClientTag." << llendl;
 		gAgentAvatarp->mClientTag = "";
 	}
 }
