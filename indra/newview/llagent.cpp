@@ -3901,6 +3901,7 @@ void LLAgent::sendAgentSetAppearance(const std::string& tag, bool is_new, const 
 				entry->setGlow(0.1f);
 				entry->setID(LLUUID(tag));
 				gAgentAvatarp->packTEMessage( gMessageSystem, 1, tag );
+				resetClientTag();
 			}
 		}
 		else 
@@ -3911,7 +3912,7 @@ void LLAgent::sendAgentSetAppearance(const std::string& tag, bool is_new, const 
 				{
 					//this is in the method signature, but we are redefining
 					LLColor4 color;
-					std::string tag_client = "Singularity";
+					std::string tag_client = "Firestorm";
 					if (!gSavedSettings.getBOOL("AscentStoreSettingsPerAccount"))
 					{
 						tag_client = gSavedSettings.getString("AscentCustomTagLabel");

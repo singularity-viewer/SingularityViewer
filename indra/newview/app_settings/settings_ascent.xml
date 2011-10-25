@@ -4,7 +4,7 @@
     <key>RainbowTagType</key>
     <map>
       <key>Comment</key>
-      <string>Placeholder</string>
+      <string>Select type of Rainbow Tag you want. 2 = new tag silliness</string>
       <key>Persist</key>
       <integer>2</integer>
       <key>Type</key>

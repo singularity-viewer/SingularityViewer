@@ -3869,6 +3869,42 @@ void handle_phantom_avatar(void*)
 	chat.mText = llformat("%s%s","Phantom ",(ph ? "On" : "Off"));
 	LLFloaterChat::addChat(chat);
 }
+//ripped from pheonix.
+F32 hueToRgb ( F32 val1In, F32 val2In, F32 valHUeIn )
+{
+	while ( valHUeIn < 0.0f ) valHUeIn += 1.0f;
+	while ( valHUeIn > 1.0f ) valHUeIn -= 1.0f;
+	if ( ( 6.0f * valHUeIn ) < 1.0f ) return ( val1In + ( val2In - val1In ) * 6.0f * valHUeIn );
+	if ( ( 2.0f * valHUeIn ) < 1.0f ) return ( val2In );
+	if ( ( 3.0f * valHUeIn ) < 2.0f ) return ( val1In + ( val2In - val1In ) * ( ( 2.0f / 3.0f ) - valHUeIn ) * 6.0f );
+	return ( val1In );
+}
+
+void hslToRgb ( F32 hValIn, F32 sValIn, F32 lValIn, F32& rValOut, F32& gValOut, F32& bValOut )
+{
+	if ( sValIn < 0.00001f )
+	{
+		rValOut = lValIn;
+		gValOut = lValIn;
+		bValOut = lValIn;
+	}
+	else
+	{
+		F32 interVal1;
+		F32 interVal2;
+
+		if ( lValIn < 0.5f )
+			interVal2 = lValIn * ( 1.0f + sValIn );
+		else
+			interVal2 = ( lValIn + sValIn ) - ( sValIn * lValIn );
+
+		interVal1 = 2.0f * lValIn - interVal2;
+
+		rValOut = hueToRgb ( interVal1, interVal2, hValIn + ( 1.f / 3.f ) );
+		gValOut = hueToRgb ( interVal1, interVal2, hValIn );
+		bValOut = hueToRgb ( interVal1, interVal2, hValIn - ( 1.f / 3.f ) );
+	}
+}
 class RainbowTagTimer : public LLEventTimer
 {
 public:
@@ -3879,6 +3915,7 @@ public:
 		  gSavedSettings.getControl("RainbowTagInterval")->getSignal()->connect(boost::bind(&RainbowTagTimer::update,this,_2));
 		  gSavedSettings.getControl("RainbowTagType")->getSignal()->connect(boost::bind(&RainbowTagTimer::update,this,_2));
 		  itr = LLVOAvatar::sClientResolutionList.beginMap();
+		  mTimer.start();
 	  }
 	~RainbowTagTimer()
 	{
@@ -3924,7 +3961,33 @@ public:
 			}
 			else if(RainbowType > 1)
 			{
+				std::string tag_client = "Firestorm";
+				if (!gSavedSettings.getBOOL("AscentStoreSettingsPerAccount"))
+				{
+					tag_client = gSavedSettings.getString("AscentCustomTagLabel");
+				}
+				else
+				{
+					tag_client = gSavedPerAccountSettings.getString("AscentCustomTagLabel");
+				}
+				U8 client_buffer[UUID_BYTES];
+				memset(&client_buffer, 0, UUID_BYTES);
+				strncpy((char*)&client_buffer[0], tag_client.c_str(), UUID_BYTES);
+				LLUUID duh_key;
+				memcpy(&duh_key.mData, &client_buffer[0], UUID_BYTES);
 
+				//color time. :D
+
+				F32 r,g,b = 0.0f;
+
+				F32 timeinc = mTimer.getElapsedTimeF32() * 0.3f;
+
+				hslToRgb(fmod(timeinc,1.0f), 1.0f, 0.5f, r, g, b);
+
+				LLColor4 output(r, g, b);
+				output.clamp();
+
+				gAgent.sendAgentSetAppearance(duh_key.asString(),true,output);
 			}
 		}
 		else
@@ -3939,6 +4002,7 @@ public:
 	}
 	LLSD::map_iterator itr;
 	BOOL running;
+	LLTimer mTimer;
 };
 RainbowTagTimer* rainbow_timer = NULL;
 BOOL check_rainbow_tag(void*)
