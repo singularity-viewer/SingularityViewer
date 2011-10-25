@@ -1,6 +1,17 @@
 <?xml version="1.0" ?>
 <llsd>
 	<map>
+    <key>RainbowTagType</key>
+    <map>
+      <key>Comment</key>
+      <string>Placeholder</string>
+      <key>Persist</key>
+      <integer>2</integer>
+      <key>Type</key>
+      <string>U32</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
     <key>RainbowTagInterval</key>
     <map>
       <key>Comment</key>

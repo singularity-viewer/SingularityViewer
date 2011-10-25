@@ -301,49 +301,60 @@ void LLNetMap::draw()
 			}
 			gGL.setAlphaRejectSettings(LLRender::CF_DEFAULT);
 		}
-
-		// Redraw object layer periodically
-		if (mUpdateNow || (map_timer.getElapsedTimeF32() > 0.5f))
+		//<edit>
+		static LLCachedControl<bool> MoyFastMiniMap(gSavedSettings, "MoyFastMiniMap");
+		if(!MoyFastMiniMap)
 		{
-			mUpdateNow = FALSE;
+			if(!map_timer.getStarted())
+				map_timer.start();
+		//</edit>
+			// Redraw object layer periodically
+			if (mUpdateNow || (map_timer.getElapsedTimeF32() > 0.5f))
+			{
+				mUpdateNow = FALSE;
 
-			// Locate the centre of the object layer, accounting for panning
-			LLVector3 new_center = globalPosToView(gAgentCamera.getCameraPositionGlobal(), rotate_map);	
-			new_center.mV[0] -= mCurPanX;
-			new_center.mV[1] -= mCurPanY;
-			new_center.mV[2] = 0.f;
-			mObjectImageCenterGlobal = viewPosToGlobal(llround(new_center.mV[0]), llround(new_center.mV[1]), rotate_map);
+				// Locate the centre of the object layer, accounting for panning
+				LLVector3 new_center = globalPosToView(gAgentCamera.getCameraPositionGlobal(), rotate_map);	
+				new_center.mV[0] -= mCurPanX;
+				new_center.mV[1] -= mCurPanY;
+				new_center.mV[2] = 0.f;
+				mObjectImageCenterGlobal = viewPosToGlobal(llround(new_center.mV[0]), llround(new_center.mV[1]), rotate_map);
 
-			// Create the base texture.
-			U8 *default_texture = mObjectRawImagep->getData();
-			memset( default_texture, 0, mObjectImagep->getWidth() * mObjectImagep->getHeight() * mObjectImagep->getComponents() );
+				// Create the base texture.
+				U8 *default_texture = mObjectRawImagep->getData();
+				memset( default_texture, 0, mObjectImagep->getWidth() * mObjectImagep->getHeight() * mObjectImagep->getComponents() );
 
-			// Draw buildings
-			gObjectList.renderObjectsForMap(*this);
+				// Draw buildings
+				gObjectList.renderObjectsForMap(*this);
 
-			mObjectImagep->setSubImage(mObjectRawImagep, 0, 0, mObjectImagep->getWidth(), mObjectImagep->getHeight());
+				mObjectImagep->setSubImage(mObjectRawImagep, 0, 0, mObjectImagep->getWidth(), mObjectImagep->getHeight());
 			
-			map_timer.reset();
+				map_timer.reset();
+			}
+		
+		
+			LLVector3 map_center_agent = gAgent.getPosAgentFromGlobal(mObjectImageCenterGlobal);
+			map_center_agent -= gAgentCamera.getCameraPositionAgent();
+		
+			gGL.getTexUnit(0)->bind(mObjectImagep);
+			F32 image_half_width = 0.5f*mObjectMapPixels;
+			F32 image_half_height = 0.5f*mObjectMapPixels;
+
+			gGL.begin(LLRender::QUADS);
+				gGL.texCoord2f(0.f, 1.f);
+				gGL.vertex2f(map_center_agent.mV[VX] - image_half_width, image_half_height + map_center_agent.mV[VY]);
+				gGL.texCoord2f(0.f, 0.f);
+				gGL.vertex2f(map_center_agent.mV[VX] - image_half_width, map_center_agent.mV[VY] - image_half_height);
+				gGL.texCoord2f(1.f, 0.f);
+				gGL.vertex2f(image_half_width + map_center_agent.mV[VX], map_center_agent.mV[VY] - image_half_height);
+				gGL.texCoord2f(1.f, 1.f);
+				gGL.vertex2f(image_half_width + map_center_agent.mV[VX], image_half_height + map_center_agent.mV[VY]);
+			gGL.end();
+		//<edit>
 		}
-
-		LLVector3 map_center_agent = gAgent.getPosAgentFromGlobal(mObjectImageCenterGlobal);
-		map_center_agent -= gAgentCamera.getCameraPositionAgent();
-
-		gGL.getTexUnit(0)->bind(mObjectImagep);
-		F32 image_half_width = 0.5f*mObjectMapPixels;
-		F32 image_half_height = 0.5f*mObjectMapPixels;
-
-		gGL.begin(LLRender::QUADS);
-			gGL.texCoord2f(0.f, 1.f);
-			gGL.vertex2f(map_center_agent.mV[VX] - image_half_width, image_half_height + map_center_agent.mV[VY]);
-			gGL.texCoord2f(0.f, 0.f);
-			gGL.vertex2f(map_center_agent.mV[VX] - image_half_width, map_center_agent.mV[VY] - image_half_height);
-			gGL.texCoord2f(1.f, 0.f);
-			gGL.vertex2f(image_half_width + map_center_agent.mV[VX], map_center_agent.mV[VY] - image_half_height);
-			gGL.texCoord2f(1.f, 1.f);
-			gGL.vertex2f(image_half_width + map_center_agent.mV[VX], image_half_height + map_center_agent.mV[VY]);
-		gGL.end();
-
+		else if(map_timer.getStarted())
+			map_timer.stop();
+		//</edit>
 		gGL.popMatrix();
 
 		LLVector3d pos_global;

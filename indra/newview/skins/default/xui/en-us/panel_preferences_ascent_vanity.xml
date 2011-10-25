@@ -61,9 +61,21 @@
           Mobi Sans
         </combo_item>
       </combo_box>
-      <!--<slider bottom_delta="-16" can_edit_text="false" enabled="true" width="400" height="16" mouse_opaque="true"
-  	     decimal_digits="0" increment="16" initial_val="16" left_delta="0" min_val="16" max_val="4096"
-  	     name="mini_map_max_prim_radius" show_text="true" value="1" control_name="MiniMapMaxPrimRadius" />-->
+      <check_box bottom_delta="-30" control_name="MoyFastMiniMap" enabled="true"
+        follows="left|top" font="SansSerifSmall" height="16" initial_value="true"
+        label="Disable Buildings on Mini-Map." left="10"
+        tool_tip="Enabling this will show your client tag on your avatar name locally."
+        mouse_opaque="true" name="moy_fast_mini_map" radio_style="false"
+        width="400" />
+      <text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+        bottom_delta="-20" left="10" drop_shadow_visible="true" enabled="true" follows="left|top"
+        font="SansSerifSmall" h_pad="0" halign="left" height="10"
+        mouse_opaque="true" name="mini-map_prim_radius_text" v_pad="0" width="300">
+        Mini-Map Prim Max Radius:
+      </text>
+      <slider bottom_delta="-20" can_edit_text="true" enabled="true" width="200" height="16" mouse_opaque="true"
+  	     decimal_digits="0" increment="8" left_delta="0" min_val="16" max_val="256" follows="left|top"
+  	     name="mini_map_prim_max_radius_slider" show_text="true" control_name="MiniMapPrimMaxRadius" />
     </panel>
     <panel border="true" left="1" bottom="-190" height="180" width="500" mouse_opaque="true"
       follows="left|top|right|bottom" label="Tags/Colors" name="TagsColors">

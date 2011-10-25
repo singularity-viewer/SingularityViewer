@@ -3877,6 +3877,7 @@ public:
 	  running(TRUE)
 	  {
 		  gSavedSettings.getControl("RainbowTagInterval")->getSignal()->connect(boost::bind(&RainbowTagTimer::update,this,_2));
+		  gSavedSettings.getControl("RainbowTagType")->getSignal()->connect(boost::bind(&RainbowTagTimer::update,this,_2));
 		  itr = LLVOAvatar::sClientResolutionList.beginMap();
 	  }
 	~RainbowTagTimer()
@@ -3898,25 +3899,33 @@ public:
 	{
 		if(running)
 		{
-			if(itr == LLVOAvatar::sClientResolutionList.endMap())
+			static LLCachedControl<U32> RainbowType(gSavedSettings,"RainbowTagType");
+			if(RainbowType == 1)
 			{
-				itr = LLVOAvatar::sClientResolutionList.beginMap();
-			}
-			std::string uuid = (*itr).first;
-			LLSD value = (*itr).second;
-			if(value.has("name"))
-			{
-				std::string name = value.get("name");
-				LLColor4 color = LLColor4(value.get("color"));
-				if(value["multiple"].asReal() != 0)
+				if(itr == LLVOAvatar::sClientResolutionList.endMap())
 				{
-					color *= 1.0/(value["multiple"].asReal()+1.0f);
+					itr = LLVOAvatar::sClientResolutionList.beginMap();
 				}
-				gAgentAvatarp->mClientTag = name;
-				gAgentAvatarp->mClientColor = color;
-				gAgent.sendAgentSetAppearance(uuid);
+				std::string uuid = (*itr).first;
+				LLSD value = (*itr).second;
+				if(value.has("name"))
+				{
+					std::string name = value.get("name");
+					LLColor4 color = LLColor4(value.get("color"));
+					if(value["multiple"].asReal() != 0)
+					{
+						color *= 1.0/(value["multiple"].asReal()+1.0f);
+					}
+					gAgentAvatarp->mClientTag = name;
+					gAgentAvatarp->mClientColor = color;
+					gAgent.sendAgentSetAppearance(uuid);
+				}
+				itr++;
 			}
-			itr++;
+			else if(RainbowType > 1)
+			{
+
+			}
 		}
 		else
 		{
