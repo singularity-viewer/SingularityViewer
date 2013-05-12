@@ -36,6 +36,7 @@
 
 #include "llfloateravatarinfo.h"
 #include "llavatarnamecache.h"
+#include "llimview.h"
 
 // viewer project includes
 #include "llagentdata.h"
@@ -43,11 +44,16 @@
 #include "llpanelavatar.h"
 #include "lluictrlfactory.h"
 #include "llweb.h"
+#include "llfloaterfriends.h"
+#include "llmutelist.h"
+#include "llfloatermute.h"
+#include "llmenucommands.h"
 
 // linden library includes
 #include "llinventory.h"
 #include "lluuid.h"
 #include "message.h"
+#include "llviewermessage.h"
 
 
 const char FLOATER_TITLE[] = "Profile";
@@ -73,11 +79,84 @@ public:
 			return false;
 		}
 
-		if (params[1].asString() == "about")
+		// Implementation of v.2 SLURLs for ///app/agent/
+		// sloppy from architecture point of view, but works
+		const std::string verb = params[1].asString();
+
+		if ((verb == "about")||(verb == "inspect")) //let say about and inspect is same thing
 		{
 			LLFloaterAvatarInfo::show(agent_id);
 			return true;
 		}
+
+		if (verb == "im")
+		{
+			gIMMgr->setFloaterOpen(TRUE);
+
+			LLAvatarName av_name;
+
+			if (LLAvatarNameCache::get(agent_id, &av_name)) 
+			{
+				gIMMgr->addSession( av_name.getCompleteName(), IM_NOTHING_SPECIAL, agent_id);
+			}
+			return true;
+		}
+
+		if (verb == "pay")
+		{
+			handle_pay_by_id(agent_id);
+			return true;
+		}
+
+		if (verb == "offerteleport")
+		{
+			handle_lure(agent_id);
+			return true;
+		}
+
+		if (verb == "requestfriend")
+		{
+			LLAvatarName av_name;
+
+			if (LLAvatarNameCache::get(agent_id, &av_name)) 
+			{
+				LLPanelFriends::requestFriendshipDialog( agent_id, av_name.getCompleteName() );
+			}
+			return true;
+		}
+
+		if (verb == "mute")
+		{
+			if (LLMuteList::getInstance()->isMuted(agent_id))
+			{
+				LLFloaterMute::getInstance()->selectMute(agent_id);
+			}
+			else
+			{
+				LLAvatarName av_name;
+				if (LLAvatarNameCache::get(agent_id, &av_name)) 
+				{
+					LLMute mute(agent_id, av_name.getCompleteName(), LLMute::AGENT);
+					LLMuteList::getInstance()->add(mute);
+				}
+			}
+			return true;
+		}
+
+		if (verb == "unmute")
+		{
+			if (LLMuteList::getInstance()->isMuted(agent_id))
+			{
+				LLAvatarName av_name;
+				if (LLAvatarNameCache::get(agent_id, &av_name)) 
+				{
+					LLMute mute(agent_id, av_name.getCompleteName(), LLMute::AGENT);
+					LLMuteList::getInstance()->remove(mute);
+				}
+			}
+			return true;
+		}
+
 		return false;
 	}
 };
