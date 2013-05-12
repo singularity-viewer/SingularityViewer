@@ -97,7 +97,7 @@ public:
 			return false;
 		}
 
-		if (tokens[1].asString() == "about")
+		if ((tokens[1].asString() == "about") || (tokens[1].asString() == "inspect"))
 		{
 			LLFloaterGroupInfo::showFromUUID(group_id);
 			return true;
