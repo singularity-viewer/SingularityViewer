@@ -17225,6 +17225,28 @@ This should be as low as possible, but too low may break functionality</string>
       <key>Value</key>
       <string>Random</string>
     </map>
+    <key>DerenderHugeAttachments</key>
+    <map>
+      <key>Comment</key>
+      <string>Allow the viewer to automatically hide attachmnets that are really just way too big</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>Boolean</string>
+      <key>Value</key>
+      <integer>1</integer>
+    </map>
+    <key>MaxAttachmentSpan</key>
+    <map>
+      <key>Comment</key>
+      <string>Size constraint for attachments (minimum value == 256.0)</string>
+      <key>Persist</key>
+      <integer>1</integer>
+      <key>Type</key>
+      <string>F32</string>
+      <key>Value</key>
+      <real>1280.0</real>
+    </map>
   </map>
 </llsd>
 

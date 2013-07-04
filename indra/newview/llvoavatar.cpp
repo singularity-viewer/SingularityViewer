@@ -1616,13 +1616,16 @@ void LLVOAvatar::updateSpatialExtents(LLVector4a& newMin, LLVector4a &newMax)
 
 void LLVOAvatar::getSpatialExtents(LLVector4a& newMin, LLVector4a& newMax)
 {
+	static const LLCachedControl<bool> control_derender_huge_attachments("DerenderHugeAttachments", true);
+	static const LLCachedControl<F32> control_max_attachment_span("MaxAttachmentSpan", 5.0f * DEFAULT_MAX_PRIM_SCALE);
+
 	LLVector4a buffer(0.25f);
 	LLVector4a pos;
 	pos.load3(getRenderPosition().mV);
 	newMin.setSub(pos, buffer);
 	newMax.setAdd(pos, buffer);
 
-	float max_attachment_span = DEFAULT_MAX_PRIM_SCALE * 5.0f;
+	float max_attachment_span = llmax<F32>(DEFAULT_MAX_PRIM_SCALE, control_max_attachment_span);
 	
 	//stretch bounding box by joint positions
 	for (polymesh_map_t::iterator i = mPolyMeshes.begin(); i != mPolyMeshes.end(); ++i)
@@ -1645,10 +1648,12 @@ void LLVOAvatar::getSpatialExtents(LLVector4a& newMin, LLVector4a& newMax)
 
 	mPixelArea = LLPipeline::calcPixelArea(center, size, *LLViewerCamera::getInstance());
 
+	static std::vector<LLViewerObject*> removal;
+
 	//stretch bounding box by attachments
-	/*for (attachment_map_t::iterator iter = mAttachmentPoints.begin();
-		iter != mAttachmentPoints.end();
-		++iter)
+	for (attachment_map_t::iterator iter = mAttachmentPoints.begin();
+		 iter != mAttachmentPoints.end();
+		 ++iter)
 	{
 		LLViewerJointAttachment* attachment = iter->second;
 
@@ -1661,13 +1666,7 @@ void LLVOAvatar::getSpatialExtents(LLVector4a& newMin, LLVector4a& newMax)
 			 attachment_iter != attachment->mAttachedObjects.end();
 			 ++attachment_iter)
 		{
-			const LLViewerObject* attached_object = (*attachment_iter);*/
-	std::vector<std::pair<LLViewerObject*,LLViewerJointAttachment*> >::iterator attachment_iter = mAttachedObjectsVector.begin();
-	for(;attachment_iter!=mAttachedObjectsVector.end();++attachment_iter)
-	{
-		if(attachment_iter->second->getValid())
-		{
-			const LLViewerObject* attached_object = attachment_iter->first;
+			const LLViewerObject* attached_object = (*attachment_iter);
 			if (attached_object && !attached_object->isHUDAttachment())
 			{
 				LLDrawable* drawable = attached_object->mDrawable;
@@ -1691,10 +1690,24 @@ void LLVOAvatar::getSpatialExtents(LLVector4a& newMin, LLVector4a& newMax)
 							update_min_max(newMin,newMax,ext[0]);
 							update_min_max(newMin,newMax,ext[1]);
 						}
+						else if(control_derender_huge_attachments)
+						{
+							removal.push_back((LLViewerObject *)attached_object);
+						}
 					}
 				}
 			}
 		}
+	}
+
+	if(removal.size() > 0)
+	{
+		for(std::vector<LLViewerObject*>::iterator removal_iter = removal.begin(); removal_iter != removal.end(); ++removal_iter)
+		{
+			LLViewerObject *object_to_remove = *removal_iter;
+			gObjectList.killObject(object_to_remove);
+		}
+		removal.clear();
 	}
 
 	//pad bounding box	
