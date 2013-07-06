@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="floaterreleasemessage" title="Betrete Region">
+	<button label="Schließen" name="close_btn"/>
+	<web_browser name="release_message_floater_browser"/>
+	<string name="in-world_help_title">In-Welt-Hilfe</string>
+	<string name="in-world_help_url">http://www.secondlife.com/app/support/inworld.html</string>
+	<string name="additional_help_title">Weitere Hilfe</string>
+	<string name="additional_help_url">http://www.secondlife.com/app/support/support.html</string>
+</floater>

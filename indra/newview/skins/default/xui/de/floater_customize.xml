@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="floater customize" title="Aussehen">
+	<tab_container name="customize tab container">
+		<panel label="Körperteile" name="body_parts_placeholder"/>
+		<panel label="Form" name="Shape">
+			<icon name="square"/>
+			<icon name="icon"/>
+			<button label="Zurücksetzen" label_selected="Zurücksetzen" name="Revert"/>
+			<button label="Körper" label_selected="Körper" name="Body"/>
+			<button label="Kopf" label_selected="Kopf" name="Head"/>
+			<button label="Augen" label_selected="Augen" name="Eyes"/>
+			<button label="Ohren" label_selected="Ohren" name="Ears"/>
+			<button label="Nase" label_selected="Nase" name="Nose"/>
+			<button label="Mund" label_selected="Mund" name="Mouth"/>
+			<button label="Kinn" label_selected="Kinn" name="Chin"/>
+			<button label="Oberkörper" label_selected="Oberkörper" name="Torso"/>
+			<button label="Beine" label_selected="Beine" name="Legs"/>
+			<radio_group name="sex radio">
+				<radio_item name="radio">Weiblich</radio_item>
+				<radio_item name="radio2">Männlich</radio_item>
+			</radio_group>
+			<text name="title">[DESC]</text>
+			<text name="title_no_modify">[DESC]: bearbeiten nicht möglich</text>
+			<text name="title_loading">[DESC]: wird geladen...</text>
+			<text name="title_not_worn">[DESC]: nicht getragen</text>
+			<text name="path">In [PATH]</text>
+      <text name="not worn instructions">Ziehen Sie eine Körperform aus dem Inventar auf Ihren Avatar,
+um sie zu tragen. Sie können auch eine neue Körperform erstellen
+und diese anziehen.</text>
+			<text name="no modify instructions">Sie sind nicht berechtigt, diese Kleidung zu bearbeiten.</text>
+      <text name="Item Action Label">Form:</text>
+      <button label="Neue Form/Gestalt" label_selected="Neue Form/Gestalt" name="Create New"/>
+      <text name="avatar_height_label">Höhe:</text>
+      <text name="avheight">[AVHEIGHT]</text>
+      <text name="includes_shoes">(enthält Schuhe)</text>
+      <button label="Speichern" label_selected="Speichern" name="Save"/>
+      <button label="Speichern unter..." label_selected="Speichern unter..." name="Save As"/>
+      <button name="Take Off"/>
+    </panel>
+    <panel label="Haut" name="Skin">
+      <icon name="square"/>
+      <icon name="icon"/>
+      <button label="Hautfarbe" label_selected="Hautfarbe" name="Skin Color"/>
+      <button label="Gesichtsdetails" label_selected="Gesichtsdetails" name="Face Detail"/>
+      <button label="Make-Up" label_selected="Make-Up" name="Makeup"/>
+      <button label="Körperdetails" label_selected="Körperdetails" name="Body Detail"/>
+      <text name="title">[DESC]</text>
+      <text name="title_no_modify">[DESC]: bearbeiten nicht möglich</text>
+      <text name="title_loading">[DESC]: wird geladen...</text>
+      <text name="title_not_worn">[DESC]: nicht getragen</text>
+      <text name="path">In [PATH]</text>
+      <text name="not worn instructions">Ziehen Sie eine Haut aus dem Inventar auf Ihren Avatar,
+um sie zu tragen. Sie können auch eine neue Haut erstellen
+und diese anziehen.</text>
+      <text name="no modify instructions">Sie sind nicht berechtigt, diese Kleidung zu bearbeiten.</text>
+      <text name="Item Action Label">Haut:</text>
+      <texture_picker label="Kopftattoo" name="Head Tattoos" tool_tip="Zum Auswählen eines Bildes hier klicken"/>
+      <texture_picker label="Obere Tattoos" name="Upper Tattoos" tool_tip="Zum Auswählen eines Bildes hier klicken"/>
+      <texture_picker label="Untere Tattoos" name="Lower Tattoos" tool_tip="Zum Auswählen eines Bildes hier klicken"/>
+      <button label="Neue Haut" label_selected="Neue Haut" name="Create New"/>
+      <button label="Speichern" label_selected="Speichern" name="Save"/>
+      <button label="Speichern unter..." label_selected="Speichern unter..." name="Save As"/>
+      <button label="Zurücksetzen" label_selected="Zurücksetzen" name="Revert"/>
+      <button name="Take Off"/>
+    </panel>
+    <panel label="Haare" name="Hair">
+      <icon name="square"/>
+      <icon name="icon"/>
+      <button label="Farbe" label_selected="Farbe" name="Color"/>
+      <button label="Stil" label_selected="Stil" name="Style"/>
+      <button label="Augenbrauen" label_selected="Augenbrauen" name="Eyebrows"/>
+      <button label="Gesicht" label_selected="Gesicht" name="Facial"/>
+      <text name="title">[DESC]</text>
+      <text name="title_no_modify">[DESC]: bearbeiten nicht möglich</text>
+      <text name="title_loading">[DESC]: wird geladen...</text>
+      <text name="title_not_worn">[DESC]: nicht getragen</text>
+      <text name="path">In [PATH]</text>
+      <text name="not worn instructions">Ziehen Sie Haare aus dem Inventar auf Ihren Avatar,
+um sie zu tragen. Sie können auch neue Haare erstellen
+und diese anziehen.</text>
+      <text name="no modify instructions">Sie sind nicht berechtigt, diese Kleidung zu bearbeiten.</text>
+      <text name="Item Action Label">Haare:</text>
+			<texture_picker label="Textur" name="Texture" tool_tip="Zum Auswählen eines Bildes hier klicken"/>
+			<button label="Neue Haare" label_selected="Neue Haare" name="Create New"/>
+			<button label="Speichern" label_selected="Speichern" name="Save"/>
+			<button label="Speichern unter..." label_selected="Speichern unter..." name="Save As"/>
+			<button label="Zurücksetzen" label_selected="Zurücksetzen" name="Revert"/>
+      <button name="Take Off"/>
+		</panel>
+		<panel label="Augen" name="Eyes">
+			<icon name="square"/>
+			<icon name="icon"/>
+			<text name="title">[DESC]</text>
+			<text name="title_no_modify">[DESC]: bearbeiten nicht möglich</text>
+			<text name="title_loading">[DESC]: wird geladen...</text>
+			<text name="title_not_worn">[DESC]: nicht getragen</text>
+			<text name="path">In [PATH]</text>
+      <text name="not worn instructions">Ziehen Sie Augen aus dem Inventar auf Ihren Avatar,
+um sie zu tragen. Sie können auch neue Augen erstellen
+und diese anziehen.</text>
+			<text name="no modify instructions">Sie sind nicht berechtigt, diese Kleidung zu bearbeiten.</text>
+      <text name="Item Action Label">Augen:</text>
+      <texture_picker label="Iris" name="Iris" tool_tip="Zum Auswählen eines Bildes hier klicken"/>
+      <button label="Neue Augen" label_selected="Neue Augen" name="Create New"/>
+      <button label="Speichern" label_selected="Speichern" name="Save"/>
+      <button label="Speichern unter..." label_selected="Speichern unter..." name="Save As"/>
+      <button label="Zurücksetzen" label_selected="Zurücksetzen" name="Revert"/>
+      <button name="Take Off"/>
+    </panel>
+    <panel label="Kleidung" name="clothes_placeholder"/>
+    <panel label="Hemd" name="Shirt">
+      <icon name="square"/>
+      <icon name="icon"/>
+      <texture_picker label="Textur" name="Fabric" tool_tip="Zum Auswählen eines Bildes hier klicken"/>
+      <color_swatch label="Farbe/Ton" name="Color/Tint" tool_tip="Klicken, um die Farbauswahl zu öffnen"/>
+      <button label="Neues Hemd" label_selected="Neues Hemd" name="Create New"/>
+      <button label="Ausziehen" label_selected="Ausziehen" name="Take Off"/>
+      <button label="Speichern" label_selected="Speichern" name="Save"/>
+      <button label="Speichern unter..." label_selected="Speichern unter..." name="Save As"/>
+      <button label="Zurücksetzen" label_selected="Zurücksetzen" name="Revert"/>
+      <text name="title">[DESC]</text>
+      <text name="title_no_modify">[DESC]: bearbeiten nicht möglich</text>
+      <text name="title_loading">[DESC]: wird geladen...</text>
+      <text name="title_not_worn">[DESC]: nicht getragen</text>
+      <text name="path">In [PATH]</text>
+      <tab_container name="layer_tabs"/>
+      <text name="not worn instructions">Ziehen Sie ein Hemd aus dem Inventar auf Ihren Avatar,
+um es zu tragen. Sie können auch ein neues Hemd erstellen
+und dieses anziehen.</text>
+      <text name="no modify instructions">Sie sind nicht berechtigt, diese Kleidung zu bearbeiten.</text>
+      <text name="Item Action Label">Hemd:</text>
+    </panel>
+    <panel label="Hose" name="Pants">
+      <icon name="square"/>
+      <icon name="icon"/>
+      <texture_picker label="Textur" name="Fabric" tool_tip="Zum Auswählen eines Bildes hier klicken"/>
+      <color_swatch label="Farbe/Ton" name="Color/Tint" tool_tip="Klicken, um die Farbauswahl zu öffnen"/>
+      <button label="Neue Hose" label_selected="Neue Hose" name="Create New"/>
+      <button label="Ausziehen" label_selected="Ausziehen" name="Take Off"/>
+      <button label="Speichern" label_selected="Speichern" name="Save"/>
+      <button label="Speichern unter..." label_selected="Speichern unter..." name="Save As"/>
+      <button label="Zurücksetzen" label_selected="Zurücksetzen" name="Revert"/>
+      <text name="title">[DESC]</text>
+      <text name="title_no_modify">[DESC]: bearbeiten nicht möglich</text>
+      <text name="title_loading">[DESC]: wird geladen...</text>
+      <text name="title_not_worn">[DESC]: nicht getragen</text>
+      <text name="path">In [PATH]</text>
+      <tab_container name="layer_tabs"/>
+      <text name="not worn instructions">Ziehen Sie eine Hose aus dem Inventar auf Ihren Avatar,
+um sie zu tragen. Sie können auch eine neue Hose erstellen
+und diese anziehen.</text>
+      <text name="no modify instructions">Sie sind nicht berechtigt, diese Kleidung zu bearbeiten.</text>
+      <text name="Item Action Label">Hose:</text>
+		</panel>
+		<panel label="Schuhe" name="Shoes">
+			<icon name="square"/>
+			<icon name="icon"/>
+			<text name="title">[DESC]</text>
+			<text name="title_no_modify">[DESC]: bearbeiten nicht möglich</text>
+			<text name="title_loading">[DESC]: wird geladen...</text>
+			<text name="title_not_worn">[DESC]: nicht getragen</text>
+			<text name="path">In [PATH]</text>
+      <tab_container name="layer_tabs"/>
+      <text name="not worn instructions">Ziehen Sie Schuhe aus dem Inventar auf Ihren Avatar,
+um sie zu tragen. Sie können auch neue Schuhe erstellen
+und diese anziehen.</text>
+			<text name="no modify instructions">Sie sind nicht berechtigt, diese Kleidung zu bearbeiten.</text>
+      <text name="Item Action Label">Schuhe:</text>
+			<texture_picker label="Textur" name="Fabric" tool_tip="Zum Auswählen eines Bildes hier klicken"/>
+			<color_swatch label="Farbe/Ton" name="Color/Tint" tool_tip="Klicken, um die Farbauswahl zu öffnen"/>
+			<button label="Neue Schuhe" label_selected="Neue Schuhe" name="Create New"/>
+      <button label="Ausziehen" label_selected="Ausziehen" name="Take Off"/>
+      <button label="Speichern" label_selected="Speichern" name="Save"/>
+			<button label="Speichern unter..." label_selected="Speichern unter..." name="Save As"/>
+			<button label="Zurücksetzen" label_selected="Zurücksetzen" name="Revert"/>
+		</panel>
+		<panel label="Socken" name="Socks">
+			<icon name="square"/>
+			<icon name="icon"/>
+			<text name="title">[DESC]</text>
+			<text name="title_no_modify">[DESC]: bearbeiten nicht möglich</text>
+			<text name="title_loading">[DESC]: wird geladen...</text>
+			<text name="title_not_worn">[DESC]: nicht getragen</text>
+			<text name="path">In [PATH]</text>
+      <tab_container name="layer_tabs"/>
+      <text name="not worn instructions">Ziehen Sie Socken aus dem Inventar auf Ihren Avatar,
+um sie zu tragen. Sie können auch neue Socken erstellen
+und diese anziehen.</text>
+			<text name="no modify instructions">Sie sind nicht berechtigt, diese Kleidung zu bearbeiten.</text>
+      <text name="Item Action Label">Socken:</text>
+      <texture_picker label="Textur" name="Fabric" tool_tip="Zum Auswählen eines Bildes hier klicken"/>
+      <color_swatch label="Farbe/Ton" name="Color/Tint" tool_tip="Klicken, um die Farbauswahl zu öffnen"/>
+      <button label="Neue Socken" label_selected="Neue Socken" name="Create New"/>
+      <button label="Ausziehen" label_selected="Ausziehen" name="Take Off"/>
+      <button label="Speichern" label_selected="Speichern" name="Save"/>
+      <button label="Speichern unter..." label_selected="Speichern unter..." name="Save As"/>
+      <button label="Zurücksetzen" label_selected="Zurücksetzen" name="Revert"/>
+    </panel>
+    <panel label="Jacke" name="Jacket">
+      <icon name="square"/>
+      <icon name="icon"/>
+      <text name="title">[DESC]</text>
+      <text name="title_no_modify">[DESC]: bearbeiten nicht möglich</text>
+      <text name="title_loading">[DESC]: wird geladen...</text>
+      <text name="title_not_worn">[DESC]: nicht getragen</text>
+      <text name="path">In [PATH]</text>
+      <tab_container name="layer_tabs"/>
+      <text name="not worn instructions">Ziehen Sie eine Jacke aus dem Inventar auf Ihren Avatar,
+um sie zu tragen. Sie können auch eine neue Jacke erstellen
+und diese anziehen.</text>
+      <text name="no modify instructions">Sie sind nicht berechtigt, diese Kleidung zu bearbeiten.</text>
+      <text name="Item Action Label">Jacke:</text>
+      <texture_picker label="Obere Textur" name="Upper Fabric" tool_tip="Zum Auswählen eines Bildes hier klicken"/>
+      <texture_picker label="Untere Textur" name="Lower Fabric" tool_tip="Zum Auswählen eines Bildes hier klicken"/>
+      <color_swatch label="Farbe/Ton" name="Color/Tint" tool_tip="Klicken, um die Farbauswahl zu öffnen"/>
+      <button label="Neue Jacke" label_selected="Neue Jacke" name="Create New"/>
+      <button label="Ausziehen" label_selected="Ausziehen" name="Take Off"/>
+      <button label="Speichern" label_selected="Speichern" name="Save"/>
+      <button label="Speichern unter..." label_selected="Speichern unter..." name="Save As"/>
+      <button label="Zurücksetzen" label_selected="Zurücksetzen" name="Revert"/>
+    </panel>
+    <panel label="Handschuhe" name="Gloves">
+      <icon name="square"/>
+      <icon name="icon"/>
+      <text name="title">[DESC]</text>
+      <text name="title_no_modify">[DESC]: bearbeiten nicht möglich</text>
+      <text name="title_loading">[DESC]: wird geladen...</text>
+      <text name="title_not_worn">[DESC]: nicht getragen</text>
+      <text name="path">In [PATH]</text>
+      <tab_container name="layer_tabs"/>
+      <text name="not worn instructions">Ziehen Sie Handschuhe aus dem Inventar auf Ihren Avatar,
+um sie zu tragen. Sie können auch neue Handschuhe erstellen
+und diese anziehen.</text>
+      <text name="no modify instructions">Sie sind nicht berechtigt, diese Kleidung zu bearbeiten.</text>
+      <text name="Item Action Label">Handschuhe:</text>
+      <texture_picker label="Textur" name="Fabric" tool_tip="Zum Auswählen eines Bildes hier klicken"/>
+      <color_swatch label="Farbe/Ton" name="Color/Tint" tool_tip="Klicken, um die Farbauswahl zu öffnen"/>
+      <button label="Neue Handschuhe" label_selected="Neue Handschuhe" name="Create New"/>
+      <button label="Ausziehen" label_selected="Ausziehen" name="Take Off"/>
+      <button label="Speichern" label_selected="Speichern" name="Save"/>
+      <button label="Speichern unter..." label_selected="Speichern unter..." name="Save As"/>
+      <button label="Zurücksetzen" label_selected="Zurücksetzen" name="Revert"/>
+    </panel>
+    <panel label="Unterhemd" name="Undershirt">
+      <icon name="square"/>
+      <icon name="icon"/>
+      <text name="title">[DESC]</text>
+      <text name="title_no_modify">[DESC]: bearbeiten nicht möglich</text>
+      <text name="title_loading">[DESC]: wird geladen...</text>
+      <text name="title_not_worn">[DESC]: nicht getragen</text>
+      <text name="path">In [PATH]</text>
+      <tab_container name="layer_tabs"/>
+      <text name="not worn instructions">Ziehen Sie ein Unterhemd aus dem Inventar auf Ihren Avatar,
+um es zu tragen. Sie können auch ein neues Unterhemd erstellen
+und dieses anziehen.</text>
+      <text name="no modify instructions">Sie sind nicht berechtigt, diese Kleidung zu bearbeiten.</text>
+      <text name="Item Action Label">Unterhemd:</text>
+      <texture_picker label="Textur" name="Fabric" tool_tip="Zum Auswählen eines Bildes hier klicken"/>
+      <color_swatch label="Farbe/Ton" name="Color/Tint" tool_tip="Klicken, um die Farbauswahl zu öffnen"/>
+      <button label="Neues Unterhemd" label_selected="Neues Unterhemd" name="Create New"/>
+      <button label="Ausziehen" label_selected="Ausziehen" name="Take Off"/>
+      <button label="Speichern" label_selected="Speichern" name="Save"/>
+      <button label="Speichern unter..." label_selected="Speichern unter..." name="Save As"/>
+      <button label="Zurücksetzen" label_selected="Zurücksetzen" name="Revert"/>
+    </panel>
+    <panel label="Unterhose" name="Underpants">
+      <icon name="square"/>
+      <icon name="icon"/>
+      <text name="title">[DESC]</text>
+      <text name="title_no_modify">[DESC]: bearbeiten nicht möglich</text>
+      <text name="title_loading">[DESC]: wird geladen...</text>
+      <text name="title_not_worn">[DESC]: nicht getragen</text>
+      <text name="path">In [PATH]</text>
+      <tab_container name="layer_tabs"/>
+      <text name="not worn instructions">Ziehen Sie eine Unterhose aus dem Inventar auf Ihren Avatar,
+um sie zu tragen. Sie können auch eine neue Unterhose erstellen
+und diese anziehen.</text>
+      <text name="no modify instructions">Sie sind nicht berechtigt, diese Kleidung zu bearbeiten.</text>
+      <text name="Item Action Label">Unterhose:</text>
+			<texture_picker label="Textur" name="Fabric" tool_tip="Zum Auswählen eines Bildes hier klicken"/>
+			<color_swatch label="Farbe/Ton" name="Color/Tint" tool_tip="Klicken, um die Farbauswahl zu öffnen"/>
+			<button label="Neue Unterhose" label_selected="Neue Unterhose" name="Create New"/>
+      <button label="Ausziehen" label_selected="Ausziehen" name="Take Off"/>
+      <button label="Speichern" label_selected="Speichern" name="Save"/>
+			<button label="Speichern unter..." label_selected="Speichern unter..." name="Save As"/>
+			<button label="Zurücksetzen" label_selected="Zurücksetzen" name="Revert"/>
+		</panel>
+		<panel label="Rock" name="Skirt">
+			<icon name="square"/>
+			<icon name="icon"/>
+			<text name="title">[DESC]</text>
+			<text name="title_no_modify">[DESC]: bearbeiten nicht möglich</text>
+			<text name="title_loading">[DESC]: wird geladen...</text>
+			<text name="title_not_worn">[DESC]: nicht getragen</text>
+			<text name="path">In [PATH]</text>
+      <tab_container name="layer_tabs"/>
+      <text name="not worn instructions">Ziehen Sie einen Rock aus dem Inventar auf Ihren Avatar,
+um ihn zu tragen. Sie können auch einen neuen Rock erstellen
+und diesen anziehen.</text>
+      <text name="no modify instructions">Sie sind nicht berechtigt, diese Kleidung zu bearbeiten.</text>
+      <text name="Item Action Label">Rock:</text>
+      <texture_picker label="Textur" name="Fabric" tool_tip="Zum Auswählen eines Bildes hier klicken"/>
+			<color_swatch label="Farbe/Ton" name="Color/Tint" tool_tip="Klicken, um die Farbauswahl zu öffnen"/>
+			<button label="Neuer Rock" label_selected="Neuer Rock" name="Create New"/>
+      <button label="Ausziehen" label_selected="Ausziehen" name="Take Off"/>
+      <button label="Speichern" label_selected="Speichern" name="Save"/>
+			<button label="Speichern unter..." label_selected="Speichern unter..." name="Save As"/>
+			<button label="Zurücksetzen" label_selected="Zurücksetzen" name="Revert"/>
+		</panel>
+		<panel name="Tattoo" label="Tätowierung">
+			<icon name="square"/>
+			<icon name="icon"/>
+			<text name="title">[DESC]</text>
+			<text name="title_no_modify">[DESC]: bearbeiten nicht möglich</text>
+			<text name="title_loading">[DESC]: wird geladen...</text>
+			<text name="title_not_worn">[DESC]: nicht getragen</text>
+			<text name="path">In [PATH]</text>
+      <tab_container name="layer_tabs"/>
+      <text name="not worn instructions">Ziehen Sie ein Tattoo aus dem Inventar auf Ihren Avatar,
+um es zu tragen. Sie können auch eine neues Tattoo erstellen
+und dieses 'anziehen'.</text>
+			<text name="no modify instructions">Sie sind nicht berechtigt, diese Kleidung zu bearbeiten.</text>
+            <text name="Item Action Label">Tätowierung:</text>
+            <texture_picker name="Head Tattoo" label="Kopftätowierung" tool_tip="Zum Auswählen eines Bildes hier klicken"/>
+            <texture_picker name="Upper Tattoo" label="Obere Tätowierung" tool_tip="Zum Auswählen eines Bildes hier klicken"/>
+            <texture_picker name="Lower Tattoo" label="Untere Tätowierung" tool_tip="Zum Auswählen eines Bildes hier klicken"/>
+			<color_swatch label="Farbe/Ton" name="Color/Tint" tool_tip="Klicken, um die Farbauswahl zu öffnen"/>
+			<button name="Create New" label="Neue Hose" label_selected="Neue Hose"/>
+            <button name="Take Off" label="Ausziehen" label_selected="Ausziehen"/>
+            <button name="Save" label="Speichern" label_selected="Speichern"/>
+            <button name="Save As" label="Speichern unter..." label_selected="Speichern unter..."/>
+            <button name="Revert" label="Zurücksetzen" label_selected="Zurücksetzen"/>
+		</panel>
+		<panel name="Alpha" label="Alpha">
+			<icon name="square"/>
+			<icon name="icon"/>
+			<text name="title">[DESC]</text>
+			<text name="title_no_modify">[DESC]: bearbeiten nicht möglich</text>
+			<text name="title_loading">[DESC]: wird geladen...</text>
+			<text name="title_not_worn">[DESC]: nicht getragen</text>
+			<text name="path">In [PATH]</text>
+      <tab_container name="layer_tabs"/>
+      <text name="not worn instructions">Ziehen Sie eine Alpha-Maske aus dem Inventar auf Ihren Avatar,
+um sie zu tragen. Sie können auch eine neue Alpha-Maske erstellen
+und diese anziehen.</text>
+			<text name="no modify instructions">Sie sind nicht berechtigt, diese Kleidung zu bearbeiten.</text>
+            <text name="Item Action Label">Transparenz:</text>
+            <texture_picker name="Head Alpha" label="Kopf: Alpha" tool_tip="Zum Auswählen eines Bildes hier klicken"/>
+            <texture_picker name="Upper Alpha" label="Alpha: Oben" tool_tip="Zum Auswählen eines Bildes hier klicken"/>
+            <texture_picker name="Lower Alpha" label="Alpha: Unten" tool_tip="Zum Auswählen eines Bildes hier klicken"/>
+            <check_box name="head alpha texture invisible"/>
+            <check_box name="upper alpha texture invisible"/>
+            <check_box name="lower alpha texture invisible"/>
+            <texture_picker name="Hair Alpha" label="Alpha: Haare" tool_tip="Zum Auswählen eines Bildes hier klicken"/>
+            <texture_picker name="Eye Alpha" label="Alpha: Augen" tool_tip="Zum Auswählen eines Bildes hier klicken"/>
+            <check_box name="hair alpha texture invisible"/>
+            <check_box name="eye alpha texture invisible"/>
+			<button name="Create New" label="Erstelle neues Alpha" label_selected="Erstelle neues Alpha"/>
+            <button name="Take Off" label="Ausziehen" label_selected="Ausziehen"/>
+            <button name="Save" label="Speichern" label_selected="Speichern"/>
+            <button name="Save As" label="Speichern unter..." label_selected="Speichern unter..."/>
+            <button name="Revert" label="Zurücksetzen" label_selected="Zurücksetzen"/>
+		</panel>
+    <panel label="Physik" name="Physics">
+      <icon name="square"/>
+      <icon name="icon"/>
+      <button label="Bauch – Hüpfen" label_selected="Bauch – Hüpfen" name="Belly Bounce"/>
+      <button label="Brust Elastizität" label_selected="Brust Elastizität" name="Breast Bounce"/>
+      <button label="Dekolleté" label_selected="Dekolleté" name="Breast Cleavage"/>
+      <button label="Brustbeweglichkeit" label_selected="Brustbeweglichkeit" name="Breast Sway"/>
+      <button label="Po – Hüpfen" label_selected="Po – Hüpfen" name="Butt Bounce"/>
+      <button label="Po – Wiegen" label_selected="Po – Wiegen" name="Butt Sway"/>
+      <button label="Erweiterte Parameter" label_selected="Erweiterte Parameter" name="Advanced Parameters"/>
+      <button name="Take Off" label="Ausziehen" label_selected="Ausziehen"/>
+      
+      <text name="title">[DESC]</text>
+      <text name="title_no_modify">[DESC]: bearbeiten nicht möglich</text>
+      <text name="title_loading">[DESC]: wird geladen...</text>
+      <text name="title_not_worn">[DESC]: nicht getragen</text>
+      <text name="path">In [PATH]</text>
+      <tab_container name="layer_tabs"/>
+      <text name="not worn instructions">Ziehen Sie ein Physics-Wearable aus dem Inventar auf Ihren Avatar,
+um es zu tragen. Sie können auch ein neues Physics-Wearable erstellen
+und dieses anziehen.</text>
+      <text name="no modify instructions">Sie sind nicht berechtigt, diese Kleidung zu bearbeiten.</text>
+      <text name="Item Action Label">Physik:</text>
+      <button label="Neue Physics" label_selected="Neue Physics" name="Create New"/>
+      <button label="Speichern" label_selected="Speichern" name="Save"/>
+      <button label="Speichern unter..." label_selected="Speichern unter..." name="Save As"/>
+      <button label="Zurücksetzen" label_selected="Zurücksetzen" name="Revert"/>
+    </panel>
+	</tab_container>
+	<scroll_container name="panel_container"/>
+	<text name="AvatarHeightText">Avatar-Größe</text>
+	<text name="HeightTextM">(metrisch)</text>
+	<text name="HeightTextI">(zöllisch)</text>
+    <button name="Import" label="Import"/>
+    <button name="Export" label="Export"/>	
+	<button label="Abbrechen" label_selected="Abbrechen" name="Cancel"/>
+	<button label="OK" label_selected="OK" name="Ok"/>
+	<button label="Outfit erstellen..." label_selected="Outfit erstellen..." name="Make Outfit"/>
+    <button name="Save Outfit" label="Speichere Outfit"/>
+</floater>

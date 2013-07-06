@@ -15,6 +15,8 @@
 #include "expat/expat.h"
 #endif
 
+#include <boost/signals2.hpp>
+
 class LLSD;
 
 
@@ -152,6 +154,8 @@ private:
 class HippoGridManager
 {
 public:
+	typedef boost::signals2::signal<void (HippoGridInfo* pNewGrid, HippoGridInfo* pPrevGrid)> current_grid_change_signal_t;
+
 	HippoGridManager();
 	~HippoGridManager();
 
@@ -179,6 +183,13 @@ public:
 	GridIterator beginGrid() { return mGridInfo.begin(); }
 	GridIterator endGrid() { return mGridInfo.end(); }
 
+	boost::signals2::connection setCurrentGridChangeCallback( const current_grid_change_signal_t::slot_type& cb )
+	{
+		if(!mCurrentGridChangeSignal)
+			mCurrentGridChangeSignal = new current_grid_change_signal_t;
+		return mCurrentGridChangeSignal->connect(cb);
+	}
+
 private:
 	friend class HippoGridInfo;
 	std::map<std::string, HippoGridInfo*> mGridInfo;
@@ -186,6 +197,8 @@ private:
 	std::string mCurrentGrid;
 	HippoGridInfo* mConnectedGrid;
 	int mDefaultGridsVersion;
+
+	current_grid_change_signal_t* mCurrentGridChangeSignal; 
 
 	void cleanup();
 	void loadFromFile();

@@ -34,6 +34,7 @@
 #include "aihttptimeout.h"
 #include "aicurlperservice.h"
 #include "aiaverage.h"
+#include "aicurltimer.h"
 #include "lltimer.h"		// ms_sleep, get_clock_count
 #include "llhttpstatuscodes.h"
 #include "llbuffer.h"
@@ -1433,21 +1434,35 @@ void AICurlThread::run(void)
 #endif
 	  int ready = 0;
 	  struct timeval timeout;
+	  // Update AICurlTimer::sTime_1ms.
+	  AICurlTimer::sTime_1ms = get_clock_count() * AICurlTimer::sClockWidth_1ms;
+	  Dout(dc::curl, "AICurlTimer::sTime_1ms = " << AICurlTimer::sTime_1ms);
+	  // Get the time in ms that libcurl wants us to wait for socket actions - at most - before proceeding.
 	  long timeout_ms = multi_handle_w->getTimeout();
-	  // If no timeout is set, sleep 1 second.
+	  // Set libcurl_timeout iff the shortest timeout is that of libcurl.
+	  bool libcurl_timeout = timeout_ms == 0 || (timeout_ms > 0 && !AICurlTimer::expiresBefore(timeout_ms));
+	  // If no curl timeout is set, sleep at most 4 seconds.
 	  if (LL_UNLIKELY(timeout_ms < 0))
-		timeout_ms = 1000;
-	  if (LL_UNLIKELY(timeout_ms == 0))
+		timeout_ms = 4000;
+	  // Check if some AICurlTimer expires first.
+	  if (AICurlTimer::expiresBefore(timeout_ms))
 	  {
-		if (mZeroTimeout >= 10000)
+		timeout_ms = AICurlTimer::nextExpiration();
+	  }
+	  // If we have to continue immediately, then just set a zero timeout, but only for 100 calls on a row;
+	  // after that start sleeping 1ms and later even 10ms (this should never happen).
+	  if (LL_UNLIKELY(timeout_ms <= 0))
+	  {
+		if (mZeroTimeout >= 1000)
 		{
-		  if (mZeroTimeout == 10000)
-			llwarns << "Detected more than 10000 zero-timeout calls of select() by curl thread (more than 101 seconds)!" << llendl;
-		}
-		else if (mZeroTimeout >= 1000)
+		  if (mZeroTimeout % 10000 == 0)
+			llwarns << "Detected " << mZeroTimeout << " zero-timeout calls of select() by curl thread (more than 101 seconds)!" << llendl;
 		  timeout_ms = 10;
+		}
 		else if (mZeroTimeout >= 100)
 		  timeout_ms = 1;
+		else
+		  timeout_ms = 0;
 	  }
 	  else
 	  {
@@ -1554,12 +1569,28 @@ void AICurlThread::run(void)
 		}
 		continue;
 	  }
-	  // Clock count used for timeouts.
-	  HTTPTimeout::sTime_10ms = get_clock_count() * HTTPTimeout::sClockWidth_10ms;
-	  Dout(dc::curl, "HTTPTimeout::sTime_10ms = " << HTTPTimeout::sTime_10ms);
+	  // Update the clocks.
+	  AICurlTimer::sTime_1ms = get_clock_count() * AICurlTimer::sClockWidth_1ms;
+	  Dout(dc::curl, "AICurlTimer::sTime_1ms = " << AICurlTimer::sTime_1ms);
+	  HTTPTimeout::sTime_10ms = AICurlTimer::sTime_1ms / 10;
 	  if (ready == 0)
 	  {
-		multi_handle_w->socket_action(CURL_SOCKET_TIMEOUT, 0);
+		if (libcurl_timeout)
+		{
+		  multi_handle_w->socket_action(CURL_SOCKET_TIMEOUT, 0);
+		}
+		else
+		{
+		  // Update MultiHandle::mTimeout because next loop we need to sleep timeout_ms shorter.
+		  multi_handle_w->update_timeout(timeout_ms);
+		  Dout(dc::curl, "MultiHandle::mTimeout set to " << multi_handle_w->getTimeout() << " ms.");
+		}
+		// Handle timers.
+		if (AICurlTimer::expiresBefore(1))
+		{
+		  AICurlTimer::handleExpiration();
+		}
+		// Handle stalling transactions.
 		multi_handle_w->handle_stalls();
 	  }
 	  else
@@ -1616,7 +1647,7 @@ MultiHandle::~MultiHandle()
   // Curl demands that all handles are removed from the multi session handle before calling curl_multi_cleanup.
   for(addedEasyRequests_type::iterator iter = mAddedEasyRequests.begin(); iter != mAddedEasyRequests.end(); iter = mAddedEasyRequests.begin())
   {
-	finish_easy_request(*iter, CURLE_OK);	// Error code is not used anyway.
+	finish_easy_request(*iter, CURLE_GOT_NOTHING);	// Error code is not used anyway.
 	remove_easy_request(*iter);
   }
   delete mWritePollSet;
@@ -1814,10 +1845,11 @@ CURLMcode MultiHandle::remove_easy_request(addedEasyRequests_type::iterator cons
   {
 	AICurlEasyRequest_wat curl_easy_request_w(**iter);
 	bool downloaded_something = curl_easy_request_w->received_data();
+	bool success = curl_easy_request_w->success();
 	res = curl_easy_request_w->remove_handle_from_multi(curl_easy_request_w, mMultiHandle);
 	capability_type = curl_easy_request_w->capability_type();
 	per_service = curl_easy_request_w->getPerServicePtr();
-	PerService_wat(*per_service)->removed_from_multi_handle(capability_type, downloaded_something);		// (About to be) removed from mAddedEasyRequests.
+	PerService_wat(*per_service)->removed_from_multi_handle(capability_type, downloaded_something, success);		// (About to be) removed from mAddedEasyRequests.
 #ifdef SHOW_ASSERT
 	curl_easy_request_w->mRemovedPerCommand = as_per_command;
 #endif
@@ -2169,7 +2201,7 @@ void BufferedCurlEasyRequest::update_body_bandwidth(void)
   mTotalRawBytes = total_raw_bytes;
   // Note that in some cases (like HTTP_PARTIAL_CONTENT), the output of CURLINFO_SIZE_DOWNLOAD lags
   // behind and will return 0 the first time, and the value of the previous chunk the next time.
-  // The last call from MultiHandle::finish_easy_request recorrects this, in that case.
+  // The last call from MultiHandle::finish_easy_request corrects this, in that case.
   if (raw_bytes > 0)
   {
 	U64 const sTime_40ms = curlthread::HTTPTimeout::sTime_10ms >> 2;
@@ -2322,6 +2354,58 @@ int debug_callback(CURL* handle, curl_infotype infotype, char* buf, size_t size,
   if (infotype == CURLINFO_HEADER_OUT && size >= 5 && (strncmp(buf, "GET ", 4) == 0 || strncmp(buf, "HEAD ", 5) == 0))
   {
 	request->mDebugIsHeadOrGetMethod = true;
+  }
+  if (infotype == CURLINFO_TEXT)
+  {
+	if (!strncmp(buf, "STATE: WAITCONNECT => ", 22))
+	{
+	  if (buf[22] == 'P' || buf[22] == 'D')		// PROTOCONNECT or DO.
+	  {
+		int n = size - 1;
+		while (buf[n] != ')')
+		{
+		  llassert(n > 56);
+		  --n;
+		}
+		int connectionnr = 0;
+		int factor = 1;
+		do
+		{
+		  llassert(n > 56);
+		  --n;
+		  connectionnr += factor * (buf[n] - '0');
+		  factor *= 10;
+		}
+		while(buf[n - 1] != '#');
+		// A new connection was established.
+		request->connection_established(connectionnr);
+	  }
+	  else
+	  {
+	  	llassert(buf[22] == 'C');				// COMPLETED (connection failure).
+	  }
+	}
+	else if (!strncmp(buf, "Closing connection", 18))
+	{
+	  int n = size - 1;
+	  while (!std::isdigit(buf[n]))
+	  {
+		llassert(n > 20);
+		--n;
+	  }
+	  int connectionnr = 0;
+	  int factor = 1;
+	  do
+	  {
+		llassert(n > 19);
+		connectionnr += factor * (buf[n] - '0');
+		factor *= 10;
+		--n;
+	  }
+	  while(buf[n] != '#');
+	  // A connection was closed.
+	  request->connection_closed(connectionnr);
+	}
   }
 
 #ifdef DEBUG_CURLIO
@@ -2769,7 +2853,7 @@ AIPerService::Approvement* AIPerService::approveHTTPRequestFor(AIPerServicePtr c
 	equal = pipelined_requests_per_capability_type == ct.mMaxPipelinedRequests;
 	increment_threshold = ct.mFlags & ctf_starvation;
 	decrement_threshold = (ct.mFlags & (ctf_empty | ctf_full)) == ctf_full;
-	ct.mFlags = 0;
+	ct.mFlags &= ~(ctf_empty|ctf_full|ctf_starvation);
 	if (decrement_threshold)
 	{
 	  if ((int)ct.mMaxPipelinedRequests > ct.mConcurrentConnections)

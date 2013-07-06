@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="object im info" short_title="Objekt-Info:" title="Objektinformation">
+
+  <text name="LabelItemNameTitle">Objekt:</text>
+  <text name="ObjectName"/>
+
+  <text name="LabelSlurlTitle">Standort:</text>
+  <text name="Slurl"/>
+  
+  <!-- A new viewer talking to an old sim will not have a slurl available and will show this. -->
+  <text name="Unknown_Slurl">(Information zu Position nicht verfügbar)</text>
+
+  <text name="LabelOwnerNameTitle">Eigentümer:</text>
+  <text name="OwnerName"/>
+  
+  <button label="Eigentümer stummschalten" label_selected="Eigentümer stummschalten" name="Mute"/>
+</floater>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="modal container" title="Neues Outfit">
+  <button label="Speichern" label_selected="Speichern" name="Save"/>
+  <button label="Abbrechen" label_selected="Abbrechen" name="Cancel"/>
+  <check_box label="Form" name="checkbox_shape"/>
+  <check_box label="Haut" name="checkbox_skin"/>
+  <check_box label="Haare" name="checkbox_hair"/>
+  <check_box label="Augen" name="checkbox_eyes"/>
+  <text name="Options:">Medien-
+Optionen:</text>
+  <!--<check_box bottom_delta="-20" enabled="true" follows="left|top" font="SansSerifSmall"
+	     height="16" initial_value="false" label="Rename Clothing To Folder Name"
+	     left="13" mouse_opaque="true" name="rename" radio_style="false" width="210" />-->
+  <check_box name="checkbox_use_outfits" label="Benutze Viewer 2 Oufit-Ordner"/>
+	<check_box name="checkbox_use_links" label="Benutze Verknüpfungen für non-copy, no-mod oder mehrfach-getragene Objekte"/>
+  <check_box name="checkbox_legacy_copy_changes" label="Kopiere Änderungen in Attachments" tool_tip="Behält Änderungen die an Attachments seit dem Tragen oder dem letzten Login gemacht wurden, indem die Attachments abgelegt werden bevor ein neues Outfit erzeugt wird. In den meisten Fällen sollte dies aktiviert bleiben. Wenn Sie jedoch genau wissen was Sie machen, zB. Berichtigungen an neuen Outfits, müssen Sie diese Option deaktivieren."/>
+  <check_box label="Hemd" name="checkbox_shirt"/>
+  <check_box label="Hose" name="checkbox_pants"/>
+  <check_box label="Schuhe" name="checkbox_shoes"/>
+  <check_box label="Socken" name="checkbox_socks"/>
+  <check_box label="Jacke" name="checkbox_jacket"/>
+  <check_box label="Handschuhe" name="checkbox_gloves"/>
+  <check_box label="Unterhemd" name="checkbox_undershirt"/>
+  <check_box label="Unterhose" name="checkbox_underpants"/>
+  <check_box label="Rock" name="checkbox_skirt"/>
+  <check_box label="Tätowierung" name="checkbox_tattoo"/>
+  <check_box label="Alpha" name="checkbox_alpha"/>
+  <check_box label="Physik" name="checkbox_physics"/>
+  <check_box label="Brust" name="checkbox_Chest"/>
+  <check_box label="Schädel" name="checkbox_Skull"/>
+  <check_box label="Linke Schulter" name="checkbox_Left Shoulder"/>
+  <check_box label="Rechte Schulter" name="checkbox_Right Shoulder"/>
+  <check_box label="Linke Hand" name="checkbox_Left Hand"/>
+  <check_box label="Rechte Hand" name="checkbox_Right Hand"/>
+  <check_box label="Linker Fuß" name="checkbox_Left Foot"/>
+  <check_box label="Rechter Fuß" name="checkbox_Right Foot"/>
+  <check_box label="Wirbelsäule" name="checkbox_Spine"/>
+  <check_box label="Becken" name="checkbox_Pelvis"/>
+  <check_box label="Mund" name="checkbox_Mouth"/>
+  <check_box label="Kinn" name="checkbox_Chin"/>
+  <check_box label="Linkes Ohr" name="checkbox_Left Ear"/>
+  <check_box label="Rechtes Ohr" name="checkbox_Right Ear"/>
+  <check_box label="Linker Augapfel" name="checkbox_Left Eyeball"/>
+  <check_box label="Rechter Augapfel" name="checkbox_Right Eyeball"/>
+  <check_box label="Nase" name="checkbox_Nose"/>
+  <check_box label="R Oberarm" name="checkbox_R Upper Arm"/>
+  <check_box label="R Unterarm" name="checkbox_R Forearm"/>
+  <check_box label="L Oberarm" name="checkbox_L Upper Arm"/>
+  <check_box label="L Unterarm" name="checkbox_L Forearm"/>
+  <check_box label="Rechte Hüfte" name="checkbox_Right Hip"/>
+  <check_box label="R Oberschenkel" name="checkbox_R Upper Leg"/>
+  <check_box label="R Unterschenkel" name="checkbox_R Lower Leg"/>
+  <check_box label="Linke Hüfte" name="checkbox_Left Hip"/>
+  <check_box label="L Oberschenkel" name="checkbox_L Upper Leg"/>
+  <check_box label="L Unterschenkel" name="checkbox_L Lower Leg"/>
+  <check_box label="Bauch" name="checkbox_Stomach"/>
+  <check_box label="Linke Brust" name="checkbox_Left Pec"/>
+  <check_box label="Rechts" name="checkbox_Right Pec"/>
+  <check_box label="Hals" name="checkbox_Neck"/>
+  <check_box label="Basis" name="checkbox_Root"/>
+  <check_box label="Mitte 2" name="checkbox_Center 2"/>
+  <check_box label="Oben rechts" name="checkbox_Top Right"/>
+  <check_box label="Oben" name="checkbox_Top"/>
+  <check_box label="Oben links" name="checkbox_Top Left"/>
+  <check_box label="Mitte" name="checkbox_Center"/>
+  <check_box label="Unten links" name="checkbox_Bottom Left"/>
+  <check_box label="Unten" name="checkbox_Bottom"/>
+  <check_box label="Unten rechts" name="checkbox_Bottom Right"/>
+  <!--text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+	     bottom="-24" drop_shadow_visible="true" enabled="true" follows="left|top"
+	     font="SansSerif" h_pad="0" halign="left" height="16" left="13"
+	     mouse_opaque="true" name="Make New Outfit" v_pad="0" width="489">
+    Make New Outfit
+  </text-->
+  <text name="Outfits are folders that contain clothing and body parts. Drag an outfit folder onto your avatar to put it on.   &quot;Make New Outfit&quot; makes a new folder and saves copies of the items you are now wearing into it.">Outfits sind Ordner, die Kleider und Körperteile enthalten.
+Ziehen Sie einen Outfit-Ordner auf Ihren Avatar, um ihn anzuziehen.
+ 
+„Neues Outfit“ erstellt einen neuen Ordner und speichert darin Kopien der
+Objekte, die Sie gerade tragen.</text>
+  <text name="Folder name:">Ordnername:</text>
+  <text name="Items to include in outfit:">Objekte für Outfit:</text>
+  <button label="Alle auswählen" name="Check All"/>
+  <button label="Keine" name="Uncheck All"/>
+  <text name="Body Parts:">Körperteile:</text>
+  <text name="Clothes:">Kleidung:</text>
+  <text name="Attachments:">Anhänge:</text>
+  <line_editor name="name ed">Neues Outfit</line_editor>
+</floater>

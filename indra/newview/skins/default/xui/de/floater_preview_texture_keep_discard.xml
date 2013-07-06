@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="preview_texture">
+	<text name="desc txt">Beschreibung:</text>
+	<line_editor name="desc"/>
+	<button label="Behalten" label_selected="Behalten" name="Keep"/>
+	<button label="Verwerfen" label_selected="Verwerfen" name="Discard"/>
+	<text name="dimensions">Maße: [WIDTH] x [HEIGHT]</text>
+</floater>

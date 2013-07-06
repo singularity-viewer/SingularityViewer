@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<menu name="Popup">
+	<menu_item_call label="Kaufen" name="Task Buy">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_call label="Öffnen" name="Task Open">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_call label="Abspielen" name="Task Play">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_call label="Eigenschaften" name="Task Properties">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_call label="Umbenennen" name="Task Rename">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_call label="Löschen" name="Task Remove">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_call label="Papierkorb ausleeren" name="Empty Trash">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_call label="Fundstücke ausleeren" name="Empty Lost And Found">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_call label="Neuer Ordner" name="New Folder">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_call label="Neues Skript" name="New Script">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_call label="Neue Notiz" name="New Note">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_call label="Neue Geste" name="New Gesture">
+		<on_click/>
+	</menu_item_call>
+	<menu label="Neue Kleider" name="New Clothes">
+		<menu_item_call label="Neues Hemd" name="New Shirt">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_call label="Neue Hose" name="New Pants">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_call label="Neue Schuhe" name="New Shoes">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_call label="Neue Socken" name="New Socks">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_call label="Neue Jacke" name="New Jacket">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_call label="Neuer Rock" name="New Skirt">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_call label="Neue Handschuhe" name="New Gloves">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_call label="Neues Unterhemd" name="New Undershirt">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_call label="Neue Unterhose" name="New Underpants">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_call label="Neue Tätowierung" name="New Tattoo">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_call label="Neues Alpha" name="New Alpha">
+			<on_click/>
+		</menu_item_call>
+    <menu_item_call label="Neue Physik" name="New Physics">
+      <on_click/>
+    </menu_item_call>
+	</menu>
+	<menu label="Neue Körperteile" name="New Body Parts">
+		<menu_item_call label="Neue Form/Gestalt" name="New Shape">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_call label="Neue Haut" name="New Skin">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_call label="Neues Haar" name="New Hair">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_call label="Neue Augen" name="New Eyes">
+			<on_click/>
+		</menu_item_call>
+	</menu>
+	<menu_item_call label="Teleportieren" name="Landmark Open">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_call label="Öffnen" name="Animation Open">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_call label="Öffnen" name="Sound Open">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_call label="Original suchen" name="Find Original">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_call label="Objekt löschen" name="Purge Item">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_call label="Objekt wiederherstellen" name="Restore Item">
+		<on_click/>
+	</menu_item_call>
+	<menu name="Open With...">
+		<menu_item_call label="Hex Editor" name="Hex Open">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_call label="Text Editor" name="Open Text">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_call label="ObjektRez" name="Rez">
+			<on_click/>
+		</menu_item_call>
+	</menu>
+	<menu_item_call label="Öffnen" name="Open">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_call label="Eigenschaften" name="Properties">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_call label="Umbenennen" name="Rename">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_call label="Asset-UUID kopieren" name="Copy Asset UUID">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_call label="Hole Asset ID" name="Acquire Asset ID">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_separator name="Copy Separator"/>
+	<menu_item_call label="Ausschneiden" name="Cut">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_call label="Kopieren" name="Copy">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_call label="Einfügen" name="Paste">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_call label="Als Kopie einfügen" name="Paste As Copy">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_call label="Als Link einfügen" name="Paste As Link">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_call label="Zu letzter Position zurücksetzen" name="Restore to Last Position">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_separator name="Paste Separator"/>
+	<menu_item_call label="Link entfernen" name="Remove Link">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_call label="Löschen" name="Delete">
+		<on_click/>
+	</menu_item_call>
+    <menu_item_call label="Systemordner löschen" name="Delete System Folder">
+        <on_click/>
+    </menu_item_call>
+	<menu_item_separator name="Folder Wearables Separator"/>
+  <menu_item_call label="Objekte anziehen" name="Wear Items">
+    <on_click/>
+  </menu_item_call>
+  <menu_item_call label="Zum Outfit hinzufügen" name="Add To Outfit">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_call label="Outfit ersetzen" name="Replace Outfit">
+		<on_click/>
+	</menu_item_call>
+  <menu_item_call label="Aus Outfit entfernen" name="Remove From Outfit">
+    <on_click/>
+  </menu_item_call>
+  <menu_item_separator name="Outfit Separator"/>
+  <menu_item_separator name="Calling Card Separator"/>
+	<menu_item_call label="Konferenz-Chat starten" name="Conference Chat Folder">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_separator name="Sound Separator"/>
+	<menu_item_call label="Abspielen" name="Sound Play">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_separator name="Landmark Separator"/>
+	<menu_item_call label="Landmarken-Info" name="Teleport To Landmark">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_separator name="Animation Separator"/>
+	<menu_item_call label="In Welt abspielen" name="Animation Play">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_call label="Lokal abspielen" name="Animation Audition">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_separator name="Send Instant Message Separator"/>
+	<menu_item_call label="Instant Message senden" name="Send Instant Message">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_call label="Teleport anbieten..." name="Offer Teleport...">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_call label="Konferenz-Chat starten" name="Conference Chat">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_separator name="Gesture Separator"/>
+	<menu_item_call label="Aktivieren" name="Activate">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_call label="Deaktivieren" name="Deactivate">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_separator name="Wearable And Object Separator"/>
+	<menu_item_call label="Anziehen" name="Wearable And Object Wear">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_call label="Zu getragener Kleidung hinzufügen" name="Wearable Add">
+		<on_click/>
+	</menu_item_call>
+  <menu_item_call label="▲ Vorwärts bewegen" name="Wearable Move Forward">
+    <on_click/>
+  </menu_item_call>
+  <menu_item_call label="▼ Zurück bewegen" name="Wearable Move Back">
+    <on_click/>
+  </menu_item_call>
+	<menu label="Anhängen an" name="Attach To"/>
+	<menu label="An HUD hängen" name="Attach To HUD"/>
+	<menu_item_call label="Von Körper abnehmen" name="Detach From Yourself">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_call label="Bearbeiten" name="Wearable Edit">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_call label="Ausziehen" name="Take Off">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_separator name="Marketplace Separator"/>
+	<menu_item_call label="In Händler-Outbox kopieren" name="Merchant Copy">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_call label="In Marktplatz übertragen" name="Marketplace Send">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_call label="--keine Optionen--" name="--no options--"/>
+	<!--menu_item_separator name="Wearable Separator" -->
+</menu>

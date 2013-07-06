@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<multi_floater name="floater_chatterbox" title="Unterhalten">
+	<icon name="chatterbox_tab_container"/>
+    <tab_container name="chatterbox_tabs_horiz"/>
+	<!--<tab_container bottom="2" follows="left|right|top|bottom" height="370" left="0"
+		name="chatterbox_tabs_vert" tab_position="left" tab_width="110" width="395" />-->
+</multi_floater>

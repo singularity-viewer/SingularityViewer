@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="Image Preview" title="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;">
+	<text name="preview_label">Bildvorschau als:</text>
+	<combo_box label="Kleidungstyp" name="clothing_type_combo">
+		<combo_item name="Image">Bild</combo_item>
+		<combo_item name="Hair">Haare</combo_item>
+		<combo_item name="FemaleHead">Kopf (Frau)</combo_item>
+		<combo_item name="FemaleUpperBody">Oberkörper (Frau)</combo_item>
+		<combo_item name="FemaleLowerBody">Unterkörper (Frau)</combo_item>
+		<combo_item name="MaleHead">Kopf (Mann)</combo_item>
+		<combo_item name="MaleUpperBody">Oberkörper (Mann)</combo_item>
+		<combo_item name="MaleLowerBody">Unterkörper (Mann)</combo_item>
+		<combo_item name="Skirt">Rock</combo_item>
+		<combo_item name="SculptedPrim">Geformtes Primitiv</combo_item>
+	</combo_box>
+</floater>

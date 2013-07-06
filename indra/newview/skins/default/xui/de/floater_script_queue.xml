@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="queue" title="Rückgängig">
+	<string name="Starting">[START] von [COUNT] Objekt(en).</string>
+	<string name="Done">Fertig.</string>
+	<string name="Resetting">Wird zurückgesetzt</string>
+	<string name="Running">Läuft</string>
+	<string name="NotRunning">Nicht aktiv</string>
+	<button label="Schließen" label_selected="Schließen" name="close"/>
+	<scroll_list name="queue output"/>
+</floater>

@@ -2187,6 +2187,38 @@ public:
 private:
 	std::set< LLViewerFetchedTexture*> mTextures;
 };
+
+void reload_objects(LLTextureReloader& texture_list, LLViewerObject::const_child_list_t& object_list, bool recurse)
+{
+	for(LLViewerObject::const_child_list_t::const_iterator it = object_list.begin(); it!=object_list.end(); ++it)
+	{
+		if(it->isNull())
+			continue;
+
+		LLViewerObject* object = it->get();
+		object->markForUpdate(TRUE);
+
+		if(object->isSculpted() && !object->isMesh())
+		{
+			LLSculptParams *sculpt_params = (LLSculptParams *)object->getParameterEntry(LLNetworkData::PARAMS_SCULPT);
+			if(sculpt_params)
+			{
+				texture_list.addTexture(LLViewerTextureManager::getFetchedTexture(sculpt_params->getSculptTexture()));
+			}
+		}
+	
+		for (U8 i = 0; i < object->getNumTEs(); i++)
+		{
+			texture_list.addTexture(object->getTEImage(i));
+		}
+
+		if(recurse)
+		{
+			reload_objects(texture_list,object->getChildren(), true);
+		}
+	}
+}
+
 class LLAvatarReloadTextures : public view_listener_t
 {
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
@@ -2215,6 +2247,7 @@ class LLAvatarReloadTextures : public view_listener_t
 					texture_list.addTexture(avatar->getTEImage((ETextureIndex)i));
 				}
 			}
+			reload_objects(texture_list,avatar->getChildren(),true);
 		}
 		return true;
 	}
@@ -2223,30 +2256,17 @@ class LLObjectReloadTextures : public view_listener_t
 {
 	bool handleEvent(LLPointer<LLEvent> event, const LLSD& userdata)
 	{
-		LLTextureReloader texture_list;
-		for (LLObjectSelection::valid_iterator iter = LLSelectMgr::getInstance()->getSelection()->valid_begin();
-		 iter != LLSelectMgr::getInstance()->getSelection()->valid_end(); iter++)
-		{
-			LLViewerObject* object = (*iter)->getObject();
-			object->markForUpdate(TRUE);
+		LLViewerObject::vobj_list_t object_list;
 
-			if(object->isSculpted() && !object->isMesh())
-			{
-				LLSculptParams *sculpt_params = (LLSculptParams *)object->getParameterEntry(LLNetworkData::PARAMS_SCULPT);
-				if(sculpt_params)
-				{
-					texture_list.addTexture(LLViewerTextureManager::getFetchedTexture(sculpt_params->getSculptTexture()));
-				}
-			}
-			
-			for (U8 i = 0; i < object->getNumTEs(); i++)
-			{
-				if((*iter)->isTESelected(i))
-				{
-					texture_list.addTexture(object->getTEImage(i));
-				}
-			}
+		for (LLObjectSelection::iterator iter = LLSelectMgr::getInstance()->getSelection()->begin();
+		 iter != LLSelectMgr::getInstance()->getSelection()->end(); iter++)
+		{
+			object_list.push_back((*iter)->getObject());
 		}
+
+		LLTextureReloader reloader;
+		reload_objects(reloader,object_list,false);
+
 		return true;
 	}
 };

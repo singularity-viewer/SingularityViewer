@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="top_objects" title="wird geladen...">
+	<text name="title_text">Wird geladen...</text>
+	<scroll_list name="objects_list">
+		<column label="Wertung" name="score"/>
+		<column label="Name" name="name"/>
+		<column label="Eigentümer" name="owner"/>
+		<column label="Position" name="location"/>
+		<column label="Uhrzeit" name="time"/>
+    <column label="Mono-Uhrzeit:" name="mono_time"/>
+	  <column label="URLs" name="URLs"/>
+  </scroll_list>
+	<text name="id_text">Objekt-ID:</text>
+	<line_editor name="id_editor"/>
+	<button label="Beacon anzeigen" name="show_beacon_btn"/>
+	<text name="obj_name_text">Objektname:</text>
+	<line_editor name="object_name_editor"/>
+	<button label="Filter" name="filter_object_btn"/>
+	<text name="owner_name_text">Eigentümername:</text>
+	<line_editor name="owner_name_editor"/>
+	<button label="Filter" name="filter_owner_btn"/>
+	<button label="Auswahl zurückgeben" name="return_selected_btn"/>
+	<button label="Alle zurückgeben" name="return_all_btn"/>
+  <button label="Lag-Warnung" name="lagwarning"/>
+  <button label="Hinauswerfen" name="kick"/>
+	<button label="Auswahl deaktivieren" name="disable_selected_btn"/>
+	<button label="Alle deaktivieren" name="disable_all_btn"/>
+  <button label="Profil" name="profile"/>  
+  <button label="TP zu" name="tpto"/>
+
+	<button label="Aktualisieren" name="refresh_btn"/>
+	<string name="top_scripts_title">Top-Skripts</string>
+	<string name="top_scripts_text">[COUNT] Skripts benötigen insgesamt [TIME] ms</string>
+	<string name="scripts_score_label">Uhrzeit</string>
+    <string name="scripts_mono_time_label">Mono-Uhrzeit:</string>
+    <string name="top_colliders_title">Top-Kollisionsobjekte</string>
+	<string name="top_colliders_text">Top [COUNT] Objekte mit vielen potenziellen Kollisionen</string>
+	<string name="colliders_score_label">Wertung</string>
+    <string name="none_descriptor">Nicht gefunden.</string>
+</floater>

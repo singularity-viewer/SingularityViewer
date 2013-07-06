@@ -3,10 +3,9 @@
  * @brief LLPanelPermissions class header file
  *
  * $LicenseInfo:firstyear=2002&license=viewergpl$
- * 
+ * Second Life Viewer Source Code
  * Copyright (c) 2002-2009, Linden Research, Inc.
  * 
- * Second Life Viewer Source Code
  * The source code in this file ("Source Code") is provided by Linden Lab
  * to you under the terms of the GNU General Public License, version 2.0
  * ("GPL"), unless you have obtained a separate licensing agreement
@@ -42,12 +41,6 @@
 // Panel for permissions of an object.
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-class LLCheckBoxCtrl;
-class LLTextBox;
-class LLButton;
-class LLLineEditor;
-class LLRadioGroup;
-class LLComboBox;
 class LLNameBox;
 
 class LLPanelPermissions : public LLPanel
@@ -56,26 +49,23 @@ public:
 	LLPanelPermissions(const std::string& title);
 	virtual ~LLPanelPermissions();
 
-	virtual	BOOL	postBuild();
-	virtual void	handleVisibilityChange(BOOL new_visibility);
+	/*virtual*/	BOOL	postBuild();
+	/*virtual*/ void	handleVisibilityChange(BOOL new_visibility);
 
-	// MANIPULATORS
 	void refresh();							// refresh all labels as needed
-//	void setPermCheckboxes(U32 mask_on, U32 mask_off, 
-//						   LLCheckBoxCtrl* move, LLCheckboxCtrl* edit,
-//						   LLCheckBoxCtrl* copy);
+
 protected:
 	// statics
 	static void onClickClaim(void*);
 	static void onClickRelease(void*);
-	static void onClickCreator(void*);
-	static void onClickOwner(void*);
-	static void onClickLastOwner(void*);
-	static void onClickGroup(void*);
-	static void onClickOpenGroup(void*);
+	void onClickCreator();
+	void onClickOwner();
+	void onClickLastOwner();
+	void onClickGroup();
+	static void onClickOpenGroup();
 	static void cbGroupID(LLUUID group_id, void* userdata);
 	static void onClickDeedToGroup(void*);
-	static void onClickCopyObjKey(void*);
+	static void onClickCopyObjKey();
 
 	static void onCommitPerm(LLUICtrl *ctrl, void *data, U8 field, U32 perm);
 
@@ -108,10 +98,6 @@ protected:
 	
 private:
 	LLNameBox*		mLabelGroupName;		// group name
-
-	//LLTextBox*		mBuyerLabel;
-	//LLCheckBoxCtrl*	mCheckBuyerModify;
-	//LLCheckBoxCtrl*	mCheckBuyerCopy;
 
 	LLUUID			mCreatorID;
 	LLUUID			mOwnerID;

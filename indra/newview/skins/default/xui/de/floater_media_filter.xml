@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="floatermediafilter" title="Medienfilter">
+	<text name="info1">Domains in Fettschrift sind in der Speicherliste (sie sind explizit freigegeben oder gesperrt)</text>
+	<text name="info2">Domains in Kursivschrift sind in der Sitzungsliste (sie sind temporär freigegeben oder gesperrt)</text>
+
+	<scroll_list name="whitelist_list">
+		<column name="whitelist_col" label="Erlaubte Somains oder Serverobjekte"/>
+	</scroll_list>
+
+	<scroll_list name="blacklist_list">
+		<column name="blacklist_col" label="Gesperrte Domains oder Serverobjekte"/>
+	</scroll_list>
+
+	<button name="add_whitelist" label="Hinzufügen..." tool_tip="Einen Server zur Erlaubnisliste hinzufügen"/>
+
+	<button name="remove_whitelist" label="Entfernen" tool_tip="Ausgewählten Server von der Erlaubnisliste entfernen"/>
+
+	<button name="clear_lists" label="Listen löschen" tool_tip="Alle Listen löschen"/>
+
+	<button name="show_ips" label="IPs anzeigen" tool_tip="Zeige die IP zu jedem Domain Namen (der Viewer pausiert während die Liste aktualisiert wird)"/>
+
+	<button name="add_blacklist" label="Hinzufügen..." tool_tip="Einen Server zur Sperrliste hinzufügen"/>
+
+	<button name="remove_blacklist" label="Entfernen" tool_tip="Den ausgewählten Server von der Sperrliste entfernen"/>
+
+	<text name="add_text">Neue Domain:</text>
+
+	<check_box name="match_ip" label="Zugehörige IP hinzufügen/entfernen" tool_tip="IP zu hinzugefügten oder gelöschten Domains angleichen"/>
+
+	<line_editor name="input_domain" tool_tip="Gib die neue URL, Domain, IP oder Objekt HTTP Pfad hier ein"/>
+
+	<button name="commit_domain" label="Hinzufügen" tool_tip="Zur Liste hinzufügen"/>
+</floater>

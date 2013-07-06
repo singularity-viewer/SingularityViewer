@@ -75,6 +75,7 @@ AIPerService::AIPerService(void) :
 		mConcurrentConnections(CurlConcurrentConnectionsPerService),
 		mApprovedRequests(0),
 		mTotalAdded(0),
+		mEstablishedConnections(0),
 		mUsedCT(0),
 		mCTInUse(0)
 {
@@ -230,6 +231,7 @@ AIPerServicePtr AIPerService::instance(std::string const& servicename)
   if (iter == instance_map_w->end())
   {
 	iter = instance_map_w->insert(instance_map_type::value_type(servicename, new RefCountedThreadSafePerService)).first;
+	Dout(dc::curlio, "Created new service \"" << servicename << "\" [" << (void*)&*PerService_rat(*iter->second) << "]");
   }
   // Note: the creation of AIPerServicePtr MUST be protected by the lock on sInstanceMap (see release()).
   return iter->second;
@@ -339,7 +341,7 @@ void AIPerService::added_to_multi_handle(AICapabilityType capability_type)
   ++mTotalAdded;
 }
 
-void AIPerService::removed_from_multi_handle(AICapabilityType capability_type, bool downloaded_something)
+void AIPerService::removed_from_multi_handle(AICapabilityType capability_type, bool downloaded_something, bool success)
 {
   CapabilityType& ct(mCapabilityType[capability_type]);
   llassert(mTotalAdded > 0 && ct.mAdded > 0);
@@ -353,6 +355,10 @@ void AIPerService::removed_from_multi_handle(AICapabilityType capability_type, b
   if (done && ct.pipelined_requests() == 0)
   {
 	mark_unused(capability_type);
+  }
+  if (success)
+  {
+	ct.mFlags |= ctf_success;
   }
 }
 

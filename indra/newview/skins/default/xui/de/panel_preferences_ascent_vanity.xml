@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel label="Vanity" name="ascvan">
+  <tab_container label="Singularity Vanity" name="Ascent Vanity">
+    <panel label="Main" name="General">
+      <check_box label="Where applicable, save Vanity settings per-account." tool_tip="Saves settings per-account, allowing easier customization for alts." name="use_account_settings_check"/>
+      <check_box label="Hide the Teleport progress screens" tool_tip="If checked, the viewer will hide the teleport progress screen, allowing you to continue to read IMs." name="disable_tp_screen_check"/>
+      <check_box label="Play the Teleport sound when moving between sims" tool_tip="Viewer will play the wooshing TP noise on teleport." name="tp_sound_check"/>
+      <check_box label="Hide the Login/Logout progress screens" tool_tip="If checked, the viewer will hide the login/logout progress screen." name="disable_logout_screen_check"/>
+      <check_box label="Disable chat, whisper and shout animations" tool_tip="Remove chat animations from your own avatar. Effect visible to everyone" name="disable_chat_animation"/>
+      <check_box label="Add attachments and wearables instead of replacing them" tool_tip="When double clicking or pressing enter in inventory with wearables or objects selected they will be added to your outfit, instead of replacing the wearable or object currently at their target destination." name="add_not_replace"/>
+      <check_box label="Turn around when walking backwards" tool_tip="Certain AOs may turn you around even with this disabled." name="turn_around"/>
+      <check_box label="Announce when someone takes a snapshot" tool_tip="Won't announce for people who hide the fact that they are taking a snapshot." name="announce_snapshots"/>
+      <check_box label="Announce music stream's metadata in local chat when tuned in" tool_tip="When a new song comes on, a message will be displayed in local chat with available information about the track." name="announce_stream_metadata"/>
+      <check_box label="Make unfocused floaters opaque (requires refocusing each floater to take effect)" tool_tip="When a floater loses focus, it won't turn transparent with this enabled.  This may conflict with some skins." name="unfocused_floaters_opaque"/>
+      <check_box label="Show complete names (display name and username) in profiles" tool_tip="Disregards the global name display settings, will not work if display names are switched off." name="complete_name_profiles"/>
+      <check_box label="Let scripts steal focus when they can't compile due to errors" name="script_errors_steal_focus"/>
+    </panel>
+    <panel label="Tags/Colors" name="TagsColors">
+      <!-- Client tag options -->
+      <check_box label="Broadcast Client Tag:" tool_tip="Choose whether others see that you enjoy Singularity." name="show_my_tag_check"/>
+      <combo_box tool_tip="The client tag (And subsequent color) to broadcast. Overridden locally by Custom Tag/Color." name="tag_spoofing_combobox">
+        <combo_item name="Singularity">Singularity</combo_item>
+      </combo_box>
+      <check_box label="Display client tag to self" tool_tip="Enabling this will show your client tag on your avatar name locally." name="show_self_tag_check"/>
+      <check_box label="Display client tag color to self" tool_tip="Enabling this set your avatar name color to your client tag color or custom set color." name="show_self_tag_color_check"/>
+      <check_box label="Display friend client tags as (Friend)" tool_tip="Enabling this changes your friends' client tags to (Friend)." name="show_friend_tag_check"/>
+      <!-- End of Left Side -->
+      <check_box label="Use a custom color and label (Local only)" tool_tip="Enabling this will let you set your own name tag to show up with your custom client and tag color. This only shows up to yourself." name="customize_own_tag_check"/>
+      <text name="custom_tag_label_text">Label:</text>
+      <line_editor name="custom_tag_label_box" tool_tip="The custom string you would like to replace your client tag with (Local only)"/>
+      <text name="custom_tag_color_text">Color:</text>
+      <color_swatch name="custom_tag_color_swatch" tool_tip="The custom color you would like to replace your client color with (Local only)"/>
+      <check_box label="Display client tag for others" tool_tip="Enabling this will show client tag names on others' avatar names." name="show_other_tag_check"/>
+      <check_box label="Display client tag color for others" tool_tip="Enabling this sets others' avatar name color to their client's color." name="show_client_tag_color_check"/>
+      <check_box label="Show Idle Time" tool_tip="Enabling this will show the amount of time an avatar has been idle." name="show_idle_time_check"/>
+      <check_box label="Automatically check website for updates to client definitions" tool_tip="Enabling this will allow Singularity to download fresh definitions when needed." name="update_tags_check"/>
+      <button name="update_clientdefs" label="Manual Update"/>
+      <!-- End of Client Tag settings -->
+      <text name="effects_color_textbox">Color For My Effects:</text>
+      <color_swatch label="Effects" name="effect_color_swatch"/>
+      <check_box label="Use user status colors (Friend, Linden, etcetera below)" tool_tip="Enabling this will show people who match specific criteria (Lindens, Estate owners, friends, muted people) with the color you've set below." name="use_status_check"/>
+      <text name="friends_color_textbox">Color For:
+(Radar, Tag, Minimap)</text>
+      <color_swatch label="Freunde" name="friend_color_swatch" tool_tip="Color of Friends"/>
+      <color_swatch label="Grundbesitz" name="estate_owner_color_swatch" tool_tip="Color of Estate Managers"/>
+      <color_swatch label="Lindens" name="linden_color_swatch" tool_tip="Color of Lindens"/>
+      <color_swatch label="Stummgeschaltet" name="muted_color_swatch" tool_tip="Color of Muted"/>
+      <color_swatch label="Custom (Minimap)" name="custom_color_swatch" tool_tip="Color of users picked out on the minimap only"/>
+      <text name="chat_color_text">Use colors for chat:</text>
+      <check_box label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="color_friend_check" tool_tip="Color Friend Chat"/>
+      <check_box label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="color_estate_owner_check" tool_tip="Color Estate Managers Chat"/>
+      <check_box label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="color_linden_check" tool_tip="Color Linden Chat"/>
+      <check_box label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="color_muted_check" tool_tip="Color Muted Chat"/>
+      <!--check_box bottom_delta="0" control_name="ColorCustomChat" follows="top" height="20" label="" left_delta="54" name="color_custom_check" width="44" tool_tip="Color Custom Chat"/ Not implemented, yet.-->
+    </panel>
+    <panel label="Body Dynamics" name="Body Dynamics">
+      <text name="av_mod_textbox">Avatar Offset Modifiers</text>
+      <spinner label="X Modifier" name="X Modifier" tool_tip="Erlaubt das Verändern des Höhenabstandes des Avatars ohne die Form selbst zu verändern."/>
+      <spinner label="Y Modifier" name="Y Modifier" tool_tip="Erlaubt das Verändern des Höhenabstandes des Avatars ohne die Form selbst zu verändern."/>
+      <spinner label="Z Modifier" name="Z Modifier" tool_tip="Erlaubt das Verändern des Höhenabstandes des Avatars ohne die Form selbst zu verändern."/>
+    </panel>
+  </tab_container>
+</panel>

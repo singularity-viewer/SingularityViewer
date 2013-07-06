@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel name="panel_login">
+	<web_browser trusted_content="true" name="login_html"/>
+	<string name="real_url">http://secondlife.com/app/login/</string>
+	<string name="forgot_password_url">http://secondlife.com/account/request.php?lang=de</string>
+	<text name="name_label">Name or Username:</text>
+	<combo_box name="name_combo"/>
+	<text name="password_text">Kennwort:</text>
+	<line_editor name="password_edit"/>
+	<check_box label="Remember name" name="remember_name_check"/>
+	<check_box label="Kennwort merken" name="remember_check"/>
+
+	<text name="grids_combo_text">Grid:</text>
+	<combo_box name="grids_combo"/>
+
+	<button name="grids_btn" label="Grid Manager"/>		 
+
+	<text name="start_location_text">Startposition:</text>
+	<combo_box name="start_location_combo">
+		<combo_item name="MyHome">Mein Heimatort</combo_item>
+		<combo_item name="MyLastLocation">Mein letzter Standort</combo_item>
+		<combo_item name="Typeregionname">&lt;Region eingeben&gt;</combo_item>
+	</combo_box>
+
+	<button label="Anmelden" label_selected="Anmelden" name="connect_btn"/>
+
+	<text name="create_new_account_text">Konto erstellen</text>
+	<text name="forgot_password_text">Namen oder Kennwort vergessen?</text>
+	<text name="channel_text">[VERSION]</text>
+</panel>

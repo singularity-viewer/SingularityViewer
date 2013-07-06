@@ -1,30 +1,44 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <panel name="panel_login">
-	<text name="first_name_text">
-		Primeiro nome:
-	</text>
-	<text name="last_name_text">
-		Sobrenome:
-	</text>
-	<text name="password_text">
-		Senha:
-	</text>
-	<text name="start_location_text">
-		Posição inicial:
-	</text>
-	<combo_box name="start_location_combo">
-		<combo_item name="MyHome">
-			Minha casa
-		</combo_item>
-		<combo_item name="MyLastLocation">
-			Minha última localização
-		</combo_item>
-		<combo_item name="Typeregionname">
-			&lt;Digite o nome da região&gt;
-		</combo_item>
-	</combo_box>
-	<check_box label="Lembrar senha" name="remember_check"/>
-	<button label="Entrar" label_selected="Entrar" name="connect_btn"/>
+  <layout_stack name="element_stack">
+    <layout_panel name="name_panel">
+      <text name="name_label">
+        Nome:
+      </text>
+      <check_box label="Lembre-se Nome" name="remember_name_check"/>
+    </layout_panel>
+    <layout_panel name="password_panel">
+      <text name="password_text">
+        Senha:
+      </text>
+      <check_box label="Lembrar senha" name="remember_check"/>
+    </layout_panel>
+    <layout_panel name="grids_panel">
+      <text name="grids_combo_text">
+        Grelha:
+      </text>
+      <!--<button name="grids_btn" label="Administrar Grid"/>-->
+    </layout_panel>
+    <layout_panel name="location_panel">
+      <text name="start_location_text">
+        Posição inicial:
+      </text>
+      <combo_box name="start_location_combo">
+        <combo_item name="MyHome">
+          Minha casa
+        </combo_item>
+        <combo_item name="MyLastLocation">
+          Minha última localização
+        </combo_item>
+        <combo_item name="Typeregionname">
+          &lt;Digite o nome da região&gt;
+        </combo_item>
+      </combo_box>
+    </layout_panel>
+    <layout_panel name="connect_panel">
+      <button label="Entrar" label_selected="Entrar" name="connect_btn"/>
+    </layout_panel>
+  </layout_stack>
 	<text name="create_new_account_text">
 		Registrar-se para uma conta
 	</text>

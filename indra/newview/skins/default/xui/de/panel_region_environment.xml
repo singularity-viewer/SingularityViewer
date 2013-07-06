@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel label="Umgebung" name="panel_env_info"> 
+ <text name="water_settings_title">Select the Water and Sky/Day Cycle Settings you would like all visitors to your
+region to see.  More info</text> 
+ <view_border name="border"/>
+ <radio_group name="region_settings_radio_group">
+  <radio_item name="use_sl_default_settings">Second Life-Standard verwenden</radio_item>
+  <radio_item name="use_my_settings">Folgende Einstellungen verwenden</radio_item>
+ </radio_group>
+ <panel name="user_environment_settings">
+   <text name="water_settings_title">Wassereinstellung</text>
+   <combo_box name="water_settings_preset_combo">
+    <combo_item name="item0">-Voreinstellung auswählen-</combo_item>
+   </combo_box>
+   <text name="sky_dayc_settings_title">Himmel / Tageszyklus</text>
+   <radio_group name="sky_dayc_settings_radio_group">
+    <radio_item name="my_sky_settings">Fester Himmel</radio_item>
+    <radio_item name="my_dayc_settings">Tageszyklus</radio_item>  	
+   </radio_group>
+   <combo_box name="sky_settings_preset_combo">
+    <combo_item name="item0">-Voreinstellung auswählen-</combo_item>
+   </combo_box>
+   <combo_box name="dayc_settings_preset_combo">
+    <combo_item name="item0">-Voreinstellung auswählen-</combo_item>
+   </combo_box>
+ </panel>
+ <button label="Übernehmen" name="apply_btn"/>
+ <button label="Abbrechen" name="cancel_btn"/> 
+ <loading_indicator/>
+ <text name="progress_indicator">Applying</text>
+</panel>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel label="Mitglied einladen" name="invite_panel">
+	<text name="help_text">Sie können mehrere Einwohner in Ihre 
+Gruppe einladen. Klicken Sie hierzu
+auf „Einwohnerliste öffnen“.</text>
+	<button label="Einwohnerliste öffnen" name="add_button" tool_tip="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;"/>
+	<name_list name="invitee_list" tool_tip="Halten Sie zur Mehrfachauswahl die Strg-Taste gedrückt und klicken Sie auf die Einwohnernamen."/>
+	<button label="Auswahl aus Liste löschen" name="remove_button" tool_tip="Die oben ausgewählten Einwohner von der Einladungsliste entfernen."/>
+	<text name="role_text">Wählen Sie eine Rolle aus:</text>
+	<combo_box name="role_name" tool_tip="Wählen Sie aus der Liste der Rollen, die Sie an Mitglieder vergeben dürfen."/>
+	<button label="Einladungen versenden" name="ok_button"/>
+	<button label="Abbrechen" name="cancel_button"/>
+	<string name="confirm_invite_owner_str">Möchten Sie wirklich (einen) neue(n) Eigentümer einladen? Dies kann nicht rückgängig gemacht werden!</string>
+	<string name="already_in_group">Einige der ausgewählten Einwohner sind bereits Gruppenmitglieder und haben aus diesem Grund keine Einladung erhalten.</string>
+	<string name="invite_selection_too_large">Group Invitations not sent: too many Residents selected. Group Invitations are limited to 100 per request.</string>
+	<!--button bottom="25" font="SansSerifSmall" halign="center" height="20"
+	     label="Send Invitations" left="65" name="ok_button" width="140" />
+	<button bottom_delta="-22" font="SansSerifSmall" halign="center" height="20"
+	     label="Cancel" left_delta="0" name="cancel_button" width="140" /-->
+	<string name="loading">(wird geladen...)</string>
+</panel>

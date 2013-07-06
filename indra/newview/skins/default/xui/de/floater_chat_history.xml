@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="chat floater" title="Lokaler Chat">
+	<string name="ringing">Verbindung mit In-Welt-Voice-Chat...</string>
+	<string name="connected">Verbunden</string>
+	<string name="unavailable">Der aktuelle Standort unterstützt keine Voice-Kommunikation</string>
+	<string name="hang_up">Verbindung mit In-Welt-Voice-Chat getrennt</string>
+	<string name="voice_icon">icn_voice-localchat.tga</string>
+	<string name="IM_logging_string">-- Instant-Message-Protokoll aktiviert --</string>
+	<string name="IM_end_log_string">-- Ende des Protokolls --</string>
+	<string name="ScriptQuestionCautionChatGranted">Dem Objekt „[OBJECTNAME]“, ein Objekt von „[OWNERNAME]“, in [REGIONNAME] [REGIONPOS], wurde folgende Berechtigung erteilt: [PERMISSIONS].</string>
+	<string name="ScriptQuestionCautionChatDenied">Dem Objekt „[OBJECTNAME]“, ein Objekt von „[OWNERNAME]“, in [REGIONNAME] [REGIONPOS], wurde folgende Berechtigung verweigert: [PERMISSIONS].</string>
+	<string name="ScriptTakeMoney">Linden-Dollar (L$) von Ihnen nehmen</string>
+	<string name="ActOnControlInputs">Steuerung festlegen</string>
+	<string name="RemapControlInputs">Steuerung neu zuweisen</string>
+	<string name="AnimateYourAvatar">Avatar animieren</string>
+	<string name="AttachToYourAvatar">An Avatar anhängen</string>
+	<string name="ReleaseOwnership">Eigentum aufgeben und öffentlich machen</string>
+	<string name="LinkAndDelink">Mit Objekten verknüpfen und davon trennen</string>
+	<string name="AddAndRemoveJoints">Verbindungen zu anderen Objekten hinzufügen und entfernen</string>
+	<string name="ChangePermissions">Berechtigungen ändern</string>
+	<string name="TrackYourCamera">Kameraverfolgung aktivieren</string>
+	<string name="TeleportYourAgent">Avatar teleportieren</string>
+	<string name="ControlYourCamera">Kamerasteuerung übernehmen</string>
+	<string name="OverrideAnimations">Überschreibe die Standard-Animationen</string>
+	<layout_stack name="panels">
+		<layout_panel name="im_contents_panel">
+         <layout_stack name="im_contents_stack">
+          <layout_panel name="history_panel">
+			<combo_box label="Gesten" name="Gesture">
+				<combo_item name="Gestures">Gesten</combo_item>
+			</combo_box>
+			<check_box label="Stummgeschalteten Text anzeigen" name="show mutes"/>
+			<!--check_box bottom_delta="-15" enabled="true" follows="left|top" font="SansSerifSmall" height="20" initial_value="false" label="Translate Chat (powered by Google)" name="translate chat" width="100"/-->
+			<button label="Teleport Historie" name="chat_history_open" tool_tip="Klicken Sie hier zur Anzeige des Gesprächsverlaufs im externen Editor"/>
+			<button label="&lt; &lt;" label_selected="&gt; &gt;" name="toggle_active_speakers_btn" tool_tip="Klicken Sie hier, um eine Liste der aktiven Teilnehmer an dieser IM-Sitzung anzuzeigen."/>
+			<text_editor name="Chat History Editor"/>
+			<text_editor name="Chat History Editor with mute"/>
+          </layout_panel>
+          <layout_panel name="chat_layout_panel">
+			<panel name="chat_panel">
+				<string name="gesture_label">Gesten</string>
+				<line_editor label="Zum Chatten hier klicken." name="Chat Editor"/>
+				<flyout_button label="Sagen" name="Say" tool_tip="(Eingabe)">
+					<flyout_button_item name="shout_item">Rufen</flyout_button_item>
+					<flyout_button_item name="say_item">Sagen</flyout_button_item>
+					<flyout_button_item name="whisper_item">Flüstern</flyout_button_item>
+				</flyout_button>
+			</panel>
+          </layout_panel>
+         </layout_stack>
+		</layout_panel>
+		<layout_panel name="active_speakers_panel"/>
+	</layout_stack>
+</floater>

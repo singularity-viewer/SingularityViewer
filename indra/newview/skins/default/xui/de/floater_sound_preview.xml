@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="Sound Preview" title="sound.wav">
+	<text name="name_label">Name:</text>
+	<line_editor name="name_form"/>
+	<text name="description_label">Beschreibung:</text>
+	<line_editor name="description_form"/>
+	<button label="Abbrechen" label_selected="Abbrechen" name="cancel_btn"/>
+	<button label="Hochladen ([AMOUNT] [CURRENCY])" name="ok_btn"/>
+</floater>

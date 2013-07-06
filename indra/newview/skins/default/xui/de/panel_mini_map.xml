@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel label="Minikarte" name="mini_mapview">
+	<text name="n_label">N</text>
+	<text name="e_label">O</text>
+	<text name="s_label">S</text>
+	<text name="w_label">W</text>
+	<text name="ne_label">NO</text>
+	<text name="se_label">SO</text>
+	<text name="sw_label">SW</text>
+	<text name="nw_label">NW</text>
+</panel>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="active_speakers" title="Aktive Sprecher">
+  <layout_stack name="active_speakers_stack">
+    <layout_panel name="panel_voice_effect" visiblity_control="Stimmenveränderung aktiviert"/>
+    <layout_panel name="active_speakers_panel">
+      <scroll_list name="speakers_list">
+        <column name="icon_speaking_status"/>
+        <column label="Name" name="speaker_name"/>
+        <column label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="speaking_status"/>
+      </scroll_list>
+      <volume_slider name="speaker_volume"/>
+      <button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="mute_btn" tool_tip="Voice für diesen Einwohner stummschalten"/>
+    </layout_panel>
+  </layout_stack>
+</floater>

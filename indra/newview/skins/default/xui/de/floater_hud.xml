@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="floater_hud" title="Lernhilfe">
+<!-- NOTE: Height and width must match values in settings.xml for 
+     FloaterHUDRect because this floater is resized to those values 
+     in LLViewerWindow initialization. JC -->
+	<web_browser name="floater_hud_browser"/>
+</floater>

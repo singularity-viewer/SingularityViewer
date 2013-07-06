@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="inspect" title="Objekt prüfen">
+	<scroll_list name="object_list" tool_tip="Wählen Sie ein Objekt aus dieser Liste, um es in der Second Life-Welt zu markieren">
+		<column label="Objektname" name="object_name"/>
+		<column label="Besitzer" name="owner_name"/>
+    <column label="Name des letzten Besitzers" name="last_owner_name"/>
+		<column label="Ersteller" name="creator_name"/>
+    <column label="Seiten" name="face_num"/>
+    <column label="Eckpunkte" name="vertex_num"/>
+    <column label="Skripts" name="script_num"/>
+    <column label="Inv Gesamt" name="inv_num"/>
+		<column label="Erstellungsdatum" name="creation_date"/>
+	</scroll_list>
+	<button label="Besitzerprofil einsehen..." label_selected="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="button owner" tool_tip="Profil des Besitzers des markierten Objekts einsehen"/>
+	<button label="Erstellerprofil einsehen..." label_selected="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="button creator" tool_tip="Profil des ursprünglichen Erstellers des markierten Objekts einsehen"/>
+</floater>

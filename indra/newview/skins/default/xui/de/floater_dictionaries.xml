@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="EmeraldIRC_dictionaries" title="Download Wörterbuch">
+     <text name="EmDics_txt">Unten ist eine Liste von zusätzlichen Wörterbücher,
+       die heruntergeladen werden können.
+
+       Bitte wählen Sie Ihre Wahl und drücken Sie zum Download.</text>
+	<combo_box name="Emerald_combo_dics" tool_tip="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;"/>
+     <button label="Herunterladen" name="Emerald_dic_download"/>
+</floater>

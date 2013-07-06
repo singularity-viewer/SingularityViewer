@@ -63,7 +63,25 @@ LLDir_Win32::LLDir_Win32()
 	//
 	// We used to store the cache in AppData\Roaming, and the installer
 	// cleans up that version on upgrade.  JC
-	SHGetSpecialFolderPath(NULL, w_str, CSIDL_LOCAL_APPDATA, TRUE);
+
+	if(HMODULE shell = LoadLibrary(L"shell32"))	//SHGetSpecialFolderPath is deprecated from Vista an onwards. Try to use SHGetSpecialFolderPath if it's available
+	{
+		HRESULT (WINAPI* pSHGetKnownFolderPath)(REFKNOWNFOLDERID rfid, DWORD dwFlags, HANDLE hToken, PWSTR *ppszPath);
+		pSHGetKnownFolderPath = (HRESULT (WINAPI *)(REFKNOWNFOLDERID, DWORD, HANDLE, PWSTR *))GetProcAddress(shell, "SHGetKnownFolderPath");
+		WCHAR* pPath = NULL;
+		if(pSHGetKnownFolderPath && (*pSHGetKnownFolderPath)(FOLDERID_LocalAppData, 0, NULL, &pPath) == S_OK)
+			wcscpy_s(w_str,pPath);
+		else
+			SHGetSpecialFolderPath(NULL, w_str, CSIDL_LOCAL_APPDATA, TRUE);
+
+		FreeLibrary(shell);
+		if(pPath)
+			CoTaskMemFree(pPath);
+	}
+	else	//XP doesn't support SHGetKnownFolderPath
+	{
+		SHGetSpecialFolderPath(NULL, w_str, CSIDL_LOCAL_APPDATA, TRUE);
+	}
 	mOSCacheDir = utf16str_to_utf8str(llutf16string(w_str));
 
 	if (GetTempPath(MAX_PATH, w_str))

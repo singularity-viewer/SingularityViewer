@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="floater_web_content" title="Web Browser" initial_mime_type="text/html">
+  <layout_stack name="stack1">
+    <layout_panel name="nav_controls">
+      <button tool_tip="Rückwärts" label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="back">
+        <button.commit_callback/>
+        </button>
+        <button tool_tip="Vorwärts" label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="forward">
+        <button.commit_callback/>
+        </button>
+      <button tool_tip="Navigation stoppen" label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="stop">
+        <button.commit_callback/>
+      </button>
+      <button tool_tip="Seite neu laden" label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="reload">
+        <button.commit_callback/>
+      </button>
+      <combo_box name="address" tool_tip="URL hier eingeben">
+        <combo_box.commit_callback/>
+      </combo_box>
+      <icon name="media_secure_lock_flag" tool_tip="Sicheres Browsen"/>
+      <button tool_tip="Aktuelle URL im Desktop-Browser öffnen" label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="popexternal">
+        <button.commit_callback/>
+      </button>
+    </layout_panel>
+    <layout_panel name="external_controls">
+      <web_browser name="webbrowser"/>
+    </layout_panel>
+    <layout_panel name="status_bar">
+      <text name="statusbartext"/>
+      <progress_bar color_bar="0.3 1.0 0.3 1" name="statusbarprogress"/>
+    </layout_panel>
+  </layout_stack>
+</floater>

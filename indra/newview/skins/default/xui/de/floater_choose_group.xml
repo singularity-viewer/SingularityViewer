@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="groups" title="Gruppen">
+	<text name="groupdesc">Gruppe wählen:</text>
+	<scroll_list name="group list">
+		<column name="name"/>
+	</scroll_list>
+	<button label="OK" label_selected="OK" name="OK"/>
+	<button label="Abbrechen" label_selected="Abbrechen" name="Cancel"/>
+  <string name="none">keine</string>
+</floater>

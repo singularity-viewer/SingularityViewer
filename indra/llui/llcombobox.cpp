@@ -64,17 +64,20 @@ LLComboBox::LLComboBox(	const std::string& name, const LLRect &rect, const std::
 	commit_callback_t commit_callback)
 :	LLUICtrl(name, rect, TRUE, commit_callback, FOLLOWS_LEFT | FOLLOWS_TOP),
 	mTextEntry(NULL),
-	mArrowImage(NULL),
-	mAllowTextEntry(FALSE),
-	mMaxChars(20),
 	mTextEntryTentative(TRUE),
-	mListPosition(BELOW),
+	mArrowImage(NULL),
+	mHasAutocompletedText(false),
+	mAllowTextEntry(false),
+	mAllowNewValues(false),
+	mMaxChars(20),
 	mPrearrangeCallback( NULL ),
 	mTextEntryCallback( NULL ),
+	mListPosition(BELOW),
 	mSuppressTentative( false ),
 	mSuppressAutoComplete( false ),
-	mLabel(label),
-	mListColor(LLUI::sColorsGroup->getColor("ComboBoxBg"))
+	mListColor(LLUI::sColorsGroup->getColor("ComboBoxBg")),
+	mLastSelectedIndex(-1),
+	mLabel(label)
 {
 	// Always use text box 
 	// Text label button
@@ -91,16 +94,24 @@ LLComboBox::LLComboBox(	const std::string& name, const LLRect &rect, const std::
 	mButton->setFont(LLFontGL::getFontSansSerifSmall());
 	mButton->setFollows(FOLLOWS_LEFT | FOLLOWS_BOTTOM | FOLLOWS_RIGHT);
 	mButton->setHAlign( LLFontGL::LEFT );
-	mButton->setRightHPad(2);
+	if(mAllowTextEntry)
+	{
+		mButton->setRightHPad(2);
+	}
+
 	addChild(mButton);
 
 	// disallow multiple selection
 	mList = new LLScrollListCtrl(std::string("ComboBox"), LLRect(), 
-								 boost::bind(&LLComboBox::onItemSelected, this), FALSE);
+								 boost::bind(&LLComboBox::onItemSelected, this, _2), FALSE);
 	mList->setVisible(FALSE);
 	mList->setBgWriteableColor(mListColor);
 	mList->setCommitOnKeyboardMovement(FALSE);
 	addChild(mList);
+
+	// Mouse-down on button will transfer mouse focus to the list
+	// Grab the mouse-up event and make sure the button state is correct
+	mList->setMouseUpCallback(boost::bind(&LLComboBox::onListMouseUp, this));
 
 	mArrowImage = LLUI::getUIImage("combobox_arrow.tga");
 	mButton->setImageOverlay("combobox_arrow.tga", LLFontGL::RIGHT);
@@ -234,6 +245,7 @@ void LLComboBox::clear()
 	mButton->setLabelSelected(LLStringUtil::null);
 	mButton->setLabelUnselected(LLStringUtil::null);
 	mList->deselectAllItems();
+	mLastSelectedIndex = -1;
 }
 
 void LLComboBox::onCommit()
@@ -278,6 +290,11 @@ void	LLComboBox::resetDirty()
 	{
 		mList->resetDirty();
 	}
+}
+
+bool LLComboBox::itemExists(const std::string& name)
+{
+	return mList->getItemByLabel(name);
 }
 
 void LLComboBox::resetTextDirty()
@@ -358,6 +375,7 @@ BOOL LLComboBox::setSimple(const LLStringExplicit& name)
 	if (found)
 	{
 		setLabel(name);
+		mLastSelectedIndex = mList->getFirstSelectedIndex();
 	}
 
 	return found;
@@ -372,14 +390,19 @@ void LLComboBox::setValue(const LLSD& value)
 		LLScrollListItem* item = mList->getFirstSelected();
 		if (item)
 		{
-			setLabel( mList->getSelectedItemLabel() );
+			updateLabel();
 		}
+		mLastSelectedIndex = mList->getFirstSelectedIndex();
+	}
+	else
+	{
+		mLastSelectedIndex = -1;
 	}
 }
 
 const std::string LLComboBox::getSimple() const
 {
-	const std::string res = mList->getSelectedItemLabel();
+	const std::string res = getSelectedItemLabel();
 	if (res.empty() && mAllowTextEntry)
 	{
 		return mTextEntry->getText();
@@ -421,6 +444,7 @@ void LLComboBox::setLabel(const LLStringExplicit& name)
 		if (mList->selectItemByLabel(name, FALSE))
 		{
 			mTextEntry->setTentative(FALSE);
+			mLastSelectedIndex = mList->getFirstSelectedIndex();
 		}
 		else
 		{
@@ -435,6 +459,25 @@ void LLComboBox::setLabel(const LLStringExplicit& name)
 	}
 }
 
+void LLComboBox::updateLabel()
+{
+	// Update the combo editor with the selected
+	// item label.
+	if (mTextEntry)
+	{
+		mTextEntry->setText(getSelectedItemLabel());
+		mTextEntry->setTentative(FALSE);
+	}
+
+	// If combo box doesn't allow text entry update
+	// the combo button label.
+	if (!mAllowTextEntry)
+	{
+		std::string label = getSelectedItemLabel();
+		mButton->setLabelUnselected(label);
+		mButton->setLabelSelected(label);
+	}
+}
 
 BOOL LLComboBox::remove(const std::string& name)
 {
@@ -447,6 +490,7 @@ BOOL LLComboBox::remove(const std::string& name)
 		{
 			mList->deleteSingleItem(mList->getItemIndex(item));
 		}
+		mLastSelectedIndex = mList->getFirstSelectedIndex();
 	}
 
 	return found;
@@ -457,6 +501,7 @@ BOOL LLComboBox::remove(S32 index)
 	if (index < mList->getItemCount())
 	{
 		mList->deleteSingleItem(index);
+		setLabel(getSelectedItemLabel());
 		return TRUE;
 	}
 	return FALSE;
@@ -502,7 +547,8 @@ BOOL LLComboBox::setCurrentByIndex( S32 index )
 	BOOL found = mList->selectNthItem( index );
 	if (found)
 	{
-		setLabel(mList->getSelectedItemLabel());
+		setLabel(getSelectedItemLabel());
+		mLastSelectedIndex = index;
 	}
 	return found;
 }
@@ -560,10 +606,12 @@ void LLComboBox::updateLayout()
 
 		mButton->setFollows(FOLLOWS_BOTTOM | FOLLOWS_TOP | FOLLOWS_RIGHT);
 	}
-	else if (!mAllowTextEntry)
+	else
 	{
 		mButton->setRect(rect);
 		mButton->setTabStop(TRUE);
+		mButton->setLabelUnselected(mLabel);
+		mButton->setLabelSelected(mLabel);
 
 		if (mTextEntry)
 		{
@@ -682,24 +730,28 @@ void LLComboBox::showList()
 
 void LLComboBox::hideList()
 {
-#if 0	// Don't do this! mTextEntry->getText() can be truncated, in which case selectItemByLabel
-	// fails and this only resets the selection :/
-
-	// *HACK: store the original value explicitly somewhere, not just in label
-	std::string orig_selection = mAllowTextEntry ? mTextEntry->getText() : mButton->getLabelSelected();
-
-	// assert selection in list
-	mList->selectItemByLabel(orig_selection, FALSE);
-#endif
-
-	mButton->setToggleState(FALSE);
-	mList->setVisible(FALSE);
-	mList->mouseOverHighlightNthItem(-1);
-
-	setUseBoundingRect(FALSE);
-	if( gFocusMgr.getTopCtrl() == this )
+	if (mList->getVisible())
 	{
-		gFocusMgr.setTopCtrl(NULL);
+		// assert selection in list
+		if(mAllowNewValues)
+		{
+			// mLastSelectedIndex = -1 means that we entered a new value, don't select
+			// any of existing items in this case.
+			if(mLastSelectedIndex >= 0)
+				mList->selectNthItem(mLastSelectedIndex);
+		}
+		else if(mLastSelectedIndex >= 0)
+			mList->selectNthItem(mLastSelectedIndex);
+
+		mButton->setToggleState(FALSE);
+		mList->setVisible(FALSE);
+		mList->mouseOverHighlightNthItem(-1);
+
+		setUseBoundingRect(FALSE);
+		if( gFocusMgr.getTopCtrl() == this )
+		{
+			gFocusMgr.setTopCtrl(NULL);
+		}
 	}
 }
 
@@ -730,10 +782,14 @@ void LLComboBox::onButtonMouseDown()
 		setFocus( TRUE );
 
 		// pass mouse capture on to list if button is depressed
-		/*if (self->mButton->hasMouseCapture())
+		if (mButton->hasMouseCapture())
 		{
-			gFocusMgr.setMouseCapture(self->mList);
-		}*/
+			gFocusMgr.setMouseCapture(mList);
+
+			// But keep the "pressed" look, which buttons normally lose when they
+			// lose focus
+			mButton->setForcePressedState(true);
+		}
 	}
 	else
 	{
@@ -742,15 +798,23 @@ void LLComboBox::onButtonMouseDown()
 
 }
 
-void LLComboBox::onItemSelected()
+void LLComboBox::onListMouseUp()
 {
-	// Note: item is the LLScrollListCtrl
-	const std::string name = mList->getSelectedItemLabel();
+	// In some cases this is the termination of a mouse click that started on
+	// the button, so clear its pressed state
+	mButton->setForcePressedState(false);
+}
 
-	S32 cur_id = getCurrentIndex();
-	if (cur_id != -1)
+//------------------------------------------------------------------
+// static functions
+//------------------------------------------------------------------
+
+void LLComboBox::onItemSelected(const LLSD& data)
+{
+	mLastSelectedIndex = getCurrentIndex();
+	if (mLastSelectedIndex != -1)
 	{
-		setLabel(name);
+		updateLabel();
 
 		if (mAllowTextEntry)
 		{
@@ -758,7 +822,6 @@ void LLComboBox::onItemSelected()
 			mTextEntry->selectAll();
 		}
 	}
-
 	// hiding the list reasserts the old value stored in the text editor/dropdown button
 	hideList();
 
@@ -879,6 +942,7 @@ void LLComboBox::setTextEntry(const LLStringExplicit& text)
 	if (mTextEntry)
 	{
 		mTextEntry->setText(text);
+		mHasAutocompletedText = FALSE;
 		updateSelection();
 	}
 }
@@ -902,12 +966,14 @@ void LLComboBox::onTextEntry(LLLineEditor* line_editor)
 		if (mList->selectItemByLabel(line_editor->getText(), FALSE))
 		{
 			line_editor->setTentative(FALSE);
+			mLastSelectedIndex = mList->getFirstSelectedIndex();
 		}
 		else
 		{
 			if (!mSuppressTentative)
 				line_editor->setTentative(mTextEntryTentative);
 			mList->deselectAllItems();
+			mLastSelectedIndex = -1;
 		}
 		return;
 	}
@@ -964,7 +1030,7 @@ void LLComboBox::updateSelection()
 	LLWString left_wstring = mTextEntry->getWText().substr(0, mTextEntry->getCursor());
 	// user-entered portion of string, based on assumption that any selected
     // text was a result of auto-completion
-	LLWString user_wstring = mTextEntry->hasSelection() ? left_wstring : mTextEntry->getWText();
+	LLWString user_wstring = mHasAutocompletedText ? left_wstring : mTextEntry->getWText();
 	std::string full_string = mTextEntry->getText();
 
 	// go ahead and arrange drop down list on first typed character, even
@@ -978,21 +1044,26 @@ void LLComboBox::updateSelection()
 	if (mList->selectItemByLabel(full_string, FALSE))
 	{
 		mTextEntry->setTentative(FALSE);
+		mLastSelectedIndex = mList->getFirstSelectedIndex();
 	}
-	else if (!mList->selectItemByPrefix(left_wstring, FALSE))
+	else if (mList->selectItemByPrefix(left_wstring, FALSE))
 	{
-		mList->deselectAllItems();
-		mTextEntry->setText(wstring_to_utf8str(user_wstring));
-		if (!mSuppressTentative) mTextEntry->setTentative(mTextEntryTentative);
-	}
-	else
-	{
-		LLWString selected_item = utf8str_to_wstring(mList->getSelectedItemLabel());
+		LLWString selected_item = utf8str_to_wstring(getSelectedItemLabel());
 		LLWString wtext = left_wstring + selected_item.substr(left_wstring.size(), selected_item.size());
 		mTextEntry->setText(wstring_to_utf8str(wtext));
 		mTextEntry->setSelection(left_wstring.size(), mTextEntry->getWText().size());
 		mTextEntry->endSelection();
 		mTextEntry->setTentative(FALSE);
+		mHasAutocompletedText = TRUE;
+		mLastSelectedIndex = mList->getFirstSelectedIndex();
+	}
+	else // no matching items found
+	{
+		mList->deselectAllItems();
+		mTextEntry->setText(wstring_to_utf8str(user_wstring)); // removes text added by autocompletion
+		mTextEntry->setTentative(mTextEntryTentative);
+		mHasAutocompletedText = FALSE;
+		mLastSelectedIndex = -1;
 	}
 }
 
@@ -1109,7 +1180,8 @@ BOOL LLComboBox::setCurrentByID(const LLUUID& id)
 
 	if (found)
 	{
-		setLabel(mList->getSelectedItemLabel());
+		setLabel(getSelectedItemLabel());
+		mLastSelectedIndex = mList->getFirstSelectedIndex();
 	}
 
 	return found;
@@ -1124,7 +1196,7 @@ BOOL LLComboBox::setSelectedByValue(const LLSD& value, BOOL selected)
 	BOOL found = mList->setSelectedByValue(value, selected);
 	if (found)
 	{
-		setLabel(mList->getSelectedItemLabel());
+		setLabel(getSelectedItemLabel());
 	}
 	return found;
 }

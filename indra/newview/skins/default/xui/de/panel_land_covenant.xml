@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel name="Covenant" title="Vertrag">
+	<text name="covenant_timestamp_text"/>
+	<text name="region_name_lbl">Region:</text>
+	<text name="region_name_text">(unbekannt)</text>
+	<text name="estate_name_lbl">Grundbesitz:</text>
+	<text name="estate_name_text">(unbekannt)</text>
+	<text name="estate_owner_lbl">Grundbesitzer:</text>
+	<text name="estate_owner_text">(unbekannt)</text>
+	<text name="resellable_clause">Gekauftes Land in dieser Region kann oder kann nicht wiederverkauft werden.</text>
+	<text name="changeable_clause">Gekauftes Land in dieser Region kann oder kann nicht zusammengelegt und geteilt werden.</text>
+	<text_editor name="covenant_editor"/>
+	<string name="can_resell">Gekauftes Land in dieser Region kann wiederverkauft werden.</string>
+	<string name="can_not_resell">Gekauftes Land in dieser Region kann nicht wiederverkauft werden.</string>
+	<string name="can_change">Gekauftes Land in dieser Region kann zusammengelegt und geteilt werden.</string>
+	<string name="can_not_change">Gekauftes Land in dieser Region kann nicht zusammengelegt und geteilt werden.</string>
+</panel>

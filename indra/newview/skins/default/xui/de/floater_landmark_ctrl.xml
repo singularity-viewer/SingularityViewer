@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="landmarkpicker" title="Organisieren: Landmarken">
+	<check_box label="Ordner anzeigen" name="show_folders_check"/>
+	<filter_editor name="inventory search editor"/>
+	<inventory_panel name="inventory panel"/>
+	<button label="Neu" label_selected="Neu" name="New"/>
+	<button label="Umbenennen" label_selected="Umbenennen" name="Rename"/>
+	<button label="Neuer Ordner" label_selected="Neuer Ordner" name="NewFolder"/>
+	<button label="Bearbeiten" label_selected="Bearbeiten" name="Edit"/>
+	<button label="Löschen" label_selected="Löschen" name="Delete"/>
+	<button label="Schließen" label_selected="Schließen" name="Close"/>
+</floater>

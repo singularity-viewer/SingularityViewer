@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel name="Classified" title="Anzeige">
+	<texture_picker name="snapshot_ctrl"/>
+	<line_editor name="given_name_editor" tool_tip="Name muss mit einem Buchstaben oder einer Ziffer beginnen, nicht einem Satzzeichen."/>
+	<text_editor name="desc_editor"/>
+	<line_editor name="location_editor" tool_tip="Die Position in dieser Anzeige zur aktuellen Position machen."/>
+	<button label="Standort festl." name="set_location_btn"/>
+	<button label="Teleportieren" name="classified_teleport_btn"/>
+	<button label="Karte" name="classified_map_btn"/>
+	<combo_box label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="classified_category_combo"/>
+  <combo_box label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="classified_mature_check">
+    <combo_item name="select_mature">- Mature wählen -</combo_item>
+    <combo_item name="mature">Mature-Inhalt</combo_item>
+    <combo_item name="pg">PG-Inhalt</combo_item>
+  </combo_box>
+	<text name="classified_info_text" tool_tip="Je mehr Sie für die Anzeige bezahlen, desto weiter oben in der Liste erscheint sie.">Anzeige: Noch nicht veröffentlicht</text>
+	<text name="click_through_text" tool_tip="Gesamtanzahl Klicks auf die Schaltflächen seit Platzierung der Anzeige.">Klicks:</text>
+	<button label="Veröffentlichen..." name="classified_update_btn"/>
+	<check_box label="Jede Woche automatisch erneuern" name="auto_renew_check"/>
+	<string name="ad_placed_paid">Anzeige: [DATE], [AMT] L$ für Eintrag bezahlt.</string>
+	<string name="update_txt">Aktualisieren</string>
+	<string name="publish_txt">Veröffentlichen...</string>
+</panel>

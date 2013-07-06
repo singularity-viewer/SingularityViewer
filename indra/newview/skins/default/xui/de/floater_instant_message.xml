@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater label="(unbekannt)" name="im_floater" title="(unbekannt)">
+	<string name="answering">Wird verbunden...</string>
+	<string name="ringing">Anruf...</string>
+	<string name="connected">Verbunden. Klicken Sie auf „Anruf beenden“, um die Verbindung zu trennen</string>
+	<string name="hang_up">Anruf beendet</string>
+	<string name="voice_icon">icn_voice-pvtfocus.tga</string>
+	<string name="title_string">Instant Message an [NAME]</string>
+	<string name="typing_start_string">[NAME] tippt...</string>
+	<string name="session_start_string">Beginne Sitzung mit [NAME], bitte warten.</string>
+	<string name="default_text_label">Für Instant Message hier klicken.</string>
+	<string name="unavailable_text_label">Für diese Verbindung ist kein Text-Chat verfügbar.</string>
+	<string name="inventory_item_offered">Inventarobjekt angeboten</string>
+	<button label="Profil" name="profile_callee_btn"/>
+	<button label="Verlauf" name="history_btn"/>
+	<button label="Teleportieren" name="profile_tele_btn"/>
+	<check_box name="rp_mode">RP Modus</check_box>
+	<button label="Anrufen" name="start_call_btn"/>
+	<button label="End" name="end_call_btn"/>
+	<panel name="speaker_controls">
+		<volume_slider name="speaker_volume"/>
+		<button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="mute_btn" tool_tip="Voice stummschalten"/>
+	</panel>
+	<text_editor name="im_history"/>
+	<line_editor label="Für Instant Message hier klicken" name="chat_editor"/>
+	<button label="Senden" name="send_btn"/>
+	<string name="live_help_dialog">*** Willkommen bei Help Request ***  
+Bitte werfen Sie zuerst einen Blick auf unsere SL-Hilfeseiten. Drücken Sie dazu F1. Oder rufen Sie unter http://secondlife.com/knowledgebase/ die Knowledge Base auf. 
+Falls Sie die gesuchte Antwort dort nicht finden, geben Sie Ihre Frage ein. Warten Sie dann einen Moment, bis die verfügbaren Helfer antworten.
+-=-=- Die Antwortzeiten variieren. Insbesondere zur Hauptbetriebszeit kann die Antwort etwas länger dauern. -=-=-</string>
+</floater>

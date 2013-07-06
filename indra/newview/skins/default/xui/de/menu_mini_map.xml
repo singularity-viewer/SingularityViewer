@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<menu name="popup">
+	<menu_item_call label="Zoom Nah" name="Zoom Close">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_call label="Zoom Mittel" name="Zoom Medium">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_call label="Zoom Weit" name="Zoom Far">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_separator/>
+	<menu_item_check label="Zentriere auf Kamera" name="Center on Camera">
+		<on_click/>
+		<on_check/>
+	</menu_item_check>
+	<menu_item_check label="Drehe Minikarte" name="Rotate Mini-Map">
+	  <on_click/>
+	  <on_check/>
+	</menu_item_check>
+	<menu_item_separator/>
+	<menu_item_call label="Verfolgung abschalten" name="Stop Tracking">
+		<on_click/>
+		<on_enable/>
+	</menu_item_call>
+	<menu_item_call label="Profil..." name="Profile">
+		<on_click/>
+		<on_enable/>
+	</menu_item_call>
+	<menu_item_call label="Kamera..." name="Camfollow">
+		<on_click/>
+		<on_enable/>
+	</menu_item_call>
+	<menu name="Mark">
+		<on_enable/>
+		<menu_item_call label="Rot" name="Red">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_call label="Grün" name="Green">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_call label="Blau" name="Blue">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_call label="Gelb" name="Yellow">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_call label="Benutzerdefiniert..." name="Custom">
+			<on_click/>
+		</menu_item_call>
+  </menu>
+  <menu_item_call label="Markierung entfernen" name="Unmark">
+    <on_click/>
+    <on_enable/>
+  </menu_item_call>
+</menu>

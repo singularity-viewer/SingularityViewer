@@ -217,6 +217,10 @@ public:
 		// Derived classes that implement completed_headers()/completedHeaders() should return true here.
 		virtual bool needsHeaders(void) const { return false; }
 
+		// A derived class should return true if curl should close the connection when done.
+		// The default is to keep connections open for possible reuse.
+		virtual bool forbidReuse(void) const { return false; }
+
 		// A derived class should return true if curl should follow redirections.
 		// The default is not to follow redirections.
 		virtual bool followRedir(void) const { return false; }

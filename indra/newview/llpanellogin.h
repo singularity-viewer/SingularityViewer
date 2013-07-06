@@ -41,6 +41,7 @@
 
 class LLUIImage;
 class LLComboBox;
+class HippoGridInfo;
 
 class LLPanelLogin:	
 	public LLPanel,
@@ -92,6 +93,7 @@ public:
 
 	void updateGridCombo();
 
+	void onCurGridChange(HippoGridInfo* new_grid, HippoGridInfo* old_grid);
 	static void loadLoginPage();	
 	static void refreshLoginPage();
 	static void giveFocus();

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="mute floater" short_title="Stummschalten-Liste" title="Stummgeschaltete Einwohner und Objekte">
+  <name_list name="mutes" tool_tip="Namen stummgeschalter Objekte/Avatare">
+      <column name="icon" label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;"/>
+      <column label="Name" name="name" tool_tip="Name"/>
+  </name_list>
+	<button label="Einwohner stummschalten..." label_selected="Einwohner stummschalten..." name="Mute resident..." tool_tip="Wählen Sie einen Einwohner, um ihn stumm zu schalten"/>
+	<button label="Objekt nach Name stummschalten..." label_selected="Objekt nach Name stummschalten..." name="Mute object by name..."/>
+	<button label="Stummschaltung aufheben" label_selected="Stummschaltung aufheben" name="Unmute" tool_tip="Einwohner oder Objekt von der Stummgeschaltet-Liste entfernen"/>
+</floater>

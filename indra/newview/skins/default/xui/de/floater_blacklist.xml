@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="floater_blacklist" title="Asset Blockliste">
+	<button name="add_btn" label="Hinzufügen..."/>
+	<button name="remove_btn" label="Entfernen"/>
+  <combo_box name="asset_combo" label="Asset Typ"/>
+	<line_editor name="id_edit" label="Asset UUID"/>
+  <line_editor name="name_edit" label="Name"/>
+	<scroll_list name="file_list">
+    <column name="asset_id" label="Asset ID"/>
+    <column name="entry_name" label="Name"/>
+    <column name="entry_type" label="Typ"/>
+    <column name="entry_agent" label="Gesperrt von"/>
+    <column name="entry_date" label="Datum"/>
+    <!--column dynamicwidth="false" name="asset_id" label="Asset-ID" width="130"/-->
+	</scroll_list>
+	<button name="save_btn" label="XML speichern"/>
+	<button name="load_btn" label="XML laden"/>
+	<button name="clear_btn" label="Löschen"/>
+	<!--button name="rerender_btn" follows="right|bottom" width="150" bottom_delta="0" left_delta="400" height="20" label="Rerender all Objects"/-->
+	<button name="copy_uuid_btn" label="UUID kopieren"/>
+</floater>

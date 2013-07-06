@@ -5,10 +5,9 @@
  * viewing/editing object names, owners, permissions, etc.
  *
  * $LicenseInfo:firstyear=2002&license=viewergpl$
- * 
+ * Second Life Viewer Source Code
  * Copyright (c) 2002-2009, Linden Research, Inc.
  * 
- * Second Life Viewer Source Code
  * The source code in this file ("Source Code") is provided by Linden Lab
  * to you under the terms of the GNU General Public License, version 2.0
  * ("GPL"), unless you have obtained a separate licensing agreement
@@ -36,6 +35,7 @@
 
 #include "llpanelpermissions.h"
 
+// library includes
 #include "llpermissions.h"
 #include "llclickaction.h"
 #include "llfocusmgr.h"
@@ -43,6 +43,7 @@
 #include "lltrans.h"
 #include "llwindow.h"
 
+// project includes
 #include "llviewerwindow.h"
 #include "llresmgr.h"
 #include "lltextbox.h"
@@ -117,31 +118,29 @@ BOOL LLPanelPermissions::postBuild()
 	getChild<LLLineEditor>("Object Description")->setPrevalidate(&LLLineEditor::prevalidatePrintableNotPipe);
 
 	
-	childSetAction("button owner profile",LLPanelPermissions::onClickOwner,this);
-	childSetAction("button last owner profile",LLPanelPermissions::onClickLastOwner,this);
-	childSetAction("button creator profile",LLPanelPermissions::onClickCreator,this);
+	getChild<LLUICtrl>("button owner profile")->setCommitCallback(boost::bind(&LLPanelPermissions::onClickOwner,this));
+	getChild<LLUICtrl>("button last owner profile")->setCommitCallback(boost::bind(&LLPanelPermissions::onClickLastOwner,this));
+	getChild<LLUICtrl>("button creator profile")->setCommitCallback(boost::bind(&LLPanelPermissions::onClickCreator,this));
 
-	childSetAction("button set group",LLPanelPermissions::onClickGroup,this);
-	childSetAction("button open group",LLPanelPermissions::onClickOpenGroup,this);
+	getChild<LLUICtrl>("button set group")->setCommitCallback(boost::bind(&LLPanelPermissions::onClickGroup,this));
+	getChild<LLUICtrl>("button open group")->setCommitCallback(boost::bind(LLPanelPermissions::onClickOpenGroup));
 
 	childSetCommitCallback("checkbox share with group",LLPanelPermissions::onCommitGroupShare,this);
 
 	childSetAction("button deed",LLPanelPermissions::onClickDeedToGroup,this);
 
-	childSetAction("button cpy_key",LLPanelPermissions::onClickCopyObjKey,this);
+	getChild<LLUICtrl>("button cpy_key")->setCommitCallback(boost::bind(LLPanelPermissions::onClickCopyObjKey));
 
 	childSetCommitCallback("checkbox allow everyone move",LLPanelPermissions::onCommitEveryoneMove,this);
 
 	childSetCommitCallback("checkbox allow everyone copy",LLPanelPermissions::onCommitEveryoneCopy,this);
 
-	getChild<LLUICtrl>("checkbox allow export")->setCommitCallback(boost::bind(&LLPanelPermissions::onCommitExport, this, _2));
-
 	childSetCommitCallback("checkbox for sale",LLPanelPermissions::onCommitSaleInfo,this);
+
+	childSetCommitCallback("sale type",LLPanelPermissions::onCommitSaleType,this);
 
 	childSetCommitCallback("Edit Cost",LLPanelPermissions::onCommitSaleInfo,this);
 	getChild<LLLineEditor>("Edit Cost")->setPrevalidate(&LLLineEditor::prevalidateNonNegativeS32);
-
-	childSetCommitCallback("sale type",LLPanelPermissions::onCommitSaleType,this);
 
 	childSetCommitCallback("checkbox next owner can modify",LLPanelPermissions::onCommitNextOwnerModify,this);
 	childSetCommitCallback("checkbox next owner can copy",LLPanelPermissions::onCommitNextOwnerCopy,this);
@@ -152,7 +151,10 @@ BOOL LLPanelPermissions::postBuild()
 	mLabelGroupName = getChild<LLNameBox>("Group Name Proxy");
 
 	if (!gHippoGridManager->getCurrentGrid()->isSecondLife())
+	{
+		getChild<LLUICtrl>("checkbox allow export")->setCommitCallback(boost::bind(&LLPanelPermissions::onCommitExport, this, _2));
 		LFSimFeatureHandler::instance().setSupportsExportCallback(boost::bind(&LLPanelPermissions::refresh, this));
+	}
 
 	return TRUE;
 }
@@ -195,16 +197,16 @@ void LLPanelPermissions::disableAll()
 	getChildView("button last owner profile")->setEnabled(FALSE);
 	
 	getChildView("Group:")->setEnabled(FALSE);
-	getChild<LLUICtrl>("Group Name")->setValue(LLStringUtil::null);
-	getChildView("Group Name")->setEnabled(FALSE);
+	getChild<LLUICtrl>("Group Name Proxy")->setValue(LLStringUtil::null);
+	getChildView("Group Name Proxy")->setEnabled(FALSE);
 	getChildView("button set group")->setEnabled(FALSE);
 	getChildView("button open group")->setEnabled(FALSE);
 
 	getChild<LLUICtrl>("Object Name")->setValue(LLStringUtil::null);
 	getChildView("Object Name")->setEnabled(FALSE);
 	getChildView("Name:")->setEnabled(FALSE);
-	getChild<LLUICtrl>("Group Name")->setValue(LLStringUtil::null);
-	getChildView("Group Name")->setEnabled(FALSE);
+	//getChild<LLUICtrl>("Group Name")->setValue(LLStringUtil::null);
+	//getChildView("Group Name")->setEnabled(FALSE);
 	getChildView("Description:")->setEnabled(FALSE);
 	getChild<LLUICtrl>("Object Description")->setValue(LLStringUtil::null);
 	getChildView("Object Description")->setEnabled(FALSE);
@@ -310,9 +312,8 @@ void LLPanelPermissions::refresh()
 		return;
 	}
 
-
 	// figure out a few variables
-	BOOL is_one_object = (object_count == 1);
+	const BOOL is_one_object = (object_count == 1);
 
 	// BUG: fails if a root and non-root are both single-selected.
 	BOOL is_perm_modify = (LLSelectMgr::getInstance()->getSelection()->getFirstRootNode() 
@@ -446,7 +447,7 @@ void LLPanelPermissions::refresh()
 
 	// update group text field
 	getChildView("Group:")->setEnabled(TRUE);
-	getChild<LLUICtrl>("Group Name")->setValue(LLStringUtil::null);
+	//getChild<LLUICtrl>("Group Name")->setValue(LLStringUtil::null);
 	LLUUID group_id;
 	BOOL groups_identical = LLSelectMgr::getInstance()->selectGetGroup(group_id);
 	if (groups_identical)
@@ -996,19 +997,13 @@ void LLPanelPermissions::onClickRelease(void*)
 	LLSelectMgr::getInstance()->sendOwner(LLUUID::null, LLUUID::null);
 }
 
-// static
-void LLPanelPermissions::onClickCreator(void *data)
+void LLPanelPermissions::onClickCreator()
 {
-	LLPanelPermissions *self = (LLPanelPermissions *)data;
-
-	LLAvatarActions::showProfile(self->mCreatorID);
+	LLAvatarActions::showProfile(mCreatorID);
 }
 
-// static
-void LLPanelPermissions::onClickOwner(void *data)
+void LLPanelPermissions::onClickOwner()
 {
-	LLPanelPermissions *self = (LLPanelPermissions *)data;
-
 	if (LLSelectMgr::getInstance()->selectIsGroupOwned())
 	{
 		LLUUID group_id;
@@ -1020,26 +1015,24 @@ void LLPanelPermissions::onClickOwner(void *data)
 // [RLVa:KB] - Checked: 2009-07-08 (RLVa-1.0.0e)
 		if (!gRlvHandler.hasBehaviour(RLV_BHVR_SHOWNAMES))
 		{
-			LLAvatarActions::showProfile(self->mOwnerID);
+			LLAvatarActions::showProfile(mOwnerID);
 		}
 // [/RLVa:KB]
-//		LLAvatarActions::showProfile(self->mOwnerID);
+//		LLAvatarActions::showProfile(mOwnerID);
 	}
 }
 
-void LLPanelPermissions::onClickLastOwner(void *data)
+void LLPanelPermissions::onClickLastOwner()
 {
-	LLPanelPermissions *self = (LLPanelPermissions *)data;
-	LLAvatarActions::showProfile(self->mLastOwnerID);
+	LLAvatarActions::showProfile(mLastOwnerID);
 }
 
-void LLPanelPermissions::onClickGroup(void* data)
+void LLPanelPermissions::onClickGroup()
 {
-	LLPanelPermissions* panelp = (LLPanelPermissions*)data;
 	LLUUID owner_id;
 	std::string name;
 	BOOL owners_identical = LLSelectMgr::getInstance()->selectGetOwner(owner_id, name);
-	LLFloater* parent_floater = gFloaterView->getParentFloater(panelp);
+	LLFloater* parent_floater = gFloaterView->getParentFloater(this);
 
 	if(owners_identical && (owner_id == gAgent.getID()))
 	{
@@ -1047,7 +1040,7 @@ void LLPanelPermissions::onClickGroup(void* data)
 
 		if (fg)
 		{
-			fg->setSelectCallback( cbGroupID, data );
+			fg->setSelectCallback( cbGroupID, this );
 
 			if (parent_floater)
 			{
@@ -1059,11 +1052,10 @@ void LLPanelPermissions::onClickGroup(void* data)
 	}
 }
 
-void LLPanelPermissions::onClickOpenGroup(void* data)
+void LLPanelPermissions::onClickOpenGroup()
 {
 	LLUUID group_id;
 	LLSelectMgr::getInstance()->selectGetGroup(group_id);
-	
 	LLGroupActions::show(group_id);
 }
 
@@ -1099,7 +1091,7 @@ void LLPanelPermissions::onClickDeedToGroup(void* data)
 	LLNotificationsUtil::add( "DeedObjectToGroup", LLSD(), LLSD(), callback_deed_to_group);
 }
 
-void LLPanelPermissions::onClickCopyObjKey(void* data)
+void LLPanelPermissions::onClickCopyObjKey()
 {
 	//NAMESHORT - Was requested on the forums, was going to integrate a textbox with the ID, but due to lack of room on the floater,
 	//We now have a copy button :>

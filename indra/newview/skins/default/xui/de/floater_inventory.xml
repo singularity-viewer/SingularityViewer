@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="Inventory" title="Inventar">
+	<filter_editor label="Suchanfrage hier eintippen" name="inventory search editor"/>
+  <button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="collapse_btn" tool_tip="Alles Verbergen"/>
+   <button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="Inventory.ExpandAll" tool_tip="Alles aufklappen"/>
+   <button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="Inventory.ResetAll" tool_tip="Inventaranzeige zurücksetzen: Filter löschen und alle Ordner schliessen"/>
+ <text name="group_titles_textbox">Typ:</text>
+	<!-- Inventory Type Filter Labels -->
+	<string name="filter_type_all">Alle Typen</string>
+	<string name="filter_type_animation">Animationen</string>
+	<string name="filter_type_callingcard">Visitenkarten</string>
+	<string name="filter_type_wearable">Kleidung / Körperteile</string>
+	<string name="filter_type_gesture">Gesten</string>
+	<string name="filter_type_landmark">Landmarken</string>
+	<string name="filter_type_notecard">Notizkarten</string>
+	<string name="filter_type_object">Objekte</string>
+	<string name="filter_type_script">Skripts</string>
+	<string name="filter_type_sound">Sounds</string>
+	<string name="filter_type_texture">Texturen</string>
+	<string name="filter_type_snapshot">Fotos</string>
+	<string name="filter_type_custom">Benutzerdefiniert...</string>
+	<combo_box name="Quick Filter" tool_tip="Filter nach Typ">
+		<combo_item name="filter_type_all">Alle Typen</combo_item>
+		<separator/>
+		<combo_item name="filter_type_animation">Animationen</combo_item>
+		<combo_item name="filter_type_callingcard">Visitenkarten</combo_item>
+		<combo_item name="filter_type_wearable">Kleidung / Körperteile</combo_item>
+		<combo_item name="filter_type_gesture">Gesten</combo_item>
+		<combo_item name="filter_type_landmark">Landmarken</combo_item>
+		<combo_item name="filter_type_notecard">Notizkarten</combo_item>
+		<combo_item name="filter_type_object">Objekte</combo_item>
+		<combo_item name="filter_type_script">Skripts</combo_item>
+		<combo_item name="filter_type_sound">Sounds</combo_item>
+		<combo_item name="filter_type_texture">Texturen</combo_item>
+		<combo_item name="filter_type_snapshot">Fotos</combo_item>
+		<separator/>
+		<combo_item name="filter_type_custom">Benutzerdefiniert...</combo_item>
+	</combo_box>
+	<tab_container name="inventory filter tabs">
+
+		<inventory_panel label="Alle Objekte" name="All Items"/>
+		<inventory_panel label="Letzte Objekte" name="Recent Items"/>
+		<inventory_panel label="Getragene Objekte" name="Worn Items"/>
+	</tab_container>
+	<menu_bar name="Inventory Menu">
+		<menu label="Datei" name="File">
+			<menu_item_call label="Öffnen" name="Open">
+				<on_click/>
+			</menu_item_call>
+			<menu_item_call label="Outfit aktualisieren" name="Update Outfit">
+				<on_click/>
+			</menu_item_call>
+			<menu_item_separator name="separator"/>
+			<menu_item_call label="Neues Fenster" name="New Window">
+				<on_click/>
+			</menu_item_call>
+			<menu_item_separator name="separator2"/>
+			<menu_item_call label="Filter anzeigen" name="Show Filters">
+				<on_click/>
+			</menu_item_call>
+			<menu_item_call label="Filter zurücksetzen" name="Reset Current">
+				<on_click/>
+			</menu_item_call>
+			<menu_item_call label="Alle Ordner schließen" name="Close All Folders">
+				<on_click/>
+			</menu_item_call>
+			<menu_item_separator name="separator3"/>
+			<menu_item_call label="Papierkorb ausleeren" name="Empty Trash">
+				<on_click/>
+			</menu_item_call>
+			<menu_item_call label="Inventar aktualisieren" name="Refresh Inventory">
+				<on_click/>
+			</menu_item_call>
+		</menu>
+		<menu label="Erstellen" name="Create">
+			<menu_item_call label="Neuer Ordner" name="New Folder">
+				<on_click/>
+			</menu_item_call>
+			<menu_item_call label="Neues Skript" name="New Script">
+				<on_click/>
+			</menu_item_call>
+			<menu_item_call label="Neue Notiz" name="New Note">
+				<on_click/>
+			</menu_item_call>
+			<menu_item_call label="Neue Geste" name="New Gesture">
+				<on_click/>
+			</menu_item_call>
+			<menu label="Neue Kleider" name="New Clothes">
+				<menu_item_call label="Neues Hemd" name="New Shirt">
+					<on_click/>
+				</menu_item_call>
+				<menu_item_call label="Neue Hose" name="New Pants">
+					<on_click/>
+				</menu_item_call>
+				<menu_item_call label="Neue Schuhe" name="New Shoes">
+					<on_click/>
+				</menu_item_call>
+				<menu_item_call label="Neue Socken" name="New Socks">
+					<on_click/>
+				</menu_item_call>
+				<menu_item_call label="Neue Jacke" name="New Jacket">
+					<on_click/>
+				</menu_item_call>
+				<menu_item_call label="Neuer Rock" name="New Skirt">
+					<on_click/>
+				</menu_item_call>
+				<menu_item_call label="Neue Handschuhe" name="New Gloves">
+					<on_click/>
+				</menu_item_call>
+				<menu_item_call label="Neues Unterhemd" name="New Undershirt">
+					<on_click/>
+				</menu_item_call>
+				<menu_item_call label="Neue Unterhose" name="New Underpants">
+					<on_click/>
+				</menu_item_call>
+				<menu_item_call label="Neue Tätowierung" name="New Tattoo">
+					<on_click/>
+				</menu_item_call>
+				<menu_item_call label="Neues Alpha" name="New Alpha">
+					<on_click/>
+				</menu_item_call>
+        <menu_item_call label="Neue Physik" name="New Physics">
+          <on_click/>
+        </menu_item_call>
+			</menu>
+			<menu label="Neue Körperteile" name="New Body Parts">
+				<menu_item_call label="Neue Form/Gestalt" name="New Shape">
+					<on_click/>
+				</menu_item_call>
+				<menu_item_call label="Neue Haut" name="New Skin">
+					<on_click/>
+				</menu_item_call>
+				<menu_item_call label="Neues Haar" name="New Hair">
+					<on_click/>
+				</menu_item_call>
+				<menu_item_call label="Neue Augen" name="New Eyes">
+					<on_click/>
+				</menu_item_call>
+			</menu>
+			<menu_item_call label="Neues Outfit" name="New Outfit">
+				<on_click/>
+			</menu_item_call>
+		</menu>
+		<menu label="Sortieren" name="Sort">
+			<menu_item_check label="Nach Name" name="By Name">
+				<on_click/>
+			</menu_item_check>
+			<menu_item_check label="Nach Datum" name="By Date">
+				<on_click/>
+			</menu_item_check>
+			<menu_item_separator name="separator"/>
+			<menu_item_check label="Ordner immer nach Name" name="Folders Always By Name">
+				<on_click/>
+			</menu_item_check>
+			<menu_item_check label="Systemordner nach oben" name="System Folders To Top">
+				<on_click/>
+			</menu_item_check>
+		</menu>
+		<menu label="Suche" name="Search">
+			<menu_item_check label="Objektname" name="Item name">
+				<on_click/>
+			</menu_item_check>
+			<menu_item_check label="Beschreibung" name="Item description">
+				<on_click/>
+			</menu_item_check>
+			<menu_item_check label="Ersteller:" name="Item creatorr">
+				<on_click/>
+			</menu_item_check>
+		</menu>
+	</menu_bar>
+</floater>

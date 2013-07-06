@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel label="Voice-Chat" name="chat">
+	<text name="voice_unavailable">Voice-Chat ist nicht verfügbar</text>
+	<check_box label="Voice-Chat aktivieren" name="enable_voice_check"/>
+	<radio_group name="ear_location">
+		<radio_item name="0">Voice-Chat von Kameraposition aus hören.</radio_item>
+		<radio_item name="1">Voice-Chat von Avatarposition aus hören.</radio_item>
+	</radio_group>
+	<text name="push_to_talk_heading">Zum Sprechen drücken</text>
+	<check_box label="„Zum-Sprechen-drücken“ im Umschaltmodus verwenden" name="push_to_talk_toggle_check" tool_tip="When enabled, press the push-to-talk trigger to switch your microphone on and off. When disabled, the microphone is off unless the trigger is being held down."/>
+	<text name="push_to_talk_label">Auslöser für „Zum-Sprechen-drücken“:</text>
+	<line_editor name="modifier_combo"/>
+	<button label="Taste festlegen" name="set_voice_hotkey_button"/>
+	<button label="Mittlere Maustaste" name="set_voice_middlemouse_button"/>
+	<check_box label="Enable lip sync animation" name="enable_lip_sync_check"/>
+	<check_box label="Anrufe nur von Personen auf meiner Freundesliste annehmen" name="voice_call_friends_only_check"/>
+	<check_box label="Nach Beendigung von IM-Anrufen Mikrofon abschalten." name="auto_disengage_mic_check"/>
+	<button label="Geräteeinstellungen" name="device_settings_btn" tool_tip="Running the Device Settings will temporarily disconnect you from Voice Chat, and changes you make will be immediately applied."/>
+	<panel visibility_control="ShowDeviceSettings" name="device_settings_panel"/>
+</panel>

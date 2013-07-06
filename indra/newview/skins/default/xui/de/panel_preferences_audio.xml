@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel label="Audio und Video" name="Media panel">
+	<text name="muting_text">Lautstärke:</text>
+	<text name="streaming_prefs_text">Streaming-Einstellungen:</text>
+	<text name="audio_prefs_text">Audio-Einstellungen:</text>
+	<panel label="Lautstärke" name="Volume Panel"/>
+	<check_box label="Streaming-Musik abspielen, falls verfügbar" name="streaming_music"/>
+	<check_box label="Play Streaming Media When Available (uses more bandwidth)" name="streaming_video"/>
+	<check_box label="Medien automatisch wiedergeben" name="auto_streaming_video"/>
+	<check_box label="Streaming-Media abspielen, falls verfügbar (mehr Bandbreite)" name="streaming_video"/>
+	<check_box label="Audio stummschalten, wenn Fenster minimiert ist" name="mute_when_minimized"/>
+	<slider label="Dopplereffekt" name="Doppler Effect"/>
+	<slider label="Rolloff-Faktor" name="Rolloff Factor"/>
+  <slider label="Rolloff Factor (Underwater)" name="Underwater Rolloff Factor"/>
+  <spinner label="[CURRENCY] change threshold:" name="currency_change_threshold"/>
+	<spinner label="Gesundheitsschwellwert" name="Health Change Threshold"/>
+</panel>

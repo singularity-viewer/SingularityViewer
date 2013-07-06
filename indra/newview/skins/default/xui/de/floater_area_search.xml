@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="area search" title="Objektbereich Suche">
+	<text name="name_label">Name durchsuchen nach:</text>
+	<text name="desc_label">Beschreibung durchsuchen nach:</text>
+  <filter_editor name="Name query chunk" tool_tip="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;"/>
+  <filter_editor name="Description query chunk" tool_tip="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;"/>
+	<text name="owner_label">Eigentümer durchsuchen nach:</text>
+	<text name="group_label">Gruppe durchsuchen nach:</text>
+  <filter_editor name="Owner query chunk" tool_tip="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;"/>
+  <filter_editor name="Group query chunk" tool_tip="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;"/>
+	<scroll_list name="result_list">
+		<column name="Name" label="Name" tool_tip="Auf Eintrag doppelklicken, um Leuchtmarkierung auf Objektposition zu setzen."/>
+    	<column name="Description" label="Beschreibung" tool_tip="Auf Eintrag doppelklicken, um Leuchtmarkierung auf Objektposition zu setzen."/>
+    	<column name="Owner" label="Eigentümer" tool_tip="Auf Eintrag doppelklicken, um Leuchtmarkierung auf Objektposition zu setzen."/>
+		<column name="Group" label="Gruppe" tool_tip="Auf Eintrag doppelklicken, um Leuchtmarkierung auf Objektposition zu setzen."/>
+	</scroll_list>
+	<button name="Refresh" label="Aktualisieren"/>
+	<button name="Stop" label="Stop"/>
+	<text name="counter">Gelistet/Offen/Total</text>
+</floater>

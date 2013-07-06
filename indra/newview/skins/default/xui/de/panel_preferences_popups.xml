@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel label="Popups" name="popups" title="Popups">
+  <check_box label="Automatically accept item offers" name="accept_new_inventory"/>
+  <check_box label="View previewable items after accepting" name="show_new_inventory"/>
+  <check_box label="Show newly accepted objects in inventory" name="show_in_inventory"/>
+  <text name="show_label">Immer anzeigen:</text>
+  <scroll_list name="enabled_popups"/>
+  <button label="Enable all" name="reset_dialogs_btn" tool_tip="Alle optionalen Popups und „Das erste Mal“-Meldungen aktivieren."/>
+  <button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="enable_popup"/>
+  <button label="Disable first time popups..." name="skip_frst_btn" tool_tip="Disable all of the first time use notifications."/>
+  <button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="disable_popup"/>
+  <button label="Disable all" name="skip_dialogs_btn" tool_tip="Alle optionalen Popups und „Das erste Mal“-Meldungen deaktivieren."/>
+  <text name="dont_show_label">Niemals anzeigen:</text>
+  <scroll_list name="disabled_popups"/>
+</panel>

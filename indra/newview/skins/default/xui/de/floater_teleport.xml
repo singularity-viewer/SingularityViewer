@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<!--agentd teleport floater-->
+<floater name="teleport_floater" title="Teleportieren">
+
+	<text name="teleport_text">Öffentlicher Regionscode:</text>
+
+
+	<combo_box name="teleport_edit"/>
+
+	<button name="teleport_btn" label="Teleportieren"/>
+	<button label="Abbrechen" name="cancel_btn"/>
+</floater>

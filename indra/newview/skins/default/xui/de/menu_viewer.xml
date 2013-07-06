@@ -1,0 +1,767 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<menu_bar name="Main Menu">
+	<menu label="Datei" name="File">
+    <menu_item_call label="Bild ([UPLOADFEE])..." name="Upload Image">
+		<on_click/>
+		<on_enable/>
+    </menu_item_call>
+    <menu_item_call label="Sound ([UPLOADFEE])..." name="Upload Sound">
+        <on_click/>
+        <on_enable/>
+    </menu_item_call>
+    <menu_item_call label="Animation ([UPLOADFEE])..." name="Upload Animation">
+        <on_click/>
+        <on_enable/>
+    </menu_item_call>
+	<menu_item_call label="Mesh hochladen" name="Upload Mesh">
+        <on_click/>
+        <on_enable/>
+    </menu_item_call>
+    <menu_item_call label="Massen ([UPLOADFEE] je Datei)..." name="Bulk Upload">
+        <on_click/>
+    </menu_item_call>
+	<menu_item_call label="Importiere XML" name="Import">
+		<on_click/>
+		<on_enable/>
+	</menu_item_call>
+	<menu_item_call label="Importiere mit Texturen" name="Import2">
+		<on_click/>
+		<on_enable/>
+	</menu_item_call>
+	<menu_item_call label="Ändere lokale Texturen" name="Change Local Textures">
+		<on_click/>
+	</menu_item_call>
+    <menu_item_separator label="-----------" name="separator"/>
+    <menu_item_call label="Setze Standard-Berechtigungen" name="perm prefs">
+        <on_click/>
+    </menu_item_call>
+    <!--menu_item_check mouse_opaque="true" label="Show Voice Morpher" name="voice effect">
+        <on_click function="ShowFloater" userdata="voice effect"/>
+        <on_check function="FloaterVisible" userdata="voice effect"/>
+    </menu_item_check-->
+		<menu_item_separator label="-----------" name="separator"/>
+		<menu_item_call label="Alle Fenster minimieren" name="Minimize All Windows">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_call label="Fenster schließen" name="Close Window">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+		<menu_item_call label="Alle Fenster schließen" name="Close All Windows">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+		<menu_item_separator label="-----------" name="separator2"/>
+		<menu_item_call label="Speichere Vorschau unter (TGA)" name="Save Preview As...">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+		<menu_item_call label="Speichere Vorschau unter (PNG)" name="Save Preview AsPNG...">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+		<menu_item_separator label="-----------" name="separator3"/>
+		<menu_item_call label="Foto machen" name="Take Snapshot">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_call label="Foto auf Datenträger" name="Snapshot to Disk">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_separator label="-----------" name="separator4"/>
+		<menu_item_call label="Beenden" name="Quit">
+			<on_click/>
+		</menu_item_call>
+	    <!--menu_item_call bottom="-259" enabled="true" height="19" label="Log Out" left="0" color="1 0 0 1"
+			mouse_opaque="true" name="Log Out" width="243">
+			<on_click function="File.LogOut" userdata="" />
+		</menu_item_call-->
+	</menu>
+	<menu label="Bearbeiten" name="Edit">
+		<menu_item_call label="Rückgängig" name="Undo">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+		<menu_item_call label="Wiederherstellen" name="Redo">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+		<menu_item_separator label="-----------" name="separator"/>
+		<menu_item_call label="Ausschneiden" name="Cut">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+		<menu_item_call label="Kopieren" name="Copy">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+		<menu_item_call label="Einfügen" name="Paste">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+		<menu_item_call label="Löschen" name="Delete">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+		<menu_item_separator label="-----------" name="separator2"/>
+		<menu_item_call label="Suchen..." name="Search...">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_separator label="-----------" name="separator3"/>
+		<menu_item_call label="Alle auswählen" name="Select All">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+		<menu_item_call label="Auswahl aufheben" name="Deselect">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+		<menu_item_separator label="-----------" name="separator4"/>
+		<menu_item_call label="Duplizieren" name="Duplicate">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+		<menu_item_separator label="-----------" name="separator5"/>
+		<menu label="Objekt anhängen" name="Attach Object"/>
+		<menu label="Objekt abnehmen" name="Detach Object"/>
+		<menu label="Kleider ausziehen" name="Take Off Clothing">
+			<menu_item_call label="Hemd" name="Shirt">
+				<on_click/>
+				<on_enable/>
+			</menu_item_call>
+			<menu_item_call label="Hose" name="Pants">
+				<on_click/>
+				<on_enable/>
+			</menu_item_call>
+			<menu_item_call label="Schuhe" name="Shoes">
+				<on_click/>
+				<on_enable/>
+			</menu_item_call>
+			<menu_item_call label="Socken" name="Socks">
+				<on_click/>
+				<on_enable/>
+			</menu_item_call>
+			<menu_item_call label="Jacke" name="Jacket">
+				<on_click/>
+				<on_enable/>
+			</menu_item_call>
+			<menu_item_call label="Handschuhe" name="Gloves">
+				<on_click/>
+				<on_enable/>
+			</menu_item_call>
+			<menu_item_call label="Unterhemd" name="Menu Undershirt">
+				<on_click/>
+				<on_enable/>
+			</menu_item_call>
+			<menu_item_call label="Unterhose" name="Menu Underpants">
+				<on_click/>
+				<on_enable/>
+			</menu_item_call>
+			<menu_item_call label="Rock" name="Skirt">
+				<on_click/>
+				<on_enable/>
+			</menu_item_call>
+			<menu_item_call label="Tätowierung" name="Tattoo">
+				<on_click/>
+				<on_enable/>
+			</menu_item_call>
+            <menu_item_separator label="-----------" name="separator51"/>
+			<menu_item_call label="Alpha" name="Alpha">
+				<on_click/>
+				<on_enable/>
+			</menu_item_call>
+            <menu_item_call label="Physik" name="Physics">
+                <on_click/>
+                <on_enable/>
+            </menu_item_call>
+            <menu_item_separator label="-----------" name="separator51"/>
+			<menu_item_call label="Alle Kleider" name="All Clothes">
+				<on_click/>
+			</menu_item_call>
+		</menu>
+		<menu_item_separator label="-----------" name="separator6"/>
+		<menu_item_call label="Gesten..." name="Gestures...">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_call label="Profil..." name="Profile...">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_call label="Aussehen..." name="Appearance...">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+		<menu_item_call label="Outfit erstellen..." name="Make Outfit...">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_call label="Display Name..." name="Display Name...">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+		<menu_item_separator label="-----------" name="separator7"/>
+		<menu_item_check label="Freunde..." name="Friends...">
+			<on_click/>
+			<on_check/>
+		</menu_item_check>
+		<menu_item_call label="Gruppen..." name="Groups...">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_separator label="-----------" name="separator8"/>
+		<menu_item_call label="Einstellungen..." name="Preferences...">
+			<on_click/>
+		</menu_item_call>
+	</menu>
+	<menu label="Ansicht" name="View">
+		<tearoff_menu label="~~~~~~~~~~~" name="~~~~~~~~~~~"/>
+		<menu_item_call label="Mouselook" name="Mouselook">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+		<menu_item_check label="Bauen" name="Build">
+			<on_click/>
+			<on_check/>
+		</menu_item_check>
+		<menu_item_check label="Joystick-Flycam" name="Joystick Flycam">
+			<on_click/>
+			<on_check/>
+			<on_enable/>
+		</menu_item_check>
+		<menu_item_call label="Ansicht zurücksetzen" name="Reset View">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_call label="Letzten Chatter ansehen" name="Look at Last Chatter">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+		<menu_item_separator label="-----------" name="separator"/>
+		<menu_item_check label="Symbolleiste" name="Toolbar">
+			<on_click/>
+			<on_check/>
+		</menu_item_check>
+		<menu_item_check label="Lokaler Chat" name="Chat History">
+             <on_click/>
+             <on_check/>
+        </menu_item_check>
+		<menu_item_check label="Unterhalten" name="Instant Message">
+			<on_click/>
+            <on_check/>
+        </menu_item_check>
+		<menu_item_check label="Inventar" name="Inventory">
+			<on_click/>
+            <on_check/>
+        </menu_item_check>
+		<menu_item_check label="Aktive Sprecher" name="Active Speakers">
+			<on_click/>
+			<on_check/>
+		</menu_item_check>
+		<menu_item_check label="Stummschalten-Liste" name="Mute List">
+			<on_click/>
+			<on_check/>
+		</menu_item_check>
+		<menu_item_check label="Teleport Historie" name="Teleport History">
+			<on_click/>
+			<on_check/>
+		</menu_item_check>
+		<menu_item_check label="Medienfilter" name="Media Filter">
+			<on_click/>
+			<on_check/>
+		</menu_item_check>
+		<menu_item_separator label="-----------" name="separator2"/>
+		<menu_item_check label="Kamerasteuerung" name="Camera Controls">
+			<on_click/>
+			<on_check/>
+		</menu_item_check>
+		<menu_item_check label="Bewegungssteuerung" name="Movement Controls">
+			<on_click/>
+			<on_check/>
+		</menu_item_check>
+		<menu_item_check label="Weltkarte" name="World Map">
+			<on_click/>
+			<on_check/>
+		</menu_item_check>
+		<menu_item_check label="Minikarte" name="Mini-Map">
+			<on_click/>
+			<on_check/>
+		</menu_item_check>
+		<menu_item_check label="Radar" name="Radar">
+			<on_click/>
+			<on_check/>
+		</menu_item_check>
+		<menu_item_separator label="-----------" name="separator3"/>
+		<menu_item_check label="Statistikleiste" name="Statistics Bar">
+			<on_click/>
+			<on_check/>
+		</menu_item_check>
+		<menu_item_separator label="-----------" name="separator100"/>
+		<menu_item_check label="Areal-Suche" name="Area Search">
+			<on_click/>
+			<on_check/>
+		</menu_item_check>
+		<menu_item_check label="Grundstücksgrenzen" name="Property Lines">
+			<on_click/>
+			<on_check/>
+		</menu_item_check>
+		<menu_item_check label="Absperrungen" name="Banlines">
+			<on_click/>
+			<on_check/>
+		</menu_item_check>
+		<menu_item_check label="Landeigentümer" name="Land Owners">
+			<on_click/>
+			<on_check/>
+		</menu_item_check>
+		<menu_item_separator label="-----------" name="separator4"/>
+		<menu label="Schwebe-Tipps" name="Hover Tips">
+			<menu_item_check label="Tipps anzeigen" name="Show Tips">
+				<on_click/>
+				<on_check/>
+			</menu_item_check>
+			<menu_item_separator label="-----------" name="separator"/>
+			<menu_item_check label="Landtipps" name="Land Tips">
+				<on_click/>
+				<on_enable/>
+				<on_check/>
+			</menu_item_check>
+			<menu_item_check label="Tipps zu allen Objekten" name="Tips On All Objects">
+				<on_click/>
+				<on_enable/>
+				<on_check/>
+			</menu_item_check>
+		</menu>
+		<menu_item_check label="Durchsichtig hervorheben" name="Highlight Transparent">
+			<on_click/>
+			<on_check/>
+		</menu_item_check>
+		<menu_item_check name="beacons" label="Strahlen">
+		    <on_click/>
+			<on_check/>
+		</menu_item_check>
+    <menu_item_check label="Partikel ausblenden" name="Hide Particles">
+        <on_click/>
+        <on_check/>
+    </menu_item_check>
+    <menu_item_check label="HUD-Anhänge anzeigen" name="Show HUD Attachments">
+			<on_click/>
+			<on_check/>
+		</menu_item_check>
+		<menu_item_separator label="-----------" name="separator5"/>
+		<menu_item_call label="Hineinzoomen" name="Zoom In">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_call label="Zoom-Standard" name="Zoom Default">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_call label="Wegzoomen" name="Zoom Out">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_separator label="-----------" name="separator6"/>
+		<menu_item_call label="Vollbild" name="Toggle Fullscreen">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_call label="UI-Größe auf Standard setzen" name="Set UI Size to Default">
+			<on_click/>
+		</menu_item_call>
+	</menu>
+	<menu label="Welt" name="World">
+		<menu_item_call label="Chat" name="Chat">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_check label="Immer rennen" name="Always Run">
+			<on_click/>
+			<on_check/>
+		</menu_item_check>
+		<menu_item_call label="Auf Boden sitzen" name="Sit on Ground">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+		<menu_item_check label="Fliegen" name="Fly">
+			<on_click/>
+			<on_enable/>
+			<on_check/>
+		</menu_item_check>
+		<menu_item_separator label="-----------" name="separator"/>
+		<menu_item_call label="Landmarke hier setzen" name="Create Landmark Here">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+		<menu_item_call label="Hier als Zuhause wählen" name="Set Home to Here">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+		<menu_item_separator label="-----------" name="separator2"/>
+		<menu_item_call label="Estate: Teleport nach Hause" name="Teleport Home">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+		<menu_item_separator label="-----------" name="separator3"/>
+    	<menu_item_call label="Täusche Abwesend-Status vor" name="Fake Away Status">
+      		<on_click/>
+    	</menu_item_call>
+		<menu_item_call label="Als abwesend anzeigen" name="Set Away">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_call label="Als beschäftigt anzeigen" name="Set Busy">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_call label="Avatar nicht mehr animieren" name="Stop Animating My Avatar">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_call label="Tasten freigeben" name="Release Keys">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+		<menu_item_call name="insert_agent"/>
+		<menu_item_separator label="-----------" name="separator4"/>
+		<menu_item_call label="Kontostatistik..." name="Account History...">
+			<on_click name="AccountHistory_url"/>
+		</menu_item_call>
+		<menu_item_call label="Mein Konto verwalten..." name="Manage My Account...">
+			<on_click name="ManageMyAccount_url"/>
+		</menu_item_call>
+        <menu_item_check label="Händler Ausgangsbox" name="MerchantOutbox">
+            <on_click/>
+            <on_check/>
+        </menu_item_check>
+		<menu_item_call label="L$ kaufen..." name="Buy and Sell L$...">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_separator label="-----------" name="separator5"/>
+        <menu_item_call label="Meine Outfits" name="My Outfits">
+            <on_click/>
+        </menu_item_call>
+        <menu_item_call label="Favoriten" name="Favorites">
+            <on_click/>
+        </menu_item_call>
+        <menu_item_separator label="-----------" name="separator5"/>
+		<menu_item_call label="Mein Land..." name="My Land...">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_call label="Land-Info..." name="About Land...">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_call label="Land kaufen..." name="Buy Land...">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+		<menu_item_call label="Region/Grundstück..." name="Region/Estate...">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_call name="insert_world"/>
+		<menu_item_separator label="-----------" name="separator6"/>
+		<menu label="Umwelt-Einstellungen" name="Environment Settings">
+			<menu_item_call label="Sonnenaufgang" name="Sunrise">
+				<on_click/>
+			</menu_item_call>
+			<menu_item_call label="Mittag" name="Noon">
+				<on_click/>
+			</menu_item_call>
+			<menu_item_call label="Sonnenuntergang" name="Sunset">
+				<on_click/>
+			</menu_item_call>
+			<menu_item_call label="Mitternacht" name="Midnight">
+				<on_click/>
+			</menu_item_call>
+			<menu_item_call label="Auf Regionsstandard zurücksetzen" name="Revert to Region Default">
+				<on_click/>
+			</menu_item_call>
+			<menu_item_separator label="-----------" name="separator"/>
+      <menu_item_call label="Umwelt-Editor" name="Environment Editor">
+        <on_click/>
+      </menu_item_call>
+      <menu_item_call label="Tageszyklus-Editor" name="Day Cycle Editor">
+        <on_click/>
+      </menu_item_call>
+	  <menu_item_call label="Post-Processing-Einstellungen" name="Post-Processing Effects">
+			 <on_click/>
+     </menu_item_call>
+		</menu>
+	</menu>
+	<menu label="Werkzeug" name="Tools">
+		<menu label="Fehlermeldungen" name="Select Tool">
+			<menu_item_call label="Fokus" name="Focus">
+				<on_click/>
+			</menu_item_call>
+			<menu_item_call label="Bewegen" name="Move">
+				<on_click/>
+			</menu_item_call>
+			<menu_item_call label="Bearbeiten" name="Edit">
+				<on_click/>
+			</menu_item_call>
+			<menu_item_call label="Erstellen" name="Create">
+				<on_click/>
+			</menu_item_call>
+			<menu_item_call label="Land" name="Land">
+				<on_click/>
+			</menu_item_call>
+		</menu>
+		<menu_item_separator label="-----------" name="separator"/>
+		<menu_item_check label="Nur meine Objekte auswählen" name="Select Only My Objects">
+			<on_click/>
+			<on_check/>
+		</menu_item_check>
+		<menu_item_check label="Nur bewegliche Objekte auswählen" name="Select Only Movable Objects">
+			<on_click/>
+			<on_check/>
+		</menu_item_check>
+		<menu_item_check label="Nach Umgebung auswählen" name="Select By Surrounding">
+			<on_click/>
+			<on_check/>
+		</menu_item_check>
+		<menu_item_check label="Zeige Auswahl-Umrisse" name="Show Selection Outlines">
+			<on_click/>
+			<on_check/>
+		</menu_item_check>
+		<menu_item_check label="Ausgeblendete Auswahl anzeigen" name="Show Hidden Selection">
+			<on_click/>
+			<on_check/>
+		</menu_item_check>
+		<menu_item_check label="Lichtradius für Auswahl anzeigen" name="Show Light Radius for Selection">
+			<on_click/>
+			<on_check/>
+		</menu_item_check>
+		<menu_item_check label="Auswahlstrahl anzeigen" name="Show Selection Beam">
+			<on_click/>
+			<on_check/>
+		</menu_item_check>
+		<menu_item_call name="insert_tools"/>
+		<menu_item_separator label="-----------" name="separator2"/>
+		<menu_item_check label="An Raster ausrichten" name="Snap to Grid">
+			<on_click/>
+			<on_check/>
+			<on_enable/>
+		</menu_item_check>
+		<menu_item_call label="Objekt-XY an Raster ausrichten" name="Snap Object XY to Grid">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+		<menu_item_call label="Auswahl für Raster verwenden" name="Use Selection for Grid">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+		<menu_item_call label="Rasteroptionen..." name="Grid Options...">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+		<menu_item_separator label="-----------" name="separator3"/>
+		<menu_item_check label="Verknüpfte Teile bearbeiten" name="Edit Linked Parts">
+			<on_click/>
+			<on_click/>
+			<on_check/>
+			<on_enable/>
+		</menu_item_check>
+		<menu label="Verknüpfte Teile auswählen" name="Select Linked Parts">
+			<menu_item_call label="Nächstes Teil auswählen" name="Select Next Part">
+				<on_click/>
+				<on_enable/>
+			</menu_item_call>
+			<menu_item_call label="Vorheriges Teil auswählen" name="Select Previous Part">
+				<on_click/>
+				<on_enable/>
+			</menu_item_call>
+			<menu_item_call label="Nächstes Teil einbinden" name="Include Next Part">
+				<on_click/>
+				<on_enable/>
+			</menu_item_call>
+			<menu_item_call label="Vorheriges Teil einbinden" name="Include Previous Part">
+				<on_click/>
+				<on_enable/>
+			</menu_item_call>
+		</menu>
+		<menu_item_call label="Verknüpfen" name="Link">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+		<menu_item_call label="Verknüpfung auflösen" name="Unlink">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+		<menu_item_separator label="-----------" name="separator4"/>
+		<menu_item_call label="Fokus auf Auswahl" name="Focus on Selection">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+		<menu_item_call label="Auf Auswahl zoomen" name="Zoom to Selection">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+		<menu_item_call label="Objekt kaufen" name="Menu Object Take">
+			<on_click/>
+			<on_enable name="EnableBuyOrTake"/>
+		</menu_item_call>
+		<menu_item_call label="Kopie nehmen" name="Take Copy">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+		<menu_item_call label="Objekte zurückgeben" name="Return...">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+		<menu_item_call label="Objekt wieder in Objektinhalt speichern" name="Save Object Back to Object Contents">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+		<menu_item_call label="Admin-Löschen" name="Admin Delete">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+		<menu_item_separator label="-----------" name="separator6"/>
+		<menu_item_call label="Skriptwarnung/Fehlerfenster anzeigen" name="Show Script Warning/Error Window">
+			<on_click/>
+		</menu_item_call>
+		<menu label="Skripte in Auswahl neu kompilieren" name="Recompile Scripts in Selection">
+		     <menu_item_call label="Mono" name="Mono">
+			     <on_click/>
+			     <on_enable/>
+		     </menu_item_call>
+		     <menu_item_call label="LSL" name="LSL">
+			     <on_click/>
+			     <on_enable/>
+		     </menu_item_call>
+		</menu>
+		<menu_item_call label="Skripte in Auswahl zurücksetzen" name="Reset Scripts in Selection">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+		<menu_item_call label="Skripte in Auswahl so einstellen, dass sie ausgeführt werden" name="Set Scripts to Running in Selection">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+		<menu_item_call label="Skripte in Auswahl so einstellen, dass sie nicht ausgeführt werden" name="Set Scripts to Not Running in Selection">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+    <menu_item_call label="Skripte in Auswahl entfernen" name="Remove Scripts in Selection">
+      <on_click/>
+      <on_enable/>
+    </menu_item_call>
+    <menu_item_call label="Skripte in Auswahl zählen" name="Count Scripts in Selection">
+      <on_click/>
+      <on_enable/>
+    </menu_item_call>
+      <menu label="Pathfinding" name="Pathfinding">
+        <menu_item_check label="Linksets..." name="pathfinding_linksets_menu_item">
+          <on_click/>
+          <on_check/>
+          <on_enable/>
+        </menu_item_check>
+        <menu_item_check label="Charaktere..." name="pathfinding_characters_menu_item">
+          <on_click/>
+          <on_check/>
+          <on_enable/>
+        </menu_item_check>
+        <menu_item_call label="Region neu erzeugen" name="pathfinding_rebake_navmesh_item">
+          <on_click/>
+          <on_enable/>
+        </menu_item_call>
+      </menu>
+	</menu>
+	<menu label="Hilfe" name="Help">
+		<menu_item_call label="Hilfe zu Snowglobe/Second Life" name="Second Life Help">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_call label="Lernhilfe" name="Tutorial">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_separator label="-----------" name="separator"/>
+		<menu_item_call label="Offizielles Linden-Blog..." name="Official Linden Blog...">
+			<on_click name="OfficialLindenBlog_url"/>
+		</menu_item_call>
+		<menu_item_separator label="-----------" name="separator2"/>
+		<menu_item_call label="Scripting-Portal..." name="Scripting Portal...">
+			<on_click name="ScriptingPortal_url"/>
+		</menu_item_call>
+		<menu_item_separator label="-----------" name="separator3"/>
+		<menu_item_call label="Missbrauch melden..." name="Report Abuse...">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_call label="Rempler, Stöße und Schläge..." name="Bumps, Pushes &amp;amp; Hits...">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_call label="Lag-Anzeige" name="Lag Meter">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_separator label="-----------" name="separator7"/>
+		<menu label="Fehlermeldungen" name="Bug Reporting">
+			<menu_item_call label="Allgemeiner Probleme-Tracker..." name="Public Issue Tracker...">
+				<on_click name="PublicIssueTracker_url"/>
+			</menu_item_call>
+			<menu_item_call label="Hilfe zum Allgemeinen Probleme-Tracker..." name="Publc Issue Tracker Help...">
+				<on_click name="PublicIssueTrackerHelp_url"/>
+			</menu_item_call>
+			<menu_item_call label="Singularity Probleme-Tracker..." name="Singularity Issue Tracker...">
+				<on_click name="SinguIssueTracker_url"/>
+			</menu_item_call>
+			<menu_item_separator label="-----------" name="separator7"/>
+			<menu_item_call label="Fehlermeldungs 101..." name="Bug Reporting 101...">
+				<on_click name="BugReporting101_url"/>
+			</menu_item_call>
+			<menu_item_call label="Sicherheitsprobleme..." name="Security Issues...">
+				<on_click name="SecurityIssues_url"/>
+			</menu_item_call>
+			<menu_item_call label="QA-Wiki..." name="QA Wiki...">
+				<on_click name="QAWiki_url"/>
+			</menu_item_call>
+			<menu_item_separator label="-----------" name="separator9"/>
+			<menu_item_call label="Fehler melden..." name="Report Bug...">
+				<on_click name="ReportBug_url"/>
+			</menu_item_call>
+			<menu_item_call label="Singularity Problem berichten..." name="Report Singularity Bug...">
+				<on_click name="ReportSinguBug_url"/>
+			</menu_item_call>
+			<menu_item_call label="Neue Funktionalität nachfragen..." name="Request New Feature...">
+				<on_click name="RequestFeature_url"/>
+			</menu_item_call>
+		</menu>
+		<menu_item_call label="Über Snowglobe..." name="About Second Life...">
+			<on_click/>
+		</menu_item_call>
+	</menu>
+	<menu label="Singularity" name="Singularity">
+		<menu_item_call label="Alle Dialoge schließen" name="Close All Dialogs">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_separator name="separators1"/>
+		<menu_item_call label="Täusche Abwesend-Status vor" name="Fake Away Status">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_call label="Erzwinge auf dem Boden zu sitzen" name="Force Ground Sit">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_separator name="separators2"/>
+		<menu_item_call label="Animationsübersteuerung" name="Animation Override ...">
+			<on_click/>
+		</menu_item_call>
+		<menu_item_check label="leichtfüßig" name="Nimble">
+			<on_click/>
+			<on_check/>
+		</menu_item_check>
+		<menu_item_separator name="separators3"/>
+		<menu_item_check label="Areal-Objektsuche" name="Object Area Search">
+			<on_click/>
+			<on_check/>
+		</menu_item_check>
+		<menu_item_check label="Sound Explorer" name="Sound Explorer">
+			<on_click/>
+			<on_check/>
+		</menu_item_check>
+		<menu_item_check label="Asset Blockliste" name="Asset Blacklist">
+			<on_click/>
+			<on_check/>
+		</menu_item_check>
+		<menu_item_check label="Streaming-Audio Anzeige" name="Streaming Audio Display">
+			<on_click/>
+			<on_check/>
+			<on_enable/>
+		</menu_item_check>
+		<menu_item_check label="Posierstand" name="Pose Stand">
+			<on_click/>
+			<on_check/>
+		</menu_item_check>
+		<menu_item_check label="Region Debug Konsole" name="Region Debug Console">
+			<on_click/>
+			<on_check/>
+			<on_visible/>
+		</menu_item_check>
+		<menu_item_separator name="separators3"/>
+		<menu_item_call label="Rebake" name="Rebake">
+			<on_click/>
+		</menu_item_call>
+	</menu>
+</menu_bar>

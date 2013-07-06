@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<!-- All our XML is utf-8 encoded. -->
+<!-- Floaters can optionally have their titlebar drag handle on the left.
+     If so, the title is not visible.
+     When a floater is resizable, a min_width and min_height must be specified. -->
+<floater name="floater_contact_groups" title="Gruppen verwalten">
+	<text name="InstructManageContacts">Wähle eine Gruppe (oder klicke Neu um eine zu erstellen):</text>
+	<combo_box tool_tip="Kontaktgruppe" name="buddy_group_combobox">
+		<combo_item name="All">Alle</combo_item>
+	</combo_box>
+	<button label="+" name="combo_group_add"/>
+	<button label="-" name="combo_group_remove"/>
+	<button label="Neu" name="combo_group_create"/>
+	<text name="contact_list_text">Aktuell in:</text>
+	<scroll_list name="group_scroll_list"/>
+</floater>

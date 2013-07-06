@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel name="media_remote">
+	<panel/>
+	<panel label="Audio und Video" name="Volume Panel"/>
+	<panel/>
+        	<string name="play_label">Abspielen</string>
+	<string name="stop_label">Stop</string>
+	<string name="pause_label">Pause</string>
+	<string name="default_tooltip_label">Keine Medien angegeben</string>
+	<string name="media_hidden_label">(URL von Parzelleneigentümer versteckt)</string>
+	<string name="media_icon_tooltip_web">An diesem Ort werden Inhalte aus dem World Wide Web wiedergegeben. Klicken Sie auf 'Wiedergeben', um Webinhalte wiederzugeben.</string>
+	<string name="media_icon_tooltip_movie">An diesem Ort werden Videoinhalte wiedergegeben. Klicken Sie auf 'Wiedergeben', um das Video abzuspielen.</string>
+	<string name="media_play_tooltip">Webinhalt an diesem Ort anzeigen.</string>
+</panel>

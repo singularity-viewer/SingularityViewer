@@ -1,0 +1,2995 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<!-- This file contains strings that used to be hardcoded in the source.
+     It is only for those strings which don't belong in a floater.
+     For example, the strings used in avatar chat bubbles, and strings
+     that are returned from one component and may appear in many places-->
+<strings>
+
+	<string name="hippo_label_free">kostenlos</string>
+	<string name="hippo_label_week">week</string>
+	<string name="TeleportOfferMaturity">[NAME] is offering a TP to [DESTINATION]</string>
+	<string name="TeleportLureMaturity">[NAME]'s teleport lure is to [DESTINATION]</string>
+
+	<!-- Default Args - these arguments will be replaced in all strings -->
+	<string name="SECOND_LIFE">Second Life</string>
+	<string name="APP_NAME">Singularity Viewer</string>
+	<string name="CAPITALIZED_APP_NAME">SINGULARITY VIEWER</string>
+	<string name="SECOND_LIFE_GRID">Second Life-Grid:</string>
+	<string name="SUPPORT_SITE">Second Life Support-Portal</string>
+
+	<string name="CURRENCY">L$</string>
+	<string name="GRID_OWNER">Linden Lab</string>
+
+	<!-- starting up -->
+	<string name="StartupDetectingHardware">Hardware wird erfasst...</string>
+	<string name="StartupLoading">[APP_NAME] wird geladen...</string>
+	<string name="StartupClearingCache">Cache wird gelöscht...</string>
+	<string name="StartupInitializingTextureCache">Initializing Texture Cache...</string>
+	<string name="StartupInitializingVFS">VFS wird initialisiert...</string>
+  <string name="StartupRequireDriverUpdate">Graphics Initialization Failed. Please Update Your Graphics Driver!</string>
+
+	<!--  progress -->
+	<string name="ProgressRestoring">Wird wiederhergestellt...</string>
+	<string name="ProgressChangingResolution">Changing Resolution...</string>
+
+	<!-- Login -->
+	<string name="LoginInProgress">Anmeldevorgang gestartet. [APP_NAME] reagiert möglicherweise nicht. Bitte warten.</string>
+	<string name="LoginInProgressNoFrozen">Anmeldung erfolgt...</string>
+	<string name="LoginAuthenticating">Authentifizierung</string>
+	<string name="LoginMaintenance">Account wird aktualisiert...</string>
+	<string name="LoginAttempt">Ein früherer Anmeldeversuch ist fehlgeschlagen. Anmeldung, Versuch [NUMBER]</string>
+	<string name="LoginPrecaching">Welt wird geladen...</string>
+	<string name="LoginInitializingBrowser">Integrierter Webbrowser wird initialisiert...</string>
+	<string name="LoginInitializingMultimedia">Multimedia wird initialisiert...</string>
+  <string name="LoginInitializingFonts">Schriftarten werden geladen...</string>
+	<string name="LoginVerifyingCache">Cache-Dateien werden überprüft (dauert 60-90 Sekunden)...</string>
+	<string name="LoginProcessingResponse">Antwort wird verarbeitet...</string>
+	<string name="LoginInitializingWorld">Welt wird initialisiert...</string>
+	<string name="LoginDecodingImages">Bilder werden entpackt...</string>
+	<string name="LoginInitializingQuicktime">QuickTime wird initialisiert...</string>
+	<string name="LoginQuicktimeNotFound">QuickTime nicht gefunden - Initialisierung nicht möglich.</string>
+	<string name="LoginQuicktimeOK">QuickTime wurde initialisiert.</string>
+	<string name="LoginRequestSeedCapGrant">Fähigkeiten der Region werden ermittelt...</string>
+	<string name="LoginRetrySeedCapGrant">Fähigkeiten der Region werden ermittelt, Versuch [NUMBER]...</string>
+	<string name="LoginWaitingForRegionHandshake">Region-Handshake...</string>
+	<string name="LoginConnectingToRegion">Region-Verbindung...</string>
+	<string name="LoginDownloadingClothing">Kleidung wird geladen...</string>
+
+	<string name="LoginFailed">Anmeldung fehlgeschlagen</string>
+	<string name="Quit">Beenden</string>
+
+	<!-- Disconnection -->
+	<string name="AgentLostConnection">In dieser Region kann es zu Problemen kommen.  Bitte überprüfen Sie Ihre Internetverbindung.</string>
+	<string name="SavingSettings">Ihr Einstellungen werden gespeichert...</string>
+	<string name="LoggingOut">Abmeldung erfolgt...</string>
+	<string name="ShuttingDown">Programm wird beendet...</string>
+	<string name="YouHaveBeenDisconnected">Die Verbindung zu der Region ist abgebrochen.</string>
+	<string name="SentToInvalidRegion">Sie wurden in eine ungültige Region geschickt.</string>
+	<string name="TestingDisconnect">Verbindungsabbruch wird getestet</string>
+
+	<!-- Tooltip, llhoverview.cpp -->
+	<string name="TooltipPerson">Person</string><!-- Object under mouse pointer is an avatar -->
+	<string name="TooltipNoName">(namenlos)</string> <!-- No name on an object -->
+	<string name="TooltipOwner">Eigentümer:</string> <!-- Owner name follows -->
+	<string name="TooltipPublic">Öffentlich</string> <!-- Public permissions on an object -->
+	<string name="TooltipIsGroup">(Gruppe)</string> <!-- The name before this text is that of a group -->
+	<string name="TooltipFlagScript">Skript</string>
+	<string name="TooltipFlagPhysics">Physik</string>
+	<string name="TooltipFlagTouch">Berühren</string>
+	<string name="TooltipFlagL$">L$</string>
+	<string name="TooltipFlagDropInventory">Inventar fallen lassen</string>
+	<string name="TooltipFlagPhantom">Phantom</string>
+	<string name="TooltipFlagTemporary">Temporär</string>
+	<string name="TooltipFlagRightClickMenu">(Rechtsklick für Menü)</string>
+	<string name="TooltipFreeToCopy">Kopieren möglich</string>
+	<string name="TooltipForSaleL$">Zum Verkauf: [AMOUNT] L$</string> <!-- L$ version -->
+	<string name="TooltipForSaleMsg">Zum Verkauf: [MESSAGE]</string> <!-- Message (RetrievingData) -->
+	<string name="TooltipFlagGroupBuild">Gruppenbau</string>
+	<string name="TooltipFlagNoBuild">Bauen aus</string>
+	<string name="TooltipFlagNoEdit">Gruppenbau</string>
+	<string name="TooltipFlagNotSafe">Unsicher</string><!-- damage area -->
+	<string name="TooltipFlagNoFly">Fliegen aus</string>
+	<string name="TooltipFlagGroupScripts">Gruppenskripte</string>
+	<string name="TooltipFlagNoScripts">Skripte aus</string>
+	<string name="TooltipLand">Land:</string>
+	<string name="TooltipMustSingleDrop">Sie können nur ein einzelnes Objekt hierher ziehen</string>
+
+	<string name="TooltipOutboxDragToWorld">Sie können Artikel nicht in Ihrer Händler-Outbox rezzen</string>
+	<string name="TooltipOutboxNoTransfer">Einer oder mehrere dieser Artikel können nicht verkauft oder übertragen werden.</string>
+	<string name="TooltipOutboxNotInInventory">Nur Artikel direkt aus Ihrem Inventar können in Ihre Händler-Outbox gelegt werden</string>
+	<string name="TooltipOutboxWorn">Artikel, die Sie tragen, können nicht in Ihre Händler-Outbox gelegt werden.</string>
+	<string name="TooltipOutboxCallingCard">Sie können keine Visitenkarten in Ihre Händler-Outbox legen</string>
+	<string name="TooltipOutboxFolderLevels">Tiefe der verschachtelten Ordner überschreitet 3</string>
+	<string name="TooltipOutboxTooManyFolders">Anzahl von Unterordnern im obersten Ordner überschreitet 20</string>
+	<string name="TooltipOutboxTooManyObjects">Anzahl von Artikeln im obersten Ordner überschreitet 200</string>
+	
+	<string name="TooltipDragOntoOwnChild">Sie können einen Ordner nicht in einen seiner untergeordneten Ordner verschieben</string>
+	<string name="TooltipDragOntoSelf">Sie können einen Ordner nicht in sich selbst verschieben</string>
+	
+	<!-- tooltips for Urls -->
+	<string name="TooltipHttpUrl">Anklicken, um Webseite anzuzeigen</string>
+	<string name="TooltipSLURL">Anklicken, um Informationen zu diesem Standort anzuzeigen</string>
+	<string name="TooltipAgentUrl">Anklicken, um das Profil dieses Einwohners anzuzeigen</string>
+	<string name="TooltipAgentInspect">Mehr über diesen Einwohner</string>
+	<string name="TooltipAgentMute">Klicken, um diesen Einwohner stummzuschalten</string>
+	<string name="TooltipAgentUnmute">Klicken, um diesen Einwohner freizuschalten</string>
+	<string name="TooltipAgentIM">Klicken, um diesem Einwohner eine IM zu schicken.</string>
+	<string name="TooltipAgentPay">Klicken, um diesen Einwohner zu bezahlen</string>
+	<string name="TooltipAgentOfferTeleport">Klicken, um diesem Einwohner einen Teleport anzubieten.</string>
+	<string name="TooltipAgentRequestFriend">Klicken, um diesem Einwohner ein Freundschaftsangebot zu schicken.</string>
+	<string name="TooltipGroupUrl">Anklicken, um Beschreibung der Gruppe anzuzeigen</string>
+	<string name="TooltipEventUrl">Anklicken, um Beschreibung der Veranstaltung anzuzeigen</string>
+	<string name="TooltipClassifiedUrl">Anklicken, um diese Anzeige anzuzeigen</string>
+	<string name="TooltipParcelUrl">Anklicken, um Beschreibung der Parzelle anzuzeigen</string>
+	<string name="TooltipTeleportUrl">Anklicken, um zu diesem Standort zu teleportieren</string>
+	<string name="TooltipObjectIMUrl">Anklicken, um Beschreibung des Objekts anzuzeigen</string>
+	<string name="TooltipMapUrl">Klicken, um diese Position auf der Karte anzuzeigen</string>
+	<string name="TooltipSLAPP">Anklicken, um Befehl secondlife:// auszuführen</string>
+	<string name="CurrentURL"/>
+
+	<!-- text for SLURL labels -->
+	<string name="SLurlLabelTeleport">Teleportieren zu</string>
+	<string name="SLurlLabelShowOnMap">Karte anzeigen für</string>
+
+	<!-- label strings for secondlife:///app/agent SLapps -->
+	<string name="SLappAgentMute">Blockieren</string>
+	<string name="SLappAgentUnmute">Stummschaltung aufheben</string>
+	<string name="SLappAgentIM">IM</string>
+	<string name="SLappAgentPay">Bezahlen</string>
+	<string name="SLappAgentOfferTeleport">Teleportangebot an</string>
+	<string name="SLappAgentRequestFriend">Freundschaftsangebot</string>
+
+	<!-- searching - generic -->
+	<string name="Searching">Suchen...</string>
+	<string name="NoneFound">Nicht gefunden.</string>
+
+	<!-- Indicates that an avatar's name or other similar datum is being retrieved. General usage. -->
+	<string name="RetrievingData">Laden...</string>
+
+	<string name="ReleaseNotes">Versionshinweise</string>
+
+	<!-- Indicates something is being loaded. Maybe should be merged with RetrievingData -->
+	<string name="LoadingData">Wird geladen...</string>
+	<string name="InvalidLocation">Ungültige Position</string>
+
+
+	<!-- namecache -->
+	<!-- Avatar name: text shown for LLUUID::null -->
+	<string name="AvatarNameNobody">(niemand)</string>
+
+	<!-- Avatar name: text shown while fetching name -->
+	<string name="AvatarNameWaiting">(wartet)</string>
+
+	<!-- Avatar name: text shown as an alternative to AvatarNameFetching, easter egg. -->
+	<string name="AvatarNameHippos">(hippos)</string>
+
+	<!-- Group name: text shown for LLUUID::null -->
+	<string name="GroupNameNone">(keiner)</string>
+
+	<!-- Asset errors. Used in llassetstorage.cpp, translation from error code to error message. -->
+	<string name="AssetErrorNone">Kein Fehler</string>
+	<string name="AssetErrorRequestFailed">Asset-Anforderung: fehlgeschlagen</string>
+	<string name="AssetErrorNonexistentFile">Asset-Anforderung: Datei existiert nicht</string>
+	<string name="AssetErrorNotInDatabase">Asset-Anforderung: Asset in Datenbank nicht gefunden</string>
+	<string name="AssetErrorEOF">Ende der Datei</string>
+	<string name="AssetErrorCannotOpenFile">Datei kann nicht geöffnet werden</string>
+	<string name="AssetErrorFileNotFound">Datei nicht gefunden</string>
+	<string name="AssetErrorTCPTimeout">Zeitüberschreitung bei Dateiübertragung</string>
+	<string name="AssetErrorCircuitGone">Verbindung verloren</string>
+	<string name="AssetErrorPriceMismatch">Viewer und Server sind sich nicht über Preis einig</string>
+	<string name="AssetErrorUnknownStatus">Status unbekannt</string>
+
+	<!-- Asset Type human readable names:  these will replace variable [TYPE] in notification FailedToFindWearable* -->
+	<!-- Will also replace [OBJECTTYPE] in notifications: UserGiveItem, ObjectGiveItem -->
+	<!-- Also used by AntiSpamBlock notification for [TYPE], since this looks like a good place. -->
+	<string name="texture">Textur</string>
+	<string name="sound">Sound</string>
+	<string name="calling card">Visitenkarte</string>
+	<string name="Inventory">inventory</string>
+	<string name="Instant Message">instant message</string>
+	<string name="Script Dialog">script dialog</string>
+	<string name="Sound Preload">sound preload</string>
+	<string name="Teleport">teleport</string>
+	<string name="Unknown">unbekannt</string>
+	<string name="landmark">Landmarke</string>
+	<string name="legacy script">Skript (veraltet)</string>
+	<string name="clothing">Kleidung</string>
+	<string name="object">Objekt</string>
+	<string name="note card">Notizkarte</string>
+	<string name="folder">Ordner</string>
+	<string name="root">Hauptverzeichnis</string>
+	<string name="lsl2 script">LSL2 Skript</string>
+	<string name="lsl bytecode">LSL Bytecode</string>
+	<string name="tga texture">tga-Textur</string>
+	<string name="body part">Körperteil</string>
+	<string name="snapshot">Foto</string>
+	<string name="lost and found">Fundbüro</string>
+	<string name="targa image">targa-Bild</string>
+	<string name="trash">Papierkorb</string>
+	<string name="jpeg image">jpeg-Bild</string>
+	<string name="animation">Animation</string>
+	<string name="gesture">Geste</string>
+	<string name="simstate">simstate</string>
+	<string name="favorite">Favoriten</string>
+	<string name="symbolic link">Link</string>
+	<string name="symbolic folder link">Link zu Ordner</string>
+	<string name="current outfit">current outfit</string>
+	<string name="outfit">outfit</string>
+	<string name="my outfits">my outfits</string>
+  <string name="mesh">mesh</string>
+
+	<!-- llvoavatar. Displayed in the avatar's chat bubble -->
+	<string name="AvatarEditingAppearance">(Aussehen wird bearbeitet)</string>
+	<string name="AvatarAway">Abwesend</string>
+	<string name="AvatarIdle">Idle [MINUTES]min</string>
+	<string name="AvatarBusy">Beschäftigt</string>
+	<string name="AvatarMuted">Stummgeschaltet</string>
+	<!-- "AvatarLangolier" is used for an avatar that teleported into a Time Frozen scene (only their moving tag is visible).
+		 A Langolier is a creature from Stephen Kings "The Langoliers" that exists outside time and lives by eating the past. -->
+	<string name="AvatarLangolier">Langolier</string>
+
+	<!-- animations -->
+	<string name="anim_express_afraid">Ängstlich</string>
+	<string name="anim_express_anger">Verärgert</string>
+	<string name="anim_away">Abwesend</string>
+	<string name="anim_backflip">Rückwärtssalto</string>
+	<string name="anim_express_laugh">Lachkrampf</string>
+	<string name="anim_express_toothsmile">Grinsen</string>
+	<string name="anim_blowkiss">Kusshand</string>
+	<string name="anim_express_bored">Gelangweilt</string>
+	<string name="anim_bow">Verbeugen</string>
+	<string name="anim_clap">Klatschen</string>
+	<string name="anim_courtbow">Diener</string>
+	<string name="anim_express_cry">Weinen</string>
+	<string name="anim_dance1">Tanz 1</string>
+	<string name="anim_dance2">Tanz 2</string>
+	<string name="anim_dance3">Tanz 3</string>
+	<string name="anim_dance4">Tanz 4</string>
+	<string name="anim_dance5">Tanz 5</string>
+	<string name="anim_dance6">Tanz 6</string>
+	<string name="anim_dance7">Tanz 7</string>
+	<string name="anim_dance8">Tanz 8</string>
+	<string name="anim_express_disdain">Verachtung</string>
+	<string name="anim_drink">Trinken</string>
+	<string name="anim_express_embarrased">Verlegen</string>
+	<string name="anim_angry_fingerwag">Drohen</string>
+	<string name="anim_fist_pump">Faust pumpen</string>
+	<string name="anim_yoga_float">Yogaflieger</string>
+	<string name="anim_express_frown">Stirnrunzeln</string>
+	<string name="anim_impatient">Ungeduldig</string>
+	<string name="anim_jumpforjoy">Freudensprung</string>
+	<string name="anim_kissmybutt">LMA</string>
+	<string name="anim_express_kiss">Küssen</string>
+	<string name="anim_laugh_short">Lachen</string>
+	<string name="anim_musclebeach">Posen</string>
+	<string name="anim_no_unhappy">Nein (Bedauernd)</string>
+	<string name="anim_no_head">Nein</string>
+	<string name="anim_nyanya">Ällabätsch</string>
+	<string name="anim_punch_onetwo">Eins-Zwei-Punch</string>
+	<string name="anim_express_open_mouth">Mund offen</string>
+	<string name="anim_peace">Friede</string>
+	<string name="anim_point_you">Auf anderen zeigen</string>
+	<string name="anim_point_me">Auf mich zeigen</string>
+	<string name="anim_punch_l">Linker Haken</string>
+	<string name="anim_punch_r">Rechter Haken</string>
+	<string name="anim_rps_countdown">SSP zählen</string>
+	<string name="anim_rps_paper">SSP Papier</string>
+	<string name="anim_rps_rock">SSP Stein</string>
+	<string name="anim_rps_scissors">SSP Schere</string>
+	<string name="anim_express_repulsed">Angewidert</string>
+	<string name="anim_kick_roundhouse_r">Rundkick</string>
+	<string name="anim_express_sad">Traurig</string>
+	<string name="anim_salute">Salutieren</string>
+	<string name="anim_shout">Rufen</string>
+	<string name="anim_express_shrug">Achselzucken</string>
+	<string name="anim_express_smile">Lächeln</string>
+	<string name="anim_smoke_idle">Zigarette halten</string>
+	<string name="anim_smoke_inhale">Rauchen</string>
+	<string name="anim_smoke_throw_down">Zigarette wegwerfen</string>
+	<string name="anim_express_surprise">Überraschung</string>
+	<string name="anim_sword_strike_r">Schwerthieb</string>
+	<string name="anim_angry_tantrum">Wutanfall</string>
+	<string name="anim_express_tongue_out">Zunge rausstrecken</string>
+	<string name="anim_hello">Winken</string>
+	<string name="anim_whisper">Flüstern</string>
+	<string name="anim_whistle">Pfeifen</string>
+	<string name="anim_express_wink">Zwinkern</string>
+	<string name="anim_wink_hollywood">Zwinkern (Hollywood)</string>
+	<string name="anim_express_worry">Sorgenvoll</string>
+	<string name="anim_yes_happy">Ja (Erfreut)</string>
+	<string name="anim_yes_head">Ja</string>
+
+	<!-- build floater -->
+	<string name="multiple_textures">Mehrfach</string>
+
+	<!-- world map -->
+	<string name="texture_loading">Wird geladen...</string>
+	<string name="worldmap_offline">Offline</string>
+	<string name="worldmap_results_none_found">Nicht gefunden.</string>
+
+	<!-- animations uploading status codes -->
+	<string name="Ok">OK</string>
+	<!-- Chat -->
+	<string name="whisper">flüstert:</string>
+	<string name="shout">ruft:</string>
+	<string name="ringing">Verbindung mit In-Welt-Voice-Chat...</string>
+	<string name="connected">Verbunden</string>
+	<string name="unavailable">Der aktuelle Standort unterstützt keine Voice-Kommunikation</string>
+	<string name="hang_up">Verbindung mit In-Welt-Voice-Chat getrennt</string>
+	<string name="ScriptTakeMoney">Take currency from you</string>
+	<string name="ActOnControlInputs">Steuerung festlegen</string>
+	<string name="RemapControlInputs">Steuerung neu zuweisen</string>
+	<string name="AnimateYourAvatar">Avatar animieren</string>
+	<string name="AttachToYourAvatar">An Avatar anhängen</string>
+	<string name="AGroupMemberNamed">A group member named</string>
+	<string name="ReleaseOwnership">Eigentum aufgeben und öffentlich machen</string>
+	<string name="LinkAndDelink">Mit Objekten verknüpfen und davon trennen</string>
+	<string name="AddAndRemoveJoints">Verbindungen zu anderen Objekten hinzufügen und entfernen</string>
+	<string name="ChangePermissions">Berechtigungen ändern</string>
+	<string name="TrackYourCamera">Kameraverfolgung aktivieren</string>
+  <string name="ControlYourCamera">Kamerasteuerung übernehmen</string>
+  <string name="TeleportYourAgent">Avatar teleportieren</string>
+  <string name="OverrideAnimations">Überschreibe die Standard-Animationen</string>
+
+	<!-- Sim Access labels -->
+	<string name="SIM_ACCESS_PG">PG</string>
+	<string name="SIM_ACCESS_MATURE">Mature</string>
+	<string name="SIM_ACCESS_ADULT">Adult</string>
+	<string name="SIM_ACCESS_DOWN">Offline</string>
+	<string name="SIM_ACCESS_MIN">Unbekannt</string>
+
+	<!-- For use when we do not have land type back from the server -->
+	<string name="land_type_unknown">(unbekannt)</string>
+
+	<!-- Covenant info -->
+	<string name="covenant_never_modified">Zuletzt geändert: (nie)</string>
+	<string name="covenant_modified">Zuletzt geändert:</string>
+
+	<!-- File load/save dialogs -->
+	<string name="all_files">Alle Dateien</string>
+	<string name="sound_files">Sounds</string>
+	<string name="animation_files">Animationen</string>
+	<string name="image_files">Bilder</string>
+	<string name="save_file_verb">Speichern</string>
+	<string name="load_file_verb">Laden</string>
+	<string name="targa_image_files">Targa-Bilder</string>
+	<string name="bitmap_image_files">Bitmap-Bilder</string>
+	<string name="avi_movie_file">AVI-Filmdatei</string>
+	<string name="xaf_animation_file">XAF Anim-Datei</string>
+	<string name="xml_file">XML-Datei</string>
+	<string name="raw_file">RAW-Datei</string>
+	<string name="compressed_image_files">Komprimierte Bilder</string>
+	<string name="load_files">Dateien laden</string>
+	<string name="choose_the_directory">Verzeichnis auswählen</string>
+
+	<string name="Sound: ">Sound</string>
+
+  <!-- LSL Usage Hover Tips -->
+	<string name="LSLTipSleepTime">Sleeps script for [SLEEP_TIME] seconds.</string>
+
+	<string name="LSLTipText_llSin">float llSin(float theta)
+Returns the sine of theta (theta in radians)</string>
+	<string name="LSLTipText_llCos">float llCos(float theta)
+Returns the cosine of theta (theta in radians)</string>
+	<string name="LSLTipText_llTan">float llTan(float theta)
+Returns the tangent of theta (theta in radians)</string>
+	<string name="LSLTipText_llAtan2">float llAtan2(float y, float x)
+Returns the arctangent2 of y, x</string>
+	<string name="LSLTipText_llSqrt">float llSqrt(float val)
+Returns the square root of val, or returns 0 and triggers a Math Error for imaginary results</string>
+	<string name="LSLTipText_llPow">float llPow(float base, float exponent)
+Returns the base raised to the power exponent, or returns 0 and triggers Math Error for imaginary results</string>
+	<string name="LSLTipText_llAbs">integer llAbs(integer val)
+Returns the positive version of val</string>
+	<string name="LSLTipText_llFabs">float llFabs(float val)
+Returns the positive version of val</string>
+	<string name="LSLTipText_llFrand">float llFrand(float mag)
+Returns a pseudo random number in the range [0,mag) or (mag,0]</string>
+	<string name="LSLTipText_llFloor">integer llFloor(float val)
+Returns largest integer value &lt;= val</string>
+	<string name="LSLTipText_llCeil">integer llCeil(float val)
+Returns smallest integer value &gt;= val</string>
+	<string name="LSLTipText_llRound">integer llRound(float val)
+Returns val rounded to the nearest integer</string>
+	<string name="LSLTipText_llVecMag">float llVecMag(vector v)
+Returns the magnitude of v</string>
+	<string name="LSLTipText_llVecNorm">vector llVecNorm(vector v)
+Returns the v normalized</string>
+	<string name="LSLTipText_llVecDist">float llVecDist(vector v1, vector v2)
+Returns the 3D distance between v1 and v2</string>
+	<string name="LSLTipText_llRot2Euler">vector llRot2Euler(rotation q)
+Returns the Euler representation (roll, pitch, yaw) of q</string>
+	<string name="LSLTipText_llEuler2Rot">rotation llEuler2Rot(vector v)
+Returns the rotation representation of Euler Angles v</string>
+	<string name="LSLTipText_llAxes2Rot">rotation llAxes2Rot(vector fwd, vector left, vector up)
+Returns the rotation defined by the coordinate axes</string>
+	<string name="LSLTipText_llRot2Fwd">vector llRot2Fwd(rotation q)
+Returns the forward vector defined by q</string>
+	<string name="LSLTipText_llRot2Left">vector llRot2Left(rotation q)
+Returns the left vector defined by q</string>
+	<string name="LSLTipText_llRot2Up">vector llRot2Up(rotation q)
+Returns the up vector defined by q</string>
+	<string name="LSLTipText_llRotBetween">rotation llRotBetween(vector v1, vector v2)
+Returns the rotation to rotate v1 to v2</string>
+	<string name="LSLTipText_llWhisper">llWhisper(integer channel, string msg)
+Whispers the text of msg on channel</string>
+	<string name="LSLTipText_llSay">llSay(integer channel, string msg)
+Says the text of msg on channel</string>
+	<string name="LSLTipText_llShout">llShout(integer channel, string msg)
+Shouts the text of msg on channel</string>
+	<string name="LSLTipText_llListen">integer llListen(integer channel, string name, key id, string msg)
+Sets a callback for msg on channel from name and id (name, id, and/or msg can be empty) and returns an identifier that can be used to deactivate or remove the listen</string>
+	<string name="LSLTipText_llListenControl">llListenControl(integer number, integer active)
+Makes a listen event callback active or inactive</string>
+	<string name="LSLTipText_llListenRemove">llListenRemove(integer number)
+Removes listen event callback number</string>
+	<string name="LSLTipText_llSensor">llSensor(string name, key id, integer type, float range, float arc)
+Performs a single scan for name and id with type (AGENT, ACTIVE, PASSIVE, and/or SCRIPTED) within range meters and arc radians of forward vector (name, id, and/or keytype can be empty or 0)</string>
+	<string name="LSLTipText_llSensorRepeat">llSensorRepeat(string name, key id, integer type, float range, float arc, float rate)
+Sets a callback for name and id with type (AGENT, ACTIVE, PASSIVE, and/or SCRIPTED) within range meters and arc radians of forward vector (name, id, and/or keytype can be empty or 0) and repeats every rate seconds</string>
+	<string name="LSLTipText_llSensorRemove">llSensorRemove()
+Removes the sensor setup by llSensorRepeat</string>
+	<string name="LSLTipText_llDetectedName">string llDetectedName(integer number)
+Returns the name of detected object number (returns empty string if number is not a valid sensed object)</string>
+	<string name="LSLTipText_llDetectedKey">key llDetectedKey(integer number)
+Returns the key of detected object number (returns empty key if number is not a valid sensed object)</string>
+	<string name="LSLTipText_llDetectedOwner">key llDetectedOwner(integer number)
+Returns the key of detected object's owner (returns empty key if number is not a valid sensed object)</string>
+	<string name="LSLTipText_llDetectedType">integer llDetectedType(integer number)
+Returns the type (AGENT, ACTIVE, PASSIVE, SCRIPTED) of detected object (returns 0 if number is not a valid sensed object)</string>
+	<string name="LSLTipText_llDetectedPos">vector llDetectedPos(integer number)
+Returns the position of detected object number (returns &lt;0,0,0&gt; if number is not a valid sensed object)</string>
+	<string name="LSLTipText_llDetectedVel">vector llDetectedVel(integer number)
+Returns the velocity of detected object number (returns &lt;0,0,0&gt; if number is not a valid sensed object)</string>
+	<string name="LSLTipText_llDetectedGrab">vector llDetectedGrab(integer number)
+Returns the grab offset of the user touching object (returns &lt;0,0,0&gt; if number is not a valid sensed object)</string>
+	<string name="LSLTipText_llDetectedRot">rotation llDetectedRot(integer number)
+Returns the rotation of detected object number (returns &lt;0,0,0,1&gt; if number is not a valid sensed object)</string>
+	<string name="LSLTipText_llDetectedGroup">integer llDetectedGroup(integer number)
+Returns TRUE if detected object is part of same group as owner</string>
+	<string name="LSLTipText_llDetectedLinkNumber">integer llDetectedLinkNumber(integer number)
+Returns the link position of the triggered event for touches and collisions only</string>
+	<string name="LSLTipText_llDie">llDie()
+Deletes the object</string>
+	<string name="LSLTipText_llGround">float llGround(vector offset)
+Returns the ground height below the object position + offset</string>
+	<string name="LSLTipText_llCloud">float llCloud(vector offset)
+Returns the cloud density at the object position + offset</string>
+	<string name="LSLTipText_llWind">vector llWind(vector offset)
+Returns the wind velocity at the object position + offset</string>
+	<string name="LSLTipText_llSetStatus">llSetStatus(integer status, integer value)
+Sets status (STATUS_PHYSICS, STATUS_PHANTOM, STATUS_BLOCK_GRAB, STATUS_ROTATE_X, STATUS_ROTATE_Y, and/or STATUS_ROTATE_Z) to value</string>
+	<string name="LSLTipText_llGetStatus">integer llGetStatus(integer status)
+Returns value of status (STATUS_PHYSICS, STATUS_PHANTOM, STATUS_BLOCK_GRAB, STATUS_ROTATE_X, STATUS_ROTATE_Y, and/or STATUS_ROTATE_Z)</string>
+	<string name="LSLTipText_llSetScale">llSetScale(vector scale)
+Sets the scale of the prim</string>
+	<string name="LSLTipText_llGetScale">vector llGetScale()
+Returns the scale of the prim</string>
+	<string name="LSLTipText_llSetColor">llSetColor(vector color, integer face)
+Sets the color on face of the prim</string>
+	<string name="LSLTipText_llGetAlpha">float llGetAlpha(integer face)
+Returns the alpha of face</string>
+	<string name="LSLTipText_llSetAlpha">llSetAlpha(float alpha, integer face)
+Sets the alpha on face</string>
+	<string name="LSLTipText_llGetColor">vector llGetColor(integer face)
+Returns the color on face</string>
+	<string name="LSLTipText_llSetTexture">llSetTexture(string texture, integer face)
+Sets the texture of face or ALL_SIDES</string>
+	<string name="LSLTipText_llScaleTexture">llScaleTexture(float u, float v, integer face)
+Sets the texture u &amp; v scales for the chosen face or ALL_SIDES</string>
+	<string name="LSLTipText_llOffsetTexture">llOffsetTexture(float u, float v, integer face)
+Sets the texture u &amp; v offsets for the chosen face or ALL_SIDES</string>
+	<string name="LSLTipText_llRotateTexture">llRotateTexture(float rotation, integer face)
+Sets the texture rotation for the chosen face</string>
+	<string name="LSLTipText_llGetTexture">string llGetTexture(integer face)
+Returns a string that is the texture on face (the inventory name if it is a texture in the prim's inventory, otherwise the key)</string>
+	<string name="LSLTipText_llSetPos">llSetPos(vector pos)
+Moves the object or prim towards pos without using physics (if the script isn't physical)</string>
+	<string name="LSLTipText_llGetPos">vector llGetPos()
+Returns the position of the task in region coordinates</string>
+	<string name="LSLTipText_llGetLocalPos">vector llGetLocalPos()
+Returns the position relative to the root</string>
+	<string name="LSLTipText_llSetRot">llSetRot(rotation rot)
+Sets the rotation</string>
+	<string name="LSLTipText_llGetRot">rotation llGetRot()
+Returns the rotation relative to the region's axes</string>
+	<string name="LSLTipText_llGetLocalRot">rotation llGetLocalRot()
+Returns the rotation local to the root</string>
+	<string name="LSLTipText_llSetForce">llSetForce(vector force, integer local)
+Applies force to the object (if the script is physical), in local coords if local == TRUE</string>
+	<string name="LSLTipText_llGetForce">vector llGetForce()
+Returns the force (if the script is physical)</string>
+	<string name="LSLTipText_llTarget">integer llTarget(vector position, float range)
+Sets positions within range of position as a target and return an ID for the target</string>
+	<string name="LSLTipText_llTargetRemove">llTargetRemove(integer number)
+Removes positional target number registered with llTarget</string>
+	<string name="LSLTipText_llRotTarget">integer llRotTarget(rotation rot, float error)
+Set rotations with error of rot as a rotational target and return an ID for the rotational target</string>
+	<string name="LSLTipText_llRotTargetRemove">llRotTargetRemove(integer number)
+Removes rotational target number registered with llRotTarget</string>
+	<string name="LSLTipText_llMoveToTarget">llMoveToTarget(vector target, float tau)
+Critically damps to target in tau seconds (if the script is physical)</string>
+	<string name="LSLTipText_llStopMoveToTarget">llStopMoveToTarget()
+Stops critically damped motion</string>
+	<string name="LSLTipText_llApplyImpulse">llApplyImpulse(vector force, integer local)
+Applies impulse to object (if the script is physical), in local coords if local == TRUE</string>
+	<string name="LSLTipText_llApplyRotationalImpulse">llApplyRotationalImpulse(vector force, integer local)
+Applies rotational impulse to object (if the script is physical), in local coords if local == TRUE</string>
+	<string name="LSLTipText_llSetTorque">llSetTorque(vector torque, integer local)
+Sets the torque of object (if the script is physical), in local coords if local == TRUE</string>
+	<string name="LSLTipText_llGetTorque">vector llGetTorque()
+Returns the torque (if the script is physical)</string>
+	<string name="LSLTipText_llSetForceAndTorque">llSetForceAndTorque(vector force, vector torque, integer local)
+Sets the force and torque of object (if the script is physical), in local coords if local == TRUE</string>
+	<string name="LSLTipText_llGetVel">vector llGetVel()
+Returns the velocity of the object</string>
+	<string name="LSLTipText_llGetAccel">vector llGetAccel()
+Returns the acceleration of the object relative to the region's axes</string>
+	<string name="LSLTipText_llGetOmega">vector llGetOmega()
+Returns the rotation velocity in radians per second</string>
+	<string name="LSLTipText_llGetTimeOfDay">float llGetTimeOfDay()
+Returns the time in seconds since [SECOND_LIFE] server midnight or since region up-time, whichever is smaller</string>
+	<string name="LSLTipText_llGetWallclock">float llGetWallclock()
+Returns the time in seconds since midnight California Pacific time (PST/PDT)</string>
+	<string name="LSLTipText_llGetTime">float llGetTime()
+Returns the time in seconds since the last region reset, script reset, or call to either llResetTime or llGetAndResetTime</string>
+	<string name="LSLTipText_llResetTime">llResetTime()
+Sets the script timer to zero</string>
+	<string name="LSLTipText_llGetAndResetTime">float llGetAndResetTime()
+Returns the script time in seconds and then resets the script timer to zero</string>
+	<string name="LSLTipText_llSound">llSound(string sound, float volume, integer queue, integer loop)
+Plays sound at volume and whether it should loop or not</string>
+	<string name="LSLTipText_llPlaySound">llPlaySound(string sound, float volume)
+Plays attached sound once at volume (0.0 - 1.0)</string>
+	<string name="LSLTipText_llLoopSound">llLoopSound(string sound, float volume)
+Plays attached sound looping indefinitely at volume (0.0 - 1.0)</string>
+	<string name="LSLTipText_llLoopSoundMaster">llLoopSoundMaster(string sound, float volume)
+Plays attached sound looping at volume (0.0 - 1.0), declares it a sync master</string>
+	<string name="LSLTipText_llLoopSoundSlave">llLoopSoundSlave(string sound, float volume)
+Plays attached sound looping at volume (0.0 - 1.0), synced to most audible sync master</string>
+	<string name="LSLTipText_llPlaySoundSlave">llPlaySoundSlave(string sound, float volume)
+Plays attached sound once at volume (0.0 - 1.0), synced to next loop of most audible sync master</string>
+	<string name="LSLTipText_llTriggerSound">llTriggerSound(string sound, float volume)
+Plays sound at volume (0.0 - 1.0), centered at but not attached to object</string>
+	<string name="LSLTipText_llStopSound">llStopSound()
+Stops currently attached sound</string>
+	<string name="LSLTipText_llPreloadSound">llPreloadSound(string sound)
+Preloads a sound on viewers within range</string>
+	<string name="LSLTipText_llGetSubString">string llGetSubString(string src, integer start, integer end)
+Returns the indicated substring</string>
+	<string name="LSLTipText_llDeleteSubString">string llDeleteSubString(string src, integer start, integer end)
+Removes the indicated substring and returns the result</string>
+	<string name="LSLTipText_llInsertString">string llInsertString(string dst, integer position, string src)
+Returns a destination string dst with the string src inserted starting at position pos</string>
+	<string name="LSLTipText_llToUpper">string llToUpper(string src)
+Returns a string that is src with all upper-case characters</string>
+	<string name="LSLTipText_llToLower">string llToLower(string src)
+Returns a string that is src with all lower-case characters</string>
+	<string name="LSLTipText_llGiveMoney">llGiveMoney(key destination, integer amount)
+Transfers amount of [CURRENCY] from script owner to destination</string>
+	<string name="LSLTipText_llMakeExplosion">llMakeExplosion(integer particles, float scale, float vel, float lifetime, float arc, string texture, vector offset)
+Makes a round explosion of particles</string>
+	<string name="LSLTipText_llMakeFountain">llMakeFountain(integer particles, float scale, float vel, float lifetime, float arc, integer bounce, string texture, vector offset, float bounce_offset)
+Makes a fountain of particles</string>
+	<string name="LSLTipText_llMakeSmoke">llMakeSmoke(integer particles, float scale, float vel, float lifetime, float arc, string texture, vector offset)
+Makes smoke like particles</string>
+	<string name="LSLTipText_llMakeFire">llMakeFire(integer particles, float scale, float vel, float lifetime, float arc, string texture, vector offset)
+Makes fire like particles</string>
+	<string name="LSLTipText_llRezObject">llRezObject(string inventory, vector pos, vector vel, rotation rot, integer param)
+Instantiates owner's inventory object at pos with velocity vel and rotation rot with start parameter param</string>
+	<string name="LSLTipText_llLookAt">llLookAt(vector target, float strength, float damping)
+Causes object to point its up axis (positive z) towards target, while keeping its forward axis (positive x) below the horizon</string>
+	<string name="LSLTipText_llStopLookAt">llStopLookAt()
+Stops causing object to point at a target</string>
+	<string name="LSLTipText_llSetTimerEvent">llSetTimerEvent(float sec)
+Causes the timer event to be triggered a maximum of once every sec seconds</string>
+	<string name="LSLTipText_llSleep">llSleep(float sec)
+Puts the script to sleep for sec seconds</string>
+	<string name="LSLTipText_llGetMass">float llGetMass()
+Returns the mass of object that the script is attached to</string>
+	<string name="LSLTipText_llCollisionFilter">llCollisionFilter(string name, key id, integer accept)
+Sets the collision filter, exclusively or inclusively. If accept == TRUE, only accept collisions with objects name and id (either is optional), otherwise with objects not name or id</string>
+	<string name="LSLTipText_llTakeControls">llTakeControls(integer controls, integer accept, integer pass_on)
+Allows for intercepting keyboard and mouse clicks from the agent the script has permissions for</string>
+	<string name="LSLTipText_llReleaseControls">llReleaseControls()
+Stops taking inputs that were taken with llTakeControls</string>
+	<string name="LSLTipText_llAttachToAvatar">llAttachToAvatar(integer attach_point)
+Attaches the object to the avatar who has granted permission to the script</string>
+	<string name="LSLTipText_llDetachFromAvatar">llDetachFromAvatar()
+Detaches object from avatar</string>
+	<string name="LSLTipText_llTakeCamera">llTakeCamera(key avatar)
+Moves avatar's viewpoint to task</string>
+	<string name="LSLTipText_llReleaseCamera">llReleaseCamera(key avatar)
+Returns camera to agent avatar</string>
+	<string name="LSLTipText_llGetOwner">key llGetOwner()
+Returns the object owner's UUID</string>
+	<string name="LSLTipText_llInstantMessage">llInstantMessage(key user, string message)
+Sends the specified string as an Instant Message to the user</string>
+  <string name="LSLTipText_llEmail">llEmail(string address, string subject, string message)
+Sends an email to address with the subject and message</string>
+	<string name="LSLTipText_llGetNextEmail">llGetNextEmail(string address, string subject)
+Gets the next waiting email that comes from address, with specified subject</string>
+	<string name="LSLTipText_llGetKey">key llGetKey()
+Returns the key of the prim the script is attached to</string>
+	<string name="LSLTipText_llSetBuoyancy">llSetBuoyancy(float buoyancy)
+Sets the buoyancy of the task or object (0 is disabled, &lt; 1.0 sinks, 1.0 floats, &gt; 1.0 rises)</string>
+	<string name="LSLTipText_llSetHoverHeight">llSetHoverHeight(float height, integer water, float tau)
+Critically damps to a height above the ground (or water) in tau seconds</string>
+	<string name="LSLTipText_llStopHover">llStopHover()
+Stops hovering to a height</string>
+	<string name="LSLTipText_llMinEventDelay">llMinEventDelay(float delay)
+Sets the minimum time between events being handled</string>
+	<string name="LSLTipText_llSoundPreload">llSoundPreload(string sound)
+Preloads a sound on viewers within range</string>
+	<string name="LSLTipText_llRotLookAt">llRotLookAt(rotation target, float strength, float damping)
+Causes object to point its forward axis towards target</string>
+	<string name="LSLTipText_llStringLength">integer llStringLength(string str)
+Returns the length of string</string>
+	<string name="LSLTipText_llStartAnimation">llStartAnimation(string anim)
+Starts animation anim for agent that granted PERMISSION_TRIGGER_ANIMATION if the permission has not been revoked</string>
+	<string name="LSLTipText_llStopAnimation">llStopAnimation(string anim)
+Stops animation anim for agent that granted permission</string>
+	<string name="LSLTipText_llPointAt">llPointAt(vector pos)
+Makes agent that owns object point at pos</string>
+	<string name="LSLTipText_llStopPointAt">llStopPointAt()
+Stops pointing agent that owns object</string>
+	<string name="LSLTipText_llTargetOmega">llTargetOmega(vector axis, float spinrate, float gain)
+Rotates the object around axis at spinrate with strength gain</string>
+	<string name="LSLTipText_llGetStartParameter">integer llGetStartParameter()
+Returns an integer that is the script start/rez parameter</string>
+	<string name="LSLTipText_llGodLikeRezObject">llGodLikeRezObject(key inventory, vector pos)
+Rezzes directly off of UUID if owner is in God Mode</string>
+	<string name="LSLTipText_llRequestPermissions">llRequestPermissions(key agent, integer perm)
+Asks the agent for permission to run certain classes of functions</string>
+	<string name="LSLTipText_llGetPermissionsKey">key llGetPermissionsKey()
+Returns the key of the avatar that last granted permissions to the script</string>
+	<string name="LSLTipText_llGetPermissions">integer llGetPermissions()
+Returns an integer bitfield with the permissions that have been granted</string>
+	<string name="LSLTipText_llGetLinkNumber">integer llGetLinkNumber()
+Returns the link number of the prim containing the script (0 means not linked, 1 the prim is the root, 2 the prim is the first child, etc)</string>
+	<string name="LSLTipText_llSetLinkColor">llSetLinkColor(integer linknumber, vector color, integer face)
+Sets face to color if a task exists in the link chain at linknumber</string>
+	<string name="LSLTipText_llCreateLink">llCreateLink(key target, integer parent)
+Attempts to link the script's object with the target (requires that PERMISSION_CHANGE_LINKS be granted). If parent == TRUE, then the script's object becomes the root</string>
+	<string name="LSLTipText_llBreakLink">llBreakLink(integer linknum)
+Delinks the prim with the given link number in a linked object set (requires that PERMISSION_CHANGE_LINKS be granted)</string>
+	<string name="LSLTipText_llBreakAllLinks">llBreakAllLinks()
+Delinks all prims in the link set (requires that PERMISSION_CHANGE_LINKS be granted)</string>
+	<string name="LSLTipText_llGetLinkKey">key llGetLinkKey(integer linknumber)
+Returns the key of the linked prim linknumber</string>
+	<string name="LSLTipText_llGetLinkName">string llGetLinkName(integer linknumber)
+Returns the name of linknumber in a link set</string>
+	<string name="LSLTipText_llGetInventoryNumber">integer llGetInventoryNumber(integer type)
+Returns the number of items of a given type (INVENTORY_* flag) in the prim's inventory</string>
+	<string name="LSLTipText_llGetInventoryName">string llGetInventoryName(integer type, integer number)
+Returns the name of the inventory item number of a given type</string>
+	<string name="LSLTipText_llSetScriptState">llSetScriptState(string name, integer run)
+Sets the running state of the specified script</string>
+	<string name="LSLTipText_llGetEnergy">float llGetEnergy()
+Returns how much energy is in the object as a percentage of maximum</string>
+	<string name="LSLTipText_llGiveInventory">llGiveInventory(key destination, string inventory)
+Gives inventory to destination</string>
+	<string name="LSLTipText_llRemoveInventory">llRemoveInventory(string item)
+Removes the named inventory item</string>
+	<string name="LSLTipText_llSetText">llSetText(string text, vector color, float alpha)
+Displays text that hovers over the prim with specific color and translucency specified with alpha</string>
+	<string name="LSLTipText_llWater">float llWater(vector offset)
+Returns the water height below the object position + offset</string>
+	<string name="LSLTipText_llPassTouches">llPassTouches(integer pass)
+If pass == TRUE, touches are passed from children on to parents</string>
+	<string name="LSLTipText_llRequestAgentData">key llRequestAgentData(key id, integer data)
+Requests data about agent id. When data is available the dataserver event will be raised.</string>
+	<string name="LSLTipText_llRequestInventoryData">key llRequestInventoryData(string name)
+Requests data from object's inventory object. When data is available the dataserver event will be raised.</string>
+	<string name="LSLTipText_llSetDamage">llSetDamage(float damage)
+Sets the amount of damage that will be done when this object hits an avatar.</string>
+	<string name="LSLTipText_llTeleportAgentHome">llTeleportAgentHome(key id)
+Teleports avatar on the owner's land to their home location without any warning</string>
+	<string name="LSLTipText_llModifyLand">llModifyLand(integer action, integer brush)
+Modifies land using the specified action on the specified brush size of land</string>
+	<string name="LSLTipText_llCollisionSound">llCollisionSound(string impact_sound, float impact_volume)
+Suppresses default collision sounds, replaces default impact sounds with impact_sound at the volume impact_volume</string>
+	<string name="LSLTipText_llCollisionSprite">llCollisionSprite(string impact_sprite)
+Suppresses default collision sprites, replaces default impact sprite with impact_sprite (use an empty string to just suppress)</string>
+	<string name="LSLTipText_llGetAnimation">string llGetAnimation(key id)
+Returns the name of the currently playing locomotion animation for avatar id</string>
+	<string name="LSLTipText_llResetScript">llResetScript()
+Resets the script</string>
+	<string name="LSLTipText_llMessageLinked">llMessageLinked(integer linknum, integer num, string str, key id)
+Allows scripts in the same object to communicate. Triggers a link_message event with the same parameters num, str, and id in all scripts in the prim(s) described by linknum.</string>
+	<string name="LSLTipText_llPushObject">llPushObject(key id, vector impulse, vector ang_impulse, integer local)
+Applies impulse and ang_impulse to object id</string>
+	<string name="LSLTipText_llPassCollisions">llPassCollisions(integer pass)
+If pass == TRUE, collisions are passed from children on to parents (default is FALSE)</string>
+	<string name="LSLTipText_llGetScriptName">string llGetScriptName()
+Returns the name of the script that this function is used in</string>
+	<string name="LSLTipText_llGetNumberOfSides">integer llGetNumberOfSides()
+Returns the number of faces (or sides) of the prim</string>
+	<string name="LSLTipText_llAxisAngle2Rot">rotation llAxisAngle2Rot(vector axis, float angle)
+Returns the rotation that is a generated angle about axis</string>
+	<string name="LSLTipText_llRot2Axis">vector llRot2Axis(rotation rot)
+Returns the rotation axis represented by rot</string>
+	<string name="LSLTipText_llRot2Angle">float llRot2Angle(rotation rot)
+Returns the rotation angle represented by rot</string>
+	<string name="LSLTipText_llAcos">float llAcos(float val)
+Returns the arccosine in radians of val</string>
+	<string name="LSLTipText_llAsin">float llAsin(float val)
+Returns the arcsine in radians of val</string>
+	<string name="LSLTipText_llAngleBetween">float llAngleBetween(rotation a, rotation b)
+Returns angle between rotation a and b</string>
+	<string name="LSLTipText_llGetInventoryKey">key llGetInventoryKey(string name)
+Returns the key that is the UUID of the inventory name</string>
+	<string name="LSLTipText_llAllowInventoryDrop">llAllowInventoryDrop(integer add)
+If add == TRUE, users without modify permissions can still drop inventory items onto a prim</string>
+	<string name="LSLTipText_llGetSunDirection">vector llGetSunDirection()
+Returns a normalized vector of the direction of the sun in the region</string>
+	<string name="LSLTipText_llGetTextureOffset">vector llGetTextureOffset(integer face)
+Returns the texture offset of face in the x and y components of a vector</string>
+	<string name="LSLTipText_llGetTextureScale">vector llGetTextureScale(integer side)
+Returns the texture scale of side in the x and y components of a vector</string>
+	<string name="LSLTipText_llGetTextureRot">float llGetTextureRot(integer side)
+Returns the texture rotation of side</string>
+	<string name="LSLTipText_llSubStringIndex">integer llSubStringIndex(string source, string pattern)
+Returns an integer that is the index in source where pattern first appears.
+(Returns -1 if not found)</string>
+	<string name="LSLTipText_llGetOwnerKey">key llGetOwnerKey(key id)
+Returns the owner of object id</string>
+	<string name="LSLTipText_llGetCenterOfMass">vector llGetCenterOfMass()
+Returns the prim's center of mass (unless called from the root prim, where it returns the object's center of mass)</string>
+	<string name="LSLTipText_llListSort">list llListSort(list src, integer stride, integer ascending)
+Sorts the list into blocks of stride, in ascending order if ascending == TRUE.
+The sort order is affected by type.</string>
+	<string name="LSLTipText_llGetListLength">integer llGetListLength(list src)
+Returns the number of elements in the list</string>
+	<string name="LSLTipText_llList2Integer">integer llList2Integer(list src, integer index)
+Copies the integer at index in the list</string>
+	<string name="LSLTipText_llList2Float">float llList2Float(list src, integer index)
+Copies the float at index in the list</string>
+	<string name="LSLTipText_llList2String">string llList2String(list src, integer index)
+Copies the string at index in the list</string>
+	<string name="LSLTipText_llList2Key">key llList2Key(list src, integer index)
+Copies the key at index in the list</string>
+	<string name="LSLTipText_llList2Vector">vector llList2Vector(list src, integer index)
+Copies the vector at index in the list</string>
+	<string name="LSLTipText_llList2Rot">rotation llList2Rot(list src, integer index)
+Copies the rotation at index in the list</string>
+	<string name="LSLTipText_llList2List">list llList2List(list src, integer start, integer end)
+Copies the slice of the list from start to end</string>
+	<string name="LSLTipText_llDeleteSubList">list llDeleteSubList(list src, integer start, integer end)
+Removes the slice from start to end and returns the remainder of the list</string>
+	<string name="LSLTipText_llGetListEntryType">integer llGetListEntryType(list src, integer index)
+Returns the type of the index entry in the list
+(TYPE_INTEGER, TYPE_FLOAT, TYPE_STRING, TYPE_KEY, TYPE_VECTOR, TYPE_ROTATION, or TYPE_INVALID if index is off list)</string>
+	<string name="LSLTipText_llList2CSV">string llList2CSV(list src)
+Creates a string of comma separated values from list</string>
+	<string name="LSLTipText_llCSV2List">list llCSV2List(string src)
+Creates a list from a string of comma separated values</string>
+	<string name="LSLTipText_llListRandomize">list llListRandomize(list src, integer stride)
+Returns a randomized list of blocks of size stride</string>
+	<string name="LSLTipText_llList2ListStrided">list llList2ListStrided(list src, integer start, integer end, integer stride)
+Copies the strided slice of the list from start to end</string>
+	<string name="LSLTipText_llGetRegionCorner">vector llGetRegionCorner()
+Returns a vector in meters that is the global location of the south-west corner of the region which the object is in</string>
+	<string name="LSLTipText_llListInsertList">list llListInsertList(list dest, list src, integer start)
+Returns a list that contains all the elements from dest but with the elements from src inserted at position start</string>
+	<string name="LSLTipText_llListFindList">integer llListFindList(list src, list test)
+Returns the index of the first instance of test in src.
+(Returns -1 if not found)</string>
+	<string name="LSLTipText_llGetObjectName">string llGetObjectName()
+Returns the name of the prim which the script is attached to</string>
+	<string name="LSLTipText_llSetObjectName">llSetObjectName(string name)
+Sets the prim's name to the name parameter</string>
+	<string name="LSLTipText_llGetDate">string llGetDate()
+Returns the current date in the UTC time zone in the format YYYY-MM-DD</string>
+	<string name="LSLTipText_llEdgeOfWorld">integer llEdgeOfWorld(vector pos, vector dir)
+Checks to see whether the border hit by dir from pos is the edge of the world (has no neighboring region)</string>
+	<string name="LSLTipText_llGetAgentInfo">integer llGetAgentInfo(key id)
+Returns an integer bitfield containing the agent information about id.
+Returns AGENT_FLYING, AGENT_ATTACHMENTS, AGENT_SCRIPTED, AGENT_SITTING, AGENT_ON_OBJECT, AGENT_MOUSELOOK, AGENT_AWAY, AGENT_BUSY, AGENT_TYPING, AGENT_CROUCHING, AGENT_ALWAYS_RUN, AGENT_WALKING and/or AGENT_IN_AIR.</string>
+	<string name="LSLTipText_llAdjustSoundVolume">llAdjustSoundVolume(float volume)
+Adjusts volume of attached sound (0.0 - 1.0)</string>
+	<string name="LSLTipText_llSetSoundQueueing">llSetSoundQueueing(integer queue)
+Sets whether attached sounds wait for the current sound to finish (If queue == TRUE then queuing is enabled, if FALSE queuing is disabled [default])</string>
+	<string name="LSLTipText_llSetSoundRadius">llSetSoundRadius(float radius)
+Establishes a hard cut-off radius for audibility of scripted sounds (both attached and triggered)</string>
+	<string name="LSLTipText_llKey2Name">string llKey2Name(key id)
+Returns the name of the prim or avatar specified by id.
+(The id must be a valid rezzed prim or avatar key in the current simulator, otherwise an empty string is returned.)</string>
+	<string name="LSLTipText_llSetTextureAnim">llSetTextureAnim(integer mode, integer face, integer sizex, integer sizey, float start, float length, float rate)
+Animates the texture on the specified face/faces</string>
+	<string name="LSLTipText_llTriggerSoundLimited">llTriggerSoundLimited(string sound, float volume, vector top_north_east, vector bottom_south_west)
+Plays sound at volume (0.0 - 1.0), centered at but not attached to object, limited to the box defined by vectors top_north_east and bottom_south_west</string>
+	<string name="LSLTipText_llEjectFromLand">llEjectFromLand(key avatar)
+Ejects avatar from the parcel</string>
+	<string name="LSLTipText_llParseString2List">list llParseString2List(string src, list separators, list spacers)
+Breaks src into a list, discarding separators, keeping spacers
+(separators and spacers must be lists of strings, maximum of 8 each)</string>
+	<string name="LSLTipText_llOverMyLand">integer llOverMyLand(key id)
+Returns TRUE if id is over land owned by the script owner, otherwise FALSE</string>
+	<string name="LSLTipText_llGetLandOwnerAt">key llGetLandOwnerAt(vector pos)
+Returns the key of the land owner, returns NULL_KEY if public</string>
+	<string name="LSLTipText_llGetNotecardLine">key llGetNotecardLine(string name, integer line)
+Returns line line of notecard name via the dataserver event</string>
+	<string name="LSLTipText_llGetAgentSize">vector llGetAgentSize(key id)
+If the avatar is in the same region, returns the size of the bounding box of the requested avatar by id, otherwise returns ZERO_VECTOR</string>
+	<string name="LSLTipText_llSameGroup">integer llSameGroup(key id)
+Returns TRUE if avatar id is in the same region and has the same active group, otherwise FALSE</string>
+	<string name="LSLTipText_llUnSit">key llUnSit(key id)
+If avatar identified by id is sitting on the object the script is attached to or is over land owned by the object's owner, the avatar is forced to stand up</string>
+	<string name="LSLTipText_llGroundSlope">vector llGroundSlope(vector offset)
+Returns the ground slope below the object position + offset</string>
+	<string name="LSLTipText_llGroundNormal">vector llGroundNormal(vector offset)
+Returns the ground normal below the object position + offset</string>
+	<string name="LSLTipText_llGroundContour">vector llGroundCountour(vector offset)
+Returns the ground contour direction below the object position + offset</string>
+	<string name="LSLTipText_llGetAttached">integer llGetAttached()
+Returns the object's attachment point, or 0 if not attached</string>
+	<string name="LSLTipText_llGetFreeMemory">integer llGetFreeMemory()
+Returns the number of free bytes of memory the script can use</string>
+	<string name="LSLTipText_llGetRegionName">string llGetRegionName()
+Returns the current region name</string>
+	<string name="LSLTipText_llGetRegionTimeDilation">float llGetRegionTimeDilation()
+Returns the current time dilation as a float between 0.0 (full dilation) and 1.0 (no dilation)</string>
+	<string name="LSLTipText_llGetRegionFPS">float llGetRegionFPS()
+Returns the mean region frames per second</string>
+	<string name="LSLTipText_llParticleSystem">llParticleSystem(list rules)
+Creates a particle system based on rules.  An empty list removes the particle system.
+List format is [ rule1, data1, rule2, data2 . . . rulen, datan ]</string>
+	<string name="LSLTipText_llGroundRepel">llGroundRepel(float height, integer water, float tau)
+Critically damps to height if within height*0.5 of level (either above ground level, or above the higher of land and water if water == TRUE)</string>
+	<string name="LSLTipText_llGiveInventoryList">llGiveInventoryList(key target, string folder, list inventory)
+Gives inventory items to target, creating a new folder to put them in</string>
+	<string name="LSLTipText_llSetVehicleType">llSetVehicleType(integer type)
+Sets the vehicle to one of the default types</string>
+	<string name="LSLTipText_llSetVehicleFloatParam">llSetVehicleFloatParam(integer param, float value)
+Sets the specified vehicle float parameter</string>
+	<string name="LSLTipText_llSetVehicleVectorParam">llSetVehicleVectorParam(integer param, vector vec)
+Sets the specified vehicle vector parameter</string>
+	<string name="LSLTipText_llSetVehicleRotationParam">llSetVehicleVectorParam(integer param, rotation rot)
+Sets the specified vehicle rotation parameter</string>
+	<string name="LSLTipText_llSetVehicleFlags">llSetVehicleFlags(integer flags)
+Sets the enabled bits in 'flags'</string>
+	<string name="LSLTipText_llRemoveVehicleFlags">llRemoveVehicleFlags(integer flags)
+Removes the enabled bits in 'flags'</string>
+	<string name="LSLTipText_llSitTarget">llSitTarget(vector offset, rotation rot)
+Sets the sit location for the prim.  If offset == &lt;0,0,0&gt; then the sit target is removed.</string>
+	<string name="LSLTipText_llAvatarOnSitTarget">key llAvatarOnSitTarget()
+If an avatar is seated on the sit target, returns the avatar's key, otherwise NULL_KEY</string>
+	<string name="LSLTipText_llAddToLandPassList">llAddToLandPassList(key avatar, float hours)
+Adds avatar to the land pass list for hours, or indefinitely if hours is 0</string>
+	<string name="LSLTipText_llSetTouchText">llSetTouchText(string text)
+Displays text rather than the default 'Touch' in the pie menu</string>
+	<string name="LSLTipText_llSetSitText">llSetSitText(string text)
+Displays text rather than the default 'Sit Here' in the pie menu</string>
+	<string name="LSLTipText_llSetCameraEyeOffset">llSetCameraEyeOffset(vector offset)
+Sets the camera eye offset for avatars that sit on the object</string>
+	<string name="LSLTipText_llSetCameraAtOffset">llSetCameraAtOffset(vector offset)
+Sets the point the camera is looking at to offset for avatars that sit on the object</string>
+	<string name="LSLTipText_llDumpList2String">string llDumpList2String(list src, string separator)
+Returns the list in a single string, using separator between the entries</string>
+	<string name="LSLTipText_llScriptDanger">integer llScriptDanger(vector pos)
+Returns TRUE if pos is over public land, sandbox land, land that doesn't allow everyone to edit and build, or land that doesn't allow outside scripts</string>
+	<string name="LSLTipText_llDialog">llDialog(key avatar, string message, list buttons, integer chat_channel
+Shows a dialog box on the avatar's screen with a message and up to 12 buttons.
+If a button is pressed, the avatar says the text of the button label on chat_channel.</string>
+	<string name="LSLTipText_llVolumeDetect">llVolumeDetect(integer detect)
+If detect = TRUE, object works much like Phantom, but triggers collision_start and collision_end events when other objects start and stop interpenetrating.
+Must be applied to the root prim.</string>
+	<string name="LSLTipText_llResetOtherScript">llResetOtherScript(string name)
+Resets script name</string>
+	<string name="LSLTipText_llGetScriptState">integer llGetScriptState(string name)
+Returns TRUE if the script name is running</string>
+	<string name="LSLTipText_llRemoteLoadScript">DEPRECATED!  Please use llRemoteLoadScriptPin instead.</string>
+	<string name="LSLTipText_llSetRemoteScriptAccessPin">llSetRemoteScriptAccessPin(integer pin)
+If pin is set to a non-zero number, allows a prim to have scripts remotely loaded via llRemoteLoadScriptPin when it passes in the correct pin. Otherwise, llRemoteLoadScriptPin is ignored.</string>
+	<string name="LSLTipText_llRemoteLoadScriptPin">llRemoteLoadScriptPin(key target, string name, integer pin, integer running, integer start_param)
+Copies script name onto target, if the owner of this scripted object can modify target and is in the same region, and the matching pin is used.
+If running == TRUE, starts the script with start_param</string>
+	<string name="LSLTipText_llOpenRemoteDataChannel">llOpenRemoteDataChannel()
+Creates a channel to listen for XML-RPC calls, and will trigger a remote_data event with channel id once it is available</string>
+	<string name="LSLTipText_llSendRemoteData">key llSendRemoteData(key channel, string dest, integer idata, string sdata)
+Sends an XML-RPC request to dest through channel with payload of channel (in a string), integer idata and string sdata.
+Returns a key that is the message_id for the resulting remote_data events.</string>
+	<string name="LSLTipText_llRemoteDataReply">llRemoteDataReply(key channel, key message_id, string sdata, integer idata)
+Sends an XML-RPC reply to message_id on channel with payload of string sdata and integer idata</string>
+	<string name="LSLTipText_llCloseRemoteDataChannel">llCloseRemoteDataChannel(key channel)
+Closes XML-RPC channel</string>
+	<string name="LSLTipText_llMD5String">string llMD5String(string src, integer nonce)
+Returns a string of 32 hex characters that is a RSA Data Security, Inc. MD5 Message-Digest Algorithm of src with nonce</string>
+	<string name="LSLTipText_llSetPrimitiveParams">llSetPrimitiveParams(list rules)
+Sets the prim's parameters according to rules</string>
+	<string name="LSLTipText_llStringToBase64">string llStringToBase64(string str)
+Converts a string to the Base64 representation of the string</string>
+	<string name="LSLTipText_llBase64ToString">string llBase64ToString(string str)
+Converts a Base64 string to a conventional string.
+If the conversion creates any unprintable characters, they are converted to spaces.</string>
+	<string name="LSLTipText_llXorBase64Strings">string llXorBase64Strings(string s1, string s2)
+DEPRECATED!  Please use llXorBase64StringsCorrect instead.
+Incorrectly performs an exclusive or on two Base64 strings and returns a Base64 string.  s2 repeats if it is shorter than s1.  Retained for backwards compatability.</string>
+	<string name="LSLTipText_llRemoteDataSetRegion">llRemoteDataSetRegion()
+DEPRECATED!  Please use llOpenRemoteDataChannel instead.
+If an object using remote data channels changes regions, you must call this function to reregister the remote data channels. This call is not needed if the prim does not change regions.</string>
+	<string name="LSLTipText_llLog10">float llLog10(float val)
+Returns the base 10 logarithm of val.  Returns zero if val &lt;= 0.</string>
+	<string name="LSLTipText_llLog">float llLog(float val)
+Returns the natural logarithm of val.  Returns zero if val &lt;= 0.</string>
+	<string name="LSLTipText_llGetAnimationList">list llGetAnimationList(key id)
+Returns a list of keys of playing animations for avatar described by id</string>
+	<string name="LSLTipText_llSetParcelMusicURL">llSetParcelMusicURL(string url)
+Sets the streaming audio URL for the parcel which the object is on</string>
+	<string name="LSLTipText_llGetRootPosition">vector llGetRootPosition()
+Returns the position (in region coordinates) of the root prim of the object which the script is attached to</string>
+	<string name="LSLTipText_llGetRootRotation">rotation llGetRootRotation()
+Returns the rotation (relative to the region) of the root prim of the object which the script is attached to</string>
+	<string name="LSLTipText_llGetObjectDesc">string llGetObjectDesc()
+Returns the description of the prim the script is attached to</string>
+	<string name="LSLTipText_llSetObjectDesc">llSetObjectDesc(string name)
+Sets the prim's description</string>
+	<string name="LSLTipText_llGetCreator">key llGetCreator()
+Returns a key for the creator of the prim</string>
+	<string name="LSLTipText_llGetTimestamp">string llGetTimestamp()
+Returns the timestamp in the UTC time zone in the format: YYYY-MM-DDThh:mm:ss.ff..fZ</string>
+	<string name="LSLTipText_llSetLinkAlpha">llSetLinkAlpha(integer linknumber, float alpha, integer face)
+If a prim exists in the link chain at linknumber, sets face to alpha</string>
+	<string name="LSLTipText_llGetNumberOfPrims">integer llGetNumberOfPrims()
+Returns the number of prims in a link set the script is attached to</string>
+	<string name="LSLTipText_llGetNumberOfNotecardLines">key llGetNumberOfNotecardLines(string name)
+Returns number of lines in notecard name via the dataserver event (cast return value to integer)</string>
+	<string name="LSLTipText_llGetBoundingBox">list llGetBoundingBox(key object)
+Returns the bounding box around the object (including any linked prims) relative to its root prim, in a list in the format [ (vector) min_corner, (vector) max_corner ]</string>
+	<string name="LSLTipText_llGetGeometricCenter">vector llGetGeometricCenter()
+Returns the geometric center of the linked set the script is attached to.</string>
+	<string name="LSLTipText_llGetPrimitiveParams">list llGetPrimitiveParams(list params)
+Returns the primitive parameters specified in the params list.</string>
+	<string name="LSLTipText_llIntegerToBase64">string llIntegerToBase64(integer number)
+Returns a string that is a Base64 big endian encode of number</string>
+	<string name="LSLTipText_llBase64ToInteger">integer llBase64ToInteger(string str)
+Returns an integer that is the str Base64 decoded as a big endian integer</string>
+	<string name="LSLTipText_llGetGMTclock">float llGetGMTclock()
+Returns the time in seconds since midnight GMT</string>
+	<string name="LSLTipText_llGetSimulatorHostname">string llGetSimulatorHostname()
+Returns the hostname of the machine which the script is running on (same as string in viewer Help dialog)</string>
+	<string name="LSLTipText_llSetLocalRot">llSetLocalRot(rotation rot)
+Sets the rotation of a child prim relative to the root prim</string>
+	<string name="LSLTipText_llParseStringKeepNulls">list llParseStringKeepNulls(string src, list separators, list spacers)
+Breaks src into a list, discarding separators, keeping spacers, keeping any null values generated.
+(separators and spacers must be lists of strings, maximum of 8 each)</string>
+	<string name="LSLTipText_llRezAtRoot">llRezAtRoot(string inventory, vector pos, vector vel, rotation rot, integer param)
+Instantiates owner's inventory object rotated to rot with its root at pos, moving at vel, using param as the start parameter</string>
+	<string name="LSLTipText_llGetObjectPermMask">integer llGetObjectPermMask(integer mask)
+Returns the requested permission mask for the root object the task is attached to</string>
+	<string name="LSLTipText_llSetObjectPermMask">llSetObjectPermMask(integer mask, integer value)
+Sets the given permission mask to the new value on the root object the task is attached to (requires God Mode)</string>
+	<string name="LSLTipText_llGetInventoryPermMask">integer llGetInventoryPermMask(string item, integer mask)
+Returns the requested permission mask for the inventory item</string>
+	<string name="LSLTipText_llSetInventoryPermMask">llSetInventoryPermMask(string item, integer mask, integer value)
+Sets the given permission mask to the new value on the inventory item (requires God Mode)</string>
+	<string name="LSLTipText_llGetInventoryCreator">key llGetInventoryCreator(string item)
+Returns a key for the creator of the inventory item</string>
+	<string name="LSLTipText_llOwnerSay">llOwnerSay(string msg)
+Says msg to owner only.  (Owner must be in the same region.)</string>
+	<string name="LSLTipText_llRequestSimulatorData">key llRequestSimulatorData(string simulator, integer data)
+Requests data about simulator.  When data is available the dataserver event will be raised.</string>
+	<string name="LSLTipText_llForceMouselook">llForceMouselook(integer mouselook)
+If mouselook is TRUE, any avatar that sits upon the prim will be forced into mouselook mode</string>
+	<string name="LSLTipText_llGetObjectMass">float llGetObjectMass(key id)
+Returns the mass of the avatar or object in the region</string>
+	<string name="LSLTipText_llListReplaceList">list llListReplaceList(list dest, list src, integer start, integer end)
+Returns a list that is dest with start through end removed and src inserted at start</string>
+	<string name="LSLTipText_llLoadURL">llLoadURL(key avatar, string message, string url)
+Shows a dialog to avatar offering to load the web page at url with a message.
+If user clicks yes, launches the page in their web browser.</string>
+	<string name="LSLTipText_llParcelMediaCommandList">llParcelMediaCommandList(list command)
+Sends a list of commands, some with arguments, to a parcel to control the playback of movies and other media</string>
+	<string name="LSLTipText_llParcelMediaQuery">list llParcelMediaQuery(list query)
+Returns a list containing results of the sent query</string>
+	<string name="LSLTipText_llModPow">integer llModPow(integer a, integer b, integer c)
+Returns a raised to the b power, mod c. ( (a**b)%c )
+b is capped at 0xFFFF (16 bits).</string>
+	<string name="LSLTipText_llGetInventoryType">integer llGetInventoryType(string name)
+Returns the type of the inventory item name</string>
+	<string name="LSLTipText_llSetPayPrice">llSetPayPrice(integer price, list quick_pay_buttons)
+Sets the default amount on the dialog that appears when someone chooses to pay this prim</string>
+	<string name="LSLTipText_llGetCameraPos">vector llGetCameraPos()
+Returns the current camera position for the agent the task has permissions for</string>
+	<string name="LSLTipText_llGetCameraRot">rotation llGetCameraRot()
+Returns the current camera orientation for the agent the task has permissions for</string>
+	<string name="LSLTipText_llSetPrimURL">llSetPrimURL(string url)
+Updates the URL for the web page shown on the sides of the object</string>
+	<string name="LSLTipText_llRefreshPrimURL">llRefreshPrimURL()
+Reloads the web page shown on the sides of the object</string>
+	<string name="LSLTipText_llEscapeURL">string llEscapeURL(string url)
+Returns an escaped/encoded version of url, replacing spaces with %20 etc.</string>
+	<string name="LSLTipText_llUnescapeURL">string llUnescapeURL(string url)
+Returns an unescaped/ unencoded version of url, replacing %20 with spaces etc.</string>
+	<string name="LSLTipText_llMapDestination">llMapDestination(string simname, vector pos, vector look_at)
+Opens the World Map centered on the region simname with pos highlighted. (NOTE: look_at currently does nothing.)
+Only works for scripts attached to avatar, or during touch events.</string>
+	<string name="LSLTipText_llAddToLandBanList">llAddToLandBanList(key avatar, float hours)
+Adds avatar to the land ban list for hours, or indefinitely if hours is 0</string>
+	<string name="LSLTipText_llRemoveFromLandPassList">llRemoveFromLandPassList(key avatar)
+Removes avatar from the land pass list</string>
+	<string name="LSLTipText_llRemoveFromLandBanList">llRemoveFromLandBanList(key avatar)
+Removes avatar from the land ban list</string>
+	<string name="LSLTipText_llSetCameraParams">llSetCameraParams(list rules)
+Sets multiple camera parameters at once.
+List format is [ rule1, data1, rule2, data2 . . . rulen, datan ]</string>
+	<string name="LSLTipText_llClearCameraParams">llClearCameraParams()
+Resets all camera parameters to default values and turns off scripted camera control</string>
+	<string name="LSLTipText_llListStatistics">float llListStatistics(integer operation, list src)
+Performs statistical aggregate functions on list src using LIST_STAT_* operations</string>
+	<string name="LSLTipText_llGetUnixTime">integer llGetUnixTime()
+Returns the number of seconds elapsed since 00:00 hours, Jan 1, 1970 UTC from the system clock</string>
+	<string name="LSLTipText_llGetParcelFlags">integer llGetParcelFlags(vector pos)
+Returns a mask of the parcel flags (PARCEL_FLAG_*) for the parcel that includes the point pos</string>
+	<string name="LSLTipText_llGetRegionFlags">integer llGetRegionFlags()
+Returns the region flags (REGION_FLAG_*) for the region the object is in</string>
+	<string name="LSLTipText_llXorBase64StringsCorrect">string llXorBase64StringsCorrect(string s1, string s2)
+Correctly performs an exclusive or on two Base64 strings and returns a Base64 string.
+s2 repeats if it is shorter than s1.</string>
+	<string name="LSLTipText_llHTTPRequest">llHTTPRequest(string url, list parameters, string body)
+Sends an HTTP request to the specified url with the body of the request and parameters</string>
+	<string name="LSLTipText_llResetLandBanList">llResetLandBanList()
+Removes all Residents from the land ban list</string>
+	<string name="LSLTipText_llResetLandPassList">llResetLandPassList()
+Removes all Residents from the land access/pass list</string>
+	<string name="LSLTipText_llGetObjectPrimCount">integer llGetObjectPrimCount(key object_id)
+Returns the total number of prims for an object in the region</string>
+	<string name="LSLTipText_llGetParcelPrimOwners">list llGetParcelPrimOwners(vector pos)
+Returns a list of all Residents who own objects on the parcel at pos and with individual prim counts.
+Requires owner-like permissions for the parcel.</string>
+	<string name="LSLTipText_llGetParcelPrimCount">integer llGetParcelPrimCount(vector pos, integer category, integer sim_wide)
+Returns the number of prims on the parcel at pos of the given category.
+Categories: PARCEL_COUNT_TOTAL, _OWNER, _GROUP, _OTHER, _SELECTED, _TEMP</string>
+	<string name="LSLTipText_llGetParcelMaxPrims">integer llGetParcelMaxPrims(vector pos, integer sim_wide)
+Returns the maximum number of prims allowed on the parcel at pos</string>
+	<string name="LSLTipText_llGetParcelDetails">list llGetParcelDetails(vector pos, list params)
+Returns the parcel details specified in params for the parcel at pos.
+Params is one or more of: PARCEL_DETAILS_NAME, _DESC, _OWNER, _GROUP, _AREA, _ID, _SEE_AVATARS</string>
+	<string name="LSLTipText_llSetLinkPrimitiveParams">llSetLinkPrimitiveParams(integer linknumber, list rules)
+Sets primitive parameters for linknumber based on rules</string>
+	<string name="LSLTipText_llSetLinkTexture">llSetLinkTexture(integer linknumber, string texture, integer face)
+Sets the texture of face for a task that exists in the link chain at linknumber</string>
+	<string name="LSLTipText_llStringTrim">string llStringTrim(string src, integer trim_type)
+Trims the leading and/or trailing white spaces from a string.
+trim_type can be STRING_TRIM, STRING_TRIM_HEAD or STRING_TRIM_TAIL.</string>
+	<string name="LSLTipText_llRegionSay">llRegionSay(integer channel, string msg)
+Broadcasts msg on channel (not 0) that can be heard anywhere in the region by a script listening on channel</string>
+	<string name="LSLTipText_llGetObjectDetails">list llGetObjectDetails(key id, list params)
+Returns the object details specified in params for the object with key id.
+Params are OBJECT_NAME, _DESC, _POS, _ROT, _VELOCITY, _OWNER, _GROUP, _CREATOR</string>
+	<string name="LSLTipText_llSetClickAction">llSetClickAction(integer action)
+Sets the action performed when a prim is clicked upon</string>
+	<string name="LSLTipText_llGetRegionAgentCount">integer llGetRegionAgentCount()
+Returns the number of avatars in the region</string>
+	<string name="LSLTipText_llTextBox">llTextBox(key avatar, string message, integer chat_channel
+Shows a dialog box on the avatar's screen with the message.
+It contains a text box for input, and if entered that text is chatted on chat_channel.</string>
+	<string name="LSLTipText_llGetAgentLanguage">string llGetAgentLanguage(key avatar)
+Returns the language code of the preferred interface language of the avatar</string>
+	<string name="LSLTipText_llDetectedTouchUV">vector llDetectedTouchUV(integer index)
+Returns the u and v coordinates in the first two components of a vector, for the texture coordinates where the prim was touched in a triggered touch event</string>
+	<string name="LSLTipText_llDetectedTouchFace">integer llDetectedTouchFace(integer index)
+Returns the index of the face where the avatar clicked in a triggered touch event</string>
+	<string name="LSLTipText_llDetectedTouchPos">vector llDetectedTouchPos(integer index)
+Returns the position where the object was touched in a triggered touch event</string>
+	<string name="LSLTipText_llDetectedTouchNormal">vector llDetectedTouchNormal(integer index)
+Returns the surface normal for a triggered touch event</string>
+	<string name="LSLTipText_llDetectedTouchBinormal">vector llDetectedTouchBinormal(integer index)
+Returns the surface binormal for a triggered touch event</string>
+	<string name="LSLTipText_llDetectedTouchST">vector llDetectedTouchST(integer index)
+Returns the s and t coordinates in the first two components of a vector, for the surface coordinates where the prim was touched in a triggered touch event</string>
+	<string name="LSLTipText_llSHA1String">string llSHA1String(string src)
+Returns a string of 40 hex characters that is the SHA1 security Hash of src</string>
+	<string name="LSLTipText_llGetFreeURLs">integer llGetFreeURLs()
+Returns the number of available URLs for the current script</string>
+	<string name="LSLTipText_llRequestURL">key llRequestURL()
+Requests one HTTP:// url for use by this object.
+An http_request event is triggered with the results.</string>
+	<string name="LSLTipText_llRequestSecureURL">key llRequestSecureURL()
+Requests one HTTPS:// (SSL) url for use by this object.
+An http_request event is triggered with the results.</string>
+	<string name="LSLTipText_llReleaseURL">llReleaseURL(string url)
+Releases the specified URL, it will no longer be usable</string>
+	<string name="LSLTipText_llHTTPResponse">llHTTPResponse(key request_id, integer status, string body)
+Responds to request_id with status and body</string>
+	<string name="LSLTipText_llGetHTTPHeader">string llGetHTTPHeader(key request_id, string header)
+Returns the value for header for request_id</string>
+	<string name="LSLTipText_llSetPrimMediaParams">integer llSetPrimMediaParams(integer face, list params)
+Sets the media params for a particular face on an object. If media is not already on this object, add it.
+List is a set of name/value pairs in no particular order.  Params not specified are unchanged, or if new media is added then set to the default specified.
+The possible names are below, along with the types of values and what they mean.</string>
+	<string name="LSLTipText_llGetPrimMediaParams">list llGetPrimMediaParams(integer face, list params)
+Returns the media params for a particular face on an object, given the desired list of names, in the order requested.
+(Returns an empty list if no media exists on the face.)</string>
+	<string name="LSLTipText_llClearPrimMedia">integer llClearPrimMedia(integer face)
+Clears (deletes) the media and all params from the given face.</string>
+	<string name="LSLTipText_llSetLinkPrimitiveParamsFast">llSetLinkPrimitiveParamsFast(integer linknumber, list rules)
+Set primitive parameters for linknumber based on rules with no built-in script sleep.</string>
+	<string name="LSLTipText_llGetLinkPrimitiveParams">list llGetLinkPrimitiveParams(integer linknumber,list rules)
+Get primitive parameters for linknumber based on rules.</string>
+	<string name="LSLTipText_llLinkParticleSystem">list llLinkParticleSystem(integer linknumber, list rules)
+Creates a particle system based on rules.  Empty list removes particle system from object.
+List format is [ rule1, data1, rule2, data2 . . . rulen, datan ].</string>
+	<string name="LSLTipText_llSetLinkTextureAnim">llSetLinkTextureAnim(integer link, integer mode, integer face, integer sizex, integer sizey, float start, float length, float rate)
+Animate the texture on the specified face/faces of the specified prim/prims by setting the texture scale and offset.</string>
+	<string name="LSLTipText_llGetLinkNumberOfSides">integer llGetLinkNumberOfSides(integer link)
+Returns the number of sides of the specified linked prim.</string>
+	<string name="LSLTipText_llGetUsername">string llGetUsername(key id)
+Returns the single-word username of an avatar, if the avatar is in the current region, otherwise the empty string.</string>
+	<string name="LSLTipText_llRequestUsername">key llRequestUsername(key id)
+Requests single-word username of an avatar.  When data is available the dataserver event will be raised.</string>
+	<string name="LSLTipText_llGetDisplayName">string llGetDisplayName(key id)
+Returns the name of an avatar, if the avatar is in the current simulator, and the name has been cached, otherwise the same as llGetUsername. Use llRequestDisplayName if you absolutely must have the display name.</string>
+	<string name="LSLTipText_llRequestDisplayName">key llRequestDisplayName(key id)
+Requests name of an avatar.  When data is available the dataserver event will be raised.</string>
+	<string name="LSLTipText_llGetEnv">string llGetEnv(string name)
+Returns a string with the requested data about the region</string>
+	<string name="LSLTipText_llCastRay">list llCastRay(vector start, vector end, list params)
+Returns a list consisting of the following three values for each hit: UUID, Link number, Hit position.</string>
+	<string name="LSLTipText_llRegionSayTo">llRegionSayTo(key target, integer channel, string msg)
+Sends msg on channel (not DEBUG_CHANNEL) directly to prim or avatar target anywhere within the region.</string>
+	<string name="LSLTipText_llGetSPMaxMemory">integer llGetSPMaxMemory()
+Returns the maximum used memory for the current script. Only valid after using PROFILE_SCRIPT_MEMORY. Non-mono scripts always use 16k.</string>
+	<string name="LSLTipText_llGetUsedMemory">integer llGetUsedMemory()
+Returns the current used memory for the current script. Non-mono scripts always use 16k.</string>
+	<string name="LSLTipText_llScriptProfiler">llScriptProfiler(integer flags)
+Enables or disables script profiling options. Currently only supports PROFILE_SCRIPT_MEMORY (mono only) and PROFILE_NONE.
+MAY SIGNIFICANTLY REDUCE SCRIPT PERFORMANCE!</string>
+	<string name="LSLTipText_llSetMemoryLimit">integer llSetMemoryLimit(integer limit)
+Request limit bytes to be reserved for this script.
+Returns a success/failure flag (STATUS_OK when sucessful, another of the STATUS_* flags on failure) for whether the memory limit was set.
+Only relevant for Mono-compiled scripts.</string>
+	<string name="LSLTipText_llGetMemoryLimit">integer llGetMemoryLimit()
+Get the maximum memory a script can use.
+Returns the integer amount of memory the script can use in bytes.</string>
+	<string name="LSLTipText_llSetLinkMedia">llSetLinkMedia(integer link, integer face, list params)
+Set the media params for a particular face on linked prim.  List is a set of name/value pairs (in no particular order). The possible names are below, along with the types of values and what they mean.  If media is not already on this object, add it. Params not specified are unchanged, or if new media is added set to the default specified.</string>
+	<string name="LSLTipText_llGetLinkMedia">list llGetLinkMedia(integer link, integer face, list params)
+Get the media params for a particular face on linked prim, given the desired list of names. Returns a list of values in the order requested.  Returns an empty list if no media exists on the face.</string>
+	<string name="LSLTipText_llClearLinkMedia">integer llClearLinkMedia(integer link, integer face)
+Clears (deletes) the media and all params from the given face on linked prim(s).</string>
+	<string name="LSLTipText_llSetContentType">llSetContentType(key id, integer content_type)
+Set the Internet media type of an LSL HTTP server response.
+content_type may be one of CONTENT_TYPE_TEXT (default) "text/plain", or CONTENT_TYPE_HTML "text/html", only valid for embedded browsers on content owned by the person viewing. Falls back to "text/plain" otherwise.</string>
+	<string name="LSLTipText_llLinkSitTarget">llLinkSitTarget(integer link, vector offset, rotation rot)
+Set the sit location for the linked prim(s). The sit location is relative to the prim's position and rotation.</string>
+	<string name="LSLTipText_llAvatarOnLinkSitTarget">key llAvatarOnLinkSitTarget(integer link)
+If an avatar is sitting on the sit target, return the avatar's key, NULL_KEY otherwise</string>
+	<string name="LSLTipText_llSetLinkCamera">llSetLinkCamera(integer link, vector eye, vector at)
+Sets the camera eye offset, and the offset that camera is looking at, for avatars that sit on the linked prim.
+The two vector parameters are offsets relative to the object's center and expressed in local coordinates.</string>
+	<string name="LSLTipText_llSetVelocity">llSetVelocity(vector velocity, integer local)
+Sets an objects velocity, in local coords if local == TRUE (if the script is physical)</string>
+	<string name="LSLTipText_llSetAngularVelocity">llSetAngularVelocity(vector angular_velocity, integer local)
+Sets an objects angular velocity, in local coords if local == TRUE (if the script is physical)</string>
+	<string name="LSLTipText_llSetPhysicsMaterial">llSetPhysicsMaterial(integer flags, float gravity_multiplier, float restitution, float friction, float density )
+Sets the requested attributes of the root object's physics material.</string>
+	<string name="LSLTipText_llGetPhysicsMaterial">llGetPhysicsMaterial() returns the gravity multiplier, restitution, friction, and density of the linkset as a list in that order.</string>
+	<string name="LSLTipText_llGetMassMKS">llGetMassMKS() returns the mass of the linkset in kilograms.</string>
+	<string name="LSLTipText_llGenerateKey">key llGenerateKey()
+Return a unique generated key</string>
+	<string name="LSLTipText_llSetKeyframedMotion">llSetKeyframedMotion(list keyframes, list options)
+Requests that a nonphysical object be keyframed according to keyframe list.</string>
+	<string name="LSLTipText_llTransferLindenDollars">key llTransferLindenDollars(key destination, integer amount)
+Transfer amount of linden dollars ([CURRENCY]) from script owner to destination. Returns a key to a corresponding transaction_result event for the success of the transfer.</string>
+	<string name="LSLTipText_llGetParcelMusicURL">string llGetParcelMusicURL()
+Gets the streaming audio URL for the parcel of land on which the object is located.</string>
+	<string name="LSLTipText_llSetRegionPos">integer llSetRegionPos(vector pos)
+Sets the position anywhere within the region (if the object isn't physical)</string>
+	<string name="LSLTipText_llNavigateTo">llNavigateTo(vector point, list options)
+For AI Character: Navigate to destination.</string>
+	<string name="LSLTipText_llCreateCharacter">llCreateCharacter(list options)
+Convert linkset to AI Character which can navigate the world.</string>
+	<string name="LSLTipText_llPursue">llPursue(key target, list options)
+For AI Character: Chase after a target.</string>
+	<string name="LSLTipText_llWanderWithin">llWanderWithin(vector center, vector dist, list options)
+For AI Character: Wander within a specified volume.</string>
+	<string name="LSLTipText_llFleeFrom">llFleeFrom(vector source, float radius, list options)
+For AI Character: Flee from a point.</string>
+	<string name="LSLTipText_llPatrolPoints">llPatrolPoints(list points, list options)
+For AI Character: Patrol a list of points.</string>
+	<string name="LSLTipText_llExecCharacterCmd">llExecCharacterCmd(integer cmd, list options)
+For AI Character: Execute a character command.</string>
+	<string name="LSLTipText_llDeleteCharacter">llDeleteCharacter()
+Convert linkset from AI Character to Physics object.</string>
+	<string name="LSLTipText_llUpdateCharacter">llUpdateCharacter(list options)
+Change the AI Character's settings.</string>
+	<string name="LSLTipText_llEvade">llEvade(key target, list options)
+For AI Character: Evade a specified target.</string>
+	<string name="LSLTipText_llGetClosestNavPoint">list llGetClosestNavPoint(vector point, list options)
+For AI Character: Get the closest navigable point to the point provided.</string>
+	<string name="LSLTipText_llGetStaticPath">list llGetStaticPath(vector start, vector end, float radius, list params)
+Returns a list of position vectors indicating pathfinding waypoints between positions at start and end, for a character of a given radius. The waypoints this function returns are for the 'static' nav mesh, meaning that dynamic objects are ignored.</string>
+<!-- Not in LL list yes -->
+	<string name="LSLTipText_llManageEstateAccess">integer llManageEstateAccess(integer action, key id)
+To add or remove agents from the estate's agent access or ban lists or groups from the estate's group access list.
+Only works for objects owned by the Estate Owner or an Estate Manager.
+Returns TRUE if successful and FALSE if throttled, on invalid action, on invalid or null id, or if object owner is not allowed to manage the estate.
+'action' can be any of: ESTATE_ACCESS_ALLOWED_[AGENT/GROUP]_[ADD/REMOVE] or ESTATE_ACCESS_BANNED_AGENT_[ADD/REMOVE]</string>
+	<string name="LSLTipText_llGetAgentList">list llGetAgentList(integer scope, list options)
+Requests a list of agents currently in the region, limited by the scope parameter.</string>
+	<string name="LSLTipText_llAttachToAvatarTemp">llAttachToAvatarTemp(integer attach_point)
+Attaches the object to the avatar who has granted permission to the script, with the exception that the object will not create new inventory for the user, and will disappear on detach or disconnect.</string>
+	<string name="LSLTipText_llTeleportAgent">llTeleportAgent(key avatar, string landmark, vector position, vector look_at)
+Requests a teleport of avatar to a landmark stored in the object's inventory. If no landmark is provided (an empty string), the avatar is teleported to the location position in the current region. In either case, the avatar is turned to face the position given by look_at in local coordinates.</string>
+	<string name="LSLTipText_llTeleportAgentGlobalCoords">llTeleportAgentGlobalCoords(key agent, vector global_coordinates, vector region_coordinates, vector look_at)
+Teleports an agent to set of a region_coordinates within a region at the specified global_coordinates. The agent lands facing the position defined by look_at local coordinates.
+A region's global coordinates can be retrieved using llRequestSimulatorData(region_name, DATA_SIM_POS)</string>
+	<string name="LSLTipText_llGetSimStats">float llGetSimStats(integer stat_type)
+Returns the value of a particular simulator statistic.</string>
+	<string name="LSLTipText_llSetAnimationOverride">llSetAnimationOverride(string anim_state, string anim)
+Set the animation (anim) that will play for the given animation state (anim_state).</string>
+	<string name="LSLTipText_llGetAnimationOverride">string llGetAnimationOverride(string anim_state)
+Returns a string that is the name of the animation that is being used for the specified animation state (anim_state).</string>
+	<string name="LSLTipText_llResetAnimationOverride">llResetAnimationOverride(string anim_state)
+Resets the animation override of the specified animation state (anim_state) to the corresponding default value.</string>
+<!-- GOD FUNCTIONS -->
+	<string name="LSLTipText_llGodLikeRezObject">llGodLikeRezObject( key inventory, vector pos )
+Rez directly off of UUID if owner has god-bit set.
+(Requires god mode)</string>
+	<string name="LSLTipText_llSetInventoryPermMask">llSetInventoryPermMask( string item, integer mask, integer value )
+Sets the given permission mask to the new value on the inventory item.
+(Requires god mode)</string>
+	<string name="LSLTipText_llSetObjectPermMask">llSetObjectPermMask( integer mask, integer value )
+Sets the given permission mask to the new value on the root object the task is attached to.
+(Requires god mode)</string>
+
+<!-- 
+    Please keep LL-LSL above this section
+    ** DATA SOURCES **
+       OpenSim OS Functions:      \OpenSim\Region\ScriptEngine\Shared\Api\Interface\IOSSL_Api.cs
+       Aurora-Sim AA Functions:   \Aurora\AuroraDotNetEngine\APIs\AA_API.cs
+       Aurora-Sim BOT Functions:  \Aurora\BotManager\Bot_API.cs
+-->
+
+	<string name="LSLTipText_osSetDynamicTextureURL">osSetDynamicTextureURL(key dynamicID, string contentType, string url, string extraParams, integer timer )
+Renders a web texture on the prim containing the script, and returns the UUID of the newly created texture.</string>
+	<string name="LSLTipText_osSetDynamicTextureURLBlend">osSetDynamicTextureURLBlend(key dynamicID, string contentType, string url, string extraParams, integer timer, integer alpha)
+Allows for two dynamic textures to blend on the prim containing this script.</string>
+	<string name="LSLTipText_osSetDynamicTextureURLBlendFace">osSetDynamicTextureURLBlendFace(key dynamicID, string contentType, string url, string extraParams, integer blend, integer disp, integer timer, integer alpha, integer face)
+Loads a web texture on a prim.</string>
+	<string name="LSLTipText_osSetDynamicTextureData">osSetDynamicTextureData(key dynamicID, string contentType, string data, string extraParams, integer timer)
+Writes text and vector graphics onto a prim face.</string>
+	<string name="LSLTipText_osSetDynamicTextureDataBlend">osSetDynamicTextureDataBlend(key dynamicID, string contentType, string data, string extraParams, integer timer, integer alpha)
+Allows for two dynamic textures to blend on the prim containing this script.</string>
+	<string name="LSLTipText_osSetDynamicTextureDataBlendFace">osSetDynamicTextureDataBlendFace(key dynamicID, string contentType, string data, string extraParams, integer blend, integer disp, integer timer, integer alpha, integer face)
+Allows for two dynamic textures to blend on the specified face of the prim containing this script.</string>
+	<string name="LSLTipText_osGetTerrainHeight">osGetTerrainHeight(integer x, integer y)
+Returns current terrain height as float at the given coordinates.</string>
+	<string name="LSLTipText_osSetTerrainHeight">osSetTerrainHeight(integer x, integer y, float val)
+Sets terrain height at the given coordinates. Use osTerrainFlush() afterwards.</string>
+	<string name="LSLTipText_osTerrainFlush">osTerrainFlush()
+Updates terrain data. Call this after you are done using osTerrainSetHeight.</string>
+	<string name="LSLTipText_osRegionRestart">osRegionRestart(float seconds)
+Restart the current region in the specified number of seconds from now.</string>
+	<string name="LSLTipText_osRegionNotice">osRegionNotice(string msg)
+Broadcasts a notification message to all agents on the current region.</string>
+	<string name="LSLTipText_osConsoleCommand">osConsoleCommand(string command)
+Issues commands directly to the OpenSim server console.</string>
+	<string name="LSLTipText_osSetParcelMediaURL">osSetParcelMediaURL(string url)
+Sets parcel media URL.</string>
+	<string name="LSLTipText_osSetPrimFloatOnWater">osSetPrimFloatOnWater(integer floatYN)
+Make physical prims float at the water level, TRUE or FALSE.</string>
+	<string name="LSLTipText_osSetParcelSIPAddress">osSetParcelSIPAddress(string SIPAddress)
+Sets parcel SIP Address for Voice.</string>
+	<string name="LSLTipText_osGetAgentIP">osGetAgentIP(key agent)
+Returns the Avatars IP Address as a string.	Allows in-world tools be used to coordinate out of world network services that need access to client IP addresses.
+Should *ONLY* be used by Region Server Owner.</string>
+	<string name="LSLTipText_osGetAgents">osGetAgents()
+Returns a list of all avatars in the region in which the script is running.</string>
+	<string name="LSLTipText_osTeleportAgent">POLYMORPHIC COMMAND
+osTeleportAgent(key agent, integer regionX, integer regionY, vector position, vector lookat)
+osTeleportAgent(key agent, string regionName, vector position, vector lookat)
+osTeleportAgent(key agent, vector position, vector lookat)
+
+Teleports the specified agent to a specified location in the region, the grid, or the hypergrid.</string>
+	<string name="LSLTipText_osTeleportOwner">POLYMORPHIC COMMAND
+osTeleportOwner(integer regionX, integer regionY, vector position, vector lookat)
+osTeleportOwner(string regionName, vector position, vector lookat)
+osTeleportOwner(vector position, vector lookat)
+
+Teleports the owner of the object that holds the script to a specified location in the region, the grid, or the hypergrid.</string>
+	<string name="LSLTipText_osAvatarPlayAnimation">osAvatarPlayAnimation(key UUID, string animation)
+Triggers animations contained within the same prim as the script. Does not need the target avatar's permission.</string>
+	<string name="LSLTipText_osAvatarStopAnimation">osAvatarStopAnimation(key UUID, string animation)
+Stops specified animation on the specified avatar.</string>
+	<string name="LSLTipText_osMovePen">osMovePen(string drawList, integer x, integer y)
+Moves the pen's location to the coordinates specified by the x and y parameters, without drawing anything.</string>
+	<string name="LSLTipText_osDrawLine">POLYMORPHIC COMMAND
+osDrawLine(string drawList, integer startX, integer startY, integer endX, integer endY)
+osDrawLine(string drawList, integer endX, integer endY)
+Draws a line on a dynamic texture.</string>
+	<string name="LSLTipText_osDrawText">osDrawText(string drawList, string text)
+Renders text on a dynamic texture.</string>
+	<string name="LSLTipText_osDrawEllipse">osDrawEllipse(string drawList, integer width, integer height)
+Draws an ellipse on a dynamic texture.</string>
+	<string name="LSLTipText_osDrawRectangle">osDrawRectangle(string drawList, integer width, integer height)
+Draws a rectangle on a dynamic texture.</string>
+	<string name="LSLTipText_osDrawFilledRectangle">osDrawFilledRectangle(string drawList, integer width, integer height)
+Draws a rectangle on a dynamic texture, and fills it with the current pen color.</string>
+	<string name="LSLTipText_osDrawPolygon">osDrawPolygon (string drawList, list x, list y)
+Draws a polygon on a dynamic texture.</string>
+	<string name="LSLTipText_osDrawFilledPolygon">osDrawFilledPolygon (string drawList, list x, list y)
+Draws a polygon on a dynamic texture, and fills it with the current pen color.</string>
+	<string name="LSLTipText_osSetFontName">osSetFontName(string drawList, string fontName)
+Sets current font to be used by osDrawText. Font must exist on region server to display.</string>
+	<string name="LSLTipText_osSetFontSize">osSetFontSize(string drawList, integer fontSize)
+Sets the font size to be used in osDrawText.</string>
+	<string name="LSLTipText_osSetPenSize">osSetPenSize(string drawList, integer penSize)
+Sets the pen size (line thickness) that is to be used when drawing dynamic textures.</string>
+	<string name="LSLTipText_osSetPenColor">osSetPenColor(string drawList, string color)
+Sets the pen color that is to be used when drawing dynamic textures.</string>
+	<string name="LSLTipText_osSetPenCap">osSetPenCap(string drawList, string direction, string type)
+Apply a shape on the end of a line. This allows using arrow, diamond, round and flat caps.</string>
+	<string name="LSLTipText_osDrawImage">osDrawImage(string drawList, integer width, integer height, string imageUrl)
+Retrieves an image specified by the imageUrl parameter and draws it at the specified height and width.</string>
+	<string name="LSLTipText_osGetDrawStringSize">vector osGetDrawStringSize(string contentType, string text, string fontName, integer fontSize)
+Returns a vector containing the horizontal and vertical dimensions in pixels of the specified text.</string>
+	<string name="LSLTipText_osSetStateEvents">osSetStateEvents(integer events)
+Used in the past as a workaround for a bug with Opensim, which has long since been fixed.</string>
+	<string name="LSLTipText_osList2Double">double osList2Double(list src, integer index)
+Returns double-precision value from src at index.</string>
+	<string name="LSLTipText_osSetRegionWaterHeight">osSetRegionWaterHeight(float height)
+Adjusts water height on region.</string>
+	<string name="LSLTipText_osSetRegionSunSettings">osSetRegionSunSettings(integer useEstateSun, integer sunFixed, float sunHour)
+Changes the estate sun settings, then triggers a sun update
+'sunFixed' TRUE to keep the sun stationary, FALSE to use global time
+'sunHour' The sun hour that is desired, 0...24, 0 is sunrise.</string>
+	<string name="LSLTipText_osSetEstateSunSettings">osSetEstateSunSettings(integer sunFixed, float sunHour)
+sunFixed = TRUE or FALSE, sunHour = 00.00 to 24.00.</string>
+	<string name="LSLTipText_osGetCurrentSunHour">float osGetCurrentSunHour()
+Returns float value of current sun hour 0...24 0 is sunrise.</string>
+	<string name="LSLTipText_osGetSunParam">float osGetSunParam(string param)
+Returns current float values for param, where param = day_length, year_length, day_night_offset, update_interval.</string>
+	<string name="LSLTipText_osSetSunParam">osSetSunParam(string param, float value)
+Sets region's sun parameters, where param = day_length, year_length, day_night_offset, update_interval.</string>
+	<string name="LSLTipText_osWindActiveModelPluginName">string osWindActiveModelPluginName()
+Returns the current working wind module installed
+These are SimpleRandomWind or ConfigurableWind.</string>
+	<string name="LSLTipText_osSetWindParam">osSetWindParam(string plugin, string param, float value)
+Sets value of param for plugin.  SimpleRandomWind plugin param = strength.
+ConfigurableWind plugin params = avgStrength, avgDirection, varStrength, varDirection, rateChange.</string>
+	<string name="LSLTipText_osGetWindParam">float osGetWindParam(string plugin, string param)
+Returns float value of param for plugin.  SimpleRandomWind plugin param = strength.
+ConfigurableWind plugin params = avgStrength, avgDirection, varStrength, varDirection, rateChange.</string>
+	<string name="LSLTipText_osParcelJoin">osParcelJoin(vector start, vector end)
+Where start = top corner, end = bottom corner.
+Subdivides from start vector to end vector.  Z is ignored but must exist in syntax</string>
+	<string name="LSLTipText_osParcelSubdivide">osParcelSubdivide(vector start, vector end)
+Where start = top corner, end = bottom corner.
+Subdivides from start vector to end vector.  Z is ignored but must exist in syntax</string>
+	<string name="LSLTipText_osSetParcelDetails">osSetParcelDetails(vector pos, list rules)
+Set parcel details at position x,y,x.
+Rules = PARCEL_DETAILS_NAME, PARCEL_DETAILS_DESC, PARCEL_DETAILS_OWNER, PARCEL_DETAILS_GROUP</string>
+	<string name="LSLTipText_osGetScriptEngineName">string osGetScriptEngineName()
+Returns the name of the script engine which is currently enabled on the server.</string>
+	<string name="LSLTipText_osGetSimulatorVersion">string osGetSimulatorVersion()
+Returns current server version information as a string.</string>
+	<string name="LSLTipText_osParseJSON">string osParseJSON(string JSON)
+Returns a deserialized JSON.</string>
+	<string name="LSLTipText_osParseJSONNew">string osParseJSON(string JSON)
+Returns a deserialized JSON object.</string>
+	<string name="LSLTipText_osMessageObject">osMessageObject(key UUID, string message)
+Sends string to object identified by UUID.
+Receiving object requires a dataserver(key queryid, string data) in a contained script(s).
+The queryid passed will be the id of the calling object.</string>
+	<string name="LSLTipText_osMakeNotecard">osMakeNotecard(string notecardName, list contents)
+Write a Notecard contained in Prim with contents of list.</string>
+	<string name="LSLTipText_osGetNotecardLine">string osGetNotecardLine(string name, integer line)
+Reads the requested notecard line and return its data as a string.</string>
+	<string name="LSLTipText_osGetNotecard">string osGetNotecard(string name)
+Reads the entire notecard and return its data as a string.</string>
+	<string name="LSLTipText_osGetNumberOfNotecardLines">integer osGetNumberOfNotecardLines(string name)
+Returns total number of lines in a notecard.</string>
+	<string name="LSLTipText_osAvatarName2Key">key osAvatarName2Key(string firstname, string lastname)
+Returns the avatar's UUID from their firstname, lastname.</string>
+	<string name="LSLTipText_osKey2Name">string osKey2Name(key UUID)
+Returns avatar name from their UUID key.</string>
+	<string name="LSLTipText_osGetGridNick">string osGetGridNick()
+Returns the grid's nickname.</string>
+	<string name="LSLTipText_osGetGridName">string osGetGridName()
+Returns the grid's name.</string>
+	<string name="LSLTipText_osGetGridLoginURI">string osGetGridLoginURI()
+Returns the grid's LoginURI.</string>
+	<string name="LSLTipText_osGetGridHomeURI">string osGetGridHomeURI()
+Returns the current grid URI.</string>
+	<string name="LSLTipText_osGetGridCustom">string osGetGridCustom(string key)
+Returns the grid's Grid Info.</string>
+	<string name="LSLTipText_osFormatString">string osFormatString(string to_format, list strings)
+Returns string. OsFormatString("My name is {0}, I'm located in {1}”, [llGetObjectName(), llGetRegionName()])
+Where {num} parameters must be incremented for each list item, starting at zero, surrounded by curly brackets.</string>
+	<string name="LSLTipText_osMatchString">list osMatchString(string src, string pattern, integer start)
+Returns list of matches for the pattern and its components inside the source string. The pattern is a regular expression.
+Each match in the result is the string that matched and its position in the source.</string>
+	<string name="LSLTipText_osReplaceString">string osReplaceString(string src, string pattern, string replace, integer count, integer start)
+Returns new string with replacements completed.</string>
+	<string name="LSLTipText_osLoadedCreationDate">string osLoadedCreationDate()
+Returns Creation Date from meta data of OAR.</string>
+	<string name="LSLTipText_osLoadedCreationTime">string osLoadedCreationTime()
+Returns Creation Time from meta data of OAR.</string>
+	<string name="LSLTipText_osLoadedCreationID">string osLoadedCreationID()
+Returns creation ID from meta data of OAR. Can not be used to identify a machine.</string>
+	<string name="LSLTipText_osGetLinkPrimitiveParams">list osGetLinkPrimitiveParams(integer linknumber, list rules)
+Returns prim params for the linkset prims specified by linknum.
+If using linkset constants (e.g. LINK_SET, LINK_ALL_CHILDREN, etc), the requested params of each relevant prim are concatenated to the end of the list.
+Otherwise, usage is identical to llGetPrimitiveParams().</string>
+	<string name="LSLTipText_osIsNpc">key osIsNpc(key NPC)
+Returns TRUE if 'key' is an NPC (non-player-character).</string>
+  <string name="LSLTipText_osNpcCreate">POLYMORPHIC
+osNpcCreate(string firstname, string lastname, vector position, string notecard)
+osNpcCreate(string firstname, string lastname, vector position, string notecard, integer options)
+Creates an NPC (Non Player Character) clone named firstname lastname at position from a notecard containing the specifications.</string>
+	<string name="LSLTipText_osNpcSaveAppearance">osNpcSaveAppearance(key npc, string notecard)
+Save NPC's current body part, clothing and attachments data to notecard in prim inventory.
+The avatar must be present in the region when this function is invoked.
+The baked textures for the avatar (necessary to recreate appearance) are saved permanently.)</string>
+	<string name="LSLTipText_osNpcLoadAppearance">osNpcLoadAppearance(key npc, string notecard)
+Load NPC appearance from notecard.
+This notecard must contain appearance data created with the save appearance function.</string>
+	<string name="LSLTipText_osNpcGetPos">vector osNpcGetPos(key npc)
+Returns current position vector of the NPC.</string>
+	<string name="LSLTipText_osNpcMoveTo">osNpcMoveTo(key npc, vector position)
+Moves an NPC to a location within the region.</string>
+	<string name="LSLTipText_osNpcMoveToTarget">osNpcMoveToTarget(key npc, vector target, integer options)
+Moves NPC to given target over time.
+Options = OS_NPC_FLY, OS_NPC_NO_FLY, OS_NPC_LAND_AT_TARGET, OS_NPC_RUNNING</string>
+	<string name="LSLTipText_osNpcGetOwner">rotation osNpcGetOwner(key npc)
+Returns the NPC owner UUID.</string>
+	<string name="LSLTipText_osNpcGetRot">rotation osNpcGetRot(key npc)
+Gets the rotation of the avatar. Only the rotation around the Z plane in Euler rotation (horizontal rotation) has any meaning.</string>
+	<string name="LSLTipText_osNpcSetRot">osNpcSetRot(key npc, rotation rot)
+Set the rotation of the NPC. Only setting the rotation in the Z plane in Euler rotation will have any meaningful effect (turning NPC facing direction).
+Setting X or Y Euler values will result in the avatar rotating in an undefined manner.</string>
+	<string name="LSLTipText_osNpcStopMoveToTarget">osNpcStopMoveToTarget(key npc)
+Stop a current move to a target.</string>
+	<string name="LSLTipText_osNpcSay">osNpcSay(key npc, string message)
+Makes an NPC say something.</string>
+	<string name="LSLTipText_osNpcSit">osNpcSit(key npc, key primkey, integer options)
+Makes NPC sit on prim/item.</string>
+	<string name="LSLTipText_osNpcStand">osNpcStand(key npc)
+Makes NPC identified by UUID to stand.</string>
+	<string name="LSLTipText_osNpcRemove">osNpcRemove(key npc)
+Removes an NPC.</string>
+	<string name="LSLTipText_osNpcPlayAnimation">osNpcPlayAnimation(key npc, string animation)
+Makes NPC identified by key npc to play animation.</string>
+	<string name="LSLTipText_osNpcStopAnimation">osNpcStopAnimation(key npc, string animation)
+Makes NPC identified by key npc stop playing animation.</string>
+	<string name="LSLTipText_osOwnerSaveAppearance">osOwnerSaveAppearance(string notecard)
+Save Owner's current body part, clothing and attachments data to notecard in prim inventory.
+The avatar must be present in the region when this function is invoked.
+The baked textures for the avatar (necessary to recreate appearance) are saved permanently.)</string>
+	<string name="LSLTipText_osAgentSaveAppearance">osAgentSaveAppearance(key agentId, string notecard)
+Save an Avatar's current body part, clothing and attachments data to specified notecard in prim inventory.
+The avatar must be present in the region when this function is invoked.
+The baked textures for the avatar (necessary to recreate appearance) are saved permanently.)</string>
+	<string name="LSLTipText_osGetMapTexture">key osGetMapTexture()
+Returns the map texture UUID of current region.</string>
+	<string name="LSLTipText_osGetRegionMapTexture">key osGetRegionMapTexture(string regionName)
+Returns the map texture UUID for the regionName requested.</string>
+	<string name="LSLTipText_osGetRegionStats">list osGetRegionStats()
+Returns a list of float values representing a number of region statistics (21 of the values shown in the statistics bar of LL-based clients).</string>
+	<string name="LSLTipText_osGetSimulatorMemory">integer osGetSimulatorMemory()
+Returns integer of current memory used by simulator instance.</string>
+	<string name="LSLTipText_osKickAvatar">osKickAvatar(string FirstName, string LastName, string alert)
+Kicks avatar from region with an alert message.</string>
+	<string name="LSLTipText_osSetSpeed">osSetSpeed(key UUID, float SpeedModifier)
+Multiplies the normal running, walking, and flying speed of the specified avatar.</string>
+	<string name="LSLTipText_osCauseHealing">osCauseHealing(key UUID, float healing)
+Causes healing to specified avatar.</string>
+	<string name="LSLTipText_osCauseDamage">osCauseDamage(key UUID, float damage)
+Causes damage to specified avatar.  Region must be damage enabled.</string>
+	<string name="LSLTipText_osGetPrimitiveParams">list osGetPrimitiveParams(key prim, list rules)
+Gets the parameters of the primitive, specified by key.</string>
+	<string name="LSLTipText_osSetPrimitiveParams">osSetPrimitiveParams(key prim, list rules)
+Sets primitive Params.</string>
+	<string name="LSLTipText_osSetProjectionParams">POLYMORPHIC COMMAND
+osSetProjectionParams(key prim. integer projection, key texture, float fov, float focus, float ambience)
+osSetProjectionParams(integer projection, key texture, float fov, float focus, float ambience)
+osSetProjectionParams(key prim, integer projection, key texture, float fov, float focus, float ambience)</string>
+	<string name="LSLTipText_osGetAvatarList">list osGetAvatarList()
+Returns strided list of the UUID, position, and name of each avatar in the region, except the owner.</string>
+	<string name="LSLTipText_osUnixTimeToTimestamp">string osUnixTimeToTimestamp(integer unixtime)
+Converts unixtime to an llGetTimeStamp() formated string.</string>
+	<string name="LSLTipText_osGetGridGatekeeperURI">string osGetGridGatekeeperURI()
+returns the value of Gatekeeper in [GridService] section for both standalone and grids.</string>
+	<string name="LSLTipText_osGetInventoryDesc">string osGetInventoryDesc(string itemName)
+returns the description of an inventory item contained within a prim.</string>
+	<string name="LSLTipText_osForceAttachToAvatar">Attach the object containing this script to the avatar that owns it without checking for PERMISSION_ATTACH
+For example, osForceAttachToAvatar(ATTACH_CHEST)</string>
+	<string name="LSLTipText_osForceDetachFromAvatar">Detach the object containing this script from the avatar it is attached to without checking for PERMISSION_ATTACH
+Nothing happens if the object is not attached</string>
+	<string name="LSLTipText_osNpcSay">osNpcSay(key npc, integer channel, string message)</string>
+	<string name="LSLTipText_osNpcShout">osNpcShout(key npc, integer channel, string message)</string>
+	<string name="LSLTipText_osNpcWhisper">osNpcWhisper(key npc, integer channel, string message)</string>
+	<string name="LSLTipText_osSetTerrainTexture">osSetTerrainTexture(integer level, key texture)
+sets terrain texture to level specified using the specific UUID of the texture</string>
+	<string name="LSLTipText_osSetTerrainTextureHeight">osSetTerrainTextureHeight(int corner, float low, float high)
+sets terrain texture in corner specified between the low and high levels.  Identical to setting textures in Region Manager within the viewer.</string>
+	<string name="LSLTipText_osInviteToGroup">integer osInviteToGroup(key agentId)
+Returns True / False if user identified by agentID is successfully added to group. (Object containing script must be attached to a group)</string>
+	<string name="LSLTipText_osEjectFromGroup">integer osEjectFromGroup(key agentId)
+Returns True / False if user identified by agentID is successfully removed from group. (Object containing script must be attached to a group)</string>
+	<string name="LSLTipText_osForceAttachToAvatar">osForceAttachToAvatar(integer attachPoint)
+Attach the object containing this script to the avatar that owns it without asking for PERMISSION_ATTACH to the attachPoint. For example, ATTACH_CHEST.</string>
+	<string name="LSLTipText_osForceAttachToAvatarFromInventory">osForceAttachToAvatarFromInventory(string itemName, integer attachPoint)
+Attach the inventory item in the object containing this script to the avatar that owns it without checking for PERMISSION_ATTACH
+If itemName is not found in the inventory then a warning is sent to the owner.  An example of attachPoint is ATTACH_CHEST.</string>
+	<string name="LSLTipText_osForceAttachToOtherAvatarFromInventory">osForceAttachToOtherAvatarFromInventory(string rawAvatarId, string itemName, integer attachPoint) 
+Attach an inventory item in the object containing this script to any avatar in the region without asking for PERMISSION_ATTACH.
+rawAvatarId = The UUID of the avatar to which to attach.  itemName = The name of the item.  attachPoint = The attachment point. Example, ATTACH_CHEST.</string>
+	<string name="LSLTipText_osNpcTouch">osNpcTouch(key npcKey, key object_key, integer link_num)
+Allows the NPC, npcKey, to touch the specified object, object_key, and its link number, link_num.</string>
+	<string name="LSLTipText_osIsUUID">osIsUUID(string thing)
+Checks if thing is a UUID.  Returns 1 if thing is a valid UUID, 0 otherwise.</string>
+	<string name="LSLTipText_osMin">osMin(float A, float B)
+Returns the smaller of two numbers. Wraps to system Math.Min()</string>
+	<string name="LSLTipText_osMax">osMax(float A, float B)
+Returns the larger of two numbers. Wraps to system Math.Max()</string>
+	<string name="LSLTipText_osGetRezzingObject">osGetRezzingObject()
+Get the key of the object that rezzed this object. Will return NULL_KEY if rezzed by agent or otherwise unknown source.</string>
+	<string name="LSLTipText_osGetHealth">osGetHealth(key avatar)
+Returns avatar's health in float value.</string>
+	<string name="LSLTipText_osSetContentType">osSetContentType(key id, string type)
+Sets the response type for an HTTP request/response.</string>
+	<string name="LSLTipText_osGetNumberOfAttachments">osGetNumberOfAttachments(key avatar, list attachmentPoints)
+Returns a strided list of the specified attachmentPoints and the number of attachments on those points.  "avatar" = avatar UUID,  "attachmentPoints" = list of ATTACH_* constants.</string>
+	<string name="LSLTipText_osMessageAttachments">osMessageAttachments(key avatar, string message, list attachmentPoints, integer flags)
+Sends message to avatar's attachments on the specified attachmentPoints. Behaves as osMessageObject(), without the sending script needing to know the attachment keys in advance.  "avatar" =avatar UUID,  "message" = message string. "attachmentPoints" = list of ATTACH_* constants, or -1 for all attachments. If -1 is specified and OS_ATTACH_MSG_INVERT_POINTS is present in flags, no action is taken.. "flags" = flags further constraining the attachments to deliver the message to.</string>
+	<string name="LSLTipText_osDropAttachment">osDropAttachment()
+Attempts to drop an attachment to the ground.</string>
+	<string name="LSLTipText_osDropAttachmentAt">osDropAttachmentAt(vector pos, rotation rot)
+Attempts to drop an attachment at the specified coordinates.  "pos" = vector position "rot" = rotation of object.</string>
+	<string name="LSLTipText_osForceDropAttachment">osForceDropAttachment()
+Attempts to drop an attachment to the ground while bypassing the script permissions.</string>
+	<string name="LSLTipText_osForceDropAttachmentAt">osForceDropAttachmentAt(vector pos, rotation rot)
+Attempts to drop an attachment at the specified coordinates while bypassing the script permissions.  "pos" = vector position "rot" = rotation of object.</string>
+	<string name="LSLTipText_osListenRegex">osListenRegex(integer channelID, string name, string ID, string msg, integer regexBitfield)
+Identical to llListen except for a bitfield which indicates which string parameters should be parsed as regex patterns.  Params = integer channelID, string name, string ID, string msg, integer regexBitfield.  Where regexBitfield = OS_LISTEN_REGEX_NAME or OS_LISTEN_REGEX_MESSAGE.</string>
+	<string name="LSLTipText_osRegexIsMatch">osRegexIsMatch(string input, string pattern)
+Wraps to bool Regex.IsMatch(string input, string pattern)
+string input = string to test for match
+string pattern = string to use as pattern
+returns boolean TRUE/FALSE.</string>
+
+	<string name="LSLTipText_cmSetWindlightScene">cmSetWindlightScene(list rules)
+Set the current WindLight scene. Estate managers and owners only.
+(Reguires LightShare Enabled Viewer)</string>
+	<string name="LSLTipText_cmSetWindlightSceneTargeted">cmSetWindlightSceneTargeted(list rules, key target)
+Set the current WindLight scene directed at a specific avatar. Estate managers and owners only.
+(Reguires LightShare Enabled Viewer)</string>
+	<string name="LSLTipText_cmGetWindlightScene">list cmGetWindlightScene(list rules)
+Get the current LightShare settings.
+(Reguires LightShare Enabled Viewer)</string>
+	<string name="LSLTipText_lsSetWindlightScene">lsSetWindlightScene(list rules)
+Set the current WindLight scene. Estate managers and owners only.
+(Reguires LightShare Enabled Viewer)</string>
+	<string name="LSLTipText_lsSetWindlightSceneTargeted">lsSetWindlightSceneTargeted(list rules, key target)
+Set the current WindLight scene directed at a specific avatar. Estate managers and owners only.
+(Reguires LightShare Enabled Viewer)</string>
+	<string name="LSLTipText_lsGetWindlightScene">list lsGetWindlightScene(list rules)
+Get the current WindLight settings.
+(Reguires LightShare Enabled Viewer)</string>
+<!-- Aurora-Sim OSSL-Functions  (unique to Aurora Only)  'osReturnObject', 'osReturnObjects', 'osShutDown', 'osaddAgentToGroup', 'osRezObject',
+   Aurora-Sim aaFunctions (\Aurora\AuroraDotNetEngine\APIs\IAA_Api.cs)
+   Aurora-Sim botFunctions (\Aurora\BotManager\IBot_Api.cs) 
+-->
+	<string name="LSLTipText_osReturnObject">osReturnObject(key userID)
+Returns object to specified avatars UUID.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_osReturnObjects">osReturnObjects(float Parameter)
+Returns group of objects. Parameter's are numeric, values are owner objects = 0, everyone except owner objects = 1, group objects = 2.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_osShutDown">osShutDown()
+Shut's down current Simulator.  Authorized Admin Only by config.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_osAddAgentToGroup">osAddAgentToGroup(key avatarID, string group_name, string role_name)
+Adds an avatar to a group.  Where group_name = name of the target group, role_name = role to assign within the group.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_osRezObject">osRezObject(string inventory, vector position, vector velocity, rotation rot, integer param, integer isRezAtRoot, integer doRecoil, integer SetDieAtEdge, integer CheckPos)
+Where inventory = object to rez.  Position = vector to rez object.  Velocity = initial velocity.  Rot = initial rotation.  Param = onrez event.
+IzAtRoot = TRUE/FALSE flag changes llRezAtRoot to llRezObject.  doRecoil =TRUE/FALSE to push avatar.  SetDieAtEdge = TRUE/FALSE for rezzed object to die at edge of region.
+CheckPos = TRUE/FALSE enable/disable 10m rez limit.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_aaSetCloudDensity">aaSetCloudDensity(float density)
+AaSetCloudDensity(0.5)  Where float density values are 0.0 =  no cloud to 1.0 = 100% cloud.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_aaUpdateDatabase">aUpdateDatabase(string Key, string value, string token)
+Where Key = database field name, xmlDataToPutIntoTheDatabase = serialized XML data,  Token = data-password
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_aaQueryDatabase">aaQueryDatabase(string Key, string Token)
+Returns a list with first value is the token, the second the Key, and the third the value
+Where Key = database field name, Token = data-password
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_aaDeserializeXMLValues">aaDeserializeXMLValues(string xmlData)
+Returns a list of Values from XML data. Where xmlData = xml formatted data Values.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_aaDeserializeXMLKeys">aaDeserializeXMLKeys(string xmlData)
+Returns a list of keys from XML data. Where xmlData = xml formatted data keys.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_aaSetConeOfSilence">aaSetConeOfSilence(float radius)
+Where radius = metres radius from centre of scripted item.  This creates an area that sounds can only be heard by the people within the area(radius) and not heard outside and visa-versa.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_aaSerializeXML">aaSerializeXML(list keys, list values)
+Returns xml formatted string of the keys and values.  Where keys = list of keys in the database, values = fields to retrieve from database.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_aaGetTeam">aaGetTeam(key uuid)
+Returns a string of avatars team name.  Where uuid = avatar key.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_aaGetHealth">aaGetHealth(key uuid)
+Returns float value (0.0 to 100.0) of current health.  Where uuid = avatar key.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_aaJoinCombat">aaJoinCombat(key uuid)
+Where uuid = avatar key.  If (PERMISSION_COMBAT == PERMISSION_COMBAT) and permission is granted then join combat.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_aaLeaveCombat">aaLeaveCombat(key uuid)
+Where uuid = avatar key.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_aaJoinCombatTeam">aaJoinCombatTeam(key uuid, string team)
+Where uuid = key of avatar, team = string of the team name.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_aaRequestCombatPermission">aaRequestCombatPermission(key ID)
+Where ID = avatar uuid.  Requests target avatar for Permissions to enter into combat mode.
+Raises a run_time_permissions event. (PERMISSION_COMBAT == PERMISSION_COMBAT).
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_aaThawAvatar">aaThawAvatar(key ID)
+Where ID = avatar uuid. If combat permission are granted then avatar can be un-frozen (movement re-enabled).
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_aaFreezeAvatar">aaFreezeAvatar(key ID)
+Where ID = avatar uuid. If combat permission are granted then avatar can be frozen (no movement).
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_aaGetTeamMembers">aaGetTeamMembers(string team)
+Return a list of team members.  Where team = string of team name.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_aaGetLastOwner">POLYMORPHIC FUNCTION.
+aaGetLastOwner(string PrimID)  returns last owner UUID of PrimID where PrimID = uuid of prim.
+AaGetLastOwner()  returns last owner uuid of prim containg script.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_aaSayDistance">aaSayDistance(integer channelID, float Distance, string text)
+Where channelID = channel to say on, Distance = float in meters  for distance to say, text = string to say.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_aaSayTo">aaSayTo(key userID, string text)
+Where userID = avatar key, text = string msg.  Similar to llOwnerSay but can be directly targeted to an avatar.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_aaGetWalkDisabled">aaGetWalkDisabled(key ID)
+Returns integer of TRUE or FALSE for specifid ID.  Where ID = avatar uuid.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_aaSetWalkDisabled">aaSetWalkDisabled(key ID, integer Value)
+Where ID = avatar uuid, Value = TRUE or FALSE. If PERMISSION_COMBAT is accepted, this disables walk, forcing avatar to fly.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_aaGetFlyDisabled">aaGetFlyDisabled(key ID)
+Returns integer of TRUE or FALSE for specifid ID. Where ID = avatar uuid.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_aaSetFlyDisabled">aaSetFlyDisabled(key ID, integer Value)
+Where ID = avatar uuid, Value = TRUE or FALSE. If PERMISSION_COMBAT is accepted, this disables flying, forcing avatar to walk.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_aaAvatarFullName2Key">aaAvatarFullName2Key(string FullName)
+Returns the avatar uuid from their fullname.  Where FullName = "Firstname Lastname”.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_aaRaiseError">aaRaiseError(string message)
+Allows you to have errors that end the execution of the event and fire another event in the script.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_aaGetText">aaGetText()
+Returns a string of the hover text of an object.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_aaGetTextColor">aaGetTextColor()
+Returns the hovertext color in rotation. Use Ex: rotation color = aaGetTextColor() to separate color.x, color.y, color.z, color.s  Where s = value of alpha in llSetText.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_aaSetEnv">aaSetEnv(string EnvName, list Value)
+Sets environment values.  Where EnvName = ENABLE_GRAVITY, GRAVITY_FORCE_X, GRAVITY_FORCE_Y, GRAVITY_FORCE_Z, ADD_GRAVITY_POINT, ADD_GRAVITY_FORCE, START_TIME_REVERSAL_SAVING,
+STOP_TIME_REVERSAL_SAVING, START_TIME_REVERSAL, STOP_TIME_REVERSAL.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_aaGetIsInfiniteRegion">aaGetIsInfiniteRegion()
+Returns TRUE or FALSE if region is an infinite region.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_aaSetCharacterStat">aaSetCharacterStat( ID, StatName, statValue)
+Sets Character Stats.  Where ID = avatar uuid, StatName = stat to change, statValue the value to change it to.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_aaAllRegionInstanceSay">aaAllRegionInstanceSay(integer channelID, string text)
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_aaWindlightGetDayCycle">aaWindlightGetDayCycle()
+Returns a List of settings
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_aaWindlightAddDayCycleFrame">aaWindlightAddDayCycleFrame(float dayCyclePosition, integer dayCycleFrameToCopy)
+Returns TRUE / FALSE on success status
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_aaWindlightRemoveDayCycleFrame">aaWindlightRemoveDayCycleFrame(int dayCycleFrame)
+Returns TRUE / FALSE on success status
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_aaWindlightSetScene">aaWindlightSetScene(list list)
+aaWindlightSetScene(integer dayCycleIndex, list list)
+Returns TRUE/FALSE on success
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_aaWindlightGetScene">aaWindlightGetScene(list rules)
+aaWindlightGetScene(integer dayCycleKeyFrame, list rules)
+Returns a list
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_aaWindlightGetSceneIsStatic">aaWindlightGetSceneIsStatic()
+Returns TRUE / FALSE
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_aaWindlightGetSceneDayCycleKeyFrameCount">aaWindlightGetSceneDayCycleKeyFrameCount()
+Returns integer value
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_botGetWaitingTime">botGetWaitingTime(integer waitTime)
+Returns waitTime as vector.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_botSetMap">botSetMap(key keyOfBot, list positions, list movementType, integer flags)
+keyOfBot = bot uuid, positions = list of position vectors, movementType = corresponding list of move modes:  0 – walk, 1 – fly,
+flags = BOT_FOLLOW_FLAG_NONE and BOT_FOLLOW_FLAG_INDEFINITELY.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_botCreateBot">botCreateBot(string FirstName, string LastName, key idToClone, vector startPos)
+Where FirstName and LastName = strings for new bot name.  idToClone = uuid of prebuild avatar to clone OR another existing avatar.  startPos = vector of starting position on region.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_botRemoveBot">botRemoveBot(key botID)
+Where botID = uuid of bot.  Removes bot identified by botID.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_botPauseMovement">botPauseMovement(key botID)
+Where botID = bot uuid.  Pauses bot at current position.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_botResumeMovement">botResumeMovement(key botID)
+Where botID = bot uuid.  Resumes bot movement.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_botFollowAvatar">botFollowAvatar(key botID, string avName, float startFollowDistance, float endFollowDistance)
+Where botID = bot uuid.  AvName = sting of avatar name OR avatar uuid.  StartFollowDistance = distance to start following from.  EndFollowDistance = distance to stop following avatar.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_botStopFollowAvatar">botStopFollowAvatar(key botID)
+Where botID = bot uuid.  Stops bot from following an avatar.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_botSendChatMessage">botSendChatMessage(key botID, string message, integer channel, integer sayType)
+Where  botID = bot uuid.  Message = string msg.  Channel = channel to speak on.  SayType = (0=whisper, 1=say, 2=shout).
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_botSendIM">botSendIM(string bot, string user, string message)
+Send IM to bot.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_botSetShouldFly">botSetShouldFly(key botID, integer ShouldFly)
+Where botID = bot uuid.  ShouldFly = TRUE/FALSE.  Enables or disables flight mode.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_botSitObject">botSitObject(key botID, key objectID, vector offset)
+Where botID = bot uuid,  objectID = uuid of object to sit on,  offset = Vector for sit position (note that VECTOR_ZERO = default sit pos).
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_botStandUp">botStandUp(key botID)
+Where botID = bot uuid.  Command bot to stand up.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_botTouchObject">botTouchObject(key botID, key objectID)
+Where botID = bot uuid,  objectID = object uuid.  Causes bot to touch object identified.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_botAddTag">botAddTag(key botID, string tag)
+Where botID = bot uuid,  tag = string tag over bot.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_botGetBotsWithTag">botGetBotsWithTag(string tag)
+Where tag = tag string to match.  Return a list of bot UUID's in region with the matching tag.
+(Aurora-Sim only)</string>
+	<string name="LSLTipText_botRemoveBotsWithTag">botRemoveBotsWithTag(string tag)
+Where tag = tag string to match.  Removes bot's matching the tag.
+(Aurora-Sim only)</string>
+<!-- *** END OF OpenSimulator & Aurora-Sim syntax section *** -->
+
+	<!-- Strings needed by drop targets -->
+	<string name="CurrentlyNotSet">Currently not set</string>
+	<string name="CurrentlySetTo">Currently set to: [ITEM]</string>
+	<string name="CurrentlySetToAnItemNotOnThisAccount">Currently set to an item not on this account</string>
+	<string name="NotLoggedIn">Not logged in</string>
+
+    <!-- Non-standard LLChat strings -->
+    <string name="ScriptCounting">Counting scripts, please wait...</string>
+    <string name="ScriptCountAvatar">Counted [SCRIPTS] scripts in [OBJECTS] attachments on [NAME].</string>
+    <string name="ScriptCountObject">Counted [SCRIPTS] scripts in [OBJECTS] objects.</string>
+    <string name="ScriptDeleteObject">Deleted [SCRIPTS] scripts in [OBJECTS] objects.</string>
+    <string name="took_a_snapshot">took a snapshot</string>
+
+  <!-- Avatar busy/away mode -->
+	<string name="AvatarSetNotAway">Nicht abwesend</string>
+	<string name="AvatarSetAway">Abwesend</string>
+	<string name="AvatarSetNotBusy">Not Busy</string>
+	<string name="AvatarSetBusy">Beschäftigt</string>
+
+
+	<!-- LLGroupNotify -->
+	<!-- used in the construction of a Group Notice blue dialog box, buttons, tooltip etc. Seems to be no longer utilized by code in Viewer 2.0 -->
+	<string name="next">Weiter</string>
+	<string name="ok">OK</string>
+	<string name="GroupNotifyGroupNotice">Gruppenmitteilung</string>
+	<string name="GroupNotifyGroupNotices">Gruppenmitteilungen</string>
+	<string name="GroupNotifySentBy">Gesendet von</string>
+	<string name="GroupNotifyAttached">Im Anhang:</string>
+	<string name="GroupNotifyViewPastNotices">Alte Mitteilungen anzeigen oder hier Auswahl treffen, um keine Mitteilungen mehr zu erhalten.</string>
+	<string name="GroupNotifyOpenAttachment">Anhang öffnen</string>
+	<string name="GroupNotifySaveAttachment">Siehe Anhang</string>
+
+	<!-- body parts -->
+	<string name="BodyPartsRightArm">Rechter Arm</string>
+	<string name="BodyPartsHead">Kopf</string>
+	<string name="BodyPartsLeftArm">Linker Arm</string>
+	<string name="BodyPartsLeftLeg">Linkes Bein</string>
+	<string name="BodyPartsTorso">Oberkörper</string>
+	<string name="BodyPartsRightLeg">Rechtes Bein</string>
+
+	<!-- mouselook -->
+	<string name="LeaveMouselook">ESC drücken, um zur Normalansicht zurückzukehren</string>
+
+	<!-- inventory -->
+	<string name="InventoryNoMatchingItems">No matching items found in inventory.</string>
+	<string name="InventoryNoTexture">Sie haben keine Kopie dieser Textur in Ihrem Inventar.</string>
+	<string name="MarketplaceURL">https://marketplace.[MARKETPLACE_DOMAIN_NAME]/</string>
+	<string name="MarketplaceURL_CreateStore">http://community.secondlife.com/t5/Deutsche-Knowledge-Base/Verkaufen-von-Artikeln-im-Marktplatz/ta-p/1443499#Section_.3</string>
+	<string name="MarketplaceURL_Dashboard">https://marketplace.[MARKETPLACE_DOMAIN_NAME]/merchants/store/dashboard</string>
+	<string name="MarketplaceURL_Imports">https://marketplace.[MARKETPLACE_DOMAIN_NAME]/merchants/store/imports</string>
+	<string name="MarketplaceURL_LearnMore">https://marketplace.[MARKETPLACE_DOMAIN_NAME]/learn_more</string>
+	<string name="InventoryOutboxNotMerchantTitle">Jeder kann Artikel im Marktplatz verkaufen.</string>
+	<string name="InventoryOutboxNotMerchantTooltip"/>
+	<string name="InventoryOutboxNotMerchant">If you'd like to become a merchant, you'll need to</string>
+	<string name="InventoryOutboxNotMerchantSubs">create a Marketplace store</string>
+	<string name="InventoryOutboxNotMerchant2">.</string>
+	<string name="InventoryOutboxNoItemsTitle">Ihre Outbox ist leer.</string>
+	<string name="InventoryOutboxNoItemsTooltip"/>
+	<string name="InventoryOutboxNoItems">Drag folders to this area and click "Send to Marketplace" to list them for sale on the</string>
+	<string name="InventoryOutboxNoItemsSubs">Einkaufen</string>
+	<string name="InventoryOutboxNoItems2">.</string>
+	<string name="InventoryOutboxInitializingTitle">Initializing Marketplace.</string>
+	<string name="InventoryOutboxInitializingTooltip"/>
+	<string name="InventoryOutboxInitializing">We are accessing your account on the</string>
+	<string name="InventoryOutboxInitializingSubs">Marketplace store</string>
+	<string name="InventoryOutboxInitializing2">.</string>
+	<string name="InventoryOutboxErrorTitle">Marketplace Errors.</string>
+	<string name="InventoryOutboxErrorTooltip"/>
+	<string name="InventoryOutboxError">The</string>
+	<string name="InventoryOutboxErrorSubs">Marketplace store</string>
+	<string name="InventoryOutboxError2">is returning errors.</string>
+
+	<!-- use value="" because they have preceding spaces -->
+	<string name="no_transfer"/>
+	<string name="no_modify"/>
+	<string name="no_copy"/>
+	<string name="temporary"/>
+	<string name="worn"/>
+	<string name="locked"/>
+	<string name="link"/>
+	<string name="broken_link"/>
+	<string name="LoadingContents">Inhalte werden geladen...</string>
+	<string name="NoContents">Keine Inhalte</string>
+	<string name="WornOnAttachmentPoint"/>
+	<string name="LockedOnAttachmentPoint"/>
+	<string name="ActiveGesture"/>
+	<!-- Inventory permissions -->
+	<string name="PermYes">Ja</string>
+	<string name="PermNo">Nein</string>
+
+	<!-- Gestures labels -->
+    <!-- use value="" because they have preceding spaces -->
+    <string name="Chat Message"/>
+    <string name="Sound"/>
+	<string name="Wait"/>
+	<string name="AnimFlagStop"/>
+	<string name="AnimFlagStart"/>
+	<string name="Wave"/>
+	<string name="GestureActionNone"/>
+	<string name="HelloAvatar"/>
+	<string name="ViewAllGestures"/>
+	<string name="GetMoreGestures"/>
+
+	<!-- inventory filter -->
+    <!-- use value="" because they have preceding spaces -->
+	<string name="Animations"/>
+	<string name="Calling Cards"/>
+	<string name="Clothing"/>
+	<string name="Gestures"/>
+	<string name="Landmarks"/>
+	<string name="Notecards"/>
+	<string name="Objects"/>
+	<string name="Scripts"/>
+	<string name="Sounds"/>
+	<string name="Textures"/>
+	<string name="Snapshots"/>
+	<string name="No Filters"/>
+	<string name="Since Logoff"/>
+	<string name="Worn"/>
+
+
+	<!-- inventory FVBridge -->
+	<!--  This is used in llpanelinventory.cpp when constructing a context menu for an item for Sale  -->
+	<string name="Buy">Kaufen</string>
+	<string name="Buyfor"/><!-- Grid currency is appended automatically -->
+
+	<string name="Stone">Stein</string>
+	<string name="Metal">Metall</string>
+	<string name="Glass">Glas</string>
+	<string name="Wood">Holz</string>
+	<string name="Flesh">Fleisch</string>
+	<string name="Plastic">Plastik</string>
+	<string name="Rubber">Gummi</string>
+	<string name="Light">Hell</string>
+
+	<!-- Avatar Skeleton -->
+	<string name="Chest">Brust</string>
+	<string name="Skull">Schädel</string>
+	<string name="Left Shoulder">Linke Schulter</string>
+	<string name="Right Shoulder">Rechte Schulter</string>
+	<string name="Left Hand">Linke Hand</string>
+	<string name="Right Hand">Rechte Hand</string>
+	<string name="Left Foot">Linker Fuß</string>
+	<string name="Right Foot">Rechter Fuß</string>
+	<string name="Spine">Wirbelsäule</string>
+	<string name="Pelvis">Becken</string>
+	<string name="Mouth">Mund</string>
+	<string name="Chin">Kinn</string>
+	<string name="Left Ear">Linkes Ohr</string>
+	<string name="Right Ear">Rechtes Ohr</string>
+	<string name="Left Eyeball">Linker Augapfel</string>
+	<string name="Right Eyeball">Rechter Augapfel</string>
+	<string name="Nose">Nase</string>
+	<string name="R Upper Arm">R Oberarm</string>
+	<string name="R Forearm">R Unterarm</string>
+	<string name="L Upper Arm">L Oberarm</string>
+	<string name="L Forearm">L Unterarm</string>
+	<string name="Right Hip">Rechte Hüfte</string>
+	<string name="R Upper Leg">R Oberschenkel</string>
+	<string name="R Lower Leg">R Unterschenkel</string>
+	<string name="Left Hip">Linke Hüfte</string>
+	<string name="L Upper Leg">L Oberschenkel</string>
+	<string name="L Lower Leg">L Unterschenkel</string>
+	<string name="Stomach">Bauch</string>
+	<string name="Left Pec">Linke Brust</string>
+	<string name="Right Pec">Rechts</string>
+    <string name="Neck">Hals</string>
+    <string name="Root">Basis</string>
+	<string name="Invalid Attachment">Ungültige Stelle für Anhang</string>
+
+  <!-- HUD Position -->
+	<string name="Center 2">Mitte 2</string>
+	<string name="Top Right">Oben rechts</string>
+	<string name="Top">Oben</string>
+	<string name="Top Left">Oben links</string>
+	<string name="Center">Mitte</string>
+	<string name="Bottom Left">Unten links</string>
+	<string name="Bottom">Unten</string>
+	<string name="Bottom Right">Unten rechts</string>
+
+	<!-- compile queue-->
+	<string name="CompileQueueDownloadedCompiling">Heruntergeladen, wird kompiliert</string>
+	<string name="CompileQueueScriptNotFound">Skript wurde auf Server nicht gefunden.</string>
+	<string name="CompileQueueProblemDownloading">Beim Herunterladen ist ein Problem aufgetreten</string>
+  <string name="CompileQueueProblemUploading">Sim lacking UpdateScriptTask capabilities. Unable to request recompile</string>
+  <string name="CompileQueueProblemWriting">Error writing to local file. Is your hard drive full?</string>
+	<string name="CompileQueueInsufficientPermDownload">Unzureichende Rechte zum Herunterladen eines Skripts.</string>
+	<string name="CompileQueueInsufficientPermFor">Unzureichende Berechtigungen für</string>
+	<string name="CompileQueueUnknownFailure">Unbekannter Fehler beim Herunterladen</string>
+	<string name="CompileQueueTitle">Recompilation Progress</string>
+	<string name="CompileQueueStart">Rekompilieren</string>
+	<string name="ResetQueueTitle">Rückgängig</string>
+	<string name="ResetQueueStart">Zurücksetzen</string>
+	<string name="RunQueueTitle">Set Running Progress</string>
+	<string name="RunQueueStart">Skript ausführen</string>
+	<string name="NotRunQueueTitle">Set Not Running Progress</string>
+	<string name="NotRunQueueStart">Skript anhalten</string>
+
+	<!-- compile comment text-->
+	<string name="CompileSuccessful">Kompilieren erfolgreich abgeschlossen!</string>
+	<string name="CompileSuccessfulSaving">Kompilieren erfolgreich abgeschlossen, speichern...</string>
+	<string name="SaveComplete">Speichervorgang abgeschlossen.</string>
+	<string name="ObjectOutOfRange">Skript (Objekt außerhalb des Bereichs)</string>
+
+	<!-- god tools -->
+	<string name="GodToolsObjectOwnedBy">Objekt [OBJECT], Besitzer [OWNER]</string>
+
+	<!-- groups -->
+	<string name="Group"/>
+	<string name="Unknown">(unbekannt)</string>
+	<string name="SummaryForTheWeek"/>
+	<string name="NextStipendDay"/>
+	<string name="GroupIndividualShare"/>
+	<string name="GroupColumn"/>
+
+	<!-- floater IM bonus_info: When a Linden with Admin/god status receives a new IM this displays the estate (Mainland vs. teen grid) of the source avatar.
+		This is to help Lindens when answering questions. -->
+	<string name="IMParentEstate">parent estate</string>
+	<string name="IMMainland">Mainland</string>
+	<string name="IMTeen">Teen</string>
+
+    <!-- floater about land -->
+    <string name="Anyone">An jeden</string>
+
+	<!-- floater region info -->
+	<!-- The following will replace variable [ALL_ESTATES] in notifications EstateAllowed*, EstateBanned*, EstateManager* -->
+	<string name="RegionInfoError">Fehler</string>
+	<string name="RegionInfoAllEstatesOwnedBy">alle Grundbesitze gehören [OWNER]</string>
+	<string name="RegionInfoAllEstatesYouOwn">alle Grundbesitze, die Sie besitzen</string>
+	<string name="RegionInfoAllEstatesYouManage">alle Grundbesitze, die Sie für [OWNER] verwalten</string>
+	<string name="RegionInfoAllowedResidents">Zulässige Einwohner: ([ALLOWEDAGENTS], max [MAXACCESS])</string>
+	<string name="RegionInfoAllowedGroups">Zulässige Gruppen: ([ALLOWEDGROUPS], max [MAXACCESS])</string>
+
+	<!-- script limits floater -->
+	<string name="ScriptLimitsParcelScriptMemory">Parzellenskript-Speicher</string>
+	<string name="ScriptLimitsParcelsOwned">Aufgeführte Parzellen: [PARCELS]</string>
+	<string name="ScriptLimitsMemoryUsed">Verwendeter Speicher: [COUNT] KB von [MAX] KB; [AVAILABLE] KB verfügbar</string>
+	<string name="ScriptLimitsMemoryUsedSimple">Verwendeter Speicher: [COUNT] KB</string>
+	<string name="ScriptLimitsParcelScriptURLs">Parzelleskript-URLs</string>
+	<string name="ScriptLimitsURLsUsed">Verwendete URLs: [COUNT] von [MAX]; [AVAILABLE] verfügbar</string>
+	<string name="ScriptLimitsURLsUsedSimple">Verwendete URLs: [COUNT]</string>
+	<string name="ScriptLimitsRequestError">Fehler bei Informationsabruf</string>
+	<string name="ScriptLimitsRequestNoParcelSelected">Keine Parzellen wurden ausgewählt</string>
+	<string name="ScriptLimitsRequestWrongRegion">Fehler: Skriptinformationen sind nur für Ihre aktuelle Region verfügbar</string>
+	<string name="ScriptLimitsRequestWaiting">Informationen werden abgerufen...</string>
+	<string name="ScriptLimitsRequestDontOwnParcel">Sie sind nicht berechtigt, diese Parzelle zu untersuchen.</string>
+
+	<string name="SITTING_ON">sitzt auf</string>
+	<string name="ATTACH_CHEST">Brust</string>
+	<string name="ATTACH_HEAD">Kopf</string>
+	<string name="ATTACH_LSHOULDER">Linke Schulter</string>
+	<string name="ATTACH_RSHOULDER">Rechte Schulter</string>
+	<string name="ATTACH_LHAND">Linke Hand</string>
+	<string name="ATTACH_RHAND">Rechte Hand</string>
+	<string name="ATTACH_LFOOT">Linker Fuß</string>
+	<string name="ATTACH_RFOOT">Rechter Fuß</string>
+	<string name="ATTACH_BACK">Zurück</string>
+	<string name="ATTACH_PELVIS">Becken</string>
+	<string name="ATTACH_MOUTH">Mund</string>
+	<string name="ATTACH_CHIN">Kinn</string>
+	<string name="ATTACH_LEAR">Linkes Ohr</string>
+	<string name="ATTACH_REAR">Rechtes Ohr</string>
+	<string name="ATTACH_LEYE">Linkes Auge</string>
+	<string name="ATTACH_REYE">Rechtes Auge</string>
+	<string name="ATTACH_NOSE">Nase</string>
+	<string name="ATTACH_RUARM">Rechter Oberarm</string>
+	<string name="ATTACH_RLARM">Rechter Unterarm</string>
+	<string name="ATTACH_LUARM">Linker Oberarm</string>
+	<string name="ATTACH_LLARM">Linker Unterarm</string>
+	<string name="ATTACH_RHIP">Rechte Hüfte</string>
+	<string name="ATTACH_RULEG">Rechter Oberschenkel</string>
+	<string name="ATTACH_RLLEG">Rechter Unterschenkel</string>
+	<string name="ATTACH_LHIP">Linke Hüfte</string>
+	<string name="ATTACH_LULEG">Linker Oberschenkel</string>
+	<string name="ATTACH_LLLEG">Linker Unterschenkel</string>
+	<string name="ATTACH_BELLY">Bauch</string>
+	<string name="ATTACH_RPEC">Rechts</string>
+	<string name="ATTACH_LPEC">Linke Brust</string>
+	<string name="ATTACH_HUD_CENTER_2">HUD Mitte 2</string>
+	<string name="ATTACH_HUD_TOP_RIGHT">HUD oben rechts</string>
+	<string name="ATTACH_HUD_TOP_CENTER">HUD oben Mitte</string>
+	<string name="ATTACH_HUD_TOP_LEFT">HUD oben links</string>
+	<string name="ATTACH_HUD_CENTER_1">HUD Mitte 1</string>
+	<string name="ATTACH_HUD_BOTTOM_LEFT">HUD unten links</string>
+	<string name="ATTACH_HUD_BOTTOM">HUD unten</string>
+	<string name="ATTACH_HUD_BOTTOM_RIGHT">HUD unten rechts</string>
+	<string name="ATTACH_NECK">Hals</string>
+	<string name="ATTACH_AVATAR_CENTER">Basis</string>
+
+	<!-- panel contents -->
+	<string name="PanelContentsNewScript">Neues Skript</string>
+
+	<!-- Region/Estate Covenant -->
+	<string name="RegionNoCovenant">Für diesen Grundbesitz fehlt der Vertrag.</string>
+	<string name="RegionNoCovenantOtherOwner">Für diesen Grundbesitz liegt kein Vertrag vor. Das Land auf diesem Grundbesitz wird vom Grundbesitzer und nicht von Linden Lab verkauft.  Für Informationen zum Verkauf setzen Sie sich bitte mit dem Grundbesitzer in Verbindung.</string>
+	<string name="none_text"/>
+
+	<!-- Environment settings -->
+	<string name="Local">Lokal</string>
+	<string name="LocalSettings">Lokale Einstellungen</string>
+	<string name="Region">Region</string>
+	<string name="RegionSettings">Regionseinstellungen</string>
+
+	<!-- Multi Preview Floater -->
+	<string name="MultiPreviewTitle">Vorschau</string>
+	<string name="MultiPropertiesTitle">Eigenschaften</string>
+
+	<!-- inventory offer -->
+	<string name="InvOfferAnObjectNamed">Ein Objekt namens</string>
+	<string name="InvOfferOwnedByGroup">im Besitz der Gruppe</string>
+	<string name="InvOfferOwnedByUnknownGroup">im Besitz einer unbekannten Gruppe</string>
+	<string name="InvOfferOwnedBy">im Besitz von</string>
+	<string name="InvOfferOwnedByUnknownUser">im Besitz eines unbekannten Einwohners</string>
+	<string name="InvOfferGaveYou">hat Ihnen folgendes übergeben</string>
+	<string name="InvOfferDecline">Sie lehnen [DESC] von [NAME] ab.</string>
+
+	<!-- group money -->
+	<string name="GroupMoneyTotal">Gesamtbetrag</string>
+	<string name="GroupMoneyBought">gekauft</string>
+	<string name="GroupMoneyPaidYou">bezahlte Ihnen</string>
+	<string name="GroupMoneyPaidInto">bezahlte an</string>
+	<string name="GroupMoneyBoughtPassTo">kaufte Pass für</string>
+	<string name="GroupMoneyPaidFeeForEvent">bezahlte Gebühr für Event</string>
+	<string name="GroupMoneyPaidPrizeForEvent">bezahlte Preis für Event</string>
+	<string name="GroupMoneyBalance">Kontostand</string>
+	<string name="GroupMoneyCredits">Credits</string>
+	<string name="GroupMoneyDebits">Soll</string>
+
+	<!-- Viewer menu -->
+	<string name="AcquiredItems">Erworbene Artikel</string>
+	<string name="Cancel">Abbrechen</string>
+	<string name="UploadingCosts">Uploading [NAME] costs [CURRENCY] [AMOUNT]</string>
+	<string name="BuyingCosts">Buying this costs</string>
+	<string name="UnknownFileExtension">Unbekanntes Dateiformat .%s
+Gültige Formate: .wav, .tga, .bmp, .jpg, .jpeg oder .bvh</string>
+  <string name="MuteObject2">Blockieren</string>
+  <string name="MuteAvatar">Blockieren</string>
+  <string name="UnmuteObject">Stummschaltung aufheben</string>
+  <string name="UnmuteAvatar">Stummschaltung aufheben</string>
+
+
+	<!-- menu accelerators -->
+	<string name="accel-mac-control">Strg-</string>
+	<string name="accel-mac-command">Cmd-</string>
+	<string name="accel-mac-option">Opt-</string>
+	<string name="accel-mac-shift">Umschalt-</string>
+	<string name="accel-win-control">Strg-</string>
+	<string name="accel-win-alt">Alt-</string>
+	<string name="accel-win-shift">Umschalt-</string>
+
+	<!-- Previews -->
+	<string name="FileSaved">Datei wurde gespeichert</string>
+	<string name="Receiving">Daten werden empfangen</string>
+
+	<!-- Directions, HUD -->
+	<string name="Direction_Forward">Weiter</string>
+	<string name="Direction_Left">Links</string>
+	<string name="Direction_Right">Rechts</string>
+	<string name="Direction_Back">Zurück</string>
+	<string name="Direction_North">Norden</string>
+	<string name="Direction_South">Süden</string>
+	<string name="Direction_West">Westen</string>
+	<string name="Direction_East">Osten</string>
+	<string name="Direction_Up">Nach oben</string>
+	<string name="Direction_Down">Nach unten</string>
+
+	<string name="None">Keine</string>
+
+	<!-- punctuations -->
+	<string name=":">:</string>
+	<string name=",">,</string>
+	<string name="...">...</string>
+	<string name="***">***</string>
+	<string name="(">(</string>
+	<string name=")">)</string>
+	<string name=".">.</string>
+	<string name="'">'</string>
+	<string name="---">---</string>
+
+	<!-- media -->
+	<string name="Multiple Media">Mehrere Medien</string>
+	<string name="Play Media">Medien Abspielen/Pausieren</string>
+
+	<!-- OSMessageBox messages -->
+	<string name="MBCmdLineError">Beim Parsen der Befehlszeile wurde ein Fehler festgestellt.
+Weitere Informationen: http://wiki.secondlife.com/wiki/Client_parameters (EN)
+Fehler:</string>
+	<string name="MBCmdLineUsg">[APP_NAME] Verwendung in Befehlszeile:</string>
+	<string name="MBUnableToAccessFile">[APP_NAME] kann auf die erforderliche Datei nicht zugreifen.
+
+Grund hierfür ist, dass Sie entweder mehrere Instanzen gleichzeitig ausführen oder dass Ihr System denkt, eine Datei sei geöffnet.
+Falls diese Nachricht erneut angezeigt wird, starten Sie bitte Ihren Computer neu und probieren Sie es noch einmal.
+Falls der Fehler dann weiterhin auftritt, müssen Sie [APP_NAME] von Ihrem System de-installieren und erneut installieren.</string>
+	<string name="MBRequiresAltiVec">[APP_NAME] erfordert einen Prozessor mit AltiVec (G4 oder später).</string>
+	<string name="MBAlreadyRunning">[APP_NAME] läuft bereits.
+Bitte sehen Sie in Ihrer Menüleiste nach, dort sollte ein Symbol für das Programm angezeigt werden.
+Falls diese Nachricht erneut angezeigt wird, starten Sie Ihren Computer bitte neu.</string>
+	<string name="MBFrozenCrashed">[APP_NAME] scheint eingefroren zu sein oder ist abgestürzt.
+Möchten Sie einen Absturz-Bericht einschicken?</string>
+	<string name="MBAlert">Benachrichtigung</string>
+	<string name="MBNoDirectX">[APP_NAME] kann DirectX 9.0b oder höher nicht feststellen.
+[APP_NAME] verwendet DirectX, um nach Hardware und/oder veralteten Treibern zu suchen, die zu Problemen mit der Stabilität, Leistung und Abstürzen führen können.  Sie können [APP_NAME] auch so ausführen, wir empfehlen jedoch, dass DirectX 9.0b vorhanden ist und ausgeführt wird.
+
+Möchten Sie fortfahren?</string>
+	<string name="MBWarning">Warnung</string>
+	<string name="MBRegClassFailed">RegisterClass fehlgeschlagen</string>
+	<string name="MBError">Fehler</string>
+	<string name="MBFullScreenErr">Vollbildschirm mit [WIDTH] x [HEIGHT] kann nicht ausgeführt werden.
+Ausführung erfolgt in Fenster.</string>
+	<string name="MBDestroyWinFailed">Fehler beim Herunterfahren während Fenster geschlossen wurde (DestroyWindow() fehlgeschlagen)</string>
+	<string name="MBShutdownErr">Fehler beim Herunterfahren</string>
+	<string name="MBDevContextErr">Kann keinen Kontext für GL-Gerät erstellen</string>
+	<string name="MBPixelFmtErr">Passendes Pixelformat wurde nicht gefunden</string>
+	<string name="MBPixelFmtDescErr">Beschreibung für Pixelformat nicht verfügbar</string>
+	<string name="MBTrueColorWindow">Um [APP_NAME] auszuführen, ist True Color (32-bit) erforderlich.
+Klicken Sie öffnen Sie auf Ihrem Computer die Einstellungen für die Anzeige und stellen Sie den Bildschirm auf 32-bit Farbe ein.</string>
+	<string name="MBAlpha">[APP_NAME] kann nicht ausgeführt werden, da kein 8-Bit-Alpha-Kanal verfügbar ist.  Dies geschieht normalerweise bei Problemen mit dem Treiber der Video-Karte.
+Bitte vergewissern Sie sich, dass Sie die aktuellsten Treiber für Ihre Videokarte installiert haben.
+Vergewissern Sie sich außerdem, dass Ihr Bildschirm auf True Color (32-Bit) eingestellt ist (Systemsteuerung &gt; Anzeige &gt; Einstellungen).
+Falls diese Meldung weiterhin angezeigt wird, wenden Sie sich bitte an [SUPPORT_SITE].</string>
+	<string name="MBPixelFmtSetErr">Pixel-Format kann nicht eingestellt werden.</string>
+	<string name="MBGLContextErr">Kann keinen Kontext für GL-Gerät erstellen</string>
+	<string name="MBGLContextActErr">Kann keinen Kontext für GL-Gerät aktivieren</string>
+	<string name="MBVideoDrvErr">[APP_NAME] kann nicht ausgeführt werden, da die Treiber Ihrer Videokarte entweder nicht richtig installiert oder veraltet sind, oder die entsprechende Hardware nicht unterstützt wird. Bitte vergewissern Sie sich, dass Sie die aktuellsten Treiber für die Videokarte installiert haben. Falls Sie die aktuellsten Treiber bereits installiert haben, installieren Sie diese bitte erneut.
+
+Falls diese Meldung weiterhin angezeigt wird, wenden Sie sich bitte an [SUPPORT_SITE].</string>
+
+	<!-- Avatar Shape Information -->
+<string name="5 O'Clock Shadow">Bartschatten</string>
+
+<string name="All White">Ganz weiß</string>
+<string name="Anime Eyes">Anime-Augen</string>
+<string name="Arced">Arched</string>
+<string name="Arm Length">Armlänge</string>
+<string name="Attached">Angewachsen</string>
+<string name="Attached Earlobes">Angewachsene Ohrläppchen</string>
+
+
+<string name="Back Fringe">Nackenfransen</string>
+
+<string name="Baggy">Tränensäcke</string>
+<string name="Bangs">Pony</string>
+
+<string name="Beady Eyes">Knopfaugen</string>
+<string name="Belly Size">Bauchgröße</string>
+<string name="Big">Groß</string>
+<string name="Big Butt">Großer Hintern</string>
+
+<string name="Big Hair Back">Volumen: Hinten</string>
+<string name="Big Hair Front">Volumen: Vorne</string>
+<string name="Big Hair Top">Volumen: Oben</string>
+<string name="Big Head">Groß</string>
+<string name="Big Pectorals">Große Brustmuskeln</string>
+<string name="Big Spikes">Große Stacheln</string>
+<string name="Black">Schwarz</string>
+<string name="Blonde">Blond</string>
+<string name="Blonde Hair">Blondes Haar</string>
+<string name="Blush">Rouge</string>
+<string name="Blush Color">Rougefarbe</string>
+<string name="Blush Opacity">Rouge Deckkraft</string>
+<string name="Body Definition">Körperkonturen</string>
+<string name="Body Fat">Körperfett</string>
+<string name="Body Freckles">Sommersprossen</string>
+<string name="Body Thick">breit</string>
+<string name="Body Thickness">Körperbreite</string>
+<string name="Body Thin">schmal</string>
+
+<string name="Bow Legged">o-beinig</string>
+<string name="Breast Buoyancy">Brust, Straffheit</string>
+<string name="Breast Cleavage">Dekolleté</string>
+<string name="Breast Size">Brustgröße</string>
+<string name="Bridge Width">Rückenbreite</string>
+<string name="Broad">Breit</string>
+<string name="Brow Size">Brauengröße</string>
+<string name="Bug Eyes">Glubschaugen</string>
+<string name="Bugged Eyes">Hervortretend</string>
+<string name="Bulbous">Knollennase</string>
+<string name="Bulbous Nose">Knollennase</string>
+
+<string name="Breast Physics Mass">Brust – Masse</string>
+<string name="Breast Physics Smoothing">Brust – Glättung</string>
+<string name="Breast Physics Gravity">Brust – Schwerkraft</string>
+<string name="Breast Physics Drag">Brust – Luftwiderstand</string>
+
+<string name="Breast Physics InOut Max Effect">Max. Effekt</string>
+<string name="Breast Physics InOut Spring">Federn</string>
+<string name="Breast Physics InOut Gain">Verstärkung</string>
+<string name="Breast Physics InOut Damping">Dämpfung</string>
+
+<string name="Breast Physics UpDown Max Effect">Max. Effekt</string>
+<string name="Breast Physics UpDown Spring">Federn</string>
+<string name="Breast Physics UpDown Gain">Verstärkung</string>
+<string name="Breast Physics UpDown Damping">Dämpfung</string>
+
+<string name="Breast Physics LeftRight Max Effect">Max. Effekt</string>
+<string name="Breast Physics LeftRight Spring">Federn</string>
+<string name="Breast Physics LeftRight Gain">Verstärkung</string>
+<string name="Breast Physics LeftRight Damping">Dämpfung</string>
+
+<string name="Belly Physics Mass">Bauch – Masse</string>
+<string name="Belly Physics Smoothing">Bauch – Glättung</string>
+<string name="Belly Physics Gravity">Bauch – Schwerkraft</string>
+<string name="Belly Physics Drag">Bauch – Luftwiderstand</string>
+
+<string name="Belly Physics UpDown Max Effect">Max. Effekt</string>
+<string name="Belly Physics UpDown Spring">Federn</string>
+<string name="Belly Physics UpDown Gain">Verstärkung</string>
+<string name="Belly Physics UpDown Damping">Dämpfung</string>
+
+<string name="Butt Physics Mass">Po – Masse</string>
+<string name="Butt Physics Smoothing">Po – Glättung</string>
+<string name="Butt Physics Gravity">Po – Schwerkraft</string>
+<string name="Butt Physics Drag">Po – Luftwiderstand</string>
+
+<string name="Butt Physics UpDown Max Effect">Max. Effekt</string>
+<string name="Butt Physics UpDown Spring">Federn</string>
+<string name="Butt Physics UpDown Gain">Verstärkung</string>
+<string name="Butt Physics UpDown Damping">Dämpfung</string>
+
+<string name="Butt Physics LeftRight Max Effect">Max. Effekt</string>
+<string name="Butt Physics LeftRight Spring">Federn</string>
+<string name="Butt Physics LeftRight Gain">Verstärkung</string>
+<string name="Butt Physics LeftRight Damping">Dämpfung</string>
+
+<string name="Bushy Eyebrows">Buschige Augenbrauen</string>
+<string name="Bushy Hair">Buschiges Haar</string>
+<string name="Butt Size">Hintern, Größe</string>
+<string name="Butt Gravity">Po – Schwerkraft</string>
+<string name="bustle skirt">Tournürenrock</string>
+<string name="no bustle">Ohne</string>
+<string name="more bustle">Mit</string>
+
+<string name="Chaplin">Chaplin</string>
+<string name="Cheek Bones">Wangenknochen</string>
+<string name="Chest Size">Brustgröße</string>
+<string name="Chin Angle">Kinnwinkel</string>
+<string name="Chin Cleft">Kinnspalte</string>
+<string name="Chin Curtains">Schifferfräse</string>
+
+<string name="Chin Depth">Kinnlänge</string>
+<string name="Chin Heavy">Kinn ausgeprägt</string>
+<string name="Chin In">Kinn zurück</string>
+<string name="Chin Out">Kinn nach vorne</string>
+<string name="Chin-Neck">Kinn-Hals</string>
+<string name="Clear">Löschen</string>
+<string name="Cleft">Spalte</string>
+<string name="Close Set Eyes">Eng stehende Augen</string>
+<string name="Closed">Geschlossen</string>
+<string name="Closed Back">Hinten geschlossen</string>
+<string name="Closed Front">Vorne geschlossen</string>
+<string name="Closed Left">Links geschlossen</string>
+<string name="Closed Right">Rechts geschlossen</string>
+<string name="Coin Purse">Klein</string>
+<string name="Collar Back">Kragen hinten</string>
+
+
+
+<string name="Collar Front">Kragen vorne</string>
+
+
+
+<string name="Corner Down">Nach unten</string>
+
+<string name="Corner Up">Nach oben</string>
+<string name="Creased">Schlupflid</string>
+<string name="Crooked Nose">Krumme Nase</string>
+
+<string name="Cuff Flare">Hosenaufschlag</string>
+<string name="Dark">Dunkel</string>
+<string name="Dark Green">Dunkelgrün</string>
+<string name="Darker">Dunkler</string>
+<string name="Deep">Tief</string>
+<string name="Default Heels">Standardabsätze</string>
+
+<string name="Dense">Dicht</string>
+
+<string name="Double Chin">Doppelkinn</string>
+<string name="Downturned">Nach unten</string>
+<string name="Duffle Bag">Groß</string>
+<string name="Ear Angle">Ohrenwinkel</string>
+<string name="Ear Size">Ohrengröße</string>
+<string name="Ear Tips">Ohrenspitzen</string>
+<string name="Egg Head">Eierkopf</string>
+<string name="Eye Bags">Augenränder</string>
+<string name="Eye Color">Augenfarbe</string>
+<string name="Eye Depth">Augentiefe</string>
+<string name="Eye Lightness">Helligkeit</string>
+<string name="Eye Opening">Öffnung</string>
+<string name="Eye Pop">Symmetrie</string>
+<string name="Eye Size">Augengröße</string>
+<string name="Eye Spacing">Augenstand</string>
+
+<string name="Eyebrow Arc">Brauenbogen</string>
+<string name="Eyebrow Density">Brauendichte</string>
+
+<string name="Eyebrow Height">Brauenhöhe</string>
+<string name="Eyebrow Points">Brauenenden</string>
+<string name="Eyebrow Size">Brauengröße</string>
+
+<string name="Eyelash Length">Wimpernlänge</string>
+<string name="Eyeliner">Eyeliner</string>
+<string name="Eyeliner Color">Farbe des Eyeliners</string>
+
+<string name="Eyes Bugged">Glubschaugen</string>
+
+
+
+
+
+
+
+
+<string name="Face Shear">Gesichtsverzerrung</string>
+<string name="Facial Definition">Gesichtskonturen</string>
+<string name="Far Set Eyes">Weit auseinander</string>
+
+<string name="Fat Lips">Volle Lippen</string>
+
+<string name="Female">Weiblich</string>
+<string name="Fingerless">Ohne Finger</string>
+<string name="Fingers">Finger</string>
+<string name="Flared Cuffs">Ausgestellt</string>
+<string name="Flat">Flach</string>
+<string name="Flat Butt">Flacher Hintern</string>
+<string name="Flat Head">Flacher Kopf</string>
+<string name="Flat Toe">Flache Spitze</string>
+<string name="Foot Size">Fußgröße</string>
+<string name="Forehead Angle">Stirnwinkel</string>
+<string name="Forehead Heavy">Stirn ausgeprägt</string>
+<string name="Freckles">Sommersprossen</string>
+
+<string name="Front Fringe">Fransen, vorne</string>
+
+<string name="Full Back">Hinten volles Haar</string>
+<string name="Full Eyeliner">Starker Eyeliner</string>
+<string name="Full Front">Vorne volles Haar</string>
+<string name="Full Hair Sides">Seitlich volles Haar</string>
+<string name="Full Sides">Volle Seiten</string>
+<string name="Glossy">Glänzend</string>
+<string name="Glove Fingers">Handschuhfinger</string>
+
+<string name="Glove Length">Handschuhlänge</string>
+
+
+<string name="Hair">Haare</string>
+<string name="Hair Back">Haare: Hinten</string>
+<string name="Hair Front">Haare: Vorne</string>
+<string name="Hair Sides">Haare: Seiten</string>
+<string name="Hair Sweep">Haartolle</string>
+<string name="Hair Thickess">Haardicke</string>
+<string name="Hair Thickness">Haardicke</string>
+<string name="Hair Tilt">Haarneigung</string>
+<string name="Hair Tilted Left">Nach links</string>
+<string name="Hair Tilted Right">Nach rechts</string>
+<string name="Hair Volume">Haare: Volumen</string>
+<string name="Hand Size">Handgröße</string>
+<string name="Handlebars">Zwirbelbart</string>
+<string name="Head Length">Kopflänge</string>
+<string name="Head Shape">Kopfform</string>
+<string name="Head Size">Kopfgröße</string>
+<string name="Head Stretch">Kopfstreckung</string>
+<string name="Heel Height">Absatzhöhe</string>
+<string name="Heel Shape">Absatzform</string>
+<string name="Height">Höhe</string>
+<string name="High">Hoch</string>
+<string name="High Heels">Hohe Absätze</string>
+<string name="High Jaw">Hoch</string>
+<string name="High Platforms">Hohe Plattformsohlen</string>
+<string name="High and Tight">Hoch und eng</string>
+<string name="Higher">Höhere</string>
+<string name="Hip Length">Länge der Hüfte</string>
+<string name="Hip Width">Breite der Hüfte</string>
+<string name="Hover">Hover</string>
+<string name="In">In</string>
+<string name="In Shdw Color">Farbe Innenseite</string>
+<string name="In Shdw Opacity">Deckkraft: innen</string>
+<string name="Inner Eye Corner">Ecke: Nasenseite</string>
+<string name="Inner Eye Shadow">Innenlid</string>
+<string name="Inner Shadow">Innenlid</string>
+
+
+<string name="Jacket Length">Jackenlänge</string>
+
+<string name="Jacket Wrinkles">Jackenfalten</string>
+<string name="Jaw Angle">Kinnansatz</string>
+<string name="Jaw Jut">Kinnposition</string>
+<string name="Jaw Shape">Kinnform</string>
+<string name="Join">Beitreten</string>
+<string name="Jowls">Hängebacken</string>
+<string name="Knee Angle">Kniewinkel</string>
+<string name="Knock Kneed">X-beinig</string>
+
+<string name="Large">Groß</string>
+<string name="Large Hands">Große Hände</string>
+<string name="Left Part">Linksscheitel</string>
+<string name="Leg Length">Beinlänge</string>
+<string name="Leg Muscles">Beinmuskeln</string>
+<string name="Less">Weniger</string>
+<string name="Less Body Fat">Weniger Speck</string>
+<string name="Less Curtains">Weniger</string>
+<string name="Less Freckles">Weniger</string>
+<string name="Less Full">Weniger</string>
+<string name="Less Gravity">Weniger</string>
+<string name="Less Love">Weniger</string>
+<string name="Less Muscles">Weniger</string>
+<string name="Less Muscular">Weniger</string>
+<string name="Less Rosy">Weniger</string>
+<string name="Less Round">Weniger</string>
+<string name="Less Saddle">Weniger</string>
+<string name="Less Square">Weniger</string>
+<string name="Less Volume">Weniger</string>
+<string name="Less soul">Weniger</string>
+<string name="Lighter">Heller</string>
+<string name="Lip Cleft">Amorbogen</string>
+<string name="Lip Cleft Depth">Tiefe: Amorbogen</string>
+<string name="Lip Fullness">Fülle</string>
+<string name="Lip Pinkness">Pinkton</string>
+<string name="Lip Ratio">Lippenproportionen</string>
+<string name="Lip Thickness">Lippendicke</string>
+<string name="Lip Width">Mundbreite</string>
+<string name="Lipgloss">Lipgloss</string>
+<string name="Lipstick">Lippenstift</string>
+<string name="Lipstick Color">Farbe</string>
+<string name="Long">Lang</string>
+<string name="Long Head">Langer Kopf</string>
+<string name="Long Hips">Lange Hüften</string>
+<string name="Long Legs">Lange Beine</string>
+<string name="Long Neck">Langer Hals</string>
+<string name="Long Pigtails">Lange Zöpfe</string>
+<string name="Long Ponytail">Langer Pferdeschwanz</string>
+<string name="Long Torso">Langer Oberkörper</string>
+<string name="Long arms">Lange Arme</string>
+
+
+<string name="Loose Pants">Weite Hosen</string>
+<string name="Loose Shirt">Weites Hemd</string>
+<string name="Loose Sleeves">Weite Ärmel</string>
+
+<string name="Love Handles">Fettpölsterchen</string>
+<string name="Low">Niedrig</string>
+<string name="Low Heels">Niedrig</string>
+<string name="Low Jaw">Niedrig</string>
+<string name="Low Platforms">Niedrig</string>
+<string name="Low and Loose">Weit</string>
+<string name="Lower">Absenken</string>
+<string name="Lower Bridge">Brücke, Unterer Teil</string>
+<string name="Lower Cheeks">Wangen, unterer Bereich</string>
+
+<string name="Male">Männlich</string>
+<string name="Middle Part">Mittelscheitel</string>
+<string name="More">Mehr</string>
+<string name="More Blush">Mehr</string>
+<string name="More Body Fat">Mehr Speck</string>
+<string name="More Curtains">Mehr</string>
+<string name="More Eyeshadow">Mehr</string>
+<string name="More Freckles">Mehr</string>
+<string name="More Full">Voller</string>
+<string name="More Gravity">Mehr</string>
+<string name="More Lipstick">Mehr</string>
+<string name="More Love">Mehr</string>
+<string name="More Lower Lip">Größer</string>
+<string name="More Muscles">Mehr</string>
+<string name="More Muscular">Mehr</string>
+<string name="More Rosy">Mehr</string>
+<string name="More Round">Runder</string>
+<string name="More Saddle">Mehr</string>
+<string name="More Sloped">Flach</string>
+<string name="More Square">Eckiger</string>
+<string name="More Upper Lip">Mehr</string>
+<string name="More Vertical">Steil</string>
+<string name="More Volume">Mehr</string>
+<string name="More soul">Mehr</string>
+<string name="Moustache">Schnauzer</string>
+
+<string name="Mouth Corner">Mundwinkel</string>
+<string name="Mouth Position">Mundposition</string>
+<string name="Mowhawk">Mohawk</string>
+<string name="Muscular">Muskulös</string>
+<string name="Mutton Chops">Koteletten</string>
+
+<string name="Nail Polish">Nagellack</string>
+<string name="Nail Polish Color">Farbe</string>
+<string name="Narrow">Schmal</string>
+<string name="Narrow Back">Wenig</string>
+<string name="Narrow Front">Wenig</string>
+<string name="Narrow Lips">Schmale Lippen</string>
+<string name="Natural">Natürlich</string>
+<string name="Neck Length">Halslänge</string>
+<string name="Neck Thickness">Halsdicke</string>
+<string name="No Blush">Kein Rouge</string>
+<string name="No Eyeliner">Kein Eyeliner</string>
+<string name="No Eyeshadow">Kein Lidschatten</string>
+
+<string name="No Lipgloss">Kein Lipgloss</string>
+<string name="No Lipstick">Kein Lippenstift</string>
+<string name="No Part">Kein Scheitel</string>
+<string name="No Polish">Kein Nagellack</string>
+<string name="No Red">Nicht rot</string>
+<string name="No Spikes">Keine Stachel</string>
+<string name="No White">Kein Weiß</string>
+<string name="No Wrinkles">Keine Falten</string>
+<string name="Normal Lower">Normal unten</string>
+<string name="Normal Upper">Normal oben</string>
+<string name="Nose Left">Links</string>
+<string name="Nose Right">Rechts</string>
+<string name="Nose Size">Größe</string>
+<string name="Nose Thickness">Dicke</string>
+<string name="Nose Tip Angle">Nasenspitze</string>
+<string name="Nose Tip Shape">Nasenspitze</string>
+<string name="Nose Width">Nasenbreite</string>
+<string name="Nostril Division">Teilung</string>
+<string name="Nostril Width">Größe</string>
+
+
+<string name="Opaque">Deckend</string>
+<string name="Open">Öffnen</string>
+<string name="Open Back">Hinten offen</string>
+<string name="Open Front">Vorne offen</string>
+<string name="Open Left">Links offen</string>
+<string name="Open Right">Rechts offen</string>
+<string name="Orange">Orange</string>
+<string name="Out">Aus</string>
+<string name="Out Shdw Color">Farbe: Oben</string>
+<string name="Out Shdw Opacity">Deckkraft: Oben</string>
+<string name="Outer Eye Corner">Äußerer Augenwinkel</string>
+<string name="Outer Eye Shadow">Lidschatten: Oben</string>
+<string name="Outer Shadow">Lidschatten: Oben</string>
+<string name="Overbite">Überbiss</string>
+
+<string name="Package">Ausbeulung</string>
+<string name="Painted Nails">Lackierte Nägel</string>
+<string name="Pale">Blass</string>
+<string name="Pants Crotch">Schritt</string>
+<string name="Pants Fit">Passform</string>
+<string name="Pants Length">Hosenlänge</string>
+
+
+<string name="Pants Waist">Hüfte</string>
+<string name="Pants Wrinkles">Falten</string>
+<string name="Part">Scheitel</string>
+<string name="Part Bangs">Pony scheiteln</string>
+<string name="Pectorals">Brustmuskel</string>
+<string name="Pigment">Pigmentierung</string>
+<string name="Pigtails">Zöpfe</string>
+<string name="Pink">Rosa</string>
+<string name="Pinker">Mehr Pink</string>
+<string name="Platform Height">Höhe</string>
+<string name="Platform Width">Breite</string>
+<string name="Pointy">Spitz</string>
+<string name="Pointy Heels">Pfennigabsätze</string>
+
+<string name="Ponytail">Pferdeschwanz</string>
+<string name="Poofy Skirt">Weit ausgestellt</string>
+<string name="Pop Left Eye">Linkes Auge größer</string>
+<string name="Pop Right Eye">Rechtes Auge größer</string>
+<string name="Puffy">Geschwollen</string>
+<string name="Puffy Eyelids">Geschwollene Lider</string>
+<string name="Rainbow Color">Regenbogenfarben</string>
+<string name="Red Hair">Rote Haare</string>
+
+<string name="Regular">Normal</string>
+
+<string name="Right Part">Scheitel rechts</string>
+<string name="Rosy Complexion">Rosiger Teint</string>
+<string name="Round">Rund</string>
+
+<string name="Ruddiness">Röte</string>
+<string name="Ruddy">Rötlich</string>
+<string name="Rumpled Hair">Zerzauste Haare</string>
+<string name="Saddle Bags">Hüftspeck</string>
+
+
+<string name="Scrawny Leg">Dürres Bein</string>
+<string name="Separate">Auseinander</string>
+
+
+<string name="Shallow">Flach</string>
+<string name="Shear Back">Hinterkopf rasiert</string>
+<string name="Shear Face">Gesicht verzerren</string>
+<string name="Shear Front">Vorne rasiert</string>
+
+<string name="Shear Left Up">Links</string>
+
+<string name="Shear Right Up">Rechts</string>
+<string name="Sheared Back">Hinterkopf rasiert</string>
+<string name="Sheared Front">Vorne rasiert</string>
+<string name="Shift Left">Nach links</string>
+<string name="Shift Mouth">Mund verschieben</string>
+<string name="Shift Right">Nach rechts</string>
+<string name="Shirt Bottom">Hemdlänge</string>
+
+<string name="Shirt Fit">Passform</string>
+
+<string name="Shirt Wrinkles">Falten</string>
+<string name="Shoe Height">Schuhart</string>
+
+<string name="Short">Klein</string>
+<string name="Short Arms">Kurze Arme</string>
+<string name="Short Legs">Kurze Beine</string>
+<string name="Short Neck">Kurzer Hals</string>
+<string name="Short Pigtails">Kurze Zöpfe</string>
+<string name="Short Ponytail">Kurzer Pferdeschwanz</string>
+<string name="Short Sideburns">Kurze Koteletten</string>
+<string name="Short Torso">Kurzer Oberkörper</string>
+<string name="Short hips">Kurze Hüften</string>
+<string name="Shoulders">Schultern</string>
+
+<string name="Side Fringe">Seitliche Fransen</string>
+<string name="Sideburns">Koteletten</string>
+
+<string name="Sides Hair">Seitliches Haar</string>
+<string name="Sides Hair Down">Lang</string>
+<string name="Sides Hair Up">Kurz</string>
+
+<string name="Skinny Neck">Dünner Hals</string>
+<string name="Skirt Fit">Passform</string>
+<string name="Skirt Length">Rocklänge</string>
+<string name="Slanted Forehead">Fliehende Stirn</string>
+<string name="Sleeve Length">Ärmellänge</string>
+
+
+
+<string name="Sleeve Looseness">Passform Ärmel</string>
+<string name="Slit Back">Schlitz: Hinten</string>
+<string name="Slit Front">Schlitz: Vorne</string>
+<string name="Slit Left">Schlitz: Links</string>
+<string name="Slit Right">Schlitz: Rechts</string>
+<string name="Small">Klein</string>
+<string name="Small Hands">Kleine Hände</string>
+<string name="Small Head">Klein</string>
+<string name="Smooth">Glätten</string>
+<string name="Smooth Hair">Glattes Haar</string>
+<string name="Socks Length">Strumpflänge</string>
+
+
+<string name="Soulpatch">Unterlippenbart</string>
+
+<string name="Sparse">Wenig</string>
+<string name="Spiked Hair">Stachelhaare</string>
+<string name="Square">Rechteck</string>
+<string name="Square Toe">Eckig</string>
+<string name="Squash Head">Gestaucht</string>
+
+<string name="Stretch Head">Gestreckt</string>
+<string name="Sunken">Eingefallen</string>
+<string name="Sunken Chest">Trichterbrust</string>
+<string name="Sunken Eyes">Eingesunkene Augen</string>
+<string name="Sweep Back">Nach hinten</string>
+<string name="Sweep Forward">Nach vorne</string>
+
+<string name="Tall">Groß</string>
+<string name="Taper Back">Ansatzbreite hinten</string>
+<string name="Taper Front">Ansatzbreite vorne</string>
+<string name="Thick Heels">Dicke Absätze</string>
+<string name="Thick Neck">Dicker Hals</string>
+<string name="Thick Toe">Dick</string>
+
+<string name="Thin">Dünn</string>
+<string name="Thin Eyebrows">Dünne Augenbrauen</string>
+<string name="Thin Lips">Dünne Lippen</string>
+<string name="Thin Nose">Dünne Nase</string>
+<string name="Tight Chin">Straffes Kinn</string>
+<string name="Tight Cuffs">Eng</string>
+<string name="Tight Pants">Enge Hosen</string>
+<string name="Tight Shirt">Enges Hemd</string>
+<string name="Tight Skirt">Enger Rock</string>
+<string name="Tight Sleeves">Enge Ärmel</string>
+
+<string name="Toe Shape">Spitze</string>
+<string name="Toe Thickness">Dicke</string>
+<string name="Torso Length">Länge des Oberkörpers</string>
+<string name="Torso Muscles">Muskeln</string>
+<string name="Torso Scrawny">Dürr</string>
+<string name="Unattached">Frei</string>
+<string name="Uncreased">Straffes Lid</string>
+<string name="Underbite">Unterbiss</string>
+<string name="Unnatural">Unnatürlich</string>
+<string name="Upper Bridge">Brücke, oberer Teil</string>
+<string name="Upper Cheeks">Obere Wangen</string>
+<string name="Upper Chin Cleft">Obere Kinnspalte</string>
+
+<string name="Upper Eyelid Fold">Obere Lidfalte</string>
+<string name="Upturned">Stupsnase</string>
+<string name="Very Red">Sehr rot</string>
+<string name="Waist Height">Bund</string>
+
+
+<string name="Well-Fed">Gut genährt</string>
+<string name="White Hair">Weiße Haare</string>
+<string name="Wide">Breit</string>
+<string name="Wide Back">Breit</string>
+<string name="Wide Front">Breit</string>
+<string name="Wide Lips">Breit</string>
+<string name="Wild">Wild</string>
+<string name="Wrinkles">Falten</string>
+
+	<!-- System Messages -->
+	<string name="ItemsComingInTooFastFrom">[APP_NAME]: Items coming in too fast from [FROM_NAME], automatic preview disabled for [TIME] seconds.</string>
+	<string name="ItemsComingInTooFast">[APP_NAME]: Items coming in too fast, automatic preview disabled for [TIME] seconds.</string>
+
+	<!-- IM system messages -->
+	<string name="IM_announce_incoming">has begun an IM session with you.</string>
+	<string name="IM_autoresponded_to">Autoresponse sent to</string>
+	<string name="IM_autoresponse_minutes">[MINS] minutes</string>
+	<string name="IM_autoresponse_sent_item">was sent auto-response item</string>
+	<string name="Unnamed">(Nicht benannt)</string>
+	<string name="inventory_item_offered_to">Inventory item offered to</string>
+	<string name="Saved_message"/>
+	<string name="StartPointSet">Start point set</string>
+	<string name="EndPointSet">End point set</string>
+	<string name="MeasuredDistance">Distance: [DIST]</string>
+	<string name="PowerUser1">You are bestowed with powers beyond mortal comprehension.</string>
+	<string name="PowerUser2">Use your newfound abilities wisely.</string>
+	<string name="Unlocked:">Unlocked:</string>
+	<string name="PowerUser3">- Animation Priority up to 7 - Meant for animations that should override anything and everything at all times. DO NOT USE THIS FOR GENERAL ANIMATIONS.</string>
+	<string name="RightClick">Right click</string>
+	<string name="PowerUser4">Destroy objects - Permanently deletes an object immediately, when you don't feel like waiting for the server to respond.</string>
+	<string name="PowerUser5">Explode objects - Turns an object physical, temporary, and delinks it.</string>
+
+	<!-- voice calls -->
+
+  <string name="ringing-im">Verbindung wird hergestellt...</string>
+  <string name="connected-im">Verbunden. Klicken Sie auf Anruf beenden, um die Verbindung zu trennen</string>
+  <string name="hang_up-im">Anruf wurde beendet</string>
+  <string name="answering-im">Wird verbunden...</string>
+  <string name="conference-title">Multi-person chat</string>
+  <string name="inventory_item_offered-im">Inventarobjekt angeboten</string>
+  <string name="inventory_item_offered_rlv">Inventory item offered to [NAME]</string>
+
+
+  <string name="only_user_message">Sie sind der einzige Benutzer in dieser Sitzung.</string>
+  <string name="offline_message">[NAME] ist offline.</string>
+  <string name="invite_message">Klicken Sie auf [BUTTON NAME], um eine Verbindung zu diesem Voice-Chat herzustellen.</string>
+  <string name="muted_message">You have muted this Resident. Sending a message will automatically unmute them.</string>
+  <!--Sometimes string name is gotten from the body of server response.
+  For ex.: from gIMMgr::showSessionStartError in the LLViewerChatterBoxSessionStartReply::post.
+  In case of the EXT-3115 issue 'generic' is passed into the gIMMgr::showSessionStartError as a string name.
+  Also there are some other places where "generic" is used.
+  So, let's add string with name="generic" with the same value as "generic_request_error" -->
+  <string name="generic">Fehler bei Anfrage, bitte versuchen Sie es später.</string>
+  <string name="generic_request_error">Fehler bei Anfrage, bitte versuchen Sie es später.</string>
+  <string name="insufficient_perms_error">Sie sind dazu nicht berechtigt.</string>
+  <string name="session_does_not_exist_error">Die Sitzung ist abgelaufen</string>
+  <string name="no_ability_error">Sie besitzen diese Fähigkeit nicht.</string>
+  <string name="no_ability">Sie besitzen diese Fähigkeit nicht.</string>
+  <string name="not_a_mod_error">Sie sind kein Sitzungsmoderator.</string>
+  <!--Sometimes string name is gotten from the body of server response.
+  For ex.: from gIMMgr::showSessionStartError in the LLViewerChatterBoxSessionStartReply::post.
+  In case of the EXT-3562 issue 'muted' is passed into the gIMMgr::showSessionStartError as a string name.
+  So, let's add string with name="muted" with the same value as "muted_error" -->
+  <string name="muted">Ein Gruppenmoderator hat Ihren Text-Chat deaktiviert.</string>
+  <string name="muted_error">Ein Gruppenmoderator hat Ihren Text-Chat deaktiviert.</string>
+  <string name="add_session_event">Es konnten keine Benutzer zur Chat-Sitzung mit [RECIPIENT] hinzugefügt werden.</string>
+  <!--Sometimes string name is gotten from the body of server response.
+  For ex.: from gIMMgr::showSessionStartError in the LLViewerChatterBoxSessionStartReply::post.
+  In case of the EXT-3562 issue 'message' is passed into the gIMMgr::showSessionStartError as a string name.
+  So, let's add string with name="message" with the same value as "message_session_event" -->
+  <string name="message">Neue Chat-Sitzung mit [RECIPIENT] konnte nicht gestartet werden.</string>
+  <string name="message_session_event">Neue Chat-Sitzung mit [RECIPIENT] konnte nicht gestartet werden.</string>
+  <string name="mute">Fehler während Moderation.</string>
+  <!--Sometimes string name is gotten from the body of server response.
+  For ex.: from gIMMgr::showSessionStartError in the LLViewerChatterBoxSessionStartReply::post.
+  In case of the EXT-3459 issue 'removed' is passed into the gIMMgr::showSessionStartError as a string name.
+  So, let's add string with name="removed" with the same value as "removed_from_group" -->
+  <string name="removed">Sie wurden von der Gruppe ausgeschlossen.</string>
+  <string name="removed_from_group">Sie wurden von der Gruppe ausgeschlossen.</string>
+  <string name="close_on_no_ability">Sie haben nicht mehr die Berechtigung an der Chat-Sitzung teilzunehmen.</string>
+
+  <string name="Home position set.">Position für Zuhause festgelegt.</string>
+
+  <string name="voice_morphing_url">http://secondlife.com/landing/voicemorphing</string>
+
+  <!-- Financial operations strings -->
+  <string name="paid_you_ldollars">[NAME] zahlt dir [CURRENCY][AMOUNT] [REASON].</string>
+  <string name="paid_you_ldollars_no_reason">[NAME] zahlt dir [CURRENCY][AMOUNT].</string>
+  <string name="you_paid_ldollars">Du zahlst an [NAME] [CURRENCY][AMOUNT] [REASON].</string>
+  <string name="you_paid_ldollars_no_info">Du zahlst [CURRENCY][AMOUNT].</string>
+  <string name="you_paid_ldollars_no_reason">Du zahlst [NAME] [CURRENCY][AMOUNT]</string>
+  <string name="you_paid_ldollars_no_name">Du zahlst [CURRENCY][AMOUNT] [REASON].</string>
+  <string name="you_paid_failure_ldollars">Zahlung fehlgeschlagen an [NAME] [CURRENCY][AMOUNT] [REASON].</string>
+  <string name="you_paid_failure_ldollars_no_info">Zahlung fehlgeschlagen [CURRENCY][AMOUNT].</string>
+  <string name="you_paid_failure_ldollars_no_reason">Zahlung fehlgeschlagen an [NAME] [CURRENCY][AMOUNT].</string>
+  <string name="you_paid_failure_ldollars_no_name">You failed to pay [CURRENCY][AMOUNT] [REASON].</string>
+  <string name="for item">für [ITEM]</string>
+  <string name="for a parcel of land">für eine Landparzelle</string>
+  <string name="for a land access pass">für einen Pass</string>
+  <string name="for deeding land">für die Landübertragung</string>
+  <string name="to create a group">für die Gründung einer Gruppe</string>
+  <string name="to join a group">für den Beitritt zur Gruppe</string>
+  <string name="to upload">fürs Hochladen</string>
+  <string name="to publish a classified ad">um eine Anzeige aufzugeben</string>
+
+  <string name="giving">Gib [CURRENCY]</string>
+  <string name="this_costs">Der Preis ist: [CURRENCY]</string>
+  <string name="this_object_costs">Dieses Objekt kostet</string>
+
+  <string name="group_role_everyone">Jeder</string>
+  <string name="group_role_officers">Offiziere</string>
+  <string name="group_role_owners">Eigentümer</string>
+  <string name="group_member_status_online">Online</string>
+
+  <string name="uploading_abuse_report">Hochladen...
+
+Missbrauchsbericht</string>
+
+  <!-- names for new inventory items-->
+  <string name="New Shape">Neue Form/Gestalt</string>
+  <string name="New Skin">Neue Haut</string>
+  <string name="New Hair">Neues Haar</string>
+  <string name="New Eyes">Neue Augen</string>
+  <string name="New Shirt">Neues Hemd</string>
+  <string name="New Pants">Neue Hose</string>
+  <string name="New Shoes">Neue Schuhe</string>
+  <string name="New Socks">Neue Socken</string>
+  <string name="New Jacket">Neue Jacke</string>
+  <string name="New Gloves">Neue Handschuhe</string>
+  <string name="New Undershirt">Neues Unterhemd</string>
+  <string name="New Underpants">Neue Unterhose</string>
+  <string name="New Skirt">Neuer Rock</string>
+  <string name="New Alpha">Neues Alpha</string>
+  <string name="New Tattoo">Neue Tätowierung</string>
+  <string name="New Physics">Neue Physik</string>
+  <string name="Invalid Wearable">Ungültiges Objekt</string>
+  <string name="New Gesture">Neue Geste</string>
+  <string name="New Script">Neues Skript</string>
+  <string name="New Note">Neue Notiz</string>
+  <string name="New Folder">Neuer Ordner</string>
+  <string name="Contents">Inhalt</string>
+  <string name="Gesture">Gesten</string>
+  <string name="Male Gestures">Männliche Gesten</string>
+  <string name="Female Gestures">Weibliche Gesten</string>
+  <string name="Other Gestures">Andere Gesten</string>
+  <string name="Speech Gestures">Sprachgesten</string>
+  <string name="Common Gestures">Häufig verwendete Gesten</string>
+  <!-- gestures -->
+  <string name="Male - Excuse me">Männlich - Excuse me</string>
+  <string name="Male - Get lost">Männlich - Get lost</string>
+  <string name="Male - Blow kiss">Männlich - Kusshand</string>
+  <string name="Male - Boo">Männlich - Buh</string>
+  <string name="Male - Bored">Männlich - Gelangweilt</string>
+  <string name="Male - Hey">Männlich - Hey</string>
+  <string name="Male - Laugh">Männlich - Lachen</string>
+  <string name="Male - Repulsed">Männlich - Angewidert</string>
+  <string name="Male - Shrug">Männlich - Achselzucken</string>
+  <string name="Male - Stick tougue out">Mann - Zunge rausstreckt</string>
+  <string name="Male - Wow">Männlich - Wow</string>
+
+  <string name="Female - Chuckle">Weiblich - Kichern</string>
+  <string name="Female - Cry">Weiblich - Weinen</string>
+  <string name="Female - Embarrassed">Weiblich - Verlegen</string>
+  <string name="Female - Excuse me">Weiblich - Räuspern</string>
+  <string name="Female - Get lost">Weiblich - Get lost</string>
+  <string name="Female - Blow kiss">Weiblich - Kusshand</string>
+  <string name="Female - Boo">Weiblich  - Buh</string>
+  <string name="Female - Bored">Weiblich - Gelangweilt</string>
+  <string name="Female - Hey">Weiblich - Hey</string>
+  <string name="Female - Hey baby">Weiblich - Hey Süße(r)</string>
+  <string name="Female - Laugh">Weiblich - Lachen</string>
+  <string name="Female - Looking good">Weiblich - Looking good</string>
+  <string name="Female - Over here">Weiblich - Over here</string>
+  <string name="Female - Please">Weiblich - Please</string>
+  <string name="Female - Repulsed">Weiblich - Angewidert</string>
+  <string name="Female - Shrug">Weiblich - Achselzucken</string>
+  <string name="Female - Stick tougue out">Frau - Streckt Zunge heraus</string>
+  <string name="Female - Wow">Weiblich - Wow</string>
+
+  <string name="/bow">/verbeugen</string>
+  <string name="/clap">/klatschen</string>
+  <string name="/count">/zählen</string>
+  <string name="/extinguish">/löschen</string>
+  <string name="/kmb">/lmaa</string>
+  <string name="/muscle">/Muskel</string>
+  <string name="/no">/nein</string>
+  <string name="/no!">/nein!</string>
+  <string name="/paper">/Papier</string>
+  <string name="/pointme">/auf mich zeigen</string>
+  <string name="/pointyou">/auf dich zeigen</string>
+  <string name="/rock">/Stein</string>
+  <string name="/scissor">/Schere</string>
+  <string name="/smoke">/rauchen</string>
+  <string name="/stretch">/dehnen</string>
+  <string name="/whistle">/pfeifen</string>
+  <string name="/yes">/ja</string>
+  <string name="/yes!">/ja!</string>
+  <string name="afk">afk</string>
+  <string name="dance1">Tanzen1</string>
+  <string name="dance2">Tanzen2</string>
+  <string name="dance3">Tanzen3</string>
+  <string name="dance4">Tanzen4</string>
+  <string name="dance5">Tanzen5</string>
+  <string name="dance6">Tanzen6</string>
+  <string name="dance7">Tanzen7</string>
+  <string name="dance8">Tanzen8</string>
+  <string name="DefaultMimeType">Keine/Keiner</string>
+  <string name="Chat">Chat</string>
+
+ <!-- External editor status codes -->
+ <string name="ExternalEditorNotSet">Wählen Sie über die Einstellung „ExternalEditor“ einen Editor aus</string>
+ <string name="ExternalEditorNotFound">Angegebener externer Editor nicht gefunden.
+Setzen Sie den Editorpfad in Anführungszeichen
+(z. B. "/pfad/editor" "%s").</string>
+ <string name="ExternalEditorCommandParseError">Fehler beim Parsen des externen Editorbefehls.</string>
+ <string name="ExternalEditorFailedToRun">Externer Editor konnte nicht ausgeführt werden.</string>
+
+  <string name="Left">Links</string>
+  <string name="Right">Rechts</string>
+
+  <!-- llviewerwindow -->
+  <string name="BeaconParticle">Partikel-Beacons werden angezeigt (blau)</string>
+  <string name="BeaconPhysical">Beacons für physische Objekte werden angezeigt (grün)</string>
+  <string name="BeaconScripted">Beacons für Skriptobjekte werden angezeigt (rot)</string>
+  <string name="BeaconScriptedTouch">Beacons für Skriptobjekte mit Berührungsfunktion werden angezeigt (rot)</string>
+  <string name="BeaconSound">Sound-Beacons werden angezeigt (gelb)</string>
+  <string name="BeaconMedia">Medien-Beacons werden angezeigt (weiß)</string>
+  <string name="ParticleHiding">Partikel werden ausgeblendet</string>
+
+  <string name="Command_Profile_Label">Profil</string>
+
+  <!-- Pathfinding -->
+  <string name="Pathfinding_Wiki_URL">http://wiki.secondlife.com/wiki/Pathfinding_Tools_in_the_Second_Life_Viewer</string>
+  <string name="Pathfinding_Object_Attr_None">Keine</string>
+  <string name="Pathfinding_Object_Attr_Permanent">Beinflusst Navmesh</string>
+  <string name="Pathfinding_Object_Attr_Character">Charakter</string>
+  <string name="Pathfinding_Object_Attr_MultiSelect">(mehrere)</string>
+
+  <!-- teleport_strings.xml's strings we need -->
+  <string name="completed_from">Teleport completed from</string>
+
+</strings>

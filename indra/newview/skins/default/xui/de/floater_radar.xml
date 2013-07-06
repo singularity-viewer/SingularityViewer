@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="radar" title="Radar">
+	<string name="Title">Radar</string>
+	<string name="TitleOneAvatar">Radar (1 Bewohner)</string>
+	<string name="TitleWithCount">Radar ([COUNT] Bewohner)</string>
+
+	<scroll_list name="avatar_list" tool_tip="Halte Steuerung oder Grosstaste um mehrere Avatare zu wählen">
+		<column name="marked" label="Markieren" tool_tip="Markierte Avatare"/>
+		<column name="avatar_name" label="Name" tool_tip="Halte Steuerung oder Grosstaste um mehrere Avatare zu wählen"/>
+		<column name="distance" label="Dist." tool_tip="Distanz von deinem Avatar (rot=in Chatzone, gelb=in Rufzone, grün=in sichtbarem Bereich)"/>
+		<column name="position" label="Pos." tool_tip="Position (X, Y) in diesem Sim oder generelle Richtung (Kompass) für andere Sims"/>
+		<column name="altitude" label="Höhe" tool_tip="Höhe"/>
+    <column name="activity" label="Akt." tool_tip="Aktivität"/>
+		<column name="age" label="Alter" tool_tip="Alter"/>
+		<column name="time" label="Uhrzeit" tool_tip="Zeit seit eintreffen in der Sim."/>
+    <column name="client" label="Client" tool_tip="Viewer den der Avatar nutzen könnte"/>
+	</scroll_list>
+
+	<tab_container name="actions_tab_container">
+		<panel label="Avatar" name="actions_tab">
+			<!-- upper row -->
+			<button name="profile_btn" label="Profil" tool_tip="Zeigt dir Bilder, Gruppen und andere Informationen"/>
+			<button name="track_btn" label="Verfolgen an/aus" tool_tip="Positionsverfolgung für diesen Avatar umschalten"/>
+			<button name="get_key_btn" label="ID Kopieren" tool_tip="Avatar UUID kopieren"/>
+			<!-- upper middle row -->
+			<button name="im_btn" label="IM" tool_tip="IM Sitzung öffnen (Umschalt-Eingabe)"/>
+			<button name="offer_btn" label="TP anbieten" tool_tip="Teleport anbieten"/>
+			<button name="teleport_btn" label="TP zu" tool_tip="Teleport to avatar's position"/>			
+			<!-- lower middle row-->
+			<button name="mark_btn" label="Markierung" tool_tip="Avatar markieren an/aus"/>
+			<button name="prev_marked_btn" label="Voriger markierter" tool_tip="Zoome Kamera auf vorigen markierten Avatar"/>
+			<button name="next_marked_btn" label="Nächster markierter" tool_tip="Zoome Kamera auf nächsten markierten Avatar"/>
+			<!-- lower row-->
+			<button name="focus_btn" label="Fokus" tool_tip="Focus camera on this avatar in the list"/>
+			<button name="prev_in_list_btn" label="Zurück" tool_tip="Zoome Kamera auf vorigen Avatar"/>
+			<button name="next_in_list_btn" label="Weiter" tool_tip="Zoome Kamera auf nächsten Avatar"/>
+
+		</panel>
+
+		<panel label="Hinweise" name="alerts_tab">
+			<check_box label="Hinweise im Chat anzeigen" name="radar_alerts" tool_tip="Hinweise auf kommende/gehende Avatare in Chat"/>
+
+			<check_box label="Avatare betreten/verlassen das Sim" name="alerts_sim" tool_tip="Avatare die das Sim betreten oder Verlassen anzeigen"/>
+
+			<check_box label="Sichtbar werdende Avatare" name="alerts_draw" tool_tip="Avatare anzeigen die in den sichtbaren Bereich eintreten oder ihn verlassen"/>
+
+			<check_box label="Bewohner innerhalb/ausserhalb der Rufweite" name="alerts_chat" tool_tip="Zeige Bewohner die sich in Rufweite begeben oder sie verlassen"/>
+
+			<check_box label="Avatars within/beyond the shout range" name="alerts_chat" tool_tip="Report avatars getting within or beyond the shout range"/>
+		</panel>
+
+		<panel label="Moderation" name="land_tab">
+			
+			<!-- Upper row -->
+			<button name="mute_btn" label="Stumm an/aus" tool_tip="Stummschalten (an/aus) des Avatars (stumme Avatare sind in der Liste rot)."/>
+			<button name="freeze_btn" label="Einfrieren" tool_tip="Avatar einfrieren so dass er sich nicht bewegen kann"/>
+			<button name="ar_btn" label="AR" tool_tip="Avatar wegen Missbrauchs anzeigen"/>
+			<!-- Lower row -->
+			<button name="eject_btn" label="Hinauswerfen" tool_tip="Avatar hinauswerfen"/>
+			
+			<button name="estate_eject_btn" label="Aus Estate werfen" tool_tip="Avatar aus dem Estate werfen"/>
+			<!-- Lowest row -->
+			<button name="estate_ban_btn" label="Von Estate werfen und verbannen." tool_tip="Bewohner von Estate werfen und verbannen"/>
+		</panel>
+
+		<panel label="Optionen" name="options_tab">
+			<check_box label="Aktualisieren" name="update_enabled_cb" tool_tip="Einstellen ob die Avatarliste sich aktualisieren soll"/>
+			<text name="rate">Intervall:</text>
+			<radio_group name="update_rate" tool_tip="Intervall für Radar-Aktualisierung (verbraucht mehr FPS wenn höher)">
+				<radio_item name="high">Hoch</radio_item>
+				<radio_item name="medium">Mittel</radio_item>
+				<radio_item name="low">Niedrig</radio_item>
+			</radio_group>
+			<check_box label="Ansagen auch wenn geschlossen" name="keep_open" tool_tip="Fenster verbergen aber Ansagen in Chat weiterführen"/>
+			<check_box label="IDs an HUD senden" name="radar_chat_keys" tool_tip="Avatar IDs an LSL scripte senden"/>
+			<button name="send_keys_btn" label="Jetzt anzeigen" tool_tip="Alle IDs jetzt an HUD senden"/>
+		</panel>
+
+		<panel label="Extras" name="extras_tab">
+			<check_box label="Bewohner-Alters-Alarm" name="agealert" tool_tip="Aktiviere Avatar-Alters-Alarm"/>
+			<spinner name="AgeAlertDays" label="Altersgrenze" tool_tip="Das minimale Alter in Tagen eines Bewohners im Grid um keinen Alarm mehr auszulösen"/>
+			<text name="hide_columns">Verstecke Spalten:</text>
+				<check_box name="hide_mark" label="Markieren"/>
+				<check_box name="hide_pos" label="Pos." tool_tip="Position"/>
+				<check_box name="hide_alt" label="Höhe" tool_tip="Höhe"/>
+				<check_box name="hide_act" label="Akt." tool_tip="Aktivität"/>
+				<check_box name="hide_age" label="Alter"/>
+				<check_box name="hide_time" label="Uhrzeit"/>
+				<check_box name="hide_client" label="Client"/>
+		</panel>
+	</tab_container>
+	<string name="Moving">Bewegen</string>
+	<string name="Playing a gesture">Geste abspielen</string>
+	<string name="Playing a sound">Geräusch abspielen</string>
+	<string name="Rezzing objects">Objekte rezzen</string>
+	<string name="Creating particles">Erzeuge Partikel</string>
+	<string name="Just arrived">Soeben angekommen</string>
+	<string name="Typing">Tippen</string>
+	<string name="has_triggered_your_avatar_age_alert">hat Avatar-Alters-Alarm ausgelöst</string>
+	<string name="template">[NAME] [ACTION] [RANGE].</string>
+	<!-- [ACTION] -->
+	<string name="has_entered">ist eingetroffen</string>
+	<string name="has_left">hat verlassen</string>
+	<!-- [RANGE] -->
+	<string name="the_sim">die Sim</string>
+	<string name="draw_distance">Anzeigeentfernung</string>
+	<string name="shout_range">Rufweite</string>
+	<string name="chat_range">Sprechweite</string>
+</floater>

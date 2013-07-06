@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="Post-Process Floater" title="Post-Processing-Einstellungen">
+	<tab_container name="Post-Process Tabs">
+		<panel label="Farbfilter" name="ColorFilterPanel">
+			<check_box label="Ein" name="enable_color_filter"/>
+			<text name="ColorFilterGammaText">Gamma</text>
+			<slider label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="gamma"/>
+			<text name="ColorFilterBrightnessText">Helligkeit</text>
+			<slider label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="brightness"/>
+			<text name="ColorFilterSaturationText">Sättigung</text>
+			<slider label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="saturation"/>
+			<text name="ColorFilterContrastText">Kontrast</text>
+			<slider label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="contrast"/>
+			<text name="ColorFilterBaseText">Kontrast Grundfarben</text>
+			<slider label="R" name="contrast_base[0]"/>
+			<slider label="G" name="contrast_base[1]"/>
+			<slider label="B" name="contrast_base[2]"/>
+			<slider label="I" name="contrast_base[3]"/>
+		</panel>
+		<panel label="Gausssche Unschärfe" name="GaussBlurPanel">
+			<check_box label="Ein" name="enable_gauss_blur"/>
+			<text name="GaussBlurPassesText">Durchgänge anzuwenden</text>
+			<slider label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="gauss_blur_passes"/>
+		</panel>
+		<panel label="Nachtsicht" name="NightVisionPanel">
+			<check_box label="Ein" name="enable_night_vision"/>
+			<text name="NightVisionBrightMultText">Lichtverstärkungsmultiplikator</text>
+			<slider label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="brightness_multiplier"/>
+			<text name="NightVisionNoiseSizeText">Rauschen-Größe</text>
+			<slider label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="noise_size"/>
+			<text name="NightVisionNoiseStrengthText">Rauschen-Stärke</text>
+			<slider label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="noise_strength"/>
+		</panel>
+		<panel label="Posterisieren" name="PosterizePanel">
+			<check_box label="Ein" name="enable_posterize"/>
+			<text name="PosterLayersText">Ebenenanzahl</text>
+			<slider label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="posterize_layers"/>
+		</panel>
+		<panel label="Bewegungsunschärfe" name="MotionBlurPanel">
+			<check_box label="Ein" name="enable_motionblur"/>
+			<text name="MotionBlurText">Bewegungsunschärfen-Stärke</text>
+			<slider label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="blur_strength"/>
+		</panel>
+    <panel label="Vignettierung" name="VignettePanel">
+      <check_box label="Ein" name="enable_vignette"/>
+      <text name="VignetteStrengthText">Stärke</text>
+      <slider label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="vignette_strength"/>
+      <text name="VignetteRadiusText">Radius</text>
+      <slider label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="vignette_radius"/>
+      <text name="VignetteDarknessText">Dunkelheit</text>
+      <slider label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="vignette_darkness"/>
+      <text name="VignetteDesaturateText">Entsättigungsstärke</text>
+      <slider label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="vignette_desaturation"/>
+      <text name="VignetteChormaticAberrationText">Farbabweichung</text>
+      <slider label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="vignette_chromatic_aberration"/>
+    </panel>
+		<!--<panel border="true" bottom="-180" follows="left|top|right|bottom" height="400"
+			 label="Bloom" left="1" mouse_opaque="true"
+			 name="BloomPanel" width="398">
+			<check_box control_name="BloomToggle" follows="left|top"
+				 font="SansSerifSmall" height="16" initial_value="false" label="Enable"
+				 left="4" mouse_opaque="true" name="BloomToggle" width="200" />
+			<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+				 bottom_delta="-21" drop_shadow_visible="true" follows="left|top|right"
+				 font="SansSerif" h_pad="0" halign="left" height="16"
+				 left="10" mouse_opaque="true" name="BloomExtractText" v_pad="0"
+				 width="355">
+				Luminosity Extraction
+			</text>
+			<slider bottom_delta="-35" can_edit_text="true" control_name="BloomExtract"
+				 decimal_digits="3" follows="left" height="18" increment="0.01"
+				 initial_val="0.9" label="" left="14" max_val="1" min_val="0" val_width="41"
+				 mouse_opaque="true" name="BloomExtract" show_text="true" value="0.7"
+				 width="200" />
+			<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+				 bottom_delta="-20" drop_shadow_visible="true" follows="left|top|right"
+				 font="SansSerif" h_pad="0" halign="left" height="16"
+				 left="10" mouse_opaque="true" name="BloomSizeText" v_pad="0" width="355">
+				Bloom Size
+			</text>
+			<slider bottom_delta="-35" can_edit_text="true" control_name="BloomSize"
+				 decimal_digits="3" follows="left" height="18" increment="0.01"
+				 initial_val="3.0" label="" left="14" max_val="20" min_val="0" val_width="41"
+				 mouse_opaque="true" name="BloomSize" show_text="true" value="1.0"
+				 width="200" />
+			<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+				 bottom_delta="-20" drop_shadow_visible="true" follows="left|top|right"
+				 font="SansSerif" h_pad="0" halign="left" height="16"
+				 left="10" mouse_opaque="true" name="BloomStrengthText" v_pad="0"
+				 width="355">
+				Bloom Strength
+			</text>
+			<slider bottom_delta="-35" can_edit_text="true" control_name="BloomStrength"
+				 decimal_digits="3" follows="left" height="18" increment="0.01"
+				 initial_val="1.2" label="" left="14" max_val="10" min_val="0" val_width="41"
+				 mouse_opaque="true" name="BloomStrength" show_text="true" value="1.0"
+				 width="200" />
+		 </panel>-->
+		<panel label="Extras" name="Extras">
+			<combo_box name="PPEffectsCombo"/>
+			<line_editor label="Effektname" name="PPEffectNameEditor"/>
+			<button label="Effekt laden" label_selected="Effekt laden" name="PPLoadEffect"/>
+			<button label="Effekt speichern" label_selected="Effekt speichern" name="PPSaveEffect"/>
+		</panel>
+	</tab_container>
+</floater>

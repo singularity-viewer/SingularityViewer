@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<floater name="floater_merchant_outbox" title="Händler-Outbox">
+  <string name="OutboxFolderCount0">Keine Ordner</string>
+  <string name="OutboxFolderCount1">1 Ordner</string>
+  <string name="OutboxFolderCountN">[NUM] Ordner</string>
+  <string name="OutboxImporting">Ordner übertragen...</string>
+  <string name="OutboxInitializing">Initialisieren...</string>
+  <!--panel
+      name="panel_1 this panel killed xui names, for some reason"
+      follows="all"
+      layout="topleft"
+      left="0"
+      top="0"
+      label=""
+      height="440"
+      width="333"-->
+      <panel name="outbox_inventory_placeholder_panel">
+        <text name="outbox_inventory_placeholder_title">Wird geladen...</text>
+        <text_editor name="outbox_inventory_placeholder_text"/>
+      </panel>
+      <inventory_panel name="panel_outbox_inventory"/>
+    <panel name="panel_2">
+      <panel name="outbox_generic_drag_target">
+        <text name="text_1">Objekte hier ablegen, um Ordner zu erstellen</text>
+      </panel>
+      <text name="outbox_folder_count"/>
+      <button label="In Marktplatz übertragen" tool_tip="In meinen Marktplatz-Laden verschieben" name="outbox_import_btn"/>
+    </panel>
+	<text name="import_progress_indicator">Importfortschritt</text>
+  <!--/panel-->
+</floater>

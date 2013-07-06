@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel label="Allgemein" name="Media Settings General">
+
+  <text name="home_label">Homepage:</text>
+  <text name="home_fails_whitelist_label">(Diese Seite wird von der angegebenen Whiteliste nicht zugelassen)</text>
+  <line_editor name="home_url" tool_tip="Die Start-URL für diese Medienquelle"> 
+    <!--  <line_editor.commit_callback
+	     function="Media.CommitHomeURL"/> -->
+  </line_editor>
+
+  <web_browser name="preview_media" decouple_texture_size="true"/>
+  
+  <text name="preview_label">Vorschau</text>
+  
+  <text name="current_url_label">Aktuelle Seite:</text>
+  <text name="current_url" tool_tip="Die aktuelle Seite für diese Medienquelle"/>
+  <button label="Zurücksetzen" name="current_url_reset_btn"> 
+   <button.commit_callback/>
+  </button>
+  <check_box label="Automatisch wiederholen" name="auto_loop"/>
+  <check_box label="Interaktion beim ersten Anklicken" name="first_click_interact"/>
+
+  <check_box label="Automatisch zoomen" name="auto_zoom"/>
+
+  <check_box label="Medien automatisch abspielen" name="auto_play"/>
+   
+  <text name="media_setting_note">Hinweis: Einwohner können diese Einstellung überschreiben</text>
+
+  <check_box label="Medien automatisch auf Objektflächen skalieren" name="auto_scale"/>
+   
+  <text name="size_label">Größe:</text>
+  
+  <spinner label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="width_pixels"/>
+   
+  <text name="X_label">X</text>
+  <spinner label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="height_pixels"/>
+ 
+</panel>

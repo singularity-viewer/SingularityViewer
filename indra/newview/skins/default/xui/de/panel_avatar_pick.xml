@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel name="Pick" title="Setzen">
+	<texture_picker name="snapshot_ctrl"/>
+	<line_editor name="given_name_editor"/>
+	<text_editor name="desc_editor"/>
+	<line_editor name="location_editor"/>
+	<button label="Standort festl." name="set_location_btn"/>
+    <button label="Open Picture" name="open_picture_btn"/>
+	<button label="Teleportieren" name="pick_teleport_btn"/>
+	<button label="Auf Karte zeigen" name="pick_map_btn"/>
+</panel>

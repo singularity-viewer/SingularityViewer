@@ -27,6 +27,7 @@ set(llmessage_SOURCE_FILES
     aicurleasyrequeststatemachine.cpp
     aicurlperservice.cpp
     aicurlthread.cpp
+    aicurltimer.cpp
     aihttpheaders.cpp
     aihttptimeout.cpp
     aihttptimeoutpolicy.cpp
@@ -116,6 +117,7 @@ set(llmessage_HEADER_FILES
     aicurlperservice.h
     aicurlprivate.h
     aicurlthread.h
+    aicurltimer.h
     aihttpheaders.h
     aihttptimeout.h
     aihttptimeoutpolicy.h

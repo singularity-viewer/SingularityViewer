@@ -1,0 +1,285 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="Model Preview" title="Model hochladen">
+
+  <string name="status_idle"/>
+  <string name="status_parse_error">Fehler: Fehler beim DAE-Parsen – Details siehe Protokoll.</string>
+  <string name="status_material_mismatch">Fehler: Das Material des Modells ist keine Teilmenge des Referenzmodells.</string>
+  <string name="status_reading_file">Wird geladen...</string>
+  <string name="status_generating_meshes">Netze werden generiert...</string>
+  <string name="status_vertex_number_overflow">Fehler: Anzahl von Vertices überschreitet 65534. Operation abgebrochen.</string>
+  <!--string name="status_waiting_server">Sending weights &amp; fee request to server, please wait...</string>
+  <string name="status_uploading">Uploading the model, please wait...</string-->
+  <string name="bad_element">Fehler: ungültiges Element.</string>
+  <string name="high">Hoch</string>
+  <string name="medium">Mittel</string>
+  <string name="low">Niedrig</string>
+  <string name="lowest">Niedrigste</string>
+  <string name="mesh_status_good">Ausliefern</string>
+  <string name="mesh_status_na">--</string>
+  <string name="mesh_status_none">Keine</string>
+  <string name="mesh_status_submesh_mismatch">Detailstufen haben unterschiedliche Anzahl texturfähiger Flächen.</string>
+  <string name="mesh_status_mesh_mismatch">Detailstufen haben unterschiedliche Anzahl von Netzinstanzen.</string>
+  <string name="mesh_status_too_many_vertices">Detailstufe hat zu viele Vertices.</string>
+  <string name="mesh_status_missing_lod">Erforderliche Detailstufe fehlt.</string>
+  <string name="mesh_status_invalid_material_list">Detailstufenmaterial ist keine Teilmenge des Referenzmodells.</string>
+  <string name="layer_all">Alle</string> <!-- Text to display in physics layer combo box for "all layers" -->
+  <string name="decomposing">Analyse läuft...</string>
+  <string name="simplifying">Vereinfachung läuft...</string>
+  <string name="tbd">noch nicht festgelegt</string>
+
+	<panel name="left_panel">
+		<panel name="model_name_representation_panel">
+			<text name="name_label">Modellname:</text>
+			<text name="model_category_label">Dieses Modell repräsentiert...</text>
+	        <line_editor name="description_form"/>
+			<combo_box name="model_category_combo">
+				<combo_item name="Choose one">Eine auswählen...</combo_item>
+				<combo_item name="Avatar shape">Avatarform</combo_item>
+				<combo_item name="Avatar attachment">Avatar-Anhang</combo_item>
+				<combo_item name="Moving object (vehicle, animal)">Mobile Objekte (Fahrzeug, Tier)</combo_item>
+				<combo_item name="Building Component">Baukomponenten</combo_item>
+				<combo_item name="Large, non moving etc">Groß, unbeweglich usw.</combo_item>
+				<combo_item name="Smaller, non-moving etc">Kleiner, unbeweglich usw.</combo_item>
+				<combo_item name="Not really any of these">Keine der oben genannten</combo_item>
+			</combo_box>
+		</panel>
+		<tab_container name="import_tab">
+
+			<!-- LOD PANEL -->
+			<panel name="lod_panel" label="Detailstufe" title="Detailstufe">
+				<view_border name="lod_tab_border"/>
+				<text name="source">Quelle</text>
+				<text name="triangles">Dreiecke</text>
+				<text name="vertices">Eckpunkte</text>
+
+				<text name="high_label">Hoch</text>
+				<combo_box name="lod_source_high">
+					<combo_item name="Load from file">Aus Datei laden</combo_item>
+					<combo_item name="Generate">Generieren</combo_item>
+				</combo_box>
+				<line_editor name="lod_file_high"/>
+				<button name="lod_browse_high" label="Auswählen"/>
+				<combo_box name="lod_mode_high">
+					<combo_item name="Triangle Limit">Triangel-Limit</combo_item>
+					<combo_item name="Error Threshold">Fehler-Schwellwert</combo_item>
+				</combo_box>
+				<spinner name="lod_triangle_limit_high"/>
+				<spinner name="lod_error_threshold_high"/>
+				<text name="high_triangles"/>
+				<text name="high_vertices"/>
+				<text name="high_status"/>
+				<icon name="status_icon_high"/>
+
+				<text name="medium_label">Mittel</text>
+				<combo_box name="lod_source_medium">
+					<combo_item name="Load from file">Aus Datei laden</combo_item>
+					<combo_item name="Generate">Generieren</combo_item>
+					<combo_item name="Use LoD above">Obige Detailstufe verwenden</combo_item>
+				</combo_box>
+				<line_editor name="lod_file_medium"/>
+				<button name="lod_browse_medium" label="Auswählen"/>
+				<combo_box name="lod_mode_medium">
+					<combo_item name="Triangle Limit">Triangel-Limit</combo_item>
+					<combo_item name="Error Threshold">Fehler-Schwellwert</combo_item>
+				</combo_box>
+				<spinner name="lod_triangle_limit_medium"/>
+				<spinner name="lod_error_threshold_medium"/>
+				<text name="medium_triangles"/>
+				<text name="medium_vertices"/>
+				<text name="medium_status"/>
+				<icon name="status_icon_medium"/>
+
+				<text name="low_label">Niedrig</text>
+				<combo_box name="lod_source_low">
+					<combo_item name="Load from file">Aus Datei laden</combo_item>
+					<combo_item name="Generate">Generieren</combo_item>
+					<combo_item name="Use LoD above">Obige Detailstufe verwenden</combo_item>
+				</combo_box>
+				<line_editor name="lod_file_low"/>
+				<button name="lod_browse_low" label="Auswählen"/>
+				<combo_box name="lod_mode_low">
+					<combo_item name="Triangle Limit">Triangel-Limit</combo_item>
+					<combo_item name="Error Threshold">Fehler-Schwellwert</combo_item>
+				</combo_box>
+				<spinner name="lod_triangle_limit_low"/>
+				<spinner name="lod_error_threshold_low"/>
+				<text name="low_triangles"/>
+				<text name="low_vertices"/>
+				<text name="low_status"/>
+				<icon name="status_icon_low"/>
+
+				<text name="lowest_label">Niedrigste</text>
+				<combo_box name="lod_source_lowest">
+					<combo_item name="Load from file">Aus Datei laden</combo_item>
+					<combo_item name="Generate">Generieren</combo_item>
+					<combo_item name="Use LoD above">Obige Detailstufe verwenden</combo_item>
+				</combo_box>
+				<line_editor name="lod_file_lowest"/>
+				<button name="lod_browse_lowest" label="Auswählen"/>
+				<combo_box name="lod_mode_lowest">
+					<combo_item name="Triangle Limit">Triangel-Limit</combo_item>
+					<combo_item name="Error Threshold">Fehler-Schwellwert</combo_item>
+				</combo_box>
+				<spinner name="lod_triangle_limit_lowest"/>
+				<spinner name="lod_error_threshold_lowest"/>
+				<text name="lowest_triangles"/>
+				<text name="lowest_vertices"/>
+				<text name="lowest_status"/>
+				<icon name="status_icon_lowest"/>
+
+				<icon name="lod_status_message_icon"/>
+				<text name="lod_status_message_text"/>
+
+				<view_border name="lod_tab_border"/>
+				<check_box name="gen_normals" label="Normalen generieren"/>
+				<text name="crease_label">Knitter-WInkel</text>
+				<spinner name="crease_angle"/>
+			</panel>
+
+			<!-- PHYSICS PANEL -->
+			<panel name="physics_panel" label="Physik" title="Physik">
+				<view_border name="physics_tab_border"/>
+
+				<!-- ==== STEP 1: Level of Detail ==== -->
+				<panel name="physics geometry">
+					<text name="first_step_name">Schritt 1: Detailstufe</text>
+                    <combo_box name="physics_lod_combo" tool_tip="Detailstufe für Physikform">
+						<combo_item name="choose_one">Eine auswählen...</combo_item>
+						<combo_item name="physics_high">Hoch</combo_item>
+						<combo_item name="physics_medium">Mittel</combo_item>
+						<combo_item name="physics_low">Niedrig</combo_item>
+						<combo_item name="physics_lowest">Niedrigste</combo_item>
+						<combo_item name="load_from_file">Aus Datei</combo_item>
+					</combo_box>
+					<line_editor name="physics_file"/>
+					<button name="physics_browse" label="Auswählen"/>
+<!--
+					<check_box name="physics_optimize" label="Optimize" follows="left|top"
+					 width="130" left="10" bottom_delta="-24" height="20"/>
+                    <check_box name="physics_use_hull" label="Use Convex Hull" follows="left|top"
+					 width="130" left_delta="135" height="20"/>
+-->
+				</panel>
+
+				<!-- ==== STEP 2: Analyze ==== -->
+				<view_border name="physics_tab_border"/>
+				<panel name="physics analysis">
+					<text name="method_label">Schritt 2: Analysieren</text>
+					<text name="analysis_method_label">Methode:</text>
+                    <text name="quality_label">Qualität:</text>
+                    <text name="smooth_method_label">Glätten:</text>
+					<combo_box name="Method"/>
+					<combo_box name="Decompose Quality"/>
+					<combo_box name="Cosine%"/>
+					<check_box name="Close Holes (Slow)" label="Löcher schließen"/>
+					<button name="Decompose" label="Analysieren"/>
+					<button name="decompose_cancel" label="Abbrechen"/>
+                </panel>
+
+				<!-- ==== STEP 3: Simplify ==== -->
+				<view_border name="physics_tab_border2"/>
+                <panel name="physics simplification">
+					<text name="second_step_label">Schritt 3: Vereinfachen</text>
+					<text name="simp_method_header">Methode:</text>
+                    <text name="pass_method_header">Durchläufe:</text>
+                    <text name="Detail Scale label">Detailskalierung:</text>
+                    <text name="Retain%_label">Beibehalten:</text>
+					<combo_box name="Simplify Method"/>
+					<combo_box name="Combine Quality"/>
+					<spinner name="Detail Scale"/>
+					<spinner name="Retain%"/>
+					<button name="Simplify" label="Vereinfachen"/>
+                    <button name="simplify_cancel" label="Abbrechen"/>
+				</panel>
+
+				<!-- ==== Results ==== -->
+				<view_border name="physics_tab_border3"/>
+                <panel name="physics info">
+					<text name="results_text">Ergebnisse:</text>
+					<text name="physics_triangles">Dreiecke: [TRIANGLES],</text>
+					<text name="physics_points">Scheitelpunkte: [POINTS],</text>
+					<text name="physics_hulls">Hüllen: [HULLS]</text>
+				</panel>
+			</panel>
+
+			<!-- MODIFIERS PANEL -->
+			<panel name="modifiers_panel" label="Hochladeoptionen" title="Hochladeoptionen">
+				<view_border name="modifiers_tab_border"/>
+				<text name="scale_label">Groessenfaktor (1 = ohne)</text>
+				<spinner name="import_scale"/>
+				<text name="dimensions_label">Dimensionen:</text>
+				<text name="import_dimensions">[X] X [Y] X [Z]</text>
+				<check_box name="upload_textures" label="Texturen einschließen"/>
+
+				<view_border name="modifiers_tab_border2"/>
+				<text name="include_label">Nur für Avatarmodelle:</text>
+				<check_box name="upload_skin" label="Skingewicht einschließen"/>
+				<text name="pelvis_offset_label">Z-Offset (Avatar anheben oder senken):</text>
+				<spinner name="pelvis_offset"/>
+				<check_box name="upload_joints" label="Gelenkpositionen einschließen"/>
+<!-- Mesh Deformer bits
+				<check_box name="deform" label="Deform to avatar shape:" follows="top|left"
+				 left="20" bottom_delta="-24" width="140" height="16"/>
+				<radio_group name="deform_base" draw_border="false"
+				 left_delta="195" bottom_delta="0" height="16" width="330" follows="top|left">
+					<radio_item name="0" value="0"
+					 bottom="-16" left="0" height="16" width="100">
+						Default male
+					</radio_item>
+					<radio_item name="1" value="1"
+					 bottom="-16" left="110" height="16" width="100">
+						Default female
+					</radio_item>
+					<radio_item name="2" value="2"
+					 bottom="-16" left="220" height="16" width="100">
+						Worn shape
+					</radio_item>
+				</radio_group>
+-->
+			</panel>
+		</tab_container>
+
+		<panel name="weights_and_warning_panel">
+			<button name="calculate_btn" label="Gewichte und Gebühr berechnen" tool_tip="Gewichte und Gebühr berechnen"/>
+			<button name="cancel_btn" label="Abbrechen"/>
+			<button name="ok_btn" label="Hochladen" tool_tip="Hochladen"/>
+			<button name="reset_btn" label="Einstellungen löschen und Formular zurücksetzen"/>
+
+			<!-- WEIGHTS -->
+			<text name="upload_fee">Uploadgebühr: [FEE] [CURRENCY]</text>
+			<text name="prim_weight">Auswirkung auf Land: [EQ]</text>
+			<text name="download_weight">Herunterladen: [ST]</text>
+			<text name="physics_weight">Physik: [PH]</text>
+			<text name="server_weight">Server: [SIM]</text>
+
+			<!-- NOTE MESSAGE -->
+			<text name="warning_title">HINWEIS:</text>
+			<text name="warning_message">Sie sind nicht berechtigt, Meshmodelle hochzuladen.</text>
+			<text name="validate_url">Für Info über Zertifzierung hier klicken.</text>
+
+			<text name="status">[STATUS]</text>
+		</panel>
+	</panel>
+
+	<text name="lod_label">Vorschau:</text>
+
+	<panel name="preview_panel"/>
+
+	<panel name="right_panel">
+		<combo_box name="preview_lod_combo" tool_tip="Detailstufe zur Anzeige in Vorschaudarstellung">
+			<combo_item name="high">Hoch</combo_item>
+			<combo_item name="medium">Mittel</combo_item>
+			<combo_item name="low">Niedrig</combo_item>
+			<combo_item name="lowest">Niedrigste</combo_item>
+		</combo_box>
+		<text name="label_display">Anzeige...</text>
+		<check_box name="show_edges" label="Kanten"/>
+		<check_box name="show_physics" label="Physik"/>
+		<check_box name="show_textures" label="Texturen"/>
+		<check_box name="show_skin_weight" label="Skingewichte"/>
+		<check_box name="show_joint_positions" label="Gelenke"/>
+
+		<text name="physics_explode_label">Vorschaudehnung:</text>
+		<slider name="physics_explode"/>
+	</panel>
+</floater>

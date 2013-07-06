@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel label="Grundbesitz" name="Estate">
+    <text name="estate_help_text">Changes to settings on this tab will affect all regions in the estate.</text>
+    <text name="estate_text">Grundbesitz:</text>
+    <text name="estate_name">(unbekannt)</text>
+    <text name="owner_text">Estate owner:</text>
+    <text name="estate_owner">(unbekannt)</text>
+
+    <view_border/>
+
+    <check_box label="Freien Zugang erlauben" name="externally_visible_check"/>
+    <button label="?" name="externally_visible_help"/>
+
+    <check_box label="Voice-Chat erlauben" name="voice_chat_check"/>
+    <button label="?" name="voice_chat_help"/>
+
+    <check_box label="Direktteleport zulassen" name="allow_direct_teleport"/>
+    <button label="?" name="allow_direct_teleport_help"/>
+    <check_box label="Globale Zeit verwenden" name="use_global_time_check"/>
+    <button label="?" name="use_global_time_help"/>
+    <check_box label="Sonne fest" name="fixed_sun_check"/>
+    <button label="?" name="fixed_sun_help"/>
+    <icon name="daycycle"/>
+    <slider label="Phase" name="sun_hour_slider"/>
+    <button label="Übernehmen" name="apply_btn"/>
+
+    <text name="Only Allow">Allow access only to Residents who:</text>
+    <check_box label="Have payment information on file" name="limit_payment" tool_tip="Residents must have payment information on file to access this estate."/>
+    <check_box label="Are age 18 or older" name="limit_age_verified" tool_tip="Residents must be age 18 or older to access this estate. See support.secondlife.com for more information."/>
+
+    <text name="estate_manager_label">Grundstücksverwalter:</text>
+    <button label="?" name="estate_manager_help"/>
+    <text name="allow_resident_label">Zulässige Einwohner:</text>
+    <button label="?" name="allow_resident_help"/>
+
+    <!-- Estate Managers box -->
+    <view_border/>
+    <name_list name="estate_manager_name_list"/>
+
+    <!-- Allowed Residents box -->
+    <view_border/>
+    <name_list name="allowed_avatar_name_list"/>
+
+    <!-- Estate Managers buttons -->
+    <button label="Hinzufügen..." name="add_estate_manager_btn"/>
+    <button label="Entfernen..." name="remove_estate_manager_btn"/>
+
+    <!-- Allowed Residents buttons -->
+    <button label="Hinzufügen..." name="add_allowed_avatar_btn"/>
+    <button label="Entfernen..." name="remove_allowed_avatar_btn"/>
+
+    <text name="allow_group_label">Zulässige Gruppen:</text>
+    <button label="?" name="allow_group_help"/>
+    <text name="ban_resident_label">Verbannte Einwohner:</text>
+    <button label="?" name="ban_resident_help"/>
+
+    <!-- Allowed Groups box -->
+    <view_border/>
+    <name_list name="allowed_group_name_list"/>
+
+    <!-- Banned Residents box -->
+    <view_border/>
+    <name_list name="banned_avatar_name_list"/>
+
+    <!-- Allowed Groups buttons -->
+    <button label="Hinzufügen..." name="add_allowed_group_btn"/>
+    <button label="Entfernen..." name="remove_allowed_group_btn"/>
+
+    <!-- Banned Residents buttons -->
+    <button label="Hinzufügen..." name="add_banned_avatar_btn"/>
+    <button label="Entfernen..." name="remove_banned_avatar_btn"/>
+
+    <button label="Nachricht an Grundstück senden..." name="message_estate_btn"/>
+    <button label="Kick Resident from Estate..." name="kick_user_from_estate_btn"/>
+
+</panel>

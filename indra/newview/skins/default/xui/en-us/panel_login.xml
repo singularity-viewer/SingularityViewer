@@ -13,72 +13,81 @@
 	<string name="forgot_password_url">
 		http://secondlife.com/account/request.php
 	</string>
-	<text bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
-	     bottom="54" drop_shadow_visible="true" follows="left|bottom"
+  <layout_stack name="element_stack" border_size="0" left="28" right="800" top="70" bottom="10" follows="left|bottom" orientation="horizontal">
+    <layout_panel name="name_panel" left="0" user_resize="false" auto_resize="false" width="163" min_width="0">
+      <text bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+	     bottom="44" drop_shadow_visible="true" follows="left|bottom"
 	     font="SansSerif" h_pad="0" halign="left" height="16"
-	     left="32" mouse_opaque="true" name="name_label" v_pad="0" width="120">
-		Name or Username:
-	</text>
-	<combo_box bevel_style="in" border_style="line" border_thickness="1" bottom_delta="-24"
-	     font="SansSerif" handle_edit_keys_directly="true" height="20" left="32"
-       max_chars="64" mouse_opaque="true" name="name_combo"
-       select_all_on_focus_received="true" width="155" allow_text_entry="true" />
-	<text bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
-	     bottom="54" drop_shadow_visible="true" follows="left|bottom"
-	     font="SansSerif" h_pad="0" halign="left" height="16"
-	     left="203" mouse_opaque="true" name="password_text" v_pad="0" width="120">
-		Password:
-	</text>
-	<line_editor bevel_style="in" border_style="line" border_thickness="1" bottom_delta="-24"
-	     follows="left|bottom" font="SansSerifSmall" handle_edit_keys_directly="true"
-	     height="20" left="203" max_length="16" mouse_opaque="true"
-	     name="password_edit" select_all_on_focus_received="true" width="120" />
-	<check_box bottom="10" control_name="RememberName"
+	     left="4" mouse_opaque="true" name="name_label" v_pad="0" width="120">
+        Name or Username:
+      </text>
+      <combo_box bevel_style="in" border_style="line" border_thickness="1" bottom_delta="-24"
+         font="SansSerif" handle_edit_keys_directly="true" height="20" left="4"
+         max_chars="64" mouse_opaque="true" name="name_combo"
+         select_all_on_focus_received="true" width="155" allow_text_entry="true" />
+      <check_box bottom="0" control_name="RememberName"
          follows="left|bottom" font="SansSerifSmall" height="16"
-	     initial_value="true" label="Remember name"
-	     left="28" mouse_opaque="true" name="remember_name_check" width="158" />
-	<check_box bottom="10" control_name="RememberPassword"
-         follows="left|bottom" font="SansSerifSmall" height="16"
-	     initial_value="false" label="Remember password"
-	     left="199" mouse_opaque="true" name="remember_check" width="138" />
-
-	<text bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
-	     bottom="54" drop_shadow_visible="true" follows="left|bottom"
+       initial_value="true" label="Remember name"
+       left="0" mouse_opaque="true" name="remember_name_check" width="158" />
+    </layout_panel>
+    <layout_panel name="password_panel" left="0" user_resize="false" auto_resize="false" width="134" min_width="0">
+      <text bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+	     bottom="44" drop_shadow_visible="true" follows="left|bottom"
 	     font="SansSerif" h_pad="0" halign="left" height="16"
-	     left="339" mouse_opaque="true" name="grids_combo_text" v_pad="0" width="120">
-		Grid:
-	</text>
-	<combo_box allow_text_entry="false" bottom_delta="-24" follows="left|bottom" height="20"
-	     left="339" mouse_opaque="true" name="grids_combo" width="120" />
-
-	<button name="grids_btn" label="Grid Manager"
-	    bottom_delta="-20" left_delta="10" height="16" width="100"
-	    follows="left|bottom" font="SansSerifSmall" halign="center"
-	    mouse_opaque="true" scale_image="TRUE" />		 
-
-	<text bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
-	     bottom="54" drop_shadow_visible="true" follows="left|bottom"
+	     left="4" mouse_opaque="true" name="password_text" v_pad="0" width="120">
+        Password:
+      </text>
+      <line_editor bevel_style="in" border_style="line" border_thickness="1" bottom_delta="-24"
+           follows="left|bottom" font="SansSerifSmall" handle_edit_keys_directly="true"
+           height="20" left="4" max_length="16" mouse_opaque="true"
+           name="password_edit" select_all_on_focus_received="true" width="120" />
+      <check_box bottom="0" control_name="RememberPassword"
+             follows="left|bottom" font="SansSerifSmall" height="16"
+           initial_value="false" label="Remember password"
+           left="0" mouse_opaque="true" name="remember_check" width="138" />
+    </layout_panel>
+    <layout_panel name="grids_panel" left="0" user_resize="false" auto_resize="false" width="129" min_width="0">
+      <text bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+	     bottom="44" drop_shadow_visible="true" follows="left|bottom"
 	     font="SansSerif" h_pad="0" halign="left" height="16"
-	     left="475" mouse_opaque="true" name="start_location_text" v_pad="0" width="120">
-		Start Location:
-	</text>
-	<combo_box allow_text_entry="true" bottom_delta="-24" left="475" follows="left|bottom" height="20"
-	     max_chars="128" mouse_opaque="true" name="start_location_combo" width="155">
-		<combo_item name="MyHome" value="home">
-			My Home
-		</combo_item>
-		<combo_item name="MyLastLocation" value="last">
-			My Last Location
-		</combo_item>
-		<combo_item name="Typeregionname" value="&lt;Type region name&gt;">
-			&lt;Type region name&gt;
-		</combo_item>
-	</combo_box>
-
-	<button bottom_delta="-3" follows="left|bottom" font="SansSerif" halign="center"
+	     left="0" mouse_opaque="true" name="grids_combo_text" v_pad="0" width="120">
+        Grid:
+      </text>
+      <combo_box allow_text_entry="false" bottom_delta="-24" follows="left|bottom" height="20"
+           left="0" mouse_opaque="true" name="grids_combo" width="120" />
+      <button name="grids_btn" label="Grid Manager"
+          bottom_delta="-20" left_delta="10" height="16" width="100"
+          follows="left|bottom" font="SansSerifSmall" halign="center"
+          mouse_opaque="true" scale_image="TRUE" />
+    </layout_panel>
+    <layout_panel name="location_panel" left="0" user_resize="false" auto_resize="false" width="165" min_width="0">
+      <text bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+	     bottom="44" drop_shadow_visible="true" follows="left|bottom"
+	     font="SansSerif" h_pad="0" halign="left" height="16"
+	     left="0" mouse_opaque="true" name="start_location_text" v_pad="0" width="120">
+        Start Location:
+      </text>
+      <combo_box allow_text_entry="true" bottom_delta="-24" left="0" follows="left|bottom" height="20"
+           max_chars="128" mouse_opaque="true" name="start_location_combo" width="155">
+        <combo_item name="MyHome" value="home">
+          My Home
+        </combo_item>
+        <combo_item name="MyLastLocation" value="last">
+          My Last Location
+        </combo_item>
+        <combo_item name="Typeregionname" value="">
+          &lt;Type region name&gt;
+        </combo_item>
+      </combo_box>
+    </layout_panel>
+    <layout_panel name="connect_panel" user_resize="false" auto_resize="true" width="100" min_width="100">
+      <button bottom="18" follows="left|bottom" font="SansSerif" halign="center"
 	     height="24" label="Log In" label_selected="Log In"
-	     left="634" mouse_opaque="true" name="connect_btn" scale_image="TRUE"
+	     left="0" mouse_opaque="true" name="connect_btn" scale_image="TRUE"
 	     width="100" />
+    </layout_panel>
+  </layout_stack>
+	
 
 	<text bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
 	     bottom="45" drop_shadow_visible="true" follows="right|bottom"

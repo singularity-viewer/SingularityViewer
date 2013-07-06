@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="build options floater" title="Rasteroptionen">
+	<spinner label="Rastereinheit (Meter)" name="GridResolution"/>
+	<spinner label="Rastergröße (Meter)" name="GridDrawSize"/>
+	<check_box label="Einrasten von Untereinheiten aktivieren" name="GridSubUnit"/>
+	<check_box label="Querschnitte anzeigen" name="GridCrossSection"/>
+	<slider label="Rasterdeckkraft" name="GridOpacity"/>
+	<spinner label="Kleine Schrittweite" name="GridProtractorSize"/>
+	<spinner label="Schrittweite" name="RotationStep"/>
+</floater>

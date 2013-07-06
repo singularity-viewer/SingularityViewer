@@ -134,6 +134,14 @@ void LLProgressView::revealIntroPanel()
 	mFadeFromLoginTimer.start();
 	gIdleCallbacks.addFunction(onIdle, this);
 }
+
+void LLProgressView::abortShowProgress()
+{
+	mFadeFromLoginTimer.stop();
+	LLPanelLogin::close();
+	gIdleCallbacks.deleteFunction(onIdle, this);
+}
+
 void LLProgressView::setStartupComplete()
 {
 	mStartupComplete = true;

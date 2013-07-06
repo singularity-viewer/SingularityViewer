@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater label="(unbekannt)" name="im_floater" title="(unbekannt)">
+	<string name="ringing">Voice-Chat wird beigetreten...</string>
+	<string name="connected">Verbunden. Klicken Sie auf „Anruf beenden“, um die Verbindung zu trennen</string>
+	<string name="hang_up">Voice-Chat verlassen</string>
+	<string name="voice_icon">icn_voice-groupfocus.tga</string>
+	<string name="title_string">Instant Message an [NAME]</string>
+	<string name="typing_start_string">[NAME] tippt...</string>
+	<string name="session_start_string">Beginne Sitzung mit [NAME], bitte warten.</string>
+	<string name="default_text_label">Für Instant Message hier klicken.</string>
+	<layout_stack name="panels">
+		<layout_panel name="im_contents_panel">
+			<button label="Verlauf" name="history_btn"/>
+			<button label="Anrufen" name="start_call_btn"/>
+			<button label="Anruf beenden" name="end_call_btn"/>
+			<button label="&lt; &lt;" label_selected="&gt; &gt;" name="toggle_active_speakers_btn" tool_tip="Klicken Sie hier um eine Liste der aktiven Teilnehmer dieser IM-Sitzung anzuzeigen."/>
+			<text_editor name="im_history"/>
+			<line_editor label="Für Instant Message hier klicken" name="chat_editor"/>
+			<button label="Senden" name="send_btn"/>
+		</layout_panel>
+		<layout_panel name="active_speakers_panel"/>
+	</layout_stack>
+	<string name="live_help_dialog">*** Willkommen bei Help Request ***  
+Bitte werfen Sie zuerst einen Blick auf unsere SL-Hilfeseiten. Drücken Sie dazu F1. Oder rufen Sie unter http://secondlife.com/knowledgebase/ die Knowledge Base auf. 
+Falls Sie die gesuchte Antwort dort nicht finden, geben Sie Ihre Frage ein. Warten Sie dann einen Moment, bis ein verfügbarer Helfer antwortet.
+-=-=- Die Antwortzeiten variieren. Insbesondere zur Hauptbetriebszeit kann die Antwort etwas länger dauern. -=-=-</string>
+</floater>

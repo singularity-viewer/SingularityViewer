@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater title="In meinem Profil posten" name="floater_snapshot_profile">
+    <text_editor name="caption">Nachricht hier eingeben.</text_editor>
+    <check_box label="Ort einschließen" name="add_location_cb"/>
+    <button label="Abbrechen" name="cancel_btn"/>
+    <button label="Posten" name="post_btn"/>
+    <string name="default_message">Klicke auf die 'Schnappschuss' Verknüpfung oben um das größere Original zu sehen.</string>
+    <string name="upload_message">"Hochladen..."</string>
+</floater>

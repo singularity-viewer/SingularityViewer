@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel name="Place" title="Platzieren">
+	<texture_picker name="snapshot_ctrl"/>
+	<text name="name_label">Name:</text>
+	<text name="name_editor"/>
+	<text name="description_label">Beschreibung:</text>
+	<text_editor name="desc_editor"/>
+	<text name="information_label">Information:</text>
+	<text name="info_editor"/>
+	<text name="location_label">Standort:</text>
+	<text name="location_editor"/>
+	<button label="Teleportieren" name="teleport_btn"/>
+	<button label="Auf Karte zeigen" name="map_btn"/>
+	<button label="Gebote..." name="auction_btn"/>
+	<string name="traffic_text">Verkehr: [TRAFFIC]</string>
+	<string name="area_text">Gebiet: [AREA] qm.</string>
+	<string name="forsale_text">Zum Verkauf für [PRICE] L$</string>
+	<string name="auction_text">Auktions-ID [ID].</string>
+	<string name="server_update_text">Ohne Serverupdate sind keine Ortsinformationen verfügbar.</string>
+	<string name="server_error_text">Zur Zeit gibt es keine Informationen zu diesem Standort. Bitte versuchen Sie es später.</string>
+	<string name="server_forbidden_text">Die Informationen über diesen Standort sind zugriffsbeschränkt.  Bitte wenden Sie sich bezüglich Ihrer Berechtigungen an den Eigentümer der Parzelle.</string>
+	<string name="internal_timeout_text">Information about this location is unavailable due to a network timeout, please try again later.</string>
+</panel>

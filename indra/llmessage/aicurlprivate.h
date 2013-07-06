@@ -457,6 +457,9 @@ class BufferedCurlEasyRequest : public CurlEasyRequest {
 	// So far the only such error I've seen is HTTP_BAD_REQUEST.
 	bool upload_error_status(void) const { return mStatus == HTTP_BAD_REQUEST; }
 
+	// Returns true if the request was a success.
+	bool success(void) const { return mResult == CURLE_OK && mStatus >= 200 && mStatus < 400; }
+
 	// Return true when prepRequest was already called and the object has not been
 	// invalidated as a result of calling timed_out().
 	bool isValid(void) const { return mResponder; }
@@ -466,6 +469,12 @@ class BufferedCurlEasyRequest : public CurlEasyRequest {
 
 	// Return true if any data was received.
 	bool received_data(void) const { return mTotalRawBytes > 0; }
+
+#if defined(CWDEBUG) || defined(DEBUG_CURLIO)
+	// Connection accounting for debug purposes.
+	void connection_established(int connectionnr);
+	void connection_closed(int connectionnr);
+#endif
 };
 
 inline ThreadSafeBufferedCurlEasyRequest* CurlEasyRequest::get_lockobj(void)

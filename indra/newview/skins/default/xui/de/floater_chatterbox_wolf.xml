@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<multi_floater name="floater_chatterbox" title="Unterhalten">
+	<tab_container name="chatterbox_tabs"/>
+</multi_floater>

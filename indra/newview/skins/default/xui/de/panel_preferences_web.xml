@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel label="Web" name="web">
+	<radio_group name="use_external_browser">
+		<radio_item name="external" tool_tip="Externen Browser für Hilfe, Weblinks usw. verwenden. Im Vollbildmodus nicht empfohlen.">Externen Browser verwenden (Firefox, Safari, Internet Explorer)</radio_item>
+		<radio_item name="internal" tool_tip="Den integrierten Browser zur Suche im Internet verwenden. Der Browser wird als eigenständiges Fenster in Second Life geöffnet.">Integrierten Browser verwenden</radio_item>
+	</radio_group>
+	<text name="cache_size_label_l">Browser-Cache:</text>
+	<button label="Jetzt leeren" name="clear_cache"/>
+	<text name="cookie_label">Cookies:</text>
+	<check_box label="Cookies von Webseiten akzeptieren" name="cookies_enabled"/>
+	<text name="proxy_label">Web-Proxy:</text>
+	<check_box label="Web-Proxy aktivieren" name="web_proxy_enabled"/>
+	<text name="proxy_text_label">Adresse:</text>
+	<line_editor name="web_proxy_editor" tool_tip="Name oder IP-Adresse des Proxys"/>
+	<spinner label="Port-Nummer:" name="web_proxy_port"/>
+</panel>

@@ -1,49 +1,44 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <panel name="panel_login">
-	<web_browser name="login_html" />
-	<string name="real_url">
-		http://secondlife.com/app/login/
-	</string>
-	<string name="forgot_password_url">
-		http://secondlife.com/account/request.php
-	</string>
-	<text left="32" name="name_label" width="120">
-		Nom:
-	</text>
-	<text name="password_text">
-		Mot de passe:
-	</text>
-	<text name="start_location_text">
-		Lieu d'arrivée:
-	</text>
-	<combo_box name="start_location_combo">
-		<combo_item name="MyHome">
-			Domicile
-		</combo_item>
-		<combo_item name="MyLastLocation">
-			Dernier emplacement
-		</combo_item>
-		<combo_item name="&lt;Typeregionname&gt;">
-			&lt;Choisir région&gt;
-		</combo_item>
-		<combo_item name="Typeregionname">
-			&lt;Nom de la région&gt;
-		</combo_item>
-	</combo_box>
-	<check_box bottom="10" label="Mémoriser le nom" left="28" name="remember_name_check" width="158"/>
-	<check_box label="Mémoriser mot de passe" name="remember_check"/>
-	<text bottom="54" left="339" name="grids_combo_text" width="120">
-		Grille:
-	</text>
-	<combo_box bottom_delta="-24" left="339" name="grids_combo" width="120" />
-	<button name="grids_btn" label="Choix de Grille" bottom_delta="-20" left_delta="10" width="100"/>
-	<text name="full_screen_text">
-		Le plein écran sera activé après identification.
-	</text>
-	<button label="Nouveau Compte" label_selected="Nouveau Compte" name="new_account_btn"/>
-	<button label="Connexion" label_selected="Me connecter" name="connect_btn"/>
-	<button label="Préférences" label_selected="Préférences" name="preferences_btn"/>
-	<button label="Quitter" label_selected="Quitter" name="quit_btn"/>
+  <layout_stack name="element_stack">
+    <layout_panel name="name_panel">
+      <text name="name_label">
+        Nom:
+      </text>
+      <check_box label="Mémoriser le nom" name="remember_name_check"/>
+    </layout_panel>
+    <layout_panel name="password_panel">
+      <text name="password_text">
+        Mot de passe:
+      </text>
+      <check_box label="Mémoriser mot de passe" name="remember_check"/>
+    </layout_panel>
+    <layout_panel name="grids_panel">
+      <text name="grids_combo_text">
+        Grille:
+      </text>
+      <button name="grids_btn" label="Choix de Grille"/>
+    </layout_panel>
+    <layout_panel name="location_panel">
+      <text name="start_location_text">
+        Lieu d'arrivée:
+      </text>
+      <combo_box name="start_location_combo">
+        <combo_item name="MyHome">
+          Domicile
+        </combo_item>
+        <combo_item name="MyLastLocation">
+          Dernier emplacement
+        </combo_item>
+        <combo_item name="Typeregionname">
+          &lt;Nom de la région&gt;
+        </combo_item>
+      </combo_box>
+    </layout_panel>
+    <layout_panel name="connect_panel">
+      <button label="Connexion" label_selected="Me connecter" name="connect_btn"/>
+    </layout_panel>
+  </layout_stack>
 	<text name="create_new_account_text">
 		Créer un compte
 	</text>

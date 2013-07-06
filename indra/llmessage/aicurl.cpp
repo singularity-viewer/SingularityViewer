@@ -1323,6 +1323,34 @@ void BufferedCurlEasyRequest::bad_socket(void)
   mResponder = NULL;
 }
 
+#if defined(CWDEBUG) || defined(DEBUG_CURLIO)
+static AIPerServicePtr sConnections[64];
+
+void BufferedCurlEasyRequest::connection_established(int connectionnr)
+{
+  PerService_rat per_service_r(*mPerServicePtr);
+  int n = per_service_r->connection_established();
+  llassert(sConnections[connectionnr] == NULL);		// Only one service can use a connection at a time.
+  llassert_always(connectionnr < 64);
+  sConnections[connectionnr] = mPerServicePtr;
+  Dout(dc::curlio, (void*)get_lockobj() << " Connection established (#" << connectionnr << "). Now " << n << " connections [" << (void*)&*per_service_r << "].");
+  llassert(sConnections[connectionnr] != NULL);
+}
+
+void BufferedCurlEasyRequest::connection_closed(int connectionnr)
+{
+  if (sConnections[connectionnr] == NULL)
+  {
+	Dout(dc::curlio, "Closing connection that never connected (#" << connectionnr << ").");
+	return;
+  }
+  PerService_rat per_service_r(*sConnections[connectionnr]);
+  int n = per_service_r->connection_closed();
+  sConnections[connectionnr] = NULL;
+  Dout(dc::curlio, (void*)get_lockobj() << " Connection closed (#" << connectionnr << "); " << n << " connections remaining [" << (void*)&*per_service_r << "].");
+}
+#endif
+
 void BufferedCurlEasyRequest::resetState(void)
 {
   llassert(!mResponder);
@@ -1391,6 +1419,10 @@ void BufferedCurlEasyRequest::prepRequest(AICurlEasyRequest_wat& curl_easy_reque
 	// This is needed (at least) for authentication after temporary redirection
 	// to id.secondlife.com for marketplace.secondlife.com.
 	allow_cookies = true;
+  }
+  if (responder->forbidReuse())
+  {
+	curl_easy_request_w->setopt(CURLOPT_FORBID_REUSE, 1);
   }
   if (allow_cookies)
   {

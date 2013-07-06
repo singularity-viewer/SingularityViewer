@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel label="Angebote" name="voting_tab">
+	<string name="help_text">Gruppenanfragen sind eine gute Möglichkeit,
+etwas über die Wünsche oder Meinungen der
+Gruppenmitglieder herauszufinden. Mit den 
+entsprechenden Rechten können Sie Anfragen
+erstellen, darüber abstimmen und alte Anfragen anzeigen.</string>
+	<panel name="open_proposals_container"/>
+	<panel name="voting_history_container"/>
+	<button label="?" name="help_button"/>
+	<text name="proposal_header">Offene Gruppenangebote</text>
+	<text name="proposal_instructions">Doppelklicken Sie zum Abstimmen auf eine Anfrage oder klicken Sie auf „Neue Anfrage“, um eine neue zu erstellen.</text>
+	<text name="proposal_lbl">Beschreibung der Anfrage</text>
+	<text name="proposal_voting_lbl">Anfrage                                                         Ende der Abstimmung  Abgestimmt?</text>
+	<scroll_list name="proposals"/>
+	<button label="Neue Anfrage" label_selected="Neue Anfrage" name="btn_proposal"/>
+	<button label="Anfrage anzeigen" label_selected="Anfrage anzeigen" name="btn_view_proposal_item"/>
+	<text_editor name="proposal_text"/>
+	<button label="Liste anzeigen" label_selected="Liste anzeigen" name="btn_view_proposal_list"/>
+	<text name="quorum_lbl">Beschlussfähige Personenzahl:</text>
+	<spinner name="quorum" tool_tip="# abstimmende Mitglieder für einen bindenden Wahlbeschluss."/>
+	<text name="quorum_text">von [MEMBERS] Mitgliedern müssen abstimmen.</text>
+	<text name="duration_lbl">Dauer:</text>
+	<spinner name="duration" tool_tip="# Tage bis zum Ende der Wahl."/>
+	<text name="duration_text">Tage</text>
+	<text name="majority_lbl"/>
+	<radio_group name="majority" tool_tip="Benötigte Mehrheit.">
+      <radio_item>Simple Majority</radio_item>
+      <radio_item>2/3 Majority</radio_item>
+      <radio_item>Unanimous</radio_item>
+	</radio_group>
+	<text name="start_lbl">Beginn:</text>
+	<text name="start_date"/>
+	<text name="end_lbl">Ende:</text>
+	<text name="end_date"/>
+	<button label="Angebot senden" label_selected="Angebot senden" name="btn_submit"/>
+	<button label="Abbrechen" label_selected="Abbrechen" name="btn_cancel"/>
+	<button label="Ja" label_selected="Ja" name="btn_yes"/>
+	<button label="Nein" label_selected="Nein" name="btn_no"/>
+	<button label="Enthalten" label_selected="Enthalten" name="btn_abstain"/>
+	<text name="txt">Alte Gruppenabstimmungen</text>
+	<text name="instructions">Doppelklicken Sie auf eine alte Abstimmung oder wählen Sie eine aus und
+klicken Sie für das Ergebnis auf „Objekt anzeigen“.</text>
+	<text name="history_list_lbl">Alte Abstimmung                                            Ende der Abstimmung</text>
+	<scroll_list name="history_list"/>
+	<button label="Objekt anzeigen" label_selected="Objekt anzeigen" name="btn_view_history_item"/>
+	<text name="vote_text_lbl">Ergebnis:</text>
+	<text_editor name="vote_text"/>
+	<button label="Liste anzeigen" label_selected="Liste anzeigen" name="btn_view_history_list"/>
+	<string name="proposals_header_view_txt">Offene Gruppenangebote</string>
+	<string name="proposals_header_view_inst">Doppelklicken Sie auf die Anfrage, für die Sie abstimmen möchten,
+oder klicken Sie auf „Neue Anfrage“, um eine neue zu erstellen.</string>
+	<string name="proposals_header_create_txt">Neue Anfrage</string>
+	<string name="proposals_header_create_inst">Geben Sie eine Beschreibung für die neue Anfrage ein. Sie können das
+Quorum, die Dauer und die erforderliche Mehrheit angeben.</string>
+	<string name="proposals_header_vote_txt">Abstimmung</string>
+	<string name="proposals_header_vote_inst">Klicken Sie zum Abstimmen auf „Ja“ oder „Nein“ oder
+enthalten Sie sich der Stimme.</string>
+	<string name="proposals_header_voted_inst">Sie haben gewählt: [VOTE]</string>
+	<string name="empty_proposal_txt">Das Angebot, das Sie erstellen möchten, enthält keine Angaben.  Füllen Sie das Angebot aus, bevor Sie es erstellen.</string>
+	<string name="proposals_submit_yes_txt">Mit „Ja“ abgestimmt...</string>
+	<string name="proposals_submit_no_txt">Mit „Nein“ abgestimmt...</string>
+	<string name="proposals_submit_abstain_txt">Enthaltung...</string>
+	<string name="proposals_submit_new_txt">Sende neue Anfrage...</string>
+	<string name="vote_recorded">Sie haben abgestimmt.</string>
+	<string name="vote_previously_recorded">Sie haben bereits abgestimmt:  Pro Wahl können Sie nur einmal abstimmen.</string>
+</panel>

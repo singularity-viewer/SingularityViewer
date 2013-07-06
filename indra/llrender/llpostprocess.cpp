@@ -282,6 +282,7 @@ public:
 	{
 		addSetting(mStrength);
 	}
+	/*virtual*/ bool isEnabled()		const	{ return LLPostProcessShader::isEnabled() && llabs(gGLModelView[0] - gGLPreviousModelView[0]) > .0000001; }
 	/*virtual*/ S32 getColorChannel()	const	{ return 0; }
 	/*virtual*/ S32 getDepthChannel()	const	{ return 1; }
 	/*virtual*/ QuadType preDraw()
@@ -298,7 +299,7 @@ public:
 		getShader().uniformMatrix4fv("inv_proj", 1, GL_FALSE, inv_proj.m);
 		getShader().uniform2fv("screen_res", 1, screen_rect.mV);
 		getShader().uniform1i("blur_strength", mStrength);
-
+		
 		return QUAD_NORMAL;
 	}
 	/*virtual*/ bool draw(U32 pass) 

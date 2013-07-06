@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel name="chat_bar">
+	<panel>
+		<panel/>
+	</panel>
+	<button label="Lokaler Chat" name="History" tool_tip="Klicken Sie hier zur Anzeige des Gesprächs"/>
+	<line_editor label="Zum Chatten hier klicken." name="Chat Editor" tool_tip="Eingabe für Sprechen, Strg-Eingabe für Rufen."/>
+	<flyout_button label="Sagen" name="Say" tool_tip="(Eingabe)">
+		<flyout_button_item name="shout_item">Rufen</flyout_button_item>
+		<flyout_button_item name="say_item">Sagen</flyout_button_item>
+		<flyout_button_item name="whisper_item">Flüstern</flyout_button_item>
+	</flyout_button>
+	<combo_box label="Gesten" name="Gesture">
+  </combo_box>
+  <string name="gesture_label">Gesten</string>
+</panel>

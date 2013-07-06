@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<pie_menu name="Self Pie">
+	<menu_item_call label="Profil..." name="Profile...">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_call label="Gruppen..." name="Groups...">
+		<on_click/>
+	</menu_item_call>
+	<pie_menu label="Ausziehen &gt;" name="Take Off &gt;">
+		<pie_menu label="Kleidung &gt;" name="Clothes &gt;">
+			<menu_item_call label="Hemd" name="Shirt">
+				<on_click/>
+				<on_enable/>
+			</menu_item_call>
+			<menu_item_call label="Hose" name="Pants">
+				<on_click/>
+				<on_enable/>
+			</menu_item_call>
+			<menu_item_call label="Schuhe" name="Shoes">
+				<on_click/>
+				<on_enable/>
+			</menu_item_call>
+			<menu_item_call label="Socken" name="Socks">
+				<on_click/>
+				<on_enable/>
+			</menu_item_call>
+			<menu_item_call label="Jacke" name="Jacket">
+				<on_click/>
+				<on_enable/>
+			</menu_item_call>
+			<menu_item_call label="Handschuhe" name="Gloves">
+				<on_click/>
+				<on_enable/>
+			</menu_item_call>
+			<pie_menu label="Mehr &gt;" name="More &gt;">
+				<menu_item_call label="Unterhemd" name="Self Undershirt">
+					<on_click/>
+					<on_enable/>
+				</menu_item_call>
+				<menu_item_separator/>
+				<menu_item_call label="Alle Kleider" name="All Clothes">
+					<on_click/>
+				</menu_item_call>
+				<menu_item_call label="Tätowierung" name="Self Tattoo">
+					<on_click/>
+					<on_enable/>
+				</menu_item_call>
+				<menu_item_call label="Alpha" name="Self Alpha">
+					<on_click/>
+					<on_enable/>
+				</menu_item_call>
+				<menu_item_call label="Unterhose" name="Self Underpants">
+					<on_click/>
+					<on_enable/>
+				</menu_item_call>
+        <menu_item_call label="Physik" name="Self Physics">
+          <on_click/>
+          <on_enable/>
+        </menu_item_call>
+			</pie_menu>
+			<menu_item_call label="Rock" name="Skirt">
+				<on_click/>
+				<on_enable/>
+			</menu_item_call>
+		</pie_menu>
+		<pie_menu label="HUD &gt;" name="Object Detach HUD"/>
+		<menu_item_separator/>
+		<pie_menu label="Abnehmen &gt;" name="Object Detach"/>
+		<menu_item_separator/>
+		<menu_item_call label="Alles abnehmen" name="Detach All">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+	</pie_menu>
+  <pie_menu label="Werkzeuge &gt;" name="Tools &gt;">
+      <menu_item_call label="Neu laden" name="Reload Textures">
+          <on_click/>
+      </menu_item_call>
+	  <menu_item_call label="Animationen" name="Anims...">
+		  <on_click/>
+	  </menu_item_call>
+	  <menu_item_call label="S. Count" name="ScriptCount">
+		  <on_click/>
+		  <on_visible/>
+	  </menu_item_call>
+	  <menu_item_call label="Skript-Info" name="Script Info">
+		  <on_click/>
+		  <on_visible/>
+	  </menu_item_call>
+    <menu_item_call label="Debug" name="Debug Layers">
+      <on_click/>
+    </menu_item_call>
+    <menu_item_call label="UUID kopieren" name="CopyUUID">
+      <on_click/>
+    </menu_item_call>
+  </pie_menu>
+	<menu_item_call label="Aufstehen" name="Stand Up Self">
+		<on_click/>
+		<on_enable/>
+	</menu_item_call>
+	<menu_item_call label="Gesten..." name="Gestures...">
+		<on_click/>
+	</menu_item_call>
+	<menu_item_call label="Aussehen..." name="Appearance...">
+		<on_click/>
+		<on_enable/>
+	</menu_item_call>
+</pie_menu>

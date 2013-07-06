@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="contents" title="Objektkopie kaufen">
+	<scroll_list name="object_list">
+		<column name="icon"/>
+		<column name="text"/>
+	</scroll_list>
+	<text name="contents_text">samt Inhalt:</text>
+	<scroll_list name="item_list">
+		<column name="icon"/>
+		<column name="text"/>
+	</scroll_list>
+	<text name="buy_text">[AMOUNT] L$ von [NAME] kaufen?</text>
+	<button label="Abbrechen" label_selected="Abbrechen" name="cancel_btn"/>
+	<button label="Kaufen" label_selected="Kaufen" name="buy_btn"/>
+	<string name="title_buy_text">Kaufen</string>
+	<string name="title_buy_copy_text">Kopie kaufen von</string>
+	<string name="no_copy_text">(kein Kopieren)</string>
+	<string name="no_modify_text">(kein Bearbeiten)</string>
+	<string name="no_transfer_text">(kein Transferieren)</string>
+</floater>

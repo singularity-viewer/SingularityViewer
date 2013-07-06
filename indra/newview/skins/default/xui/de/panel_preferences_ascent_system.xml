@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel label="System" name="ascsys">
+  <tab_container label="Singularity System" name="Ascent System">
+
+    <panel label="Allgemein" name="User Interface">
+      <check_box label="Teleport mit Doppelklick erlauben" tool_tip="Doppelklick auf eine Person oder Ort teleportiert dich dorthin" name="double_click_teleport_check"/>
+	<check_box label="Kamera nach Teleport zurücksetzen" tool_tip="Platziert die Kamera nach einem Teleport in der Standardposition" name="center_after_teleport_check"/>
+      <check_box label="TP Ziel um halbe Avatargrösse erhöhen" tool_tip="Versucht den TP so zu platzieren dass der Avatar genau am Zielpunkt ankommt" name="offset_teleport_check"/>
+      <check_box name="clear_beacon_after_tp" label="Clear red destination beacon after teleporting"/>
+      <check_box name="fly_after_tp" label="Always fly after teleports" tool_tip="Avoid those falls from great heights by automatically flying after teleporting in."/>
+      <check_box name="continue_flying" label="Continue flying upon standing" tool_tip="Keeps your Fly state the same as when you sat down, so you continue to fly or not when you stand up. Useful for birds, fairies, or those who just wish to make a dramatic leap from their chairs."/>
+      <check_box label="Animationvorschau auf dem Avatar anstelle eines Dummy vor dem Upload" tool_tip="Das Animations-Upload Fenster spielt Animationen auf deinem Avatar in der Vorschau." name="preview_anim_in_world_check"/>
+      <check_box label="Scripte im Inventar als Mono speichern anstelle von LSL2" tool_tip="Scripte beim Speichern automatisch in Mono kompilieren - Normalerweise nur möglich wenn sie in einem Objekt platziert sind." name="save_scripts_as_mono_check"/>
+      <check_box label="Objekte immer mit der Land-Gruppe rezzen, wenn verfügbar." tool_tip="Objekte unabhaengig on der aktiven Gruppe mit der gleichen Gruppe rezzen wie das Objekt auf dem gerezzt wird." name="always_rez_in_group_check"/>
+      <check_box label="Bauen immer als aktiviert anzeigen" tool_tip="Erlaubt dir das Bau-Menü ohne grosse Klimmzüge zu nutzen. Es kann jedoch sein, daß man dort dennoch nicht bauen kann." name="always_build_check"/>
+      <check_box label="Fliegen immer erlauben" tool_tip="Erlaubt dir in Flugverbotszonen zu fliegen. Benutzung auf eigene Gefahr - Es zu können heisst nicht, daß man es auch sollte." name="always_fly_check"/>
+      <check_box label="Deaktiviert die Minimal-Distanz der Kamera zum Objekt" tool_tip="Erlaubt mit der Kamera ganz ganz nah zu zoomen." name="disable_camera_zoom_check"/>
+      <check_box label="Power User Funktionen einschalten" tool_tip="Fügt Optionen hinzu, die normalerweise als zu gefährlich erachtet werden. Diese Optionen können schwerste Fehler verursachen wenn sie falsch benutzt werden - entweder an dir oder deinem Inventar. Wenn du dir wirklich sicher bist, aktiviere die Checkbox unten ebenfalls." name="power_user_check"/>
+      <check_box label="Power User Funktionen bestätigen" tool_tip="Bestätigt Power User Funktionen. Aktiviere dies auf eingene Gefahr und benutze alle Features die aktiviert werden verantwortungsvoll. Die Singularity Entwicker ersetzen nichts was durch die Benutzung dieser Funktionen zerstört wird. Wir empfehlen immer Backups von allem zu erstellen, um nicht Opfer dieser Funktionen zu werden. Im Gegensatz zu anderen Checkboxen, musst du erst Anwenden oder OK klicken um es zu aktivieren." name="power_user_confirm_check"/>
+      <check_box label="Lade das Inventar automatisch im Hintergrund nach dem Login" tool_tip="Inventar wird vorgeladen beim Einloggen, damit du nicht zu lang darauf warten musst wenn du die erste Suche machst." name="fetch_inventory_on_login_check"/>
+      <check_box label="Aktiviere Wind Effekte" name="enable_wind"/>
+      <check_box label="Aktiviere Wolken" name="enable_clouds"/>
+      <check_box label="Aktiviere klassische Wolken" name="enable_classic_clouds"/>
+      <check_box label="Aktiviert schnelles rezzen durch Draw-Distance-Stepping" name="speed_rez_check" tool_tip="Wenn aktiviert, vergrössert dies progressiv die draw distance, damit nähere Objecte/Personen zuerst rezzen. "/>
+      <spinner label="Draw Distance stepping Interval:" name="speed_rez_interval"/>
+      <text name="speed_rez_seconds">Sekunden</text>
+      <check_box name="use_web_profiles" label="Use web profiles instead of legacy v1 profiles" tool_tip="May not be available on certain grids"/>
+    </panel>
+
+    <panel label="Kommandozeile" name="Command Line">
+      <check_box label="Chat-Eingabezeile zur Kommandoeingabe verwenden" name="chat_cmd_toggle"/>
+      <text name="cmd_line_text_2">Teleport in Region (Befehl: cmd x z y)</text>
+      <line_editor name="AscentCmdLinePos"/>
+      <text name="cmd_line_text_3">Teleport zur Oberfläche (Befehl: cmd)</text>
+      <line_editor name="AscentCmdLineGround"/>
+      <text name="cmd_line_text_4">Teleport auf Höhe (Befehl: cmd z)</text>
+      <line_editor name="AscentCmdLineHeight"/>
+      <text name="cmd_line_text_5">Teleport nach Hause (Befehl: cmd)</text>
+      <line_editor name="AscentCmdLineTeleportHome"/>
+      <text name="cmd_line_text_6">Plattform rezzen (Befehl: cmd 0 - 30)</text>
+      <line_editor name="AscentCmdLineRezPlatform"/>
+      <slider name="AscentPlatformSize" label="Standardbreite:" tool_tip="Wie groß soll die Plattform sein?"/>
+      <text name="cmd_line_text_8">Berechnet mathematische Ausdrücke (Benutzung: cmd 2 + 2)</text>
+      <line_editor name="AscentCmdLineCalc"/>
+      <text name="cmd_line_text_15">Chat-Historie löschen (Befehl: cmd)</text>
+      <line_editor tool_tip="Löscht die Chat-Historie um Lag durch Spammer vorzubeugen." name="AscentCmdLineClearChat"/>
+      <!-- Column Split -->
+      <view_border name="CmdDivisor"/>
+      <text name="cmd_line_text_9">Ändert die Draw-Distance (Benutzung: cmd Distanz in Metern)</text>
+      <line_editor name="AscentCmdLineDrawDistance"/>
+      <text name="cmd_line_text_10">Teleport zur Kameraposition (Befehl: cmd)</text>
+      <line_editor name="AscentCmdTeleportToCam"/>
+      <text name="cmd_line_text_11">Avatarname anhand UUID bestimmen (Befehl: cmd key)</text>
+      <line_editor name="AscentCmdLineKeyToName"/>
+      <text name="cmd_line_text_12">Avatar Teleport anbieten (Befehl: cmd key)</text>
+      <line_editor name="AscentCmdLineOfferTp"/>
+      <text name="cmd_line_text_7">Teleport zu Region x (cmd regionname)</text>
+      <line_editor name="AscentCmdLineMapTo"/>
+      <check_box label="Selbe Position auf neuer Region" name="map_to_keep_pos"/>
+      <text name="cmd_line_text_13">Teleport zu Avatar (Befehl: cmd name)</text>
+      <line_editor tool_tip="Die Syntax dieses Befehls erlaubt partielle Avatarnamen und unterscheidet nicht zwischen Groß- und Kleinschreibung." name="AscentCmdLineTP2"/>
+      <text name="cmd_line_text_14">Toggle Fake Away Status (usage: cmd)</text>
+      <line_editor name="SinguCmdLineAway"/>
+    </panel>
+
+    <panel label="Sicherheit" name="Security">
+      <check_box label="Viewer Effekte senden (ohne Strahlen)" name="broadcast_viewer_effects"/>
+      <check_box label="Deaktiviere Hinzeigen und Strahl " tool_tip="Den Bearbeiten-Strahl bei Objekt-Auswahl nicht anzeigen." name="disable_point_at_and_beams_check"/>
+      <check_box label="Nicht direkt Objekte ansehen (überlagert ShowLookAt)" tool_tip="Schaltet das senden von Kopfbewegungen und LookAt Beacons für dich selbst." name="private_look_at_check"/>
+      <check_box label="Zeige anderer Avatare LookAt Beacons" tool_tip="Zeigt dir wohin andere schauen." name="show_look_at_check"/>
+      <check_box label="Auto detach LSL Bridge" tool_tip="Automatically detach LSL Bridge of Phoenix or Firestorm viewer." name="detach_bridge"/>
+      <check_box label="Quiet Snapshots to Disk" tool_tip="Doesn't make a camera sound nor alert everyone when you take a snapshot to your computer." name="quiet_snapshots_check"/>
+      <check_box label="Gebe beim Aufstehen die Permissions für das Objekt ab, auf dem dein Avatar gesessen hat" tool_tip="Objekte behalten generell TakeControl und TriggerAnimation Permissions bis sie resettet oder mit neuen Permissions durch einen anderen Benutzer ausgestattet werden. Aktiviert man dieses werden die Permissions sofort abgegeben." name="revoke_perms_on_stand_up_check"/>
+      <check_box label="Disable click-to-sit on objects" tool_tip="Einige Griefer Werkzeuge setzen darauf dich zu zwingen oder dich durch Tricks zum Sitzen auf einem Objekt zu bringen, was dem Objekt automatisch Permissions gibt Animationen und andere Dinge auszuführen. Dies deaktiviert llSitTarget - Das heisst, du musst &quot;Sitzen&quot; klicken um auf Poseballs oder Möbeln zu sitzen." name="disable_click_sit_check"/>
+      <check_box label="you don't own" tool_tip="Disables click to sit on objects you don't own (If used with the group check, only one is needed)" name="disable_click_sit_own_check"/>
+      <check_box label="Zeige alle Änderungen der Scriptanzahl an:" name="totalscriptjumps" tool_tip="Zeigt Änderungen in der Anzahl der Scripte in der Region an, abhängig vom Grenzwert der rechts eingestellt ist."/>
+      <spinner name="ScriptJumpCount" tool_tip="Grenzwert für Script Jump Nachricht [Default: 100]"/>
+      <check_box label="Restrained Love API Support (RLVa)" name="RestrainedLove" tool_tip="Allows scripts to take greater control of the viewer, if you wear compliant objects."/>
+    </panel>
+
+    <panel label="Gebäude" name="Building">
+      <text name="text_box6">Drehpunkt</text>
+      <spinner label="X-Position" name="X pos"/>
+      <spinner label="Y-Position" name="Y pos"/>
+      <spinner label="Z-Position" name="Z pos"/>
+      <check_box label="Werte sind Prozentangaben" tool_tip="Standardwerte sind Prozentangaben mit einem Wert von 50 für jede Achse" name="EmPivotPercToggle"/>
+      <text name="Dimensions">Dimensions</text>
+      <spinner label="X-Größe" name="X size"/>
+      <spinner label="Y-Größe" name="Y size"/>
+      <spinner label="Z-Größe" name="Z size"/>
+      <text name="Material">Material:</text>
+      <combo_box name="material">
+        <combo_item name="Stone">Stein</combo_item>
+        <combo_item name="Metal">Metall</combo_item>
+        <combo_item name="Glass">Glas</combo_item>
+        <combo_item name="Wood">Holz</combo_item>
+        <combo_item name="Flesh">Fleisch</combo_item>
+        <combo_item name="Plastic">Plastik</combo_item>
+        <combo_item name="Rubber">Gummi</combo_item>
+      </combo_box>
+      <text name="text_box7">Next Owner Perms</text>
+        <check_box label="Copy permission" tool_tip="Next owner can make copies of creations" name="next_owner_copy"/>
+        <check_box label="Modify permission" tool_tip="Next owner can edit creations" name="next_owner_modify"/>
+        <check_box label="Transfer permission" tool_tip="Next owner can give(or sell) creations" name="next_owner_transfer"/>
+      <check_box label="Phantom" name="EmPhantomToggle"/>
+      <check_box label="Physisch" name="EmPhysicalToggle"/>
+      <check_box label="Temporär" name="EmTemporaryToggle"/>
+      <texture_picker label="     Texture" name="texture control" tool_tip="Klicken Sie hier, um ein Bild auszuwählen"/>
+      <color_swatch label="      Color" name="colorswatch" tool_tip="Klicken, um die Farbauswahl zu öffnen"/>
+      <spinner label="Alpha" name="alpha"/>
+      <spinner label="Leuchten" name="glow"/>
+      <check_box label="Ganz hell" name="EmFBToggle"/>
+      <text name="shine">Shine</text>
+      <combo_box name="combobox shininess" tool_tip="Set the amount of shine for the object">
+        <combo_item name="None">Keine</combo_item>
+        <combo_item name="Low">Niedrig</combo_item>
+        <combo_item name="Medium">Mittel</combo_item>
+        <combo_item name="High">Hoch</combo_item>
+      </combo_box>
+      <check_box name="EmeraldBuildPrefsEmbedItem" label="Put an item into new objects"/>
+       <drop_target name="build_item_add_disp_rect"/>
+      <check_box label="Highlight selected prims" name="EmBuildPrefsRenderHighlight_toggle"/>
+      <check_box label="Axis arrow on root prim position" tool_tip="Standardverhalten ist, die Achse am Massenzentrum eines Linksets anzuzeigen. Aktivieren, um die Achse am Wurzel-Prim anzuzeigen." name="EmBuildPrefsActualRoot_toggle"/>
+    </panel>
+
+  </tab_container>
+</panel>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel name="login_progress_panel">
+  <layout_stack name="stack1">
+    <layout_panel name="panel1"/>
+    <layout_panel name="panel2">
+      <layout_stack name="stack2">
+        <layout_panel name="panel3"/>
+        <layout_panel name="panel4">
+          <icon/>
+          <text name="title_text"/>
+          <text name="progress_text"/>
+          <progress_bar name="login_progress_bar"/>
+          <text name="message_text"/>
+        </layout_panel>
+        <layout_panel name="panel5"/>
+      </layout_stack>
+    </layout_panel>
+    <layout_panel name="panel6"/>
+  </layout_stack>
+  <button name="cancel_btn"/>
+</panel>

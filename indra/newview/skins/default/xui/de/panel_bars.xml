@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel name="bottom_panel">
+	<panel name="status"/>
+	<layout_stack name="bar_stack">
+		<layout_panel name="spacer"/>
+		<layout_panel name="overlay"/>
+		<layout_panel name="toolbar"/>
+	</layout_stack>
+</panel>

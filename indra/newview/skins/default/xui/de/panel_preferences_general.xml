@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel label="Allgemein" name="general_panel">
+  <radio_group name="default_start_location">
+    <radio_item name="home" tool_tip="Als Standardeinstellung in Zuhauseposition anmelden.">Mein Heimatort</radio_item>
+    <radio_item name="last" tool_tip="Als Standardeinstellung in letztem Standort anmelden.">Mein letzter Standort</radio_item>
+  </radio_group>
+  <check_box label="Startposition auf Anmeldebildschirm anzeigen" name="show_location_checkbox"/>
+	<combo_box name="fade_out_combobox">
+		<combo_item name="Never">Niemals</combo_item>
+		<combo_item name="Show Temporarily">Temporär anzeigen</combo_item>
+		<combo_item name="Always">Immer</combo_item>
+	</combo_box>
+	<combo_box name="namesystem_combobox">
+		<combo_item name="Old Names">Old Names</combo_item>
+		<combo_item name="Display Names (with Username)">Display Names(w/Username)</combo_item>
+		<combo_item name="Display Names only">Anzeigename</combo_item>
+	</combo_box>
+	<check_box label="Kleine Avatarnamen" name="small_avatar_names_checkbox"/>
+	<check_box label="Meinen Namen auf meinem Bildschirm ausblenden" name="show_my_name_checkbox"/>
+	<text name="group_titles_textbox">Gruppentitel:</text>
+	<check_box label="Alle Gruppentitel ausblenden" name="show_all_title_checkbox"/>
+	<check_box label="Meinen Gruppentitel ausblenden" name="show_my_title_checkbox"/>
+	<text name="UI Size:">UI-Größe:</text>
+	<slider name="ui_scale_slider"/>
+	<check_box label="Auflösungsunabhängigen Maßstab verwenden" name="ui_auto_scale"/>
+	<check_box label="Go away when idle" name="away_when_idle_checkbox"/>
+	<spinner label="Timeout für Abwesenheit:" name="afk_timeout_spinner"/>
+	<check_box label="Notify when in-world currency is exchanged" name="notify_money_change_checkbox"/>
+	<check_box label="without filling up the corner" name="no_transaction_clutter_checkbox" tool_tip="Still present the notifications, but have them pop up in the bottom right momentarily, then leave, so the transaction draws attention but doesn't get in the way."/>
+	<text name="maturity_desired_label">Einstufung:</text>
+	<text name="maturity_desired_prompt">Ich möchte auf Inhalt mit folgender
+Alterseinstufung zugreifen:</text>
+	<combo_box name="maturity_desired_combobox">
+		<combo_item name="Desired_Adult">PG, Mature und Adult</combo_item>
+		<combo_item name="Desired_Mature">PG und Mature</combo_item>
+		<combo_item name="Desired_PG">Nur PG</combo_item>
+	</combo_box>
+	<text name="maturity_desired_textbox">Nur PG</text>
+	<text name="start_location_textbox">Startposition:</text>
+	<text name="show_names_textbox">Namen anzeigen:</text>
+	<text name="seconds_textbox">Sekunden</text>
+	<text name="crash_report_textbox">Crash-Berichte:</text>
+	<text name="language_textbox">Sprache:</text>
+	<text name="language_textbox2">(Erfordert Neustart)</text>
+	<combo_box name="language_combobox">
+		<combo_item name="System Default Language">Systemstandard</combo_item>
+		<combo_item name="English">English (Englisch)</combo_item>		
+		<!-- After "System Default" and "English", please keep the rest of these combo_items in alphabetical order by the first character in the string.-->
+		<combo_item name="Spanish">Español (Spanisch) - Beta</combo_item>
+		<combo_item name="French">Français (Französisch) - Beta</combo_item>
+		<combo_item name="Portugese">Portugués(Portuguese)</combo_item>
+		<!-- Also, with the above advice in mind, keep completed UI translations above this line.-->
+		<combo_item name="Danish">Danks (Dänisch) - Beta</combo_item>
+		<combo_item name="Deutsch(German)">Deutsch - Beta</combo_item>
+		<combo_item name="Italian">Italiano (Italienisch) - Beta</combo_item>
+		<combo_item name="Hungarian">Magyar (Ungarisch) - Beta</combo_item>
+		<combo_item name="Dutch">Nederlands (Niederländisch) - Beta</combo_item>
+		<combo_item name="Polish">Polski (Polnisch) - Beta</combo_item>
+ 		<combo_item name="Russian">Русский (Russian) - Beta</combo_item>
+		<combo_item name="Turkish">Türkçe (Türkisch) - Beta</combo_item>
+ 		<combo_item name="Ukrainian">Українська (Ukrainisch) - Beta</combo_item>
+		<combo_item name="Chinese">中文 (简体) (Chinesisch) - Beta</combo_item>
+		<combo_item name="(Japanese)">日本語 (Japanisch) - Beta</combo_item>
+		<combo_item name="(Korean)">한국어 (Koreanisch) - Beta</combo_item>
+	</combo_box>
+	<string name="region_name_prompt">&lt;Region eingeben&gt;</string>
+	<combo_box name="crash_behavior_combobox">
+		<combo_item name="Askbeforesending">Vor dem Senden fragen</combo_item>
+		<combo_item name="Alwayssend">Immer senden</combo_item>
+		<combo_item name="Neversend">Nie senden</combo_item>
+	</combo_box>
+  <check_box label="Objekten Sprache mitteilen" name="language_is_public" tool_tip="In-Welt-Objekten wird Ihre bevorzugte Spracheinstellung mitgeteilt."/>
+  <button label="Alle Einstellungen zurücksetzen" name="clear_settings"/>
+</panel>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel label="Oberflächendesign" name="Skins panel">
+          <text name="Skin_txt1">Selected Skin</text>
+          <combo_box name="custom_skin_combo"/>
+          <text name="Skin_txt2">Primary Author</text>
+		<view_border name="custom_box1"/>
+          <text name="custom_skin_author">skin author</text>
+          <text name="Skin_txt3">Additional Authors</text>
+		<view_border name="custom_box2"/>
+          <text name="custom_skin_ad_authors">additional skin authors</text>
+          <text name="Skin_txt4">Skin folder</text>
+		<view_border name="custom_box3"/>
+          <text name="custom_skin_folder">skin folder</text>
+  <button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="custom_skin_preview" tool_tip="Skin Preview"/>
+          <text name="Skin_txt5">Additional info</text>
+		<text_editor name="custom_skin_info"/>
+</panel>

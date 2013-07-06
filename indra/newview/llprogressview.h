@@ -62,6 +62,7 @@ public:
 	void setMessage(const std::string& msg);
 	
 	void revealIntroPanel();
+	void abortShowProgress();
 
 	void setStartupComplete();
 

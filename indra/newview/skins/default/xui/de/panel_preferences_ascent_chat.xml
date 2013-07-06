@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel label="Erw. Chat" name="ascsys">
+  <tab_container label="Erweiterte Chatoptionen" name="Ascent Chat">
+
+    <panel label="Chat/IM" name="Chat/IM">
+      <text name="objects_link_text_box">Chat:</text>
+      <check_box label="Ankommende Nachrichten anzeigen" tool_tip="Opens an IM window when someone starts typing an IM to you. This gives you a heads up that someone is IMing you before they hit enter. " name="quickstart_im_check"/>
+      <check_box label="'[name] tippt gerade...' in Nachrichten unterdrücken" tool_tip="Nachrichtenempfänger sehen nicht &quot;_______ tippt gerade...&quot; wenn du antwortest." name="hide_typing_check"/>
+      <check_box label="Only accept IMs from Friends" name="InstantMessagesFriendsOnly"/>
+      <check_box label="MU Emotes erlauben" tool_tip="Erlaubt, /me und : für Emotes zu verwenden" name="allow_mu_pose_check"/>
+      <check_box label="OOC automatisch schliessen." tool_tip="Schliesst mit (( beginnende Nachrichten automatisch mit )) ab." name="close_ooc_check"/>
+	  <!-- Left/Right Column split  
+		 <view_border bevel_style="none" border_thickness="1" bottom_delta="0" follows="top|left" height="75"
+		left="235" name="CmdDivisor" width="0"/>
+	  -->
+      <text name="objects_link_text_box2">Chat:</text>
+      <check_box label="Tippgeräusche erzeugen" tool_tip="Unterdrückt die Tippgeräusche" name="play_typing_sound_check"/>
+      <check_box label="Hinweise nicht im Chat anzeigen und protokollieren" name="hide_notifications_in_chat_check"/>
+      <check_box label="Gruppennamen im Chat zeigen" tool_tip="Der name der Gruppe word angezeigt wenn die Nachricht aus dem Gruppenchat stammt." name="append_group_name_check"/>
+      <check_box label="Show display name changes" tool_tip="When checked, a notification will come up in chat whenever someone's display name changes." name="display_name_change"/>
+      <check_box label="Use overhead typing indicator bubbles" name="use_typing_bubbles"/>
+      <text name="objects_link_text_box3">Show links on chatting object names in chat history for:</text>
+      <radio_group tool_tip="Generiert einen Link auf den Besitzer eines sprechenden Objekts" name="objects_link">
+        <radio_item name="no_object">Kein Objekt</radio_item>
+        <radio_item name="others_objects">Objekte anderer Personen</radio_item>
+        <radio_item name="anyones_objects">Alle Objekte</radio_item>
+      </radio_group>
+      <text name="time_format_text_box">Zeitformat:</text>
+      <combo_box tool_tip="Zeige Zeit entweder im 12 oder im 24 Stunden Format." name="time_format_combobox">
+        <combo_item name="24hours">24 Stunden Uhr</combo_item>
+        <combo_item name="12hours">12 Stunden Uhr</combo_item>
+      </combo_box>
+      <check_box label="Sekunden in Chat und IM Zeitangaben" name="seconds_in_chat_and_ims_check"/>
+      <text name="date_format_text_box">Datumsformat:</text>
+      <combo_box name="date_format_combobox">
+        <combo_item name="year_first">JJJJ-MM-TT</combo_item>
+        <combo_item name="day_first">TT/MM/JJJJ</combo_item>
+        <combo_item name="month_first">MM/TT/JJJJ</combo_item>
+      </combo_box>
+      <check_box label="Seconds in Log timestamps" name="seconds_in_log"/>
+  </panel>
+
+  <panel label="Chat UI" name="ChatUI">
+      <check_box label="Vertikale Nachrichten-Tabs (Neustart erforderlich)" name="use_vertical_ims_check"/>
+      <check_box label="Open new IMs in separate floaters" name="chats_torn_off"/>
+      <check_box label="Focus new instant messages" name="chat_steal_focus"/>
+      <check_box label="Show chat bar in torn-off local chat floater" name="show_local_chat_floater_bar"/>
+      <check_box label="Use horizontal buttons for contacts floater (Needs restart)" tool_tip="When enabled, the buttons on the Friends and Groups panels will be at the bottom, horizontally arranged, instead of vertically arranged on the right." name="horiz_butt"/>	  
+      <check_box label="Buttons on the same line as name for IMs (Affects new IMs)" name="im_concise_butt"/>
+      <check_box label="Buttons on group chat name line (Affects new group chats)" name="group_concise_butt"/>
+      <check_box label="Buttons on conference title line (Affects new conferences)" name="conf_concise_butt"/>
+      <check_box label="Disallow communicate shortcut opening detached friends list" name="only_comm"/>
+      <check_box label="Italicize action messages (/me)" name="italicize_actions"/>
+  </panel>
+
+  <panel label="Autoresponse" name="Autoresponse">
+    <text name="Autoresponse Info">Autoresponse makes the viewer respond to people who message you, with a custom message.
+The following wildcards are available to enhance your autoresponses: #n for user's legacy name,
+#d for their display name, #r for SLURL to your location, #i for your idle time in minutes.</text>
+    <check_box name="AscentInstantMessageResponseRepeat" label="Autorespond every time you receive a message you've enabled autoresponse for"/>
+    <check_box name="AutoresponseAnyone" label="Send basic autoresponse" tool_tip="Send the message in the box below to people you haven't muted."/>
+    <check_box name="AutoresponseAnyoneFriendsOnly" label="to friends only" tool_tip="Avoids sending this response to those you don't know"/>
+    <check_box name="AutoresponseAnyoneItem" label="Send item"/>
+    <check_box name="AutoresponseAnyoneShow" label="Show that this was sent"/>
+    <text_editor name="AutoresponseAnyoneMessage"/>
+    <drop_target name="AutoresponseAnyoneItemID" tool_tip="Drop an item here to have it sent with the above response."/>
+    <check_box name="AutoresponseNonFriends" label="Autorespond to nonfriends" tool_tip="Send the message in the box below to people who are not your friends"/>
+    <check_box name="AutoresponseNonFriendsItem" label="Send item"/>
+    <check_box name="AutoresponseNonFriendsShow" label="Show that this was sent"/>
+    <text_editor name="AutoresponseNonFriendsMessage"/>
+    <drop_target name="AutoresponseNonFriendsItemID" tool_tip="Drop an item here to have it sent with the above response."/>
+    <check_box name="AutoresponseMuted" label="Automatisch an stummgeschaltete Benutzer senden" tool_tip="Send the message in the box below to people you have muted."/>
+    <check_box name="AutoresponseMutedItem" label="Send item"/>
+    <text_editor name="AutoresponseMutedMessage"/>
+    <drop_target name="AutoresponseMutedItemID" tool_tip="Drop an item here to have it sent with the above response."/>
+    <text name="BusyModeResponseText" tool_tip="Send the message in the box below to people who message when you are busy.">Antwort für 
+Beschäftigt-Modus:</text>
+    <check_box name="BusyModeResponseItem" label="Send item"/>
+    <check_box name="BusyModeResponseShow" label="Show that this was sent"/>
+    <text_editor name="BusyModeResponse"/>
+    <drop_target name="BusyModeResponseItemID" tool_tip="Drop an item here to have it sent with the above response."/>
+  </panel>
+
+    <panel label="Spam" name="Spam">
+      <check_box label="Enable Antispam" name="enable_as"/>
+      <button label="Reset antispam queues" label_selected="Reset antispam queues" name="reset_antispam"/>
+      <check_box label="No messagetype-specific spam queues" name="spammsg_checkbox"/>
+      <spinner label="Antispam time(seconds):" tool_tip="Lower is less sensitive" name="antispamtime"/>
+      <spinner label="Antispam amount:" tool_tip="Higher is less sensitive" name="antispamamount"/>
+      <spinner label="Amount multiplier for sound plays:" tool_tip="Higher is less sensitive" name="antispamsoundmulti"/>
+      <spinner label="Amount multiplier for sound preloads:" tool_tip="Higher is less sensitive" name="antispamsoundpreloadmulti"/>
+      <spinner label="Amount of newlines to instablock message:" tool_tip="Higher is less sensitive" name="antispamnewlines"/>
+      <check_box label="Notify when spam is blocked" name="Notify On Spam" tool_tip="When enabled, the bottom right corner may become a source of pseudo-spam whenever real spam is blocked."/>
+	  <check_box label="Disable -all- dialogs (resets on login)" name="antispam_checkbox"/>
+	  <text name="Block All Dialogs From">Block All Dialogs From</text>
+      <check_box label="Hinweise" name="Alerts"/>
+      <check_box label="Friendship Offers" name="Friendship Offers"/>
+      <check_box label="All Group Invites" name="Group Invites"/>
+      <check_box label="Group Fee Invites" name="Group Fee Invites"/>
+      <check_box label="Item Offers" name="Item Offers"/>
+      <check_box label="Skripts" name="Scripts"/>
+      <check_box label="Teleport Offers" name="Teleport Offers"/>
+      <check_box label="Gruppenmitteilungen" name="Group Notices"/>
+      <check_box label="Enable Gesture Sounds" name="Enable Gesture Sounds"/>
+    </panel>
+
+    <panel label="Textoptionen" name="TextOptions">
+      <check_box label="Falsch geschriebene Worte in Rot anzeigen" name="SpellDisplay"/>
+      <text name="EmSpell_txt1">Aktuelle Sprache (Wörterbuch):</text>
+      <combo_box name="SpellBase"/>
+      <text name="EmSpell_txt3">Vorhandene Sprachen (Wörterbücher):</text>
+      <combo_box name="EmSpell_Avail"/>
+      <button label="Installieren" name="EmSpell_Add" tool_tip="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;"/>
+      <button label="Weitere downloaden..." name="EmSpell_GetMore" tool_tip="Mehr Wörterbücher online finden"/>
+      <text name="EmSpell_txt2">Zusätzliche benutzerdefinierte Sprachen (Wörterbücher):</text>
+      <combo_box name="EmSpell_Installed" tool_tip="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;"/>
+      <button label="Entfernen" name="EmSpell_Remove" tool_tip="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;"/>
+      <button label="Benutzerdefiniertes Wörterbuch bearbeiten" name="EmSpell_EditCustom"/>
+      <text name="EmSpell_txt4">Um die Rechtschreibprüfung anzuwenden, klicke mit rechts
+auf ein falsches wort und wähle ein anderes Wort aus.</text>
+
+      <view_border name="CmdDivisor"/>
+
+      <check_box label="Markiere Nachrichten die eines dieser Worte enthalten" name="KeywordsOn"/>
+      <text name="keyword_txt1">(durch Komma getrennt)</text>
+      <line_editor name="KeywordsList"/>
+      <text name="EmKeyw">Wurde gefunden in:</text>
+      <check_box label="Local Chat Floater" name="KeywordsInChat"/>
+      <check_box label="Instant Message Floater" name="KeywordsInIM"/>
+      <check_box label="Nachricht in dieser Farbe markieren:" name="KeywordsChangeColor"/>
+      <color_swatch name="KeywordsColor" tool_tip="Klicken, um die Farbauswahl zu öffnen"/>
+      <check_box label="Diesen Ton spielen (UUID)" name="KeywordsPlaySound"/>
+      <line_editor name="KeywordsSound"/>
+    </panel>
+
+  </tab_container>
+</panel>

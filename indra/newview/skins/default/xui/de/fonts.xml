@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<fonts>
+
+  <font name="default">
+    <file>DejaVuSansCondensed.ttf</file>
+    <os name="Windows">
+      <file>MSGOTHIC.TTC</file>
+      <file>gulim.ttc</file>
+      <file>simhei.ttf</file>
+      <file>ArialUni.ttf</file>
+    </os>
+    <os name="Mac">
+      <file>ヒラギノ角ゴ ProN W3.otf</file>
+      <file>ヒラギノ角ゴ Pro W3.otf</file>
+      <file>AppleGothic.ttf</file>
+      <file>AppleGothic.dfont</file>
+      <file>华文细黑.ttf</file>
+      <file>儷黑 Pro.ttf</file>
+      <file>Apple Symbols.ttf</file>
+    </os>
+  </font>
+
+  <font name="SansSerif">
+    <file>DroidSans.ttf</file>
+  </font>
+
+  <font name="SansSerifBold">
+	<file>DroidSans-Bold.ttf</file>
+  </font>
+
+  <font name="Monospace" comment="Name of monospace font">
+    <file>DejaVuSansMono.ttf</file>
+  </font>
+
+  <font name="DejaVu" comment="Name of DejaVu font">
+    <file>DejaVuSans.ttf</file>
+  </font>
+
+  <font name="DejaVu" comment="Name of DejaVu font (bold)" font_style="BOLD">
+    <file>DejaVuSansBold.ttf</file>
+  </font>
+
+  <font name="DejaVu" comment="Name of DejaVu font (italic)" font_style="ITALIC">
+    <file>DejaVuSansOblique.ttf</file>
+  </font>
+
+  <font name="DejaVu" comment="Name of DejaVu font" font_style="BOLD|ITALIC">
+    <file>DejaVuSansBoldOblique.ttf</file>
+  </font>
+
+  <font name="Helvetica" comment="Name of Helvetica font">
+    <file>arial.ttf</file>
+  </font>
+
+  <font name="Helvetica" comment="Name of Helvetica font (bold)" font_style="BOLD">
+    <file>arialbd.ttf</file>
+  </font>
+
+  <font name="Helvetica" comment="Name of Helvetica font (italic)" font_style="ITALIC">
+    <file>ariali.ttf</file>
+  </font>
+
+  <font name="Helvetica" comment="Name of Helvetica font" font_style="BOLD|ITALIC">
+    <file>arialbi.ttf</file>
+  </font>
+
+  <font name="OverrideTest">
+    <file>times.ttf</file>
+  </font>
+
+  <font_size name="Monospace" comment="Name of monospace font" size="9.0"/>
+  <font_size name="Huge"/>
+  <font_size name="Large"/>
+  <font_size name="Medium"/>
+  <font_size name="Small"/>
+</fonts>

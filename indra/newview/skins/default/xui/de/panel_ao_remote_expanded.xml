@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel name="ao_remote">
+  <panel name="panel_bg_tab"/>
+  <button label="AO Sitzen Aus" label_selected="AO Sitzen Ein" name="ao_sit_btn"/>
+  <panel name="panel_ao_controls"/>
+</panel>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="clothing" title="Kleidung">
+	<scroll_list name="clothing_list">
+		<column label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="icon"/>
+		<column label="Name" name="name"/>
+		<column name="sort"/>
+	</scroll_list>
+	<button label="Ausziehen" name="take_off_btn"/>
+	<button label="Anziehen" name="wear_btn"/>
+</floater>

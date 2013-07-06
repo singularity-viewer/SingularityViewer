@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="Postcard" title="Foto per E-Mail senden">
+	<text name="to_label">E-Mail des Empfängers:</text>
+	<line_editor name="to_form"/>
+	<text name="from_label">Ihre E-Mail:</text>
+	<line_editor name="from_form"/>
+	<text name="name_label">Ihr Name:</text>
+	<line_editor name="name_form"/>
+	<text name="subject_label">Betreff:</text>
+	<line_editor label="Betreff hier eingeben." name="subject_form"/>
+	<text name="msg_label">Nachricht:</text>
+	<text_editor name="msg_form">Nachricht hier eingeben.</text_editor>
+	<button label="Abbrechen" name="cancel_btn"/>
+	<button label="Senden" name="send_btn"/>
+	<string name="default_subject">Postkarte aus [SECOND_LIFE].</string>
+	<string name="default_message">Sehen Sie mal!</string>
+	<string name="upload_message">Wird gesendet...</string>	
+</floater>

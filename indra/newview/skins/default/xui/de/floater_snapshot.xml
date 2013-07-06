@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="Snapshot" title="Foto-Vorschau">
+	<text name="file_size_label">Dateigröße: [SIZE] KB</text>
+	<text name="type_label">Ziel</text>
+	<radio_group label="Fototyp" name="snapshot_type_radio">
+		<radio_item name="feed">Sende an Profil-Feed</radio_item>
+		<radio_item name="postcard">Per E-Mail senden</radio_item>
+		<radio_item name="texture">Speichere in Inventar ([UPLOADFEE])</radio_item>
+		<radio_item name="local">Auf Festplatte speichern</radio_item>
+	</radio_group>
+	<button label="Aktualisieren" name="new_snapshot_btn"/>
+	<button label="Einfrieren" name="freeze_time_btn" tool_tip="Zeige Vollansicht. Erlaubt Kammeraführung als stünde die Zeit still, um mehrere Fotos der gleichen Szene zu machen. ESC beendet den Zustand!"/>
+	<button label="Hochladen" name="feed_btn"/>
+	<button label="Senden" name="send_btn"/>
+	<button label="Hochladen ([AMOUNT] [CURRENCY])" name="upload_btn"/>
+	<flyout_button label="Speichern" name="save_btn" tool_tip="Bild als Datei speichern">
+    <flyout_button_item name="save_item">Speichern</flyout_button_item>
+    <flyout_button_item name="saveas_item">Speichern unter...</flyout_button_item>
+	</flyout_button>
+	<button label="Abbrechen" name="discard_btn"/>
+	<button label="Mehr &gt;&gt;" name="more_btn" tool_tip="Erweiterte Optionen"/>
+	<button label="&lt;&lt; Weniger" name="less_btn" tool_tip="Erweiterte Optionen"/>
+	<text name="type_label2">Zielauflösung</text>
+	<text name="format_label">Format</text>
+	<combo_box label="Auflösung" name="feed_size_combo">
+		<combo_item name="CurrentWindow">Aktuelles Fenster</combo_item>
+		<combo_item name="500x500">500x500 (1:1)</combo_item>
+		<combo_item name="500x375">500x375 (4:3)</combo_item>
+		<combo_item name="500x350">500x350 (10:7)</combo_item>
+		<combo_item name="500x313">500x313 (16:10)</combo_item>
+		<combo_item name="500x281">500x281 (16:9)</combo_item>
+		<combo_item name="500x250">500x250 (2:1)</combo_item>
+		<combo_item name="Custom">Benutzerdefiniert</combo_item>
+	</combo_box>
+	<combo_box label="Auflösung" name="postcard_size_combo">
+		<combo_item name="CurrentWindow">Aktuelles Fenster</combo_item>
+		<combo_item name="640x480">640x480</combo_item>
+		<combo_item name="700x525">700x525</combo_item>
+		<combo_item name="800x600">800x600</combo_item>
+		<combo_item name="1024x768">1024x768</combo_item>
+		<combo_item name="Custom">Benutzerdefiniert</combo_item>
+	</combo_box>
+	<combo_box label="Auflösung" name="texture_size_combo">
+		<combo_item name="512x512">512x512 (1:1)</combo_item>
+		<combo_item name="256x256">256x256 (1:1)</combo_item>
+		<combo_item name="128x128">128x128 (1:1)</combo_item>
+		<combo_item name="512x256">512x256 (2:1)</combo_item>
+		<combo_item name="256x128">256x128 (2:1)</combo_item>
+		<combo_item name="256x512">256x512 (1:2)</combo_item>
+		<combo_item name="128x256">128x256 (1:2)</combo_item>
+		<combo_item name="512x128">512x128 (4:1)</combo_item>
+		<combo_item name="128x512">128x512 (1:4)</combo_item>
+	</combo_box>
+	<combo_box label="Auflösung" name="local_size_combo">
+		<combo_item name="CurrentWindow">Aktuelles Fenster</combo_item>
+		<combo_item name="320x240">320x240</combo_item>
+		<combo_item name="640x480">640x480</combo_item>
+		<combo_item name="800x600">800x600</combo_item>
+		<combo_item name="1024x768">1024x768</combo_item>
+		<combo_item name="1280x960">1280x960</combo_item>
+		<combo_item name="1280x1024">1280x1024</combo_item>
+		<combo_item name="1600x1200">1600x1200</combo_item>
+		<combo_item name="1680x1050">1680x1050</combo_item>
+		<combo_item name="Custom">Benutzerdefiniert</combo_item>
+	</combo_box>
+	<combo_box label="Format" name="local_format_combo">
+		<combo_item name="PNG">PNG</combo_item>
+		<combo_item name="JPEG">JPEG</combo_item>
+		<combo_item name="BMP">BMP</combo_item>
+	</combo_box>
+	<spinner label="Breite" name="snapshot_width"/>
+	<spinner label="Höhe" name="snapshot_height"/>
+	<slider label="Bildqualität" name="image_quality_slider"/>
+	<check_box label="Aspektverhältnis beibehalten:" name="keep_aspect" tool_tip="Achtung: Das Setzen der Auflösung auf nicht-benutzerdefiniert oder das setzen des Aspektverhältnis auf Default setzt diese Checkbox zurück, da sie nicht kompatibel sind."/>
+	<text name="type_label3"/>
+	<combo_box label="Aspekt" name="feed_aspect_combo">
+		<combo_item name="Default">Standard</combo_item>
+		<combo_item name="Custom">Benutzerdefiniert</combo_item>
+	</combo_box>
+	<combo_box label="Aspekt" name="postcard_aspect_combo">
+		<combo_item name="Default">Standard</combo_item>
+		<combo_item name="Custom">Benutzerdefiniert</combo_item>
+	</combo_box>
+	<combo_box label="Aspekt" name="texture_aspect_combo">
+		<combo_item name="CurrentWindow">Aktuelles Fenster</combo_item>
+		<combo_item name="1:1">1:1</combo_item>
+		<combo_item name="4:3">4:3 (profile)</combo_item>
+		<combo_item name="10:7">10:7</combo_item>
+		<combo_item name="3:2">3:2</combo_item>
+		<combo_item name="16:10">16:10</combo_item>
+		<combo_item name="16:9">16:9</combo_item>
+		<combo_item name="2:1">2:1</combo_item>
+		<combo_item name="Custom">Benutzerdefiniert</combo_item>
+	</combo_box>
+	<combo_box label="Aspekt" name="local_aspect_combo">
+		<combo_item name="Default">Standard</combo_item>
+		<combo_item name="CurrentWindow">Aktuelles Fenster</combo_item>
+		<combo_item name="1:1">1:1</combo_item>
+		<combo_item name="4:3">4:3 (profile)</combo_item>
+		<combo_item name="10:7">10:7</combo_item>
+		<combo_item name="3:2">3:2</combo_item>
+		<combo_item name="16:10">16:10</combo_item>
+		<combo_item name="16:9">16:9</combo_item>
+		<combo_item name="2:1">2:1</combo_item>
+		<combo_item name="Custom">Benutzerdefiniert</combo_item>
+	</combo_box>
+	<spinner label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="aspect_ratio"/>
+    <text name="aspect_one_label">:1</text>
+	<text name="layer_type_label">Aufnahme:</text>
+	<combo_box label="Bildebenen" name="layer_types">
+		<combo_item name="Colors">Farben</combo_item>
+		<combo_item name="Depth">Tiefe</combo_item>
+	</combo_box>
+	<check_box label="Interface auf Foto anzeigen" name="ui_check" tool_tip="Sperrt Auflösung auf aktuelle Fenstergröße."/>
+	<check_box label="HUD-Objekte auf Foto anzeigen" name="hud_check" tool_tip="Sperrt Auflösung auf aktuelle Fenstergröße."/>
+	<check_box label="Nach dem Speichern offen lassen" name="keep_open_check"/>
+	<check_box label="Öffne Dialog in Zeitstillstands-Modus" name="freeze_time_check" tool_tip="Erlaubt schnelles Öffnen des Fotodialogs, dann Kamerapositionierung und das Aufnehmen mehrerer Fotos der stillstehenden Szene."/>
+	<check_box label="Automatisch aktualisieren" name="auto_snapshot_check" tool_tip="Hilfreich im Zusammenspiel mit Zeitstillstand: Erzeugt eine neue Vollansicht wann immer die Kamerabewegung gestoppt wird."/>
+	<check_box label="Temporäres Bild (Kostenfrei)" name="temp_check" tool_tip="Setzt die Ressource zeitlich begrenzt und damit kostenfrei. Allerdings ist diese dann nur kurze Zeit bis zum Erlöschen nutzbar. (Möglicherweise nicht in SL verfügbar)"/>
+	<string name="unknown">unbekannt</string>
+	<string name="targetAR">Ziel-Aspektverhältnis:</string>
+	<string name="sourceAR">Auflösung und Ziel-Aspektverhältnis</string>
+</floater>

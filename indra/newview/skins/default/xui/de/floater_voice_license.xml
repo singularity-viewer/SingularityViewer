@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="modal container" title="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;">
+  <button label="Weiter" label_selected="Weiter" name="Continue"/>
+  <button label="Abbrechen" label_selected="Abbrechen" name="Cancel"/>
+  <check_box label="Ich stimme der Vivox Acceptable Use Policy zu" name="agree_chk"/>
+  <text name="license_heading">Bitte lese die folgende Lizenz sorgfältig. 
+Um Sprache zu benutzen musst du dieser Lizenz zustimmen.</text>
+  <text_editor name="license_text">LICENSE_TEXT</text_editor>
+  <!-- Loading text says: "Loading Vivox Personal License Agreement..." URL encoded -->
+  <web_browser name="license_html" trusted_content="true"/>
+  <string name="real_url">vivox_aup.html</string>
+  <string name="fallback_html">vivox_aup.html</string>
+</floater>

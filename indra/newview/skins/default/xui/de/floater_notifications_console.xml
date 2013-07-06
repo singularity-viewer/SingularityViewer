@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater title="Konsole: Meldungen" name="notifications_console">
+  <combo_box name="notification_types" label="Meldungsart auswählen"/>
+  <button name="add_notification" label="Hinzufügen"/>
+  <layout_stack name="notification_channels">
+  </layout_stack>
+</floater>

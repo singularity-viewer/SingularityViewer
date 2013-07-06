@@ -1,0 +1,273 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="directory" title="Suchen">
+	<tab_container name="Directory Tabs">
+		<panel label="Alle" name="find_all_panel">
+			<string name="searching_text">Suchen...</string>
+			<string name="not_found_text">Nicht gefunden.</string>
+			<text name="find">Suchen:</text>
+			<line_editor label="Suche" name="search_editor" tool_tip="Suchen"/>
+      <button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="back_btn"/>
+      <button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="forward_btn"/>
+      <button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="reload_btn"/>
+			<button label="Suche" name="search_btn"/>
+			<combo_box name="Category">
+				<combo_item name="AnyCategory">Alle Kategorien</combo_item>
+				<combo_item name="Events">Events</combo_item>
+				<combo_item name="Groups">Gruppen</combo_item>
+				<combo_item name="People">Leute</combo_item>
+				<combo_item name="Places">Orte</combo_item>
+				<combo_item name="Wiki">Wiki</combo_item>
+			</combo_box>
+			<check_box label="PG-Inhalt" name="incpg"/>
+			<check_box label="Mature-Inhalt" name="incmature"/>
+			<check_box label="Adult-Inhalt" name="incadult"/>
+            <check_box name="filter_gaming" label="Verstecke Glücksspiel"/>
+	                <button label="?" label_selected="?" name="?"/>
+			<web_browser name="find_browser" trusted_content="true"/>
+			<text name="status_text"/>
+			<string name="loading_text">Wird geladen...</string>
+			<string name="done_text">Fertig</string>
+			<string name="redirect_404_url">http://secondlife.com/app/search/notfound.html</string>
+      <string name="default_search_page">"http://secondlife.com/app/search/index.php?"</string>
+    </panel>
+		<panel label="Anzeigen" name="classified_panel">
+			<string name="searching_text">Suchen...</string>
+			<string name="not_found_text">Nicht gefunden.</string>
+			<text name="find">Suchen:</text>
+			<line_editor name="name"/>
+			<check_box label="PG-Inhalt" name="incpg"/>
+			<check_box label="Mature-Inhalt" name="incmature"/>
+			<check_box label="Adult-Inhalt" name="incadult"/>
+            <check_box name="filter_gaming" label="Verstecke Glücksspiel"/>
+			<combo_box name="Category">
+				<combo_item name="AnyCategory">Alle Kategorien</combo_item>
+				<combo_item name="Shopping">Shopping</combo_item>
+				<combo_item name="LandRental">Land mieten</combo_item>
+				<combo_item name="PropertyRental">Immobilie mieten</combo_item>
+				<combo_item name="SpecialAttraction">Attraktionen</combo_item>
+				<combo_item name="NewProducts">Neue Produkte</combo_item>
+				<combo_item name="Employment">Stellenangebote</combo_item>
+				<combo_item name="Wanted">Gesucht</combo_item>
+				<combo_item name="Service">Dienstleistungen</combo_item>
+				<combo_item name="Personal">Sonstiges</combo_item>
+			</combo_box>
+			<button label="Durchsuchen" label_selected="Durchsuchen" name="Browse"/>
+			<button label="Suche" label_selected="Suche" name="Search"/>
+			<button label="Löschen" label_selected="Löschen" name="Delete"/>
+			<scroll_list name="results">
+				<column label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="icon"/>
+				<column label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="type"/>
+				<column label="Name" name="name"/>
+				<column label="Preis" name="price"/>
+			</scroll_list>
+			<text name="result_text"/>
+			<button label="Weiter &gt;" label_selected="Weiter &gt;" name="Next &gt;"/>
+			<button label="&lt; Vorherige" label_selected="&lt; Vorherige" name="&lt; Prev"/>
+		</panel>
+		<panel label="Events" name="events_panel">
+			<string name="searching_text">Suchen...</string>
+			<string name="not_found_text">Nicht gefunden.</string>
+			<text name="text2">Suchen:</text>
+			<line_editor name="event_search_text"/>
+			<radio_group name="date_mode">
+				<radio_item name="current">Stattfindend und anstehend</radio_item>
+				<radio_item name="date">Datum</radio_item>
+			</radio_group>
+			<button label="&lt;&lt;" label_selected="&lt;&lt;" name="&lt;&lt;" tool_tip="Einen Tag zurück"/>
+			<text name="date_text">6/6</text>
+			<button label="&gt;&gt; " label_selected="&gt;&gt; " name="&gt;&gt;" tool_tip="Einen Tag weiter"/>
+			<button label="Heute" label_selected="Heute" name="Today" tool_tip="Heutige Events anzeigen"/>
+			<text name="text">Kategorie:</text>
+			<combo_box name="category combo">
+				<combo_item name="All">Alle Kategorien</combo_item>
+				<combo_item name="Discussion">Diskussion</combo_item>
+				<combo_item name="Sports">Sport</combo_item>
+				<combo_item name="LiveMusic">Live Musik</combo_item>
+				<combo_item name="Commercial">Kommerziell</combo_item>
+				<combo_item name="Nightlife/Entertainment">Nachtleben/Unterhaltung</combo_item>
+				<combo_item name="Games/Contests">Spiele/Wettbewerbe</combo_item>
+				<combo_item name="Pageants">Schönheitswettbewerbe</combo_item>
+				<combo_item name="Education">Bildung</combo_item>
+				<combo_item name="ArtsandCulture">Kunst &amp; Kultur</combo_item>
+				<combo_item name="Charity/SupportGroups">Wohltätigkeits-/Support-Gruppen</combo_item>
+				<combo_item name="Miscellaneous">Sonstiges</combo_item>
+			</combo_box>
+			<check_box label="PG-Inhalt" name="incpg"/>
+			<check_box label="Mature-Inhalt" name="incmature"/>
+			<check_box label="Adult-Inhalt" name="incadult"/>
+            <check_box name="filter_gaming" label="Verstecke Glücksspiel"/>
+			<button label="Suche" label_selected="Suche" name="Search"/>
+			<button label="Löschen" label_selected="Löschen" name="Delete"/>
+			<scroll_list name="results">
+				<column label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="icon"/>
+				<column label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="type"/>
+				<column label="Name" name="name"/>
+				<column label="Zeit (PT)" name="date"/>
+				<column label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="event_id"/>
+				<column label="Uhrzeit" name="time"/>
+			</scroll_list>
+			<text name="result_text"/>
+			<button label="Weiter &gt;" label_selected="Weiter &gt;" name="Next &gt;"/>
+			<button label="&lt; Vorherige" label_selected="&lt; Vorherige" name="&lt; Prev"/>
+		</panel>
+		<panel label="Showcase" name="showcase_panel">
+        <string name="searching_text">Suchen...</string>
+        <string name="not_found_text">Nicht gefunden.</string>
+        <button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="back_btn"/>
+        <button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="forward_btn"/>
+        <button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="reload_btn"/>
+        <!-- No mature content checkbox, showcase is all PG -->
+        <web_browser name="showcase_browser" trusted_content="true"/>
+        <text name="status_text"/>
+        <string name="loading_text">Wird geladen...</string>
+        <string name="done_text">Fertig</string>
+        <string name="redirect_404_url">http://secondlife.com/app/search/notfound.html</string>
+        <string name="default_search_page">"http://secondlife.com/app/showcase/index.php?"</string>
+    </panel>
+		<panel label="Landverkauf" name="land_sales_panel">
+			<string name="searching_text">Suchen...</string>
+			<string name="not_found_text">Nicht gefunden.</string>
+			<string name="land_help_text">Land kann direkt für Linden Dollar (L$) oder bei einer Auktion für L$ oder US$ erworben werden.
+Um direkt zu kaufen, klicken Sie auf dem betreffenden Land in der Titelleiste auf den Namen.</string>
+			<text name="find">Suchen:</text>
+			<check_box label="PG-Inhalt" name="incpg"/>
+			<check_box label="Mature-Inhalt" name="incmature"/>
+			<check_box label="Adult-Inhalt" name="incadult"/>
+            <check_box name="filter_gaming" label="Verstecke Glücksspiel"/>
+			<combo_box name="type">
+				<combo_item name="AllTypes">Alle Typen</combo_item>
+				<combo_item name="Auction">Auktion</combo_item>
+				<combo_item name="MainlandSales">Verkauf - Mainland</combo_item>
+				<combo_item name="EstateSales">Verkauf - Immobilien</combo_item>
+			</combo_box>
+			<check_box label="Preis ≤ " name="pricecheck"/>
+			<text name="pricecheck_symbol">L$</text>
+			<check_box label="Gebiet ≥ " name="areacheck"/>
+			<text name="areacheck_symbol">m²</text>
+			<line_editor name="priceedit"/>
+			<line_editor name="areaedit"/>
+			<button label="Suche" label_selected="Suche" name="Search"/>
+			<scroll_list name="results">
+				<column label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="icon"/>
+				<column label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="type"/>
+				<column label="Name" name="name"/>
+				<column label="Typ" name="landtype"/>
+				<column label="L$ Price" name="price"/>
+				<column label="Gebiet" name="area"/>
+				<column label="L$/qm" name="per_meter"/>
+			</scroll_list>
+			<text name="result_text"/>
+			<button label="Weiter &gt;" label_selected="Weiter &gt;" name="Next &gt;"/>
+			<button label="&lt; Vorherige" label_selected="&lt; Vorherige" name="&lt; Prev"/>
+		</panel>
+		<panel label="Orte" name="places_panel">
+			<string name="searching_text">Suchen...</string>
+			<string name="not_found_text">Nicht gefunden.</string>
+			<text name="find">Suchen:</text>
+			<line_editor name="name"/>
+			<check_box label="PG-Inhalt" name="incpg"/>
+			<check_box label="Mature-Inhalt" name="incmature"/>
+			<check_box label="Adult-Inhalt" name="incadult"/>
+            <check_box name="filter_gaming" label="Verstecke Glücksspiel"/>
+			<combo_box name="Category">
+				<combo_item name="AnyCategory">Alle Kategorien</combo_item>
+				<combo_item name="LindenLocation">Lindenort</combo_item>
+				<combo_item name="Arts&amp;Culture">Kunst &amp; Kultur</combo_item>
+				<combo_item name="Business">Firmen</combo_item>
+				<combo_item name="Educational">Bildung</combo_item>
+				<combo_item name="Gaming">Spielen</combo_item>
+				<combo_item name="Hangout">Treffpunkt</combo_item>
+				<combo_item name="NewcomerFriendly">Anfängergerecht</combo_item>
+				<combo_item name="Parks&amp;Nature">Parks und Natur</combo_item>
+				<combo_item name="Residential">Wohngebiet</combo_item>
+				<combo_item name="Shopping">Shopping</combo_item>
+				<combo_item name="Other">Andere</combo_item>
+        <combo_item name="Rental">Vermietung</combo_item>
+			</combo_box>
+			<!-- This is used only during the AO transition and can be deleted once the AO transition is
+			complete. It is identical to the combo box above except that it has the Adult category. 
+			You might also want to set it back to default visible and enabled. -->
+			<combo_box name="Category_Adult">
+				<combo_item name="AnyCategory">Alle Kategorien</combo_item>
+				<combo_item name="LindenLocation">Lindenort</combo_item>
+				<combo_item name="Adult">Adult</combo_item>
+				<combo_item name="Arts&amp;Culture">Kunst &amp; Kultur</combo_item>
+				<combo_item name="Business">Firmen</combo_item>
+				<combo_item name="Educational">Bildung</combo_item>
+				<combo_item name="Gaming">Spielen</combo_item>
+				<combo_item name="Hangout">Treffpunkt</combo_item>
+				<combo_item name="NewcomerFriendly">Anfängergerecht</combo_item>
+				<combo_item name="Parks&amp;Nature">Parks und Natur</combo_item>
+				<combo_item name="Residential">Wohngebiet</combo_item>
+				<combo_item name="Shopping">Shopping</combo_item>
+				<combo_item name="Other">Andere</combo_item>
+        <combo_item name="Rental">Vermietung</combo_item>
+			</combo_box>
+			<button label="Suche" label_selected="Suche" name="Search"/>
+			<scroll_list name="results">
+				<column label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="icon"/>
+				<column label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="type"/>
+				<column label="Name" name="name"/>
+				<column label="Verkehr" name="dwell"/>
+			</scroll_list>
+			<text name="result_text"/>
+			<button label="Weiter &gt;" label_selected="Weiter &gt;" name="Next &gt;"/>
+			<button label="&lt; Vorherige" label_selected="&lt; Vorherige" name="&lt; Prev"/>
+		</panel>
+    <panel label="Leute" name="people_panel">
+			<string name="searching_text">Suchen...</string>
+			<string name="not_found_text">Nicht gefunden.</string>
+      <text name="find">Suchen:</text>
+	  <line_editor name="name"/>
+		<button label="Suche" label_selected="Suche" name="Search"/>
+      <scroll_list name="results">
+        <column label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="icon"/>
+        <column label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="type"/>
+        <column label="Name" name="name"/>
+      </scroll_list>
+			<text name="result_text"/>
+			<button label="Weiter &gt;" label_selected="Weiter &gt;" name="Next &gt;"/>
+      		<button label="&lt; Vorherige" label_selected="&lt; Vorherige" name="&lt; Prev"/>
+		</panel>
+    <panel label="Gruppen" name="groups_panel">
+			<string name="searching_text">Suchen...</string>
+			<string name="not_found_text">Nicht gefunden.</string>
+			<button label="Weiter &gt;" label_selected="Weiter &gt;" name="Next &gt;"/>
+			<button label="&lt; Vorherige" label_selected="&lt; Vorherige" name="&lt; Prev"/>
+			<text name="find">Suchen:</text>
+			<line_editor name="name"/>
+			<button label="Suche" label_selected="Suche" name="Search"/>
+			<check_box label="PG-Inhalt" name="incpg"/>
+			<check_box label="Mature-Inhalt" name="incmature"/>
+			<check_box label="Adult-Inhalt" name="incadult"/>
+            <check_box name="filter_gaming" label="Verstecke Glücksspiel"/>
+			<scroll_list name="results">
+				<column label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="icon"/>
+				<column label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="type"/>
+				<column label="Name" name="name"/>
+				<column label="Mitglieder" name="members"/>
+				<column label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="score"/>
+			</scroll_list>
+			<text name="result_text"/>
+    </panel>
+    <panel label="Einkaufen" name="market_panel">
+      <button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="back_btn"/>
+      <button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="forward_btn"/>
+      <button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="reload_btn"/>
+      <web_browser name="market_browser" trusted_content="true"/>
+      <text name="status_text"/>
+      <string name="loading_text">Wird geladen...</string>
+      <string name="done_text">Fertig</string>
+      <string name="redirect_404_url">https://marketplace.secondlife.com/notfound</string>
+      <string name="default_search_page">http://marketplace.secondlife.com/</string>
+    </panel>
+	</tab_container>
+	<panel name="classified_details_panel"/>
+	<panel name="Panel Avatar"/>
+	<panel name="event_details_panel"/>
+	<panel name="group_details_panel_holder">
+		<panel name="group_details_panel"/>
+	</panel>
+	<panel name="place_details_panel"/>
+	<panel name="place_details_small_panel"/>
+</floater>

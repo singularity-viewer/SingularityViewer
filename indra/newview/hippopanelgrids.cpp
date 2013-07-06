@@ -227,7 +227,6 @@ void HippoPanelGridsImpl::apply()
 		// adding new grid did not fail
 		gHippoGridManager->setCurrentGrid(mCurGrid);
 	}
-	LLPanelLogin::refreshLoginPage();
 	gHippoGridManager->saveFile();
 	refresh();
 	// update render compatibility

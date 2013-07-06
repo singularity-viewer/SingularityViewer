@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<pie_menu name="Object Pie">
+	<menu_item_call label="Öffnen" name="Open">
+		<on_click/>
+		<on_enable/>
+	</menu_item_call>
+	<menu_item_call label="Erstellen" name="Create">
+		<on_click/>
+		<on_enable/>
+	</menu_item_call>
+	<menu_item_call label="Berühren" name="Object Touch">
+		<on_click/>
+		<on_enable name="EnableTouch"/>
+	</menu_item_call>
+	<menu_item_call label="Hier sitzen" name="Object Sit">
+		<on_click/>
+		<on_enable name="EnableSitOrStand"/>
+	</menu_item_call>
+	<menu_item_call label="Nehmen" name="Pie Object Take">
+		<on_click/>
+		<on_enable name="EnableBuyOrTake"/>
+	</menu_item_call>
+	<menu_item_call label="Zahlen..." name="Pay...">
+		<on_click/>
+		<on_enable/>
+	</menu_item_call>
+	<pie_menu label="Mehr &gt;" name="More &gt;">
+		<menu_item_call label="Löschen" name="Delete">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+		<menu_item_call label="Anziehen" name="Wear">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+		<menu_item_call label="Kopie nehmen" name="Take Copy">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+		<pie_menu label="HUD anhängen &gt;" name="Object Attach HUD"/>
+		<pie_menu label="Anhängen &gt;" name="Object Attach"/>
+		<menu_item_call label="Zurückgeben..." name="Return...">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+		<pie_menu label="Mehr &gt;" name="Rate Menu">
+			<menu_item_separator/>
+			<pie_menu label="Werkzeuge &gt;" name="Rate Menu">
+				<menu_item_call label="Zerstören" name="Destroy">
+					<on_click/>
+					<on_enable/>
+				</menu_item_call>
+				<menu_item_call label="Explode" name="Explode">
+					<on_click/>
+					<on_enable/>
+				</menu_item_call>
+				<menu_item_call label="Messen" name="Measure">
+					<on_click/>
+				</menu_item_call>
+				<menu_item_call label="Daten" name="Data">
+					<on_click/>
+				</menu_item_call>
+				<menu_item_call label="Export" name="Export">
+						<on_click/>
+						<on_enable/>
+				</menu_item_call>
+        <menu_item_call label="Neu laden" name="Reload Textures">
+          <on_click/>
+        </menu_item_call>
+			</pie_menu>
+			<menu_item_call label="Blockieren" name="Object Mute">
+				<on_click/>
+				<on_enable/>
+			</menu_item_call>
+			<menu_item_call label="Untersuchen" name="Object Inspect">
+				<on_click/>
+				<on_enable/>
+			</menu_item_call>
+			<menu_item_call label="Nicht anzeigen" name="Derender">
+				<on_click/>
+			</menu_item_call>
+			<menu_item_call label="Melden..." name="Report Abuse...">
+				<on_click/>
+				<on_enable/>
+			</menu_item_call>
+            <pie_menu label="Pathfinding &gt;" name="PF Menu">
+              <menu_item_call label="Zeige in Linksets" name="show_in_linksets">
+                <on_click/>
+                <on_enable/>
+              </menu_item_call>
+              <menu_item_call label="Zeige in Charaktere" name="show_in_characters">
+                <on_click/>
+                <on_enable/>
+              </menu_item_call>
+            </pie_menu>
+            <pie_menu label="Skripte &gt;" name="ScriptsMenu">
+              <menu_item_call label="Erzeuge Mono" name="CompileMono">
+                <on_click/>
+                <on_enable/>
+              </menu_item_call>
+              <menu_item_call label="Erzeuge LSL" name="CompileLSL">
+                <on_click/>
+                <on_enable/>
+              </menu_item_call>
+              <menu_item_call label="Zurücksetzen" name="Reset Scripts">
+                <on_click/>
+                <on_enable/>
+              </menu_item_call>
+              <menu_item_call label="Start" name="Object Set Scripts to Running">
+                <on_click/>
+                <on_enable/>
+              </menu_item_call>
+              <menu_item_call label="Stop" name="Object Set Scripts to Not Running">
+                <on_click/>
+                <on_enable/>
+              </menu_item_call>
+              <menu_item_call label="Entfernen" name="Remove Scripts From Selection">
+                <on_click/>
+                <on_enable/>
+              </menu_item_call>
+              <menu_item_call label="Anzahl" name="ScriptCount">
+                <on_click/>
+                <on_visible/>
+              </menu_item_call>
+            </pie_menu>
+		</pie_menu>
+		<menu_item_call label="Kaufen..." name="Buy...">
+			<on_click/>
+			<on_enable/>
+		</menu_item_call>
+	</pie_menu>
+	<menu_item_call label="Bearbeiten..." name="Edit...">
+		<on_click/>
+		<on_enable/>
+	</menu_item_call>
+</pie_menu>

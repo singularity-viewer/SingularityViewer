@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="floater_pathfinding_characters" title="Pathfinding Charaktere">
+  <string name="messaging_initial"/>
+  <string name="messaging_get_inprogress">Suche nach Pathfinding Charakteren ... </string>
+  <string name="messaging_get_error">Fehler bei Anfrage nach Pathfinding Characteren.</string>
+  <string name="messaging_set_inprogress"/>
+  <string name="messaging_set_error"/>
+  <string name="messaging_complete_none_found">Keine Pathfinding Charaktere</string>
+  <string name="messaging_complete_available">[NUM_SELECTED] Charaktere von [NUM_TOTAL] gewählt.</string>
+  <string name="messaging_not_enabled">Diese Region unterstützt kein Pathfinding.</string>
+  <string name="character_cpu_time">[CPU_TIME] µs</string>
+  <string name="character_owner_loading">Wird geladen...</string>
+  <string name="character_owner_unknown">Unbekannt</string>
+  <string name="character_owner_group">Gruppe</string>
+  <panel name="pathfinding_chars_main">
+    <scroll_list name="objects_scroll_list">
+      <column label="Name" name="name"/>
+      <column label="Beschreibung" name="description"/>
+      <column label="Eigentümer" name="owner"/>
+      <column label="CPU" name="cpu_time"/>
+      <column label="Höhe" name="altitude"/>
+    </scroll_list>
+    <text name="messaging_status">Charaktere</text>
+    <button label="Liste aktualisieren" name="refresh_objects_list"/>
+    <button label="Alle auswählen" name="select_all_objects"/>
+    <button label="Nichts auswählen" name="select_none_objects"/>
+  </panel>
+  <view_border name="horiz_separator"/>
+  <panel name="pathfinding_chars_actions">
+    <text name="actions_label">Aktionen auf gewählten Charakteren:</text>
+    <check_box label="Beacon anzeigen" name="show_beacon"/>
+<!-- Singu NOTE: Requires havok
+    <check_box
+        height="19"
+        follows="left|bottom"
+        label="Show physics capsule"
+        layout="topleft"
+        name="show_physics_capsule"
+        top_pad="-19"
+        left_delta="150"
+        bottom_delta="0"
+		width="150" />
+-->
+    <button label="Nehmen" name="take_objects"/>
+    <button label="Kopie nehmen" name="take_copy_objects"/>
+    <button label="Dorthin teleportieren" name="teleport_me_to_object" tool_tip="Nur aktiviert, wenn ein Charakter gewählt ist."/>
+    <button label="Zurückgeben" name="return_objects"/>
+    <button label="Löschen" name="delete_objects"/>
+  </panel>
+</floater>

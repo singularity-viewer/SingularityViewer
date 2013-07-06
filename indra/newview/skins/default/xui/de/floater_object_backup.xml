@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="Import" title="Importfortschritt">
+  <text name="name_label">Fortschritt</text>  
+</floater>

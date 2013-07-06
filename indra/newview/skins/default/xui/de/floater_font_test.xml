@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="contents" title="Schriftart-Test">
+
+<text>SansSerifSmall</text>
+
+<text>SansSerifMedium</text>
+
+<text>SansSerif, keine Grösse oder Stil (identisch mit medium)</text>
+
+<text>SansSerifLarge</text>
+
+<text>SansSerifHuge</text>
+
+<text>Monospace</text>
+
+<text>Monospace Grösse=Gross</text>
+
+<text>SansSerifLarge style=BOLD</text>
+
+<text>SansSerifBold</text>
+
+<text>SansSerif Stil=FETT (Sollte das gleiche sein wie SansSerifBold)</text>
+
+<text>SansSerif Stil=KURSIV</text>
+
+<text>SansSerif Stil=FETT/KURSIV</text>
+
+<text>SansSerif Stil=FETT?KURSIV Schatten = DROP_SHADOW_SOFT</text>
+
+<text>SansSerif Stil=UNTERSTRICHEN</text>
+
+<text>SansSerif Schatten=DROP_SHADOW</text>
+
+<text>SansSerif Schatten=DROP_SHADOW_SOFT</text>
+
+<text>DejaVu</text>
+
+<text>DejaVu Stil=FETT</text>
+
+<text>DejaVu Stil=KURSIV</text>
+
+<text>DejaVu Stil=FETT/KURSIV</text>
+
+<text>DejaVu Grösse=Gross Stil=FETT|KURSIV</text>
+
+<text>Helvetica</text>
+
+<text>Helvetica Stil=FETT</text>
+
+<text>Helvetica Stil=KURSIV</text>
+
+<text>Helvetica Stil=FETT|KURSIV</text>
+
+<text>Helvetica Grösse=Gross Stil=FETT|KURSIV</text>
+
+<text name="linea">OverrideTest, sollte hier als Times angezeigt werden. (Aus default/xui/en-us)</text>
+
+<text>UnsinnigeSchriftart</text>
+
+</floater>

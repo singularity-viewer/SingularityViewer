@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel label="Grids" name="Grids panel">
+  <!-- Grid Selector -->
+  <text name="grid_selector_label">Wähle ein Grid:</text>
+  <combo_box name="grid_selector"/>
+  <button label="Standard" label_selected="Standard" name="btn_default"/>
+  <text name="default_grid">([DEFAULT])</text>
+  <!-- Buttons -->
+  <button label="Löschen" label_selected="Löschen" name="btn_delete" tool_tip="Delete the selected grid from the list"/>
+  <button label="Erstellen" label_selected="Hinzufügen" name="btn_add" tool_tip="Add a new grid to the list"/>
+  <button label="Kopieren" label_selected="Kopieren" name="btn_copy" tool_tip="Create a new entry using the selected entry as template"/>
+  <!-- Advanced -->
+  <button label="Erweitert" label_selected="Erweitert" name="btn_advanced"/>
+  <!-- Login URI -->
+  <text name="loginuri_label">Login URI:</text>
+  <line_editor name="loginuri"/>
+  <button label="Refresh Grid URLs" name="btn_gridinfo" tool_tip="Retrieve all grid info from the given Login URI (overwriting the current URLs, see Advanced)"/>
+  <!-- Platform -->
+  <text name="platform_label">Plattform:</text>
+  <combo_box name="platform"/>
+  <!-- Grid Name -->
+  <text name="gridname_label">Grid Name:</text>
+  <line_editor name="gridname"/>
+
+  <!-- Grid Message -->
+  <text name="gridmessage_label">Grid Info:</text>
+  <text_editor name="gridmessage"/>
+  
+  <!-- Advanced settings -->
+  
+  <!-- Grid Splash Page -->
+  <text name="loginpage_label">Splash Seite:</text>
+  <line_editor name="loginpage"/>
+  <!-- Helper URI -->
+  <text name="helperuri_label">Hilfe URL:</text>
+  <line_editor name="helperuri"/>
+  <!-- Web Site -->
+  <text name="website_label">Webseite:</text>
+  <line_editor name="website"/>
+  <!-- Support URL -->
+  <text name="support_label">Support URL:</text>
+  <line_editor name="support"/>
+  <!-- Account URL -->
+  <text name="register_label">Account URL:</text>
+  <line_editor name="register"/>
+  <!-- Password URL -->
+  <text name="password_label">Passwort URL:</text>
+  <line_editor name="password"/>
+  <!-- Search URL -->
+  <text name="search_label">Such URL:</text>
+  <line_editor name="search"/>
+  <!-- Rendering Compatibility -->
+  <check_box label="Render Kompatibilität" name="render_compat"/>
+  <button label="?" label_selected="?" name="btn_help_render_compat"/>
+</panel>

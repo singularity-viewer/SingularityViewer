@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="avatarpicker" title="Einwohner auswählen">
+    <string name="not_found">„[TEXT]“ nicht gefunden</string>
+    <string name="no_one_near">Keiner in der Nähe</string>
+    <string name="no_results">Keine Ergebnisse</string>
+    <string name="searching">Suchen...</string>
+    <!-- For multiple person selection, use "Select" and "Close" 
+      instead of "OK" and "Cancel" because "Cancel" still keeps the ones 
+      you have already selected.  The code will show the appropriate
+      set of buttons. -->
+    <string name="Select">Auswählen</string>
+    <string name="Close">Schließen</string>
+
+	<tab_container name="ResidentChooserTabs">
+		<panel name="SearchPanel" label="Suche">
+			<text name="InstructSearchResidentName">Geben Sie einen Teil des Namens des
+Einwohners ein:</text>
+			<line_editor name="Edit"/>
+			<button label="Suchen" label_selected="Suchen" name="Find"/>
+			<scroll_list name="SearchResults"/>
+		</panel>
+
+		<panel name="FriendsPanel" label="Freunde">
+			<text name="InstructSelectFriend">Wählen Sie eine Person aus:</text>
+			<button label="Aktualisieren" label_selected="Aktualisieren" name="RefreshFriends"/>
+			<scroll_list name="Friends"/>
+		</panel>
+
+    <panel name="NearMePanel" label="In meiner Nähe">
+      <text name="InstructSelectResident">Einwohner in der Nähe
+auswählen:</text>
+      <button label="Aktualisieren" label_selected="Aktualisieren" name="Refresh"/>
+      <slider name="near_me_range" label="Bereich"/>
+      <text name="meters">Meter</text>
+      <scroll_list name="NearMe"/>
+    </panel>
+    <panel name="KeyPanel" label="Nach UUID">
+      <text name="InstructSelectResident">Avatar oder Gruppen-UUID</text>
+      <line_editor name="EditUUID"/>
+    </panel>
+	</tab_container>
+
+  	<button label="OK" label_selected="OK" name="ok_btn"/>
+	<button label="Abbrechen" label_selected="Abbrechen" name="cancel_btn"/>
+
+</floater>

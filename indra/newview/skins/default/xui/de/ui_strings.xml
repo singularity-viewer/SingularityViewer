@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<!-- This file contains strings that used to be hardcoded in the UI source.
+     It is only for those strings which don't belong in a floater and don't
+     belong to SL-specific dialogs.
+     For example, the menu accelerators cmd, opt, shift, etc -->
+<strings>
+	
+    <!-- menu accelerators -->
+	<string name="accel-mac-control">Strg-</string>
+	<string name="accel-mac-command">Cmd-</string>
+	<string name="accel-mac-option">Opt-</string>
+	<string name="accel-mac-shift">Umschalt-</string>
+	<string name="accel-win-control">Strg-</string>
+	<string name="accel-win-alt">Alt-</string>
+	<string name="accel-win-shift">Umschalt-</string>
+
+</strings>

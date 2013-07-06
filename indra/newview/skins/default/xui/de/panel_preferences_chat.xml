@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel label="Text-Chat" name="chat">
+	<text name="text_box">Chat-Schriftgröße:</text>
+	<radio_group name="chat_font_size">
+		<radio_item name="radio">Klein</radio_item>
+		<radio_item name="radio2">Mittel</radio_item>
+		<radio_item name="radio3">Groß</radio_item>
+	</radio_group>
+	<text name="text_box2">Chat-Farbe:</text>
+	<color_swatch label="Sie" name="user"/>
+	<color_swatch label="Andere" name="agent"/>
+	<color_swatch label="IM" name="im"/>
+	<color_swatch label="System" name="system"/>
+	<color_swatch label="Fehler" name="script_error"/>
+	<color_swatch label="Objekte" name="objects"/>
+	<color_swatch label="Eigentümer" name="owner"/>
+	<color_swatch label="Blase" name="background"/>
+	<color_swatch label="URLs" name="links"/>
+	
+	<text name="text_box3">Chat-Konsole:</text>
+	<spinner label="Chat ausblenden nach" name="fade_chat_time"/>
+	<text name="text_box4">(Sekunden)</text>
+	<spinner name="max_chat_count"/>
+	<text name="text_box5">(# Zeilen)</text>
+	<spinner name="chat_bottom_offset" label="Bottom offset" tool_tip="Offset in pixels between the chat console and the bottom of the viewer."/>
+	<slider label="Deckkraft" name="console_opacity"/>
+	<check_box label="Chat verwendet volle Bildbreite (Neustart erforderlich)" name="chat_full_width_check"/>
+	<text name="text_box6">Chat-Optionen:</text>
+	<check_box label="Chatleiste nach Drücken der Eingabetaste schließen" name="close_chat_on_return_check"/>
+	<check_box label="Pfeiltasten bewegen immer den Avatar beim Chatten" name="arrow_keys_move_avatar_check"/>
+	<check_box label="Zeitstempel im lokalen Chat anzeigen" name="show_timestamps_check"/>
+	<check_box label="Skriptfehler und Warnungen als normalen Chat anzeigen" name="script_errors_as_chat"/>
+	<check_box label="Beim Chatten Tippanimation abspielen" name="play_typing_animation"/>
+	<text name="text_box7">Blasen-Chat:</text>
+	<check_box label="Chat-Blasen anzeigen" name="bubble_text_chat"/>
+	<slider label="Deckkraft" name="bubble_chat_opacity"/>
+<!--
+	<text bottom="-410" height="10" left="12" name="text_translate_chat">Translate Chat:</text>
+	<check_box bottom="-417" control_name="TranslateChat" height="16" initial_value="false" label="Use machine translation while chatting (powered by Google)" left="148" name="translate_chat"/>
+	<text bottom="-432" height="10" left="149" name="text_translate_chat">Translate into this language:</text>	
+		<combo_box allow_text_entry="true" bottom="-438" follows="top" height="16" left_delta="183" max_chars="135" name="translate_language_combobox" width="146">
+		<combo_item name="System Default Language" value="default">System Default</combo_item>
+		<combo_item name="English" value="en">English</combo_item>
+		<!- After "System Default" and "English", please keep the rest of these combo_items in alphabetical order by the first character in the string. ->
+		<combo_item name="Danish" value="da">Dansk (Danish)</combo_item>
+		<combo_item name="Deutsch(German)" value="de">Deutsch (German)</combo_item>
+		<combo_item name="Spanish" value="es">Español (Spanish)</combo_item>
+		<combo_item name="French" value="fr">Français (French)</combo_item>
+		<combo_item name="Italian" value="it">Italiano (Italian)</combo_item>
+		<combo_item name="Hungarian" value="hu">Magyar (Hungarian)</combo_item>
+		<combo_item name="Dutch" value="nl">Nederlands (Dutch)</combo_item>
+		<combo_item name="Polish" value="pl">Polski (Polish)</combo_item>
+		<combo_item name="Portugese" value="pt">Portugués (Portuguese)</combo_item>
+ 		<combo_item name="Russian" value="ru">Русский (Russian)</combo_item>
+		<combo_item name="Turkish" value="tr">Türkçe (Turkish)</combo_item>
+ 		<combo_item name="Ukrainian" value="uk">Українська (Ukrainian)</combo_item>
+		<combo_item name="Chinese" value="zh">中文 (简体) (Chinese)</combo_item>
+		<combo_item name="(Japanese)" value="ja">日本語 (Japanese)</combo_item>
+		<combo_item name="(Korean)" value="ko">한국어 (Korean)</combo_item>
+	</combo_box>-->
+</panel>

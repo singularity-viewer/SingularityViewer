@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="Display Name" title="ANZEIGENAMEN ÄNDERN">
+
+    <text name="lockout_text">Nächste mögliche Änderung: [TIME].</text>
+    
+    <text name="set_name_label">Neuer Anzeigename:</text>
+    <line_editor name="display_name_editor"/>
+    <text name="name_confirm_label">Geben Sie den neuen Namen zur Bestätigung noch einmal ein:</text>
+    <line_editor name="display_name_confirm"/>
+    <button label="Speichern" name="save_btn" tool_tip="Speichern Sie Ihren neuen Anzeigenamen"/>
+    <button label="Zurücksetzen" name="reset_btn" tool_tip="Benutzernamen als Anzeigenamen verwenden"/>
+    <button label="Abbrechen" name="cancel_btn" tool_tip="Abbrechen und dieses Fenster schliessen"/>
+    <text name="name_confirm_label2">Der Name den Sie Ihrem Avatar geben ist ihr Anzeigename</text>
+     <text name="name_confirm_label3">Sie können diesen einmal pro Woche ändern.</text>
+</floater>

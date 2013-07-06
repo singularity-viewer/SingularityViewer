@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel label="Netzwerk" name="network">
+	<text name="text_box">Maximale Bandbreite:</text>
+	<slider name="max_bandwidth"/>
+	<text name="text_box2">kbit/s (Kilobit pro Sekunde)</text>
+	<text name="text_box3">Texture Bandwidth:</text>
+	<slider name="tex_bandwidth"/>
+	<text name="text_box4">kbit/s (Kilobit pro Sekunde)</text>
+	<text name="use_http_for">Use HTTP for:</text>
+	<check_box label="Texturen" name="http_textures"/>
+	<check_box label="Inventar" name="http_inventory"/>
+	<text name="cache_size_label_l">Disk Cache Size:</text>
+	<slider name="cache_size"/>
+	<text name="text_box5">MB</text>
+	<button label="Cache leeren" name="clear_cache"/>
+	<text name="cache_location_label">Festplatten-Cache-Verzeichnis:</text>
+	<line_editor name="cache_location"/>
+	<button label="Festlegen" label_selected="Festlegen" name="set_cache"/>
+	<button label="Zurücksetzen" label_selected="Festlegen" name="reset_cache"/>
+	<check_box label="Benutzerdefinierter Port" name="connection_port_enabled"/>
+	<spinner label="Port-Nummer:" name="connection_port"/>
+	<text name="socks5_auth_label">Http Proxy:</text>
+  <radio_group name="socks5_http_proxy_type">
+    <radio_item name="None" tool_tip="No Http Proxy">Keine</radio_item>
+	<radio_item name="Socks" tool_tip="Use Socks for Http Proxy">Socken</radio_item>
+    <radio_item name="Web" tool_tip="Use web proxy for Http Proxy">Web</radio_item>
+  </radio_group>
+	<check_box label="Enable SOCKS 5 Proxy" name="socks5_proxy_enabled"/>
+	<text name="socks5_host_label">Socks 5 Host:</text>
+	<line_editor name="socks5_proxy_host" tool_tip="The name or IP address of the SOCKS5 proxy you would like to use"/>
+	<spinner label="Port-Nummer:" name="socks5_proxy_port"/>
+	<text name="socks5_auth_label2">Socks5 Authentication:</text>
+	<radio_group name="socks5_auth">
+		<radio_item name="None" tool_tip="No authentication">Keine</radio_item>
+		<radio_item name="UserPass" tool_tip="Username / Password authentication">Benutzername/Kennwort</radio_item>
+	</radio_group>
+	<text name="socks5_username_label">Benutzername:</text>
+	<line_editor name="socks5_proxy_username" tool_tip="Username for the Socks5 proxy"/>
+	<text name="socks5_password_label">Kennwort:</text>
+	<line_editor name="socks5_proxy_password" tool_tip="Password for the Socks5 proxy"/>
+</panel>

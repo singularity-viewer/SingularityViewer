@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel name="Adv_Settings">
+	<panel/>
+	<slider label="Draw Dist.:" name="DrawDistance" tool_tip="Legt die Entfernung fest, bis zu der Objekte dargestellt werden."/>
+	<slider label="Partikel:" name="MaxParticleCount" tool_tip="Die maximale Anzahl an Partikel, die dargestellt werden sollen."/>
+	<slider label="Max Avatars:" name="RenderAvatarMaxVisible" tool_tip="Anzahl der vollständig gerenderten Avatare auf dem Bildschirm. Herabsetzen führt zu stark verbesserter Performanz in gedrängten Situationen. Vereinfachte Avatar Darstellugn muss dazu eingeschalten sein. [Default: 35]"/>
+	<slider label="Obj. Detail:" name="Object Detail" tool_tip="Controls level of detail of primitives (multiplier for current screen area when calculated level of detail[0.5 to 2.0 is stable])"/>
+	<button name="EnvAdvancedSkyButton" label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" tool_tip="Himmel (erweitert)"/>
+	<combo_box name="WLSkyPresetsCombo" tool_tip="WindLight Einstellungen für deinen Himmel."/>
+	<button label="&lt;" name="WLprev"/>
+	<button label="&gt;" name="WLnext"/>
+	<button name="EnvAdvancedWaterButton" label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" tool_tip="Wasser (erweitert)"/>
+	<combo_box name="WLWaterPresetsCombo" tool_tip="WindLight Einstellungen für dein Wasser."/>
+	<button label="&lt;" name="WWprev"/>
+	<button label="&gt;" name="WWnext"/>
+	<check_box label="Region WL" name="use_estate_wl" tool_tip="Benutze Regionsvoreinstellungen für Windlight wenn möglich."/>
+<!--check_box bottom_delta="0" left_delta="125" label="Always?" control_name="UseEnvironmentFromRegionAlways" height="16" name="Always" tool_tip="Always use region/parcel settings when they exist, automatically."/-->
+	<check_box label="Überblenden?" name="Crossfade" tool_tip="Wenn abgewählt, Sky Windlight Einstellungen werden sofort übernommen, ohne Verzögerungen oder Animationen."/>
+	<icon/>
+	<slider label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="EnvTimeSlider"/>
+	<button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="expand" tool_tip="Verstecke Einstellungsdialog"/>
+</panel>

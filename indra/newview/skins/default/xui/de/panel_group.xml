@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel name="GroupInfo" title="Gruppeninfo">
+	<string name="default_needs_apply_text">Das Register enthält nicht übernommene Änderungen.</string>
+	<string name="want_apply_text">Diese Änderungen übernehmen?</string>
+	<tab_container name="group_tab_container">
+		<panel name="general_tab"/>
+		<panel name="roles_tab"/>
+		<panel name="notices_tab"/>
+		<panel name="voting_tab"/>
+		<panel name="land_money_tab"/>
+	</tab_container>
+	<button label="Übernehmen" label_selected="Übernehmen" name="btn_apply"/>
+	<button label="Abbrechen" label_selected="Abbrechen" name="btn_cancel"/>
+	<button label="OK" label_selected="OK" name="btn_ok"/>
+	<button label="Aktualisieren" label_selected="Aktualisieren" name="btn_refresh"/>
+</panel>

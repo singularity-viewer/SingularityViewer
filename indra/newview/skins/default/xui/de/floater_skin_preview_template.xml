@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<multi_floater name="floater_chatterbox" title="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;">
+    <icon/>
+    <panel name="panel_littletoolbar">
+        <panel/>
+        <button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="chat_btn" tool_tip="Chat-Leiste anzeigen.(Eingabe)"/>
+            <icon/>
+        <flyout_button label="Unterhalten" name="communicate_btn" tool_tip="Unterhalten Sie sich mit Freunden und in Gruppen."/>
+        <icon/>
+        <button label="Fliegen" label_selected="Flug stoppen" name="fly_btn" tool_tip="Flug beginnen.Steigen/sinken mit E/C oder Bild hoch/Bild ab."/>
+    </panel>
+        <panel name="panel_unfocused_floater">
+            <panel/>
+            <text name="titlebar_focused">Nicht fokussiert</text>
+            <icon/>
+            <icon/>
+            
+        <combo_box name="combo_box_1" label="Kombifeld"/>
+        <text_editor name="Chat History Editor">Text</text_editor>
+        </panel>
+        <panel name="panel_focused_floater">
+            <panel/>
+            <text name="titlebar_focused">Fokussiert</text>
+            <icon/>
+            <icon/>
+<icon name="chatterbox_tab_container"/>
+    <tab_container name="chatterbox_tabs">
+        <panel name="test_1" label="Fokussiert">
+            <slider label="Regler" name="SliderTestName"/>
+            <check_box name="check_box_test_1" label="Wahr"/>
+        <check_box name="check_box_test_2" label="Unwahr"/>
+            <text_editor name="Chat History Editor">Chat-Text</text_editor>
+        
+        </panel>
+        <panel name="test_2" label="Nicht fokussiert"/>
+    </tab_container>
+        </panel>
+
+</multi_floater>

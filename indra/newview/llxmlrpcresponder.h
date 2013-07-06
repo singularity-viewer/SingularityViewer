@@ -107,6 +107,7 @@ public:
 	LLXMLRPCValue responseValue(void) const;
 
 	/*virtual*/ bool needsHeaders(void) const { return true; }
+	/*virtual*/ bool forbidReuse(void) const { return true; }
 	/*virtual*/ void received_HTTP_header(void) { mReceivedHTTPHeader = true; LLHTTPClient::ResponderBase::received_HTTP_header(); }
 	/*virtual*/ void completed_headers(U32 status, std::string const& reason, AITransferInfo* info);
 	/*virtual*/ void completedRaw(U32 status, std::string const& reason, LLChannelDescriptors const& channels, buffer_ptr_t const& buffer);

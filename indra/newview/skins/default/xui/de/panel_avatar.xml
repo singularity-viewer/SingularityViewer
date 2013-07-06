@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel name="Panel Avatar">
+	<tab_container name="tab">
+		<panel label="2. Leben" name="2nd Life">
+			<string name="CaptionTextAcctInfo">[ACCTTYPE]
+[PAYMENTINFO]
+[AGEVERIFICATION]</string>
+			<string name="AcctTypeResident">Einwohner</string>
+			<string name="AcctTypeTrial">Test</string>
+			<string name="AcctTypeCharterMember">Charta-Mitglied</string>
+			<string name="AcctTypeEmployee">Linden Lab-Mitarbeiter</string>
+			<string name="PaymentInfoUsed">Zahlungsinfo verwendet</string>
+			<string name="PaymentInfoOnFile">Zahlungsinfo archiviert</string>
+			<string name="NoPaymentInfoOnFile">Keine Zahlungsinfo archiviert</string>
+			<string name="AgeVerified">Altersgeprüft</string>
+			<string name="NotAgeVerified">Nicht altersgeprüft</string>
+      <button label="Copy Key:" tool_tip="Copy key to clipboard" name="copy_key"/>
+      <name_editor name="avatar_key"/>
+      <button name="web_profile" label="Web Profile">
+         <button.commit_callback/>
+      </button>
+      <text name="Name:">Name:</text>
+			<line_editor name="dnname"/>
+			<text name="online_yes">Zurzeit online</text>
+			<text name="label">Geboren am:</text>
+			<line_editor name="born"/>
+			<text name="label2">Konto:</text>
+			<view_border name="acct_border"/>
+			<text name="acct"/>
+			<text name="partner_label" tool_tip="Second Life Partner. Weitere Informationen finden Sie auf www.secondlife.com/partner">Partner:</text>
+			<button label="i" label_selected="i" name="partner_info" tool_tip="Klicken Sie, um das Profil Ihres Partners anzuzeigen"/>
+			<button label="?" label_selected="?" name="partner_help"/>
+			<line_editor name="partner_edit" tool_tip="Second Life Partner. Weitere Informationen finden Sie auf www.secondlife.com/partner">[NAME]</line_editor>
+			<text name="Photo:">Foto:</text>
+			<texture_picker label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="img" tool_tip="Zum Auswählen eines Bildes hier klicken"/>
+			<button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="bigimg"/>
+			<text name="Groups:">Gruppen:</text>
+			<scroll_list name="groups"/>
+			<string name="None">Keine</string>
+			<text name="About:">Info:</text>
+			<text name="(500 chars)">500 Zeichen</text>
+			<text_editor name="about"/>
+			<text name="Give item:">Objekt geben:</text>
+			<drop_target name="drop_target_rect" label="Inventarobjekt hier ablegen." tool_tip="Hier Inventarobjekte ablegen, um sie dieser Person zu geben."/>
+			<check_box label="In Suche anzeigen" name="allow_publish" tool_tip="Zusätzliche Profilinformationen wie Beschreibung und Bild in der Suche veröffentlichen."/>
+			<button label="?" label_selected="?" name="?"/>
+			<button label="Auf Karte anzeigen" label_selected="Auf Karte anzeigen" name="Find on Map"/>
+			<button label="Teleport anbieten..." label_selected="Teleport anbieten..." name="Offer Teleport..."/>
+			<button label="Freund hinzufügen..." label_selected="Freund hinzufügen..." name="Add Friend..."/>
+			<button label="Zahlen..." label_selected="Zahlen..." name="Pay..."/>
+			<button label="Privatnachricht..." label_selected="Privatnachricht..." name="Instant Message..." tool_tip="Privatnachricht (IM)"/>
+			<button label="Blockieren" label_selected="Blockieren" name="Mute"/>
+			<button label="In Gruppe einladen" label_selected="In Gruppe einladen" name="GroupInvite_Button"/>
+		</panel>
+		<panel label="Web" name="WebProfile">
+		  <line_editor name="url_edit"/>
+      <flyout_button label="Laden" label_selected="Laden" name="load" tool_tip="Dieses Profil im integrierten Webbrowser laden.">
+        <flyout_button_item name="open_item">In externem Browser</flyout_button_item>
+        <flyout_button_item name="home_item">Start URL</flyout_button_item>
+      </flyout_button>
+			<button label="?" label_selected="?" name="web_profile_help"/>
+			<check_box label="Web-Profile automatisch laden" name="auto_load" tool_tip="Ohne Nachfrage ALLE Profil-Webseiten automatisch laden."/>
+			<web_browser name="profile_html" trusted_content="true"/>
+			<text name="status_text"/>
+		</panel>
+		<panel label="Interes." name="Interests">
+			<text name="I Want To:">Ich möchte:</text>
+			<check_box label="Bauen" name="chk0"/>
+			<check_box label="Erkunden" name="chk1"/>
+			<check_box label="Treffen" name="chk2"/>
+			<check_box label="Anstellen lassen" name="chk6"/>
+			<check_box label="Gruppe" name="chk3"/>
+			<check_box label="Kaufen" name="chk4"/>
+			<check_box label="Verkaufen" name="chk5"/>
+			<check_box label="Anstellen" name="chk7"/>
+			<line_editor name="want_to_edit"/>
+			<text name="Skills:">Fähigkeiten:</text>
+			<check_box label="Texturen" name="schk0"/>
+			<check_box label="Architektur" name="schk1"/>
+			<check_box label="Eventplanung" name="schk2"/>
+			<check_box label="Modellierung" name="schk3"/>
+			<check_box label="Scripting" name="schk4"/>
+			<check_box label="Benutzerdef. Charaktere" name="schk5"/>
+			<line_editor name="skills_edit"/>
+			<text name="Languages:">Sprachen:</text>
+			<line_editor name="languages_edit"/>
+		</panel>
+		<panel label="AUSWAHLEN" name="Picks">
+			<text name="Tell everyone about your favorite places in Second Life.">Erzähle von deinen Lieblingsorten in Second Life.</text>
+			<button label="Neu..." label_selected="Neu..." name="New..."/>
+			<button label="Löschen..." label_selected="Löschen..." name="Delete..."/>
+      		<button label="Import..." label_selected="Import..." name="Import..."/>
+     		<button label="Export..." label_selected="Export..." name="Export..."/>
+			<tab_container name="picks tab"/>
+			<text name="loading_text">Wird geladen...</text>
+		</panel>
+		<panel label="Anzeige" name="Classified">
+			<text name="Place an ad in Second Life's classified listings.">Anzeige in Second Life aufgeben.</text>
+			<button label="Neu..." label_selected="Neu..." name="New..."/>
+			<button label="Löschen..." label_selected="Löschen..." name="Delete..."/>
+			<tab_container name="classified tab"/>
+			<text name="loading_text">Wird geladen...</text>
+		</panel>
+		<panel label="1. Leben" name="1st Life">
+
+			<text name="Photo:">Foto:</text>
+			<texture_picker label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="img" tool_tip="Zum Auswählen eines Bildes hier klicken"/>
+			<button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="flbigimg"/>
+			<text name="Info:">Info:</text>
+			<text name="(250 chars)">250 Zeichen</text>
+			<text_editor name="about"/>
+		</panel>
+		<panel label="Meine Notizen" name="My Notes">
+			<string name="Loading">Wird geladen...</string>
+			<text name="label">Hier können Sie Notizen über diese Person machen.  Notieren Sie Geschäfte,
+gemeinsame Projekte usw. Nur Sie können diese Notizen sehen.
+Die betreffende Person oder andere können sie nicht sehen.</text>
+			<text_editor name="notes edit"/>
+		</panel>
+	</tab_container>
+	<button label="OK" label_selected="OK" name="OK"/>
+	<button label="Abbrechen" label_selected="Abbrechen" name="Cancel"/>
+	<button label="Hinauswerfen" label_selected="Hinauswerfen" name="Kick"/>
+	<button label="Einfrieren" label_selected="Einfrieren" name="Freeze" tool_tip="Bewegungen und Chat dieses Einwohners abschalten."/>
+	<button label="Auftauen" label_selected="Auftauen" name="Unfreeze" tool_tip="Einwohner auftauen"/>
+	<button label="CSR" label_selected="CSR" name="csr_btn" tool_tip="Öffnet das Kundendiensttool für diesen Einwohner"/>
+	<string name="ShowOnMapNonFriend">Position auf Karte zeigen.
+Deaktiviert, weil zwischen Ihnen
+keine Freundschaft besteht.</string>
+	<string name="ShowOnMapFriendOffline">Position auf Karte zeigen.
+    Deaktiviert, weil nicht online.</string>
+	<string name="ShowOnMapFriendOnline">Position auf Karte zeigen.</string>
+	<string name="TeleportGod">Teleport an Ihre Position erzwingen.</string>
+	<string name="TeleportPrelude">Teleport an Ihre Position anbieten.
+Deaktiviert, bis Sie Orientation Island verlassen.</string>
+	<string name="TeleportNormal">Teleport an Ihre Position anbieten.</string>
+	<string name="Loading">Wird geladen...</string>
+</panel>

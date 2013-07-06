@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel name="active_speakers_panel">
+	<string name="moderator_label">(Moderator)</string>
+	<layout_stack name="panels">
+		<layout_panel name="moderation_mode_panel">
+			<combo_box name="moderation_mode">
+				<combo_item name="OpenVoice">Voice-Chat standardmäßig einschalten</combo_item>
+				<combo_item name="ModeratedVoice">Voice-Chat standardmäßig abschalten</combo_item>
+			</combo_box>
+		</layout_panel>
+		<layout_panel name="moderate_chat_panel">
+			<scroll_list name="speakers_list">
+				<column name="icon_speaking_status"/>
+				<column label="Name" name="speaker_name"/>
+				<column label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="speaking_status"/>
+			</scroll_list>
+			<panel name="speaker_controls">
+				<button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="profile_btn"/>
+				<text name="resident_name">Rumpelstilzchen Megakrass</text>
+				<volume_slider name="speaker_volume"/>
+				<button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="mute_btn" tool_tip="Voice für diesen Einwohner stummschalten"/>
+				<check_box label="Text stummschalten" name="mute_text_btn"/>
+			</panel>
+		</layout_panel>
+		<layout_panel name="moderator_controls">
+			<text name="moderator_controls_label">Moderator-Steuerung:</text>
+			<check_box name="moderator_allow_voice">Voice-Chat erlauben</check_box>
+			<check_box name="moderator_allow_text">Text-Chat zulassen</check_box>
+		</layout_panel>
+	</layout_stack>
+</panel>

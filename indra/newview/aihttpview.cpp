@@ -76,10 +76,11 @@ void AIServiceBar::draw()
   LLFontGL::getFontMonospace()->renderUTF8(mName, 0, start, height, text_color, LLFontGL::LEFT, LLFontGL::TOP);
   start += LLFontGL::getFontMonospace()->getWidth(mName);
   std::string text;
-  AIPerService::CapabilityType const* cts;
+  AIPerService::CapabilityType* cts;
   U32 is_used;
   U32 is_inuse;
   int total_added;
+  int established_connections;
   int concurrent_connections;
   size_t bandwidth;
   {
@@ -87,6 +88,7 @@ void AIServiceBar::draw()
 	is_used = per_service_r->is_used();
 	is_inuse = per_service_r->is_inuse();
 	total_added = per_service_r->mTotalAdded;
+	established_connections = per_service_r->mEstablishedConnections;
 	concurrent_connections = per_service_r->mConcurrentConnections;
 	bandwidth = per_service_r->bandwidth().truncateData(AIHTTPView::getTime_40ms());
 	cts = per_service_r->mCapabilityType;	// Not thread-safe, but we're only reading from it and only using the results to show in a debug console.
@@ -94,26 +96,62 @@ void AIServiceBar::draw()
   for (int col = 0; col < number_of_capability_types; ++col)
   {
 	AICapabilityType capability_type = static_cast<AICapabilityType>(col);
-	AIPerService::CapabilityType const& ct(cts[capability_type]);
+	AIPerService::CapabilityType& ct(cts[capability_type]);
 	start = mHTTPView->updateColumn(col, start);
 	U32 mask = AIPerService::CT2mask(capability_type);
 	if (!(is_used & mask))
 	{
 	  text = " |              ";
 	}
-	else if (col < 2)
-	{
-	  text = llformat(" | %hu-%hu-%lu,{%hu/%hu,%u}/%u", ct.mApprovedRequests, ct.mQueuedCommands, ct.mQueuedRequests.size(), ct.mAdded, ct.mConcurrentConnections, ct.mDownloading, ct.mMaxPipelinedRequests);
-	}
 	else
 	{
-	  text = llformat(" | --%hu-%lu,{%hu/%hu,%u}", ct.mQueuedCommands, ct.mQueuedRequests.size(), ct.mAdded, ct.mConcurrentConnections, ct.mDownloading);
+	  if (col < 2)
+	  {
+		text = llformat(" | %hu-%hu-%lu,{%hu/%hu,%u}/%u",
+			ct.mApprovedRequests, ct.mQueuedCommands, ct.mQueuedRequests.size(),
+			ct.mAdded, ct.mConcurrentConnections, ct.mDownloading,
+			ct.mMaxPipelinedRequests);
+	  }
+	  else
+	  {
+		text = llformat(" | --%hu-%lu,{%hu/%hu,%u}",
+			ct.mQueuedCommands, ct.mQueuedRequests.size(),
+			ct.mAdded, ct.mConcurrentConnections, ct.mDownloading);
+	  }
+	  if (capability_type == cap_texture || capability_type == cap_mesh)
+	  {
+		if (!(is_inuse & mask))
+		{
+		  ct.mFlags |= AIPerService::ctf_grey;
+		}
+		else
+		{
+		  bool show = true;
+		  int progress_counter = (ct.mFlags & AIPerService::ctf_progress_mask) >> AIPerService::ctf_progress_shift;
+		  if ((ct.mFlags & AIPerService::ctf_success))
+		  {
+			show = !(ct.mFlags & AIPerService::ctf_grey);
+			ct.mFlags &= ~(AIPerService::ctf_success|AIPerService::ctf_grey|AIPerService::ctf_progress_mask);
+			progress_counter = (progress_counter + 1) % 8;
+			ct.mFlags |= progress_counter << AIPerService::ctf_progress_shift;
+		  }
+		  if (show)
+		  {
+			static char const* progress_utf8[8] = { " \xe2\xac\x93", " \xe2\xac\x95", " \xe2\x97\xa7", " \xe2\x97\xa9", " \xe2\xac\x92", " \xe2\xac\x94", " \xe2\x97\xa8", " \xe2\x97\xaa" };
+			text += progress_utf8[progress_counter];
+		  }
+		}
+	  }
 	}
 	LLFontGL::getFontMonospace()->renderUTF8(text, 0, start, height, ((is_inuse & mask) == 0) ? LLColor4::grey2 : text_color, LLFontGL::LEFT, LLFontGL::TOP);
 	start += LLFontGL::getFontMonospace()->getWidth(text);
   }
   start = mHTTPView->updateColumn(mc_col, start);
+#if defined(CWDEBUG) || defined(DEBUG_CURLIO)
+  text = llformat(" | %d,%d/%d", total_added, established_connections, concurrent_connections);
+#else
   text = llformat(" | %d/%d", total_added, concurrent_connections);
+#endif
   LLFontGL::getFontMonospace()->renderUTF8(text, 0, start, height, text_color, LLFontGL::LEFT, LLFontGL::TOP);
   start += LLFontGL::getFontMonospace()->getWidth(text);
   start = mHTTPView->updateColumn(bw_col, start);
@@ -174,7 +212,7 @@ void AIGLHTTPHeaderBar::draw(void)
 
   // First header line.
   F32 height = v_offset + sLineHeight * number_of_header_lines;
-  text = "HTTP console -- [approved]-commandQ-curlQ,{added/max,downloading}[/max]";
+  text = "HTTP console -- [approved]-commandQ-curlQ,{added/max,downloading}[/max][ completed]";
   LLFontGL::getFontMonospace()->renderUTF8(text, 0, h_offset, height, text_color, LLFontGL::LEFT, LLFontGL::TOP);
   text = " | Added/Max";
   U32 start = mHTTPView->updateColumn(mc_col, 100);

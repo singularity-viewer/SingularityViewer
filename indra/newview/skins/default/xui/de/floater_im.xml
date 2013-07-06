@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<multi_floater name="im_floater" title="Instant Message">
+	<tab_container name="Preview Tabs"/>
+</multi_floater>

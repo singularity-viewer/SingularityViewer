@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<!-- Local Asset Browser: xui -->
+<!-- floater definition start -->
+<floater name="local_bitmap_browser_floater" title="Lokale Bildansicht">
+
+  <!-- floater definition end, left side begin -->
+
+  <button name="add_btn" label="Hinzufügen"/>
+  <button name="del_btn" label="Entfernen"/>
+  <button name="upload_btn" label="Hochladen"/>
+  <button name="more_btn" label="Mehr"/>
+  <button name="less_btn" label="Weniger"/>
+  
+  <scroll_list name="bitmap_list">
+    <column name="bitmap_name" label="Name"/>
+    <column name="bitmap_uuid" label="UUID"/>
+  </scroll_list>
+
+  <!-- left side done, right side begin -->
+
+  <line_editor name="path_text"/>
+  
+  <text name="path_caption_text">Lokaler Pfad:</text>
+
+  <line_editor name="uuid_text"/>
+
+  <text name="uuid_caption_text">Lokale UUID:</text>
+
+  <texture_picker label="Textur" name="texture_view"/>
+
+  <check_box label="Weiter updaten" name="keep_updating_checkbox" tool_tip="Aktiviere oder deaktiviere periodische Prüfung ob sich das Quellbild auf der Festplatte geändert hat"/>
+
+  <combo_box name="type_combobox">
+    
+    <combo_item name="type_texture">Textur</combo_item>
+    
+    <combo_item name="type_sculptie">Sculptmap</combo_item>
+    
+    <combo_item name="type_layer">Kleidung</combo_item>
+  
+  </combo_box>
+  
+  <text name="time_caption_text">Uhrzeit:</text>
+  
+  <text name="time_text">(date here)</text>
+
+  <text name="link_caption_text">Link:</text>
+  
+  <text name="link_text">(link status)</text>
+
+  <text name="name_caption_text">Name:</text>
+
+  <line_editor name="name_text"/>
+
+</floater>

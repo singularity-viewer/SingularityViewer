@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="worldmap" title="Weltkarte">
+	<panel name="objects_mapview"/>
+	<icon name="self"/>
+	<text name="you_label">Sie</text>
+	<icon name="home"/>
+	<text name="home_label">Zuhause</text>
+	<icon name="square2"/>
+	<text name="auction_label">Auktion</text>
+	<icon name="square"/>
+	<text name="land_for_sale_label">Land erhaeltlich</text>
+	<button label="Nach Hause" label_selected="Nach Hause" name="Go Home" tool_tip="Nach Hause teleportieren"/>
+	<icon name="person"/>
+	<check_box label="Einwohner" name="people_chk"/>
+	<icon name="infohub"/>
+	<check_box label="Infohub" name="infohub_chk"/>
+	<icon name="telehub"/>
+	<check_box label="Telehub" name="telehubchk"/>
+	<icon name="landforsale"/>
+	<check_box label="Land zu verkaufen" name="land_for_sale_chk"/>
+	<text name="events_label">Events:</text>
+	<icon name="event"/>
+	<check_box label="PG" name="event_chk"/>
+	<icon name="events_mature_icon"/>
+	<check_box label="Mature" name="event_mature_chk"/>
+	<icon name="events_adult_icon"/>
+	<check_box label="Adult" name="event_adult_chk"/>
+	<icon name="avatar_icon"/>
+	<combo_box label="Online-Freunde" name="friend combo" tool_tip="Freund, der auf Karte angezeigt werden soll">
+		<combo_item name="none_selected">Online-Freunde</combo_item>
+	</combo_box>
+	<icon name="landmark_icon"/>
+	<combo_box label="Landmarken" name="landmark combo" tool_tip="Landmarke, die auf Karte angezeigt werden soll">
+		<combo_item name="none_selected">Landmarken</combo_item>
+	</combo_box>
+	<icon name="location_icon"/>
+	<search_editor label="Nach Regionsname suchen" name="location" tool_tip="Geben Sie den Namen einer Region ein"/>
+	<button label="Suche" name="DoSearch" tool_tip="Nach einer Region suchen"/>
+	<text name="search_label">Suchergebnisse:</text>
+	<scroll_list name="search_results">
+		<column label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="icon"/>
+		<column label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="sim_name"/>
+	</scroll_list>
+	<text name="location_label">Standort:</text>
+	<spinner name="spin x" tool_tip="X-Koordinate der Position auf der Karte"/>
+	<spinner name="spin y" tool_tip="Y-Koordinate der Position auf der Karte"/>
+	<spinner name="spin z" tool_tip="Z-Koordinate der Position auf der Karte"/>
+	<button label="Teleportieren" label_selected="Teleportieren" name="Teleport" tool_tip="Zu ausgewählter Position teleportieren"/>
+	<button label="Ziel anzeigen" label_selected="Ziel anzeigen" name="Show Destination" tool_tip="Karte auf ausgewählte Position zentrieren"/>
+	<button label="Löschen" label_selected="Löschen" name="Clear" tool_tip="Verfolgung abschalten"/>
+	<button label="Wo bin ich?" label_selected="Wo bin ich?" name="Show My Location" tool_tip="Karte auf Position Ihres Avatars zentrieren"/>
+	<button label="SLURL in die Zwischenablage kopieren" name="copy_slurl" tool_tip="Kopiert die aktuelle Position als SLURL zur Verwendung im Web."/>
+	<slider label="Zoom" name="zoom slider"/>
+</floater>

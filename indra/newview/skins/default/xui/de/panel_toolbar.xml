@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel name="toolbar">    
+  <string name="Redock Windows">Fenster andocken</string>
+  <panel/>
+  <layout_stack name="toolbar_stack">
+	  <layout_panel name="panel1">
+		  <icon/>
+	  </layout_panel>
+    <layout_panel name="panel2">
+		  <button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="chat_btn" tool_tip="Chat-Leiste anzeigen.(Eingabe)"/>
+	  </layout_panel>
+	  <layout_panel name="panel3">
+		  <icon/>
+	  </layout_panel>
+	  <layout_panel name="panel4">
+		  <flyout_button label="Unterhalten" name="communicate_btn" tool_tip="Unterhalten Sie sich mit Freunden und in Gruppen."/>
+	  </layout_panel>
+	  <layout_panel name="panel5">
+		  <icon/>
+	  </layout_panel>
+	  <layout_panel name="panel6">
+		  <button label="Radar" label_selected="Radar" name="radar_list_btn" tool_tip="View a list of nearby avatars.(Ctrl-Shift-A)"/>
+	  </layout_panel>
+	  <layout_panel name="panel7">
+		  <button label="Fliegen" label_selected="Flug stoppen" name="fly_btn" tool_tip="Flug beginnen. Steigen/sinken mit E/C oder Bild hoch/Bild ab."/>
+	  </layout_panel>
+	  <layout_panel name="panel8">
+		  <button label="Foto" name="snapshot_btn" tool_tip="Einen Screenshot auf Festplatte oder im Inventar speichern."/>
+	  </layout_panel>
+	  <layout_panel name="panel9">
+		  <button label="Suche" name="directory_btn" tool_tip="Nach Orten, Events, Personen und mehr suchen."/>
+	  </layout_panel>
+	  <layout_panel name="panel10">
+		  <button label="Bauen" name="build_btn" tool_tip="Neue Objekte erstellen."/>
+	  </layout_panel>
+	  <layout_panel name="panel11">
+		  <button label="Karte" name="map_btn" tool_tip="Die Weltkarte. (Strg-M)"/>
+	  </layout_panel>
+	  <layout_panel name="panel12">
+		  <button label="Minikarte" name="radar_btn" tool_tip="Die Umgebungskarte. (Strg-Umschalt-M)"/>
+	  </layout_panel>
+	  <layout_panel name="panel13">
+		  <button label="Inventar" name="inventory_btn" tool_tip="Ihre Habseligkeiten. (Strg-I)"/>
+	  </layout_panel>
+  </layout_stack>
+</panel>

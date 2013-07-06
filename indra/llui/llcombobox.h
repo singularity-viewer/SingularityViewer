@@ -123,6 +123,7 @@ public:
 	LLScrollListItem*	addSeparator(EAddPosition pos = ADD_BOTTOM);
 	BOOL			remove( S32 index );	// remove item by index, return TRUE if found and removed
 	void			removeall() { clearRows(); }
+	bool			itemExists(const std::string& name);
 
 	void			sortByName(BOOL ascending = TRUE); // Sort the entries in the combobox by name
 
@@ -131,11 +132,14 @@ public:
 	// Get name of current item. Returns an empty string if not found.
 	const std::string	getSimple() const;
 	// Get contents of column x of selected row
-	const std::string getSelectedItemLabel(S32 column = 0) const;
+	virtual const std::string getSelectedItemLabel(S32 column = 0) const;
 
 	// Sets the label, which doesn't have to exist in the label.
 	// This is probably a UI abuse.
 	void			setLabel(const LLStringExplicit& name);
+
+	// Updates the combobox label to match the selected list item.
+	void			updateLabel();
 
 	BOOL			remove(const std::string& name);	// remove item "name", return TRUE if found and removed
 	
@@ -185,7 +189,8 @@ public:
 	void			setButtonVisible(BOOL visible);
 
 	void			onButtonMouseDown();
-	void			onItemSelected();
+	void			onListMouseUp();
+	void			onItemSelected(const LLSD& data);
 
 	void			onTextCommit(const LLSD& data);
 
@@ -205,10 +210,12 @@ protected:
 	EPreferredPosition	mListPosition;
 	LLPointer<LLUIImage>	mArrowImage;
 	std::string			mLabel;
+	BOOL				mHasAutocompletedText;
 	LLColor4				mListColor;
 
 private:
 	BOOL				mAllowTextEntry;
+	BOOL				mAllowNewValues;
 	S32					mMaxChars;
 	BOOL				mTextEntryTentative;
 	bool				mSuppressAutoComplete;
@@ -216,6 +223,7 @@ private:
 	commit_callback_t	mPrearrangeCallback;
 	commit_callback_t	mTextEntryCallback;
 	boost::signals2::connection mTopLostSignalConnection;
+	S32                 mLastSelectedIndex;
 };
 
 class LLFlyoutButton : public LLComboBox

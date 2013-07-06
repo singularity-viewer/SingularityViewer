@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel label="Region Memory" name="script_limits_region_memory_panel">
+	<text name="script_memory">Parzellenskript-Speicher</text>
+	<text name="parcels_listed">
+
+	</text>
+	<text name="memory_used">
+	</text>
+
+	<text name="urls_used">
+
+	</text>
+	<text name="loading_text">Wird geladen...</text>
+    <scroll_list name="scripts_list">
+        <column label="Objekt" name="name"/>
+        <column label="Größe" tool_tip="Size in kilobytes" name="size"/>
+        <column label="URLs" name="urls"/>
+        <column label="Eigentümer" name="owner"/>
+        <column label="Parzelle" name="parcel"/>
+        <column label="Position" name="location"/>
+    </scroll_list>
+    <button label="Aktualisieren" name="refresh_list_btn"/>
+    <button label="Markieren" name="highlight_btn"/>
+    <button label="Zurückgeben" name="return_btn"/>
+</panel>

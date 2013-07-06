@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel label="Mitteilungen" name="notices_tab">
+	<string name="help_text">Mitteilungen sind eine schnelle Möglichkeit, 
+Mitglieder auf dem Laufenden zu halten und 
+Objekte im Anhang zu versenden. Mitteilungen werden
+nur an Mitglieder mit einer entsprechenden Rolle 
+gesendet. Mitteilungen können unter 
+„Allgemein“ ausgeschaltet werden.</string>
+	<string name="no_notices_text">Keine älteren Mitteilungen.</string>
+	<button label="?" label_selected="?" name="help_button"/>
+	<text name="lbl">Gruppenmitteilungsarchiv</text>
+	<text name="lbl2">Mitteilungen werden 14 Tage lang aufbewahrt. Klicken Sie auf eine Mitteilung,
+um sie anzuzeigen. Klicken Sie „Aktualisieren“, um neue Mitteilungen zu suchen.
+Eine Mitteilungsliste speichert maximal 200 Mitteilungen pro Gruppe täglich.</text>
+	<scroll_list name="notice_list">
+		<column label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="icon"/>
+		<column label="Thema" name="subject"/>
+		<column label="Von" name="from"/>
+		<column label="Datum" name="date"/>
+		<column name="sort"/>
+	</scroll_list>
+	<text name="notice_list_none_found">Nicht gefunden.</text>
+	<button label="Neue Mitteilung" label_selected="Neue Mitteilung" name="create_new_notice"/>
+	<button label="Aktualisieren" label_selected="Aktualisieren" name="refresh_notices"/>
+	<panel label="Neue Mitteilung" name="panel_create_new_notice">
+		<text name="lbl">Mitteilung schreiben</text>
+		<text name="lbl2">Geben Sie einen Betreff für die Mitteilung ein. Sie können der
+Mitteilung ein Objekt anfügen, indem Sie es aus dem Inventar
+in dieses Feld ziehen. Angehängte Objekte müssen kopier-
+und transferierbar sein. Ordner können nicht gesendet werden.</text>
+		<text name="lbl3">Betreff:</text>
+		<line_editor name="create_subject"/>
+		<text name="lbl4">Nachricht:</text>
+		<text_editor name="create_message"/>
+		<text name="lbl5">Anhängen:</text>
+		<line_editor name="create_inventory_name"/>
+		<icon name="create_inv_icon"/>
+		<button label="Anhang entfernen" label_selected="Anhang entfernen" name="remove_attachment"/>
+		<button label="Mitteilung senden" label_selected="Mitteilung senden" name="send_notice"/>
+		<panel name="drop_target2"/>
+		<icon name="drop_icon"/>
+		<group_drop_target name="drop_target" tool_tip="Ziehe ein Inventarobjekt in den Nachrichtentext um es mit der Notiz zu senden. Du brauchst Rechte zum Kopieren und Weitegeben um ein Objekt mit der Notiz zu senden."/>
+	</panel>
+	<panel label="Ältere Notiz anzeigen" name="panel_view_past_notice">
+		<text name="lbl">Archivierte Mitteilung</text>
+		<text name="lbl2">Klicken Sie zum Senden einer Mitteilung auf „Neue Mitteilung“.</text>
+		<text name="lbl3">Betreff:</text>
+		<line_editor name="view_subject"/>
+		<text name="lbl4">Nachricht:</text>
+		<text_editor name="view_message"/>
+		<button label="Anhang öffnen" label_selected="Anhang öffnen" name="open_attachment"/>
+		<line_editor name="view_inventory_name"/>
+		<icon name="view_inv_icon"/>
+	</panel>
+</panel>

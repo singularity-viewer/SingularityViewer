@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel label="My Avatar" name="script_limits_my_avatar_panel">
+	<text name="script_memory">Avatar-Skript-Gebrauch</text>
+
+	<text/>
+
+	<text name="memory_used">
+
+	</text>
+	<text name="urls_used">
+
+	</text>
+	<text name="loading_text">Wird geladen...</text>
+    <scroll_list name="scripts_list">
+        <column label="Objekt" name="name"/>
+        <column label="Größe" tool_tip="Size in kilobytes" name="size"/>
+        <column label="URLs" name="urls"/>
+        <column label="Position" name="location"/>
+    </scroll_list>
+    <button label="Aktualisieren" name="refresh_list_btn"/>
+</panel>

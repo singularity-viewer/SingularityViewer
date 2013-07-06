@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<panel label="Kamera" name="Input panel">
+	<text name=" Mouselook Options:">Mouselook-Optionen:</text>
+	<text name=" Mouse Sensitivity:">Mausempfindlichkeit:</text>
+	<slider_bar name="mouse_sensitivity"/>
+	<check_box label="Maus umkehren" name="invert_mouse"/>
+	<check_box label="Avatar in Mouselook anzeigen" name="first_person_avatar_visible"/>
+	<text name=" Movement Options:">Movement Options:</text>
+	<check_box label="Fliegen/Landen beim Drücken von auf/ab" name="automatic_fly"/>
+	<check_box label="Allow crouch toggle by holding shift" name="crouch_toggle"/>
+	<text name=" Camera Options:">Kameraoptionen:</text>
+  <text name="camera_fov_label">Kamera-Sichtwinkel:</text>
+  <slider name="camera_fov"/>
+  <text name="Camera Follow Distance:">Kameraabstand:</text>
+	<slider name="camera_offset_scale"/>
+	<check_box label="Automatischer Kameraschwenk im Bearbeiten-Modus" name="edit_camera_movement" tool_tip="Automatische Kamerapositionierung bei Wechsel in und aus dem Bearbeitungsmodus verwenden"/>
+	<check_box label="Automatischer Kameraschwenk im Aussehen-Modus" name="appearance_camera_movement" tool_tip="Automatische Kamerapositionierung im Bearbeitenmodus verwenden"/>
+	<check_box label="Unsit Avatar on Camera Reset" name="unsit_on_camera_reset" tool_tip="Stand up automatically when you press Esc and the camera switches to third person mode"/>
+	<check_box label="Disable Camera Constraints" name="DisableCameraConstraints" tool_tip="Prevent the camera from automatically zooming when you approach walls, objects, etc., too closely."/>
+	<check_box label="Limit Select Distance" name="Limit Select Distance" tool_tip="Limit the distance at which an object can be selected."/>
+	<button label="Joystick-Einrichtung" name="joystick_setup_button"/>
+</panel>

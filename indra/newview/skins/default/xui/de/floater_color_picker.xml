@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="ColorPicker" title="Farbauswahl">
+	<text name="r_val_text">Rot:</text>
+	<spinner name="rspin"/>
+	<text name="g_val_text">Grün:</text>
+	<spinner name="gspin"/>
+	<text name="b_val_text">Blau:</text>
+	<spinner name="bspin"/>
+	<text name="h_val_text">Farbton:</text>
+	<spinner name="hspin"/>
+	<text name="s_val_text">Sätt.:</text>
+	<spinner name="sspin"/>
+	<text name="l_val_text">Hell.:</text>
+	<spinner name="lspin"/>
+	<check_box label="Sofort übernehmen" name="apply_immediate"/>
+	<button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" label_selected="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="color_pipette"/>
+	<button label="Abbrechen" label_selected="Abbrechen" name="cancel_btn"/>
+	<button label="Auswählen" label_selected="Auswählen" name="select_btn"/>
+	<text name="Hex Value:">Hex:</text>
+	<line_editor tool_tip="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="hexval"/>
+	<text name="Current color:">Aktuelle Farbe:</text>
+	<text name="(Drag below to save.)">(Nach unten ziehen,
+ um zu speichern.)</text>
+</floater>

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="preview lsl text" title="Skript: Rotationsskript">
+	<panel name="script panel"/>
+	<icon name="lock"/>
+	<text name="desc txt">Beschreibung:</text>
+	<line_editor name="desc"/>
+</floater>

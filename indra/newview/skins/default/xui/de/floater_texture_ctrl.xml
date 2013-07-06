@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="texture picker" title="Auswählen: Textur">
+	<string name="choose_picture">Zum Auswählen eines Bildes hier klicken</string>
+	<text name="Multiple">Mehrfach</text>
+	<text name="unknown">Maße: [DIMENSIONS]</text>
+	<button label="Standard" label_selected="Standard" name="Default"/>
+	<button label="Alpha" label_selected="Alpha" name="Alpha"/>
+	<button label="Leer" label_selected="Leer" name="Blank"/>
+	<button label="Unsichtbar" label_selected="Unsichtbar" name="Invisible"/>
+  <button label="Keine" label_selected="Keine" name="None"/>
+	<check_box label="Ordner anzeigen" name="show_folders_check"/>
+	<check_box label="Sofort übernehmen" name="apply_immediate_check"/>
+	<button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" label_selected="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="Pipette"/>
+	<button label="Abbrechen" label_selected="Abbrechen" name="Cancel"/>
+	<button label="Auswählen" label_selected="Auswählen" name="Select"/>
+	<line_editor name="texture_uuid"/>
+	<button label="UUID setzen" label_selected="UUID setzen" name="ApplyUUID"/>
+	<string name="pick title">Auswählen:</string>
+
+  	<tab_container name="actions_tab_container">
+    <panel label="Inventar" name="server_tab">
+      <filter_editor label="Suchanfrage hier eintippen" name="inventory search editor"/>
+        <inventory_panel name="inventory panel"/>
+    </panel>
+    <panel label="Computer" name="local_tab">
+  <!-- tag: vaa emerald local_asset_browser [begin] -->
+      <text name="select_local">Wähle Textur auf diesem Computer zur Vorschau in der Welt</text>
+      <button label="Hinzufügen" name="Add"/>
+      <button label="Entfernen" name="Remove"/>
+      <button label="Eigenschaften..." name="Browser"/>
+      <scroll_list name="local_name_list">
+	      <column name="unit_name" label="Name"/>
+	      <column name="unit_id_HIDDEN" label="ID"/>
+	    </scroll_list>
+	  <!-- tag: vaa emerald local_asset_browser [end] -->
+    </panel>
+  </tab_container>
+</floater>

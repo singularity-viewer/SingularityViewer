@@ -161,6 +161,20 @@ private:
 	std::string mMarketplaceURL;
 };
 
+static void* createWebPanel(void* data)
+{
+	struct LLPanelDirWeb : public LLPanelDirFind
+	{
+		LLPanelDirWeb(LLFloaterDirectory* f) : LLPanelDirFind("web_panel", f, "web_search_browser") {}
+		/*virtual*/ void search(const std::string& url) {}
+		/*virtual*/ void navigateToDefaultPage()
+		{
+			if (mWebBrowser) mWebBrowser->navigateTo(getString("default_search_page"));
+		}
+	};
+	return new LLPanelDirWeb(static_cast<LLFloaterDirectory*>(data));
+}
+
 LLFloaterDirectory* LLFloaterDirectory::sInstance = NULL;
 //static
 S32 LLFloaterDirectory::sOldSearchCount = 0; // debug
@@ -205,6 +219,7 @@ LLFloaterDirectory::LLFloaterDirectory(const std::string& name)
 		// web search and showcase only for SecondLife
 		factory_map["find_all_panel"] = LLCallbackMap(createFindAll, this);
 		factory_map["showcase_panel"] = LLCallbackMap(createShowcase, this);		
+		if (!enableClassicAllSearch) factory_map["web_panel"] = LLCallbackMap(createWebPanel, this);
 	}
 
 	if (enableClassicAllSearch)

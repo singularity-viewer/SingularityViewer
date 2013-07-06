@@ -93,6 +93,9 @@ class MultiHandle : public CurlMultiHandle
 	// Returns how long to wait for socket action before calling socket_action(CURL_SOCKET_TIMEOUT, 0), in ms.
 	int getTimeout(void) const { return mTimeout; }
 
+	// We slept delta_ms instead of mTimeout ms. Update mTimeout to be the remaining time.
+	void update_timeout(long delta_ms) { mTimeout -= delta_ms; }
+
 	// This is called before sleeping, after calling (one or more times) socket_action.
 	void check_msg_queue(void);
 

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="Joystick" title="Joystick-Konfiguration">
+	<check_box name="enable_joystick">Joystick aktivieren:</check_box>
+	<text name="joystick_type"/>
+	<string name="JoystickMonitor">Joystick-Monitor</string>
+	<string name="Axis">Achse [NUM]</string>
+	<string name="NoDevice">Kein Gerät erkannt</string>
+	<spinner name="JoystickAxis1" label="X-Achse"/>
+	<spinner name="JoystickAxis4" label="Neigungswinkel"/>
+	<spinner name="JoystickAxis6" label="Zoom"/>
+
+	<spinner name="JoystickAxis2" label="Y-Achse"/>
+	<spinner name="JoystickAxis5" label="Gierwinkel"/>
+
+	<spinner name="JoystickAxis0" label="Z-Achse"/>
+	<spinner name="JoystickAxis3" label="Rollwinkel"/>
+
+	<check_box label="Direkt-Zoom" name="ZoomDirect"/>
+	<check_box label="3D-Cursor" name="Cursor3D"/>
+	<check_box label="Automatisch ausrichten" name="AutoLeveling"/>
+
+	<text name="Control Modes:">Steuermodi:</text>
+	<check_box name="JoystickAvatarEnabled">Avatar</check_box>
+	<check_box name="JoystickBuildEnabled">Bauen</check_box>
+	<check_box name="JoystickFlycamEnabled">Flycam</check_box>
+
+	<text name="XScale">X-Skala</text>
+	<spinner name="AvatarAxisScale1"/>
+	<spinner name="BuildAxisScale1"/>
+	<spinner name="FlycamAxisScale1"/>
+
+	<text name="YScale">Y-Skala</text>
+	<spinner name="AvatarAxisScale2"/>
+	<spinner name="BuildAxisScale2"/>
+	<spinner name="FlycamAxisScale2"/>
+
+	<text name="ZScale">Z-Skala</text>
+	<spinner name="AvatarAxisScale0"/>
+	<spinner name="BuildAxisScale0"/>
+	<spinner name="FlycamAxisScale0"/>
+
+	<text name="PitchScale">Neigungsskala</text>
+	<spinner name="AvatarAxisScale4"/>
+	<spinner name="BuildAxisScale4"/>
+	<spinner name="FlycamAxisScale4"/>
+
+	<text name="YawScale">Gierskala</text>
+	<spinner name="AvatarAxisScale5"/>
+	<spinner name="BuildAxisScale5"/>
+	<spinner name="FlycamAxisScale5"/>
+
+	<text name="RollScale">Rollskala</text>
+	<spinner name="BuildAxisScale3"/>
+	<spinner name="FlycamAxisScale3"/>
+
+	<text name="XDeadZone">X-Totzone</text>
+	<spinner name="AvatarAxisDeadZone1"/>
+	<spinner name="BuildAxisDeadZone1"/>
+	<spinner name="FlycamAxisDeadZone1"/>
+
+	<text name="YDeadZone">Y-Totzone</text>
+	<spinner name="AvatarAxisDeadZone2"/>
+	<spinner name="BuildAxisDeadZone2"/>
+	<spinner name="FlycamAxisDeadZone2"/>
+
+	<text name="ZDeadZone">Z-Totzone</text>
+	<spinner name="AvatarAxisDeadZone0"/>
+	<spinner name="BuildAxisDeadZone0"/>
+	<spinner name="FlycamAxisDeadZone0"/>
+
+	<text name="PitchDeadZone">Neigen-Totzone</text>
+	<spinner name="AvatarAxisDeadZone4"/>
+	<spinner name="BuildAxisDeadZone4"/>
+	<spinner name="FlycamAxisDeadZone4"/>
+
+	<text name="YawDeadZone">Gieren-Totzone</text>
+	<spinner name="AvatarAxisDeadZone5"/>
+	<spinner name="BuildAxisDeadZone5"/>
+	<spinner name="FlycamAxisDeadZone5"/>
+
+	<text name="RollDeadZone">Rollen-Totzone</text>
+	<spinner name="BuildAxisDeadZone3"/>
+	<spinner name="FlycamAxisDeadZone3"/>
+
+	<text name="Feathering">Auslaufen</text>
+	<spinner name="AvatarFeathering"/>
+	<spinner name="BuildFeathering"/>
+	<spinner name="FlycamFeathering"/>
+
+	<text name="ZoomScale2">Zoom-Skala</text>
+	<spinner name="FlycamAxisScale6"/>
+	<text name="ZoomDeadZone">Zoom-Totzone</text>
+	<spinner name="FlycamAxisDeadZone6"/>
+
+	<button label="SpaceNavigator-Standards" name="SpaceNavigatorDefaults"/>
+	
+	<button label="OK" label_selected="OK" name="ok_btn"/>
+	<button label="Abbrechen" label_selected="Abbrechen" name="cancel_btn"/>
+</floater>

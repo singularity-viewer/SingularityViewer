@@ -49,6 +49,11 @@ LLUICtrl::LLUICtrl() :
 	mValidateSignal(NULL),
 	mMouseEnterSignal(NULL),
 	mMouseLeaveSignal(NULL),
+	mMouseDownSignal(NULL),
+	mMouseUpSignal(NULL),
+	mRightMouseDownSignal(NULL),
+	mRightMouseUpSignal(NULL),
+	mDoubleClickSignal(NULL),
 	mTentative(FALSE),
 	mTabStop(TRUE),
 	mIsChrome(FALSE)
@@ -66,6 +71,11 @@ LLUICtrl::LLUICtrl(const std::string& name, const LLRect rect, BOOL mouse_opaque
 	mViewModel(LLViewModelPtr(new LLViewModel)),
 	mMouseEnterSignal(NULL),
 	mMouseLeaveSignal(NULL),
+	mMouseDownSignal(NULL),
+	mMouseUpSignal(NULL),
+	mRightMouseDownSignal(NULL),
+	mRightMouseUpSignal(NULL),
+	mDoubleClickSignal(NULL),
 	mTentative( FALSE ),
 	mTabStop( TRUE ),
 	mIsChrome(FALSE)
@@ -86,6 +96,13 @@ LLUICtrl::~LLUICtrl()
 
 	delete mCommitSignal;
 	delete mValidateSignal;
+	delete mMouseEnterSignal;
+	delete mMouseLeaveSignal;
+	delete mMouseDownSignal;
+	delete mMouseUpSignal;
+	delete mRightMouseDownSignal;
+	delete mRightMouseUpSignal;
+	delete mDoubleClickSignal;
 }
 
 
@@ -105,6 +122,60 @@ void LLUICtrl::onMouseLeave(S32 x, S32 y, MASK mask)
 	{
 		(*mMouseLeaveSignal)(this, getValue());
 	}
+}
+
+//virtual 
+BOOL LLUICtrl::handleMouseDown(S32 x, S32 y, MASK mask)
+{
+	BOOL handled  = LLView::handleMouseDown(x,y,mask);
+	if (mMouseDownSignal)
+	{
+		(*mMouseDownSignal)(this,x,y,mask);
+	}
+	return handled;
+}
+
+//virtual
+BOOL LLUICtrl::handleMouseUp(S32 x, S32 y, MASK mask)
+{
+	BOOL handled  = LLView::handleMouseUp(x,y,mask);
+	if (mMouseUpSignal)
+	{
+		(*mMouseUpSignal)(this,x,y,mask);
+	}
+	return handled;
+}
+
+//virtual
+BOOL LLUICtrl::handleRightMouseDown(S32 x, S32 y, MASK mask)
+{
+	BOOL handled  = LLView::handleRightMouseDown(x,y,mask);
+	if (mRightMouseDownSignal)
+	{
+		(*mRightMouseDownSignal)(this,x,y,mask);
+	}
+	return handled;
+}
+
+//virtual
+BOOL LLUICtrl::handleRightMouseUp(S32 x, S32 y, MASK mask)
+{
+	BOOL handled  = LLView::handleRightMouseUp(x,y,mask);
+	if(mRightMouseUpSignal)
+	{
+		(*mRightMouseUpSignal)(this,x,y,mask);
+	}
+	return handled;
+}
+
+BOOL LLUICtrl::handleDoubleClick(S32 x, S32 y, MASK mask)
+{
+	BOOL handled = LLView::handleDoubleClick(x, y, mask);
+	if (mDoubleClickSignal)
+	{
+		(*mDoubleClickSignal)(this, x, y, mask);
+	}
+	return handled;
 }
 
 void LLUICtrl::onCommit()
@@ -696,4 +767,34 @@ boost::signals2::connection LLUICtrl::setMouseLeaveCallback( const commit_signal
 { 
 	if (!mMouseLeaveSignal) mMouseLeaveSignal = new commit_signal_t();
 	return mMouseLeaveSignal->connect(cb); 
+}
+
+boost::signals2::connection LLUICtrl::setMouseDownCallback( const mouse_signal_t::slot_type& cb ) 
+{ 
+	if (!mMouseDownSignal) mMouseDownSignal = new mouse_signal_t();
+	return mMouseDownSignal->connect(cb); 
+}
+
+boost::signals2::connection LLUICtrl::setMouseUpCallback( const mouse_signal_t::slot_type& cb ) 
+{ 
+	if (!mMouseUpSignal) mMouseUpSignal = new mouse_signal_t();
+	return mMouseUpSignal->connect(cb); 
+}
+
+boost::signals2::connection LLUICtrl::setRightMouseDownCallback( const mouse_signal_t::slot_type& cb ) 
+{ 
+	if (!mRightMouseDownSignal) mRightMouseDownSignal = new mouse_signal_t();
+	return mRightMouseDownSignal->connect(cb); 
+}
+
+boost::signals2::connection LLUICtrl::setRightMouseUpCallback( const mouse_signal_t::slot_type& cb ) 
+{ 
+	if (!mRightMouseUpSignal) mRightMouseUpSignal = new mouse_signal_t();
+	return mRightMouseUpSignal->connect(cb); 
+}
+
+boost::signals2::connection LLUICtrl::setDoubleClickCallback( const mouse_signal_t::slot_type& cb ) 
+{ 
+	if (!mDoubleClickSignal) mDoubleClickSignal = new mouse_signal_t();
+	return mDoubleClickSignal->connect(cb); 
 }

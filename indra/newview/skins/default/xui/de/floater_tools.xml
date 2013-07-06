@@ -1,0 +1,512 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<floater name="toolbox floater" title="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" short_title="Bauen">
+
+<!-- Main floater tabs -->
+
+	<button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" label_selected="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="button focus" tool_tip="Fokus">
+	  <button.commit_callback parameter="Fokus"/>
+	</button>
+	<button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" label_selected="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="button move" tool_tip="Bewegen">
+	  <button.commit_callback parameter="Bewegen"/>
+	</button>
+	<button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" label_selected="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="button edit" tool_tip="Bearbeiten">
+	  <button.commit_callback parameter="Bearbeiten"/>
+	</button>
+	<button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" label_selected="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="button create" tool_tip="Erstellen">
+	  <button.commit_callback parameter="Erstellen"/>
+	</button>
+	<button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" label_selected="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="button land" tool_tip="Land">
+	  <button.commit_callback parameter="Land"/>
+	</button>
+
+<!-- Focus panel -->
+
+	<check_box label="Zoom" name="radio zoom">
+	    <check_box.commit_callback/>
+	</check_box>
+	     
+	<volume_slider name="slider zoom">
+	 <volume_slider.commit_callback/>
+	</volume_slider>
+	<check_box label="Orbit (Strg)" name="radio orbit">
+	    <check_box.commit_callback/>
+	</check_box>
+	<check_box label="Schwenken (Strg-Umschalt)" name="radio pan">
+	    <check_box.commit_callback/>
+	</check_box>
+
+<!-- Move panel -->
+
+	<check_box label="Bewegen" name="radio move">
+	    <check_box.commit_callback/>
+	</check_box>
+	<check_box label="Heben (Strg)" name="radio lift">
+	    <check_box.commit_callback/>
+	</check_box>
+	<check_box label="Rotieren (Strg-Umschalt)" name="radio spin">
+	    <check_box.commit_callback/>
+	</check_box>
+
+<!-- Edit panel -->
+	<check_box label="Position" name="radio position">
+	    <check_box.commit_callback/>
+	</check_box>
+	<check_box label="Drehen (Strg)" name="radio rotate">
+	    <check_box.commit_callback/>
+	</check_box>
+	<check_box label="Dehnen (Strg-Umschalt)" name="radio stretch">
+	    <check_box.commit_callback/>
+	</check_box>
+	<check_box label="Textur auswählen" name="radio select face">
+	    <check_box.commit_callback/>
+	</check_box>
+	<check_box label="Ausrichten (Strg-A)" name="radio align">
+	    <check_box.commit_callback/>
+	</check_box>
+	<check_box label="Verknüpfte Teile bearbeiten" name="checkbox edit linked parts">
+	    <check_box.commit_callback/>
+	</check_box>
+	<text name="text ruler mode">Lineal:</text>
+	<combo_box name="combobox grid mode">
+		<combo_item name="World">Welt</combo_item>
+		<combo_item name="Local">Lokal</combo_item>
+		<combo_item name="Reference">Referenz</combo_item>
+	    	<combo_box.commit_callback/>
+	</combo_box>
+	<check_box label="Beide Seiten dehnen" name="checkbox uniform"/>
+	<check_box label="Texturen dehnen" name="checkbox stretch textures"/>
+	<check_box label="Beschränke Zieh-Entfernung" name="checkbox limit drag distance"/>
+	<check_box label="Bearbeite Achse an Basis" name="checkbox actual root"/>
+	<check_box label="Zeige Hervorhebung" name="checkbox show highlight"/>
+	<check_box label="Raster verwenden" name="checkbox snap to grid"/>
+	<button label="Optionen..." label_selected="Optionen..." name="Options...">
+	 	<button.commit_callback/>
+	</button>
+
+<!-- Help text -->
+
+	<text name="text status">Zum Verschieben ziehen, zum Kopieren Umschalttaste-Ziehen</text>
+
+<!-- Create panel -->
+
+	<button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" label_selected="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="ToolCube" tool_tip="Würfel"/>
+	<button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" label_selected="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="ToolPrism" tool_tip="Prisma"/>
+	<button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" label_selected="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="ToolPyramid" tool_tip="Pyramide"/>
+	<button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" label_selected="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="ToolTetrahedron" tool_tip="Tetraeder"/>
+	<button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" label_selected="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" tool_tip="Zylinder" name="ToolCylinder"/>
+	<button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" label_selected="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="ToolHemiCylinder" tool_tip="Halbzylinder"/>
+	<button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" label_selected="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="ToolCone" tool_tip="Kegel"/>
+	<button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" label_selected="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="ToolHemiCone" tool_tip="Halbkegel"/>
+	<button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" label_selected="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="ToolSphere" tool_tip="Kugel"/>
+	<button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" label_selected="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="ToolHemiSphere" tool_tip="Halbkugel"/>
+	<button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" label_selected="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="ToolTorus" tool_tip="Torus"/>
+	<button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" label_selected="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="ToolTube" tool_tip="Rohr"/>
+	<button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" label_selected="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="ToolRing" tool_tip="Ring"/>
+	<button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" label_selected="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="ToolTree" tool_tip="Baum"/>
+	<button label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" label_selected="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="ToolGrass" tool_tip="Gras"/>
+	<check_box label="Auswahl behalten" name="checkbox sticky"/>
+	<check_box label="Auswahl kopieren" name="checkbox copy selection"/>
+	<check_box label="Mitte" name="checkbox copy centers"/>
+	<check_box label="Drehen" name="checkbox copy rotates"/>
+
+<!-- Land panel -->
+
+	<check_box label="Land auswählen" name="radio select land">
+	     <check_box.commit_callback/>
+	</check_box>
+	<check_box label="Einebnen" name="radio flatten">
+	     <check_box.commit_callback/>
+	</check_box>
+	<check_box label="Anheben" name="radio raise">
+	     <check_box.commit_callback/>
+	</check_box>
+	<check_box label="Absenken" name="radio lower">
+	     <check_box.commit_callback/>
+	</check_box>
+	<check_box label="Glätten" name="radio smooth">
+	     <check_box.commit_callback/>
+	</check_box>
+	<check_box label="Aufrauen" name="radio noise">
+	     <check_box.commit_callback/>
+	</check_box>
+	<check_box label="Zurücksetzen" name="radio revert">
+	     <check_box.commit_callback/>
+	</check_box>
+	<button label="Übernehmen" label_selected="Übernehmen" name="button apply to selection" tool_tip="Ausgewähltes Land ändern">
+	     <button.commit_callback/>
+    	</button>
+	<text name="Bulldozer:">Planierraupe:</text>
+	<text name="Dozer Size:">Größe</text>
+	<volume_slider name="slider brush size">
+	     <volume_slider.commit_callback/>
+    	</volume_slider>
+	<text name="Strength:">Stärke</text>
+	<volume_slider name="slider force">
+	     <volume_slider.commit_callback/>
+    	</volume_slider>
+	<text name="link_num_obj_count">[DESC] [NUM]</text>
+	<text name="prim_count"/>
+
+<!-- Sub-tabs -->
+
+	<tab_container name="Object Info Tabs">
+		<panel label="Allgemein" name="General">
+			<text name="Name:">Name:</text>
+			<line_editor name="Object Name"/>
+			<text name="Description:">Beschreibung:</text>
+			<line_editor name="Object Description"/>
+			<text name="Creator:">Ersteller:</text>
+			<text name="Creator Name">Thrax Linden</text>
+      		<button label="Profil..." label_selected="Profil..." name="button creator profile"/>
+			<text name="Owner:">Eigentümer:</text>
+			<text name="Owner Name">Thrax Linden</text>
+		    <button label="Profil..." label_selected="Profil..." name="button owner profile"/>
+			<text name="Last Owner:">Letzter Besitzer:</text>
+			<text name="Last Owner Name">Thrax Linden</text>
+			<button label="Profil..." label_selected="Profil..." name="button last owner profile"/>
+			<text name="Group:">Gruppe:</text>
+			<name_box name="Group Name Proxy"/>
+			<button label="Festlegen" label_selected="Einstellen..." name="button set group"/>
+			<button label="Ansicht" label_selected="Öffnen" name="button open group"/>
+			<text name="Permissions:">Berechtigungen:</text>
+			<text name="perm_modify">Sie können dieses Objekt ändern.</text>
+			<check_box label="Mit Gruppe teilen" name="checkbox share with group" tool_tip="Allen Mitgliedern der zugeordneten Gruppe die Erlaubnis erteilen, Ihre Berechtigungen für dieses Objekt zu teilen und zu verwenden. Sie müssen Übereignen, um Rollenbeschränkungen zu aktivieren."/>
+			<string name="text deed continued">Übertragen...</string>
+			<string name="text deed">Übertragung</string>
+			<button label="Übertragen..." label_selected="Übertragen..." name="button deed" tool_tip="In der Gruppe gemeinsam verwendete Objekte können von einem Gruppenfunktionär übertragen werden."/>
+			<text name="text anyone can">Jeder kann:</text>
+			<check_box label="Bewegen" name="checkbox allow everyone move"/>
+			<check_box label="Kopieren" name="checkbox allow everyone copy"/>
+			<check_box name="checkbox allow export" label="Export"/>
+			<check_box label="In Suche anzeigen" name="search_check" tool_tip="Dieses Objekt in Suchergebnissen anzeigen"/>
+			<check_box label="Zum Verkauf" name="checkbox for sale"/>
+			<text name="Cost">Preis:  L$</text>
+			<line_editor name="Edit Cost"/>
+			<radio_group name="sale type">
+				<radio_item name="Original">Original</radio_item>
+				<radio_item name="Copy">Kopieren</radio_item>
+				<radio_item name="Contents">Inhalt</radio_item>
+			</radio_group>
+			<text name="Next owner can:">Nächster Eigentümer kann:</text>
+			<check_box label="Bearbeiten" name="checkbox next owner can modify"/>
+			<check_box label="Kopieren" name="checkbox next owner can copy"/>
+			<check_box label="Verkaufen/Weggeben" name="checkbox next owner can transfer"/>
+			<text name="label click action">Bei Linksklicken:</text>
+			<combo_box name="clickaction">
+			     <!-- Do not reorder these items, the index numbers are
+					used internally. JC -->
+			<combo_item name="Touch/grab(default)">Berühren/Greifen (Standard)</combo_item>
+				<combo_item name="Sitonobject">Sitzen</combo_item>
+				<combo_item name="Buyobject">Kaufen</combo_item>
+				<combo_item name="Payobject">Bezahlen</combo_item>
+				<combo_item name="Open">Öffnen</combo_item>
+				<combo_item name="Play">Parzellenmedien wiedergeben</combo_item>
+				<combo_item name="Opemmedia">Parzellenmedien öffnen</combo_item>
+			</combo_box>
+			<button label="Kopiere Schlüssel" label_selected="Kopiere Schlüssel" name="button cpy_key" tool_tip="Kipiert Objektschlüssel in Zwischenablage"/>
+      		<text name="B:">B:</text>
+			<text name="G:">G:</text>
+			<text name="E:">E:</text>
+			<text name="N:">N:</text>
+			<text name="F:">F:</text>
+      <panel/>
+      <panel name="pathfinding_attrs_panel">
+        <text name="pathfinding_attributes_label">Pathfinding-Attribute:</text>
+        <text name="pathfinding_attributes_value">Test</text>
+      </panel>
+			<string name="text modify info 1">Sie können dieses Objekt ändern.</string>
+			<string name="text modify info 2">Sie können diese Objekte ändern.</string>
+			<string name="text modify info 3">Sie können dieses Objekt nicht ändern.</string>
+			<string name="text modify info 4">Sie können diese Objekte nicht ändern.</string>
+      <string name="text modify info 5">Sie können das Objekt nicht über Regionsgrenzen bearbeiten.</string>
+      <string name="text modify info 6">Sie können diese Objekte nicht über Regionsgrenzen bearbeiten.</string>
+			<string name="text modify warning">Gesamtes Objekt muss gewählt werden, um Berechtigungen festzulegen.</string>
+			<string name="Cost Default">Preis:L$</string>
+			<string name="Cost Total">Summe:L$</string>
+			<string name="Cost Per Unit">Stückpreis:L$</string>
+			<string name="Cost Mixed">Mischpreis</string>
+			<string name="Sale Mixed">Mischverkauf</string>
+		</panel>
+
+<!-- Object sub-tab -->
+
+		<panel label="Objekt" name="Object">
+			<text name="select_single">
+			</text>
+			<button label="Verknüpfen" name="link_obj" tool_tip="Verknüpfen"/>
+			<button label="Verknüpfung auflösen" name="unlink_obj" tool_tip="Verknüpfung aufheben."/>
+			<check_box label="Gesperrt" name="checkbox locked" tool_tip="Verhindert, dass Objekt verschoben oder gelöscht wird. Oft beim Bauen nützlich, um unbeabsichtigte Bearbeitungen zu vermeiden."/>
+			<check_box label="Physisch" name="Physical Checkbox Ctrl" tool_tip="Gestattet, das Objekt geschoben und von Schwerkraft beeinflusst wird"/>
+			<check_box label="Temporär" name="Temporary Checkbox Ctrl" tool_tip="Verursacht, dass Objekt 1 Minute nach Erstellung gelöscht wird."/>
+			<check_box label="Phantom" name="Phantom Checkbox Ctrl" tool_tip="Verursacht, dass Objekt nicht mit anderen Objekten oder Avataren kollidiert"/>
+			<text name="label position">Position (Meter)</text>
+			<spinner label="X" name="Pos X"/>
+			<spinner label="Y" name="Pos Y"/>
+			<spinner label="Z" name="Pos Z"/>
+			<button label="de_DE.UTF-8" name="copypos" tool_tip="Kopiere Position"/>
+			<button label="P" name="pastepos" tool_tip="Füge Position ein"/>
+			<button label="p" name="pasteposclip" tool_tip="Füge Position von Zwischenablage ein"/>
+							 
+				 
+			<text name="label size">Größe</text>
+			<spinner label="X" name="Scale X"/>
+			<spinner label="Y" name="Scale Y"/>
+			<spinner label="Z" name="Scale Z"/>
+			<button label="de_DE.UTF-8" name="copysize" tool_tip="Kopiere Größe"/>
+			<button label="P" name="pastesize" tool_tip="Füge Größe ein"/>
+			<button label="p" name="pastesizeclip" tool_tip="Füge Größe von Zwischenablage ein"/>
+			<text name="label rotation">Rotation (Grad)</text>
+			<spinner label="X" name="Rot X"/>
+			<spinner label="Y" name="Rot Y"/>
+			<spinner label="Z" name="Rot Z"/>
+			<button label="de_DE.UTF-8" name="copyrot" tool_tip="Kopiere Drehung"/>
+			<button label="P" name="pasterot" tool_tip="Füge Drehung ein"/>
+			<button label="p" name="pasterotclip" tool_tip="Füge Drehung von Zwischenablage ein"/>
+			<text name="label material">Material</text>
+			<combo_box name="material">
+				<combo_item name="Stone">Stein</combo_item>
+				<combo_item name="Metal">Metall</combo_item>
+				<combo_item name="Glass">Glas</combo_item>
+				<combo_item name="Wood">Holz</combo_item>
+				<combo_item name="Flesh">Fleisch</combo_item>
+				<combo_item name="Plastic">Plastik</combo_item>
+				<combo_item name="Rubber">Gummi</combo_item>
+			</combo_box>
+			<text name="edit_object">Objektparameter bearbeiten:</text>
+			<button label="Kopieren" name="copyparams" tool_tip="Kopiere Parameter in Zwischenablage"/>
+			<button label="Einfügen" name="pasteparams" tool_tip="Füge Parameter von Zwischenablage ein"/>
+			<text name="label basetype">Bausteintyp</text>
+			<combo_box name="comboBaseType">
+				<combo_item name="Box">Quader</combo_item>
+				<combo_item name="Cylinder">Zylinder</combo_item>
+				<combo_item name="Prism">Prisma</combo_item>
+				<combo_item name="Sphere">Kugel</combo_item>
+				<combo_item name="Torus">Torus</combo_item>
+				<combo_item name="Tube">Rohr</combo_item>
+				<combo_item name="Ring">Ring</combo_item>
+				<combo_item name="Sculpted">Geformt</combo_item>
+
+				<combo_item name="Hemicylinder">Halbzylinder</combo_item>
+
+				<combo_item name="Spiral Circle">Spiral-Kreis</combo_item>
+				<combo_item name="Spiral Square">Spiral-Quadrat</combo_item>
+				<combo_item name="Spiral Triangle">Spiral-Dreieck</combo_item>
+				<combo_item name="Spiral Semicircle">Spiral-Halbkreis</combo_item>
+
+				<combo_item name="Test Cylinder">Test-Zylinder</combo_item>
+				<combo_item name="Test Box">Test-Würfel</combo_item>
+				<combo_item name="Test Prism">Test-Prisma</combo_item>
+				<combo_item name="Test Hemicylinder">Test-Halbzylinder</combo_item>
+
+			</combo_box>
+			<text name="text cut">Pfadschnitt Beginn und Ende</text>
+			<spinner label="B" name="cut begin"/>
+			<spinner label="O" name="cut end"/>
+			<text name="text hollow">Hohl</text>
+			<text name="text skew">Versatz</text>
+			<spinner name="Scale 1"/>
+			<spinner name="Skew"/>
+			<text name="Hollow Shape">Hohlform</text>
+			<combo_box name="hole">
+				<combo_item name="Default">Standard</combo_item>
+				<combo_item name="Circle">Kreis</combo_item>
+				<combo_item name="Square">Rechteck</combo_item>
+				<combo_item name="Triangle">Dreieck</combo_item>
+			</combo_box>
+			<text name="text twist">Torsion</text>
+			<spinner label="B" name="Twist Begin"/>
+			<spinner label="O" name="Twist End"/>
+			<text name="scale_taper">Verjüngung</text>
+			<text name="scale_hole">Lochgröße</text>
+			<spinner label="X" name="Taper Scale X"/>
+			<spinner label="Y" name="Taper Scale Y"/>
+			<text name="text topshear">Verscherung</text>
+			<spinner label="X" name="Shear X"/>
+			<spinner label="Y" name="Shear Y"/>
+			<text name="advanced_cut">Profilschnitt-Beginn und Ende</text>
+			<text name="advanced_dimple">Vertiefung-Beginn und Ende</text>
+			<text name="advanced_slice">Anfang/Ende abschneiden</text>
+			<spinner label="B" name="Path Limit Begin"/>
+			<spinner label="O" name="Path Limit End"/>
+			<text name="text taper2">Verjüngung</text>
+			<spinner label="X" name="Taper X"/>
+			<spinner label="Y" name="Taper Y"/>
+			<text name="text radius delta">Radius</text>
+			<text name="text revolutions">Umdrehungen</text>
+			<spinner name="Radius Offset"/>
+			<spinner name="Revolutions"/>
+			<texture_picker label="Textur für gestaltetes  Primitiv" name="sculpt texture control" tool_tip="Zum Auswählen eines Bildes hier klicken"/>
+            <check_box label="Spiegeln" name="sculpt mirror control" tool_tip="Geformtes Primitiv entlang der X-Achse spiegeln."/>
+            <check_box label="Wenden" name="sculpt invert control" tool_tip="Dreht die Normalen des geformten Primitivs von innen nach außen."/>
+			<text name="label sculpt type">Naht</text>
+			<combo_box name="sculpt type control">
+				<combo_item name="None">(keiner)</combo_item>
+				<combo_item name="Sphere">Kugel</combo_item>
+				<combo_item name="Torus">Torus</combo_item>
+				<combo_item name="Plane">Fläche</combo_item>
+				<combo_item name="Cylinder">Zylinder</combo_item>
+      		</combo_box>
+		</panel>
+
+<!-- Features sub-tab -->
+
+		<panel label="Eigenschaften" name="Features">
+		     	<string name="None">Keine</string>
+			<string name="Prim">Prim</string>
+			<string name="Convex Hull">Konvexe Hülle</string>
+			<text name="select_single">Wählen Sie nur einen einzelnen Baustein aus, um Eigenschaften zu bearbeiten.</text>
+			<text name="edit_object">Objekteigenschaften bearbeiten:</text>
+			<check_box label="Flexibler Weg" name="Flexible1D Checkbox Ctrl" tool_tip="Gestattet, dass Objekt um die Z-Achse gebogen wird. (nur Client-Seite)"/>
+			<spinner label="Weichheit" name="FlexNumSections"/>
+			<spinner label="Schwerkraft" name="FlexGravity"/>
+			<spinner label="Ziehen" name="FlexFriction"/>
+			<spinner label="Wind" name="FlexWind"/>
+			<spinner label="Spannung" name="FlexTension"/>
+			<spinner label="Erzwingen X" name="FlexForceX"/>
+			<spinner label="Erzwingen Y" name="FlexForceY"/>
+			<spinner label="Erzwingen Z" name="FlexForceZ"/>
+			<check_box label="Hell" name="Light Checkbox Ctrl" tool_tip="Verursacht, dass Objekt Licht emittiert"/>
+			<text name="label color">Farbe</text>
+			<text name="label texture">Textur</text>
+			<color_swatch label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="colorswatch" tool_tip="Klicken, um die Farbauswahl zu öffnen"/>
+			
+			 <texture_picker label="Report-Msgid-Bugs-To: &#10;POT-Creation-Date: 2013-07-05 04:37+0200&#10;PO-Revision-Date: 2013-07-05 00:15+0200&#10;Last-Translator: Leonie &lt;saphira@terror-twins.de&gt;&#10;Language: de&#10;MIME-Version: 1.0&#10;Content-Type: text/plain; charset=UTF-8&#10;Content-Transfer-Encoding: 8bit&#10;Plural-Forms: nplurals=2; plural=(n != 1);&#10;X-Generator: Pootle 2.1.5&#10;" name="light texture control" tool_tip="Klicken um Projektionsbild zu wählen (nur effektiv wenn verzögertes Rendering aktiv)"/>
+			<spinner label="Intensität" name="Light Intensity"/>
+			<spinner label="FOV" name="Light FOV"/>
+			<spinner label="Radius" name="Light Radius"/>
+			<spinner label="Fokus" name="Light Focus"/>
+			<spinner label="Abnehmend" name="Light Falloff"/>
+			<spinner label="Atmosphäre" name="Light Ambiance"/>
+            <text name="label physicsshapetype">Physikalischer Formentyp:</text>
+			<combo_box name="Physics Shape Type Combo Ctrl" tool_tip="Physikalischen Formentyp wählen"/>
+	    <spinner label="Schwerkraft" name="Physics Gravity"/>
+
+            <spinner label="Reibung" name="Physics Friction"/>
+
+            <spinner label="Dichte" label_wrap="true" name="Physics Density"/>
+
+            <spinner label="Ausgleich" name="Physics Restitution"/>
+		</panel>
+
+<!-- Texture sub-tab -->
+
+		<panel label="Textur" name="Texture">
+			<texture_picker label="Textur" name="texture control" tool_tip="Zum Auswählen eines Bildes hier klicken"/>
+			<color_swatch label="Farbe" name="colorswatch" tool_tip="Klicken, um die Farbauswahl zu öffnen"/>
+			<text name="color trans">Transparenz %</text>
+			<spinner name="ColorTrans"/>
+			<text name="glow label">Leuchten</text>
+			<spinner name="glow"/>
+			<check_box label="Ganz hell" name="checkbox fullbright"/>
+			<text name="tex gen">Zuordnung</text>
+			<combo_box name="combobox texgen">
+				<combo_item name="Default">Standard</combo_item>
+				<combo_item name="Planar">Eben</combo_item>
+			</combo_box>
+			<text name="label shininess">Glanz</text>
+			<combo_box name="combobox shininess">
+				<combo_item name="None">Keine</combo_item>
+				<combo_item name="Low">Niedrig</combo_item>
+				<combo_item name="Medium">Mittel</combo_item>
+				<combo_item name="High">Hoch</combo_item>
+			</combo_box>
+			<text name="label bumpiness">Holprigkeit</text>
+			<combo_box name="combobox bumpiness">
+				<combo_item name="None">Keine</combo_item>
+				<combo_item name="Brightness">Helligkeit</combo_item>
+				<combo_item name="Darkness">Dunkelheit</combo_item>
+				<combo_item name="woodgrain">Holzmaserung</combo_item>
+				<combo_item name="bark">Rinde</combo_item>
+				<combo_item name="bricks">Ziegel</combo_item>
+				<combo_item name="checker">Karo</combo_item>
+				<combo_item name="concrete">Beton</combo_item>
+				<combo_item name="crustytile">verkrustete Fliesen</combo_item>
+				<combo_item name="cutstone">Steinplatten</combo_item>
+				<combo_item name="discs">Scheiben</combo_item>
+				<combo_item name="gravel">Kies</combo_item>
+				<combo_item name="petridish">Petrischale</combo_item>
+				<combo_item name="siding">Verkleidung</combo_item>
+				<combo_item name="stonetile">Steinfliesen</combo_item>
+				<combo_item name="stucco">Stuck</combo_item>
+				<combo_item name="suction">Saugen</combo_item>
+				<combo_item name="weave">gewoben</combo_item>
+			</combo_box>
+			<check_box label="Planare Texturen ausrichten" name="checkbox planar align" tool_tip="Richtet Texturen auf allen gewählten Flächen nach der letzten gewählten Fläche aus. Benötigt planare Textur-Abbildung"/>
+			<text name="tex scale">Wiederholungen</text>
+			<spinner label="Horizontal (U)" name="TexScaleU"/>
+			<check_box label="Umkehren" name="checkbox flip s"/>
+			<spinner label="Vertikal (V)" name="TexScaleV"/>
+			<check_box label="Umkehren" name="checkbox flip t"/>
+			<text name="tex rotate">Rotation (Grad)</text>
+			<spinner name="TexRot"/>
+			<string name="string repeats per meter">Kacheln pro Meter</string>
+			<string name="string repeats per face">Wiederholungen pro Fläche</string>
+			<text name="rpt">Kacheln pro Meter</text>
+			<spinner name="rptctrl"/>
+			<button label="Übernehmen" label_selected="Übernehmen" name="button apply"/>
+			<text name="tex offset">Versatz</text>
+			<spinner label="Horizontal (U)" name="TexOffsetU"/>
+			<spinner label="Vertikal (V)" name="TexOffsetV"/>
+			<text name="textbox params">Textur-Parameter</text>
+			<button label="Kopieren" name="copytextures" tool_tip="Kopiere Textur-Parameter aus Zwischenablage"/>
+	  		<button label="Einfügen" name="pastetextures" tool_tip="Füge Textur-Parameter aus Zwischenablage ein"/>
+        
+	<text name="media_tex">Medien</text>
+	<panel name="Add_Media">
+			<button label="Hinzufügen" name="add_media" tool_tip="Medien hinzufügen">
+				<button.commit_callback/>
+			</button>
+			<button label="Löschen" name="delete_media" tool_tip="Lösche Medientextur">
+				<button.commit_callback/>
+			</button>
+			<button tool_tip="Ändere dieses Medium" label="&gt;&gt; " name="edit_media">
+				<button.commit_callback/>
+			</button>
+      <text read_only="true" name="media_info"/>
+      <web_browser name="title_media" decouple_texture_size="true"/>
+     <button label="Ausrichten" name="button align" tool_tip="Medientextur ausrichten&#10;(zuerst laden)"/>
+		</panel>
+	   </panel>
+       <panel label="Inhalt" name="Contents">
+      		<button label="Neues Skript" label_selected="Neues Skript" name="button new script"/>
+      <button label="Berechtigungen..." name="button permissions"/>
+			<panel name="ContentsInventory"/>
+		</panel>
+	</tab_container>
+
+<!-- Land Info sub-tab -->
+
+	<panel name="land info panel">
+	<!-- Parcel Information -->
+		<text name="label_parcel_info">Parzelleninformation</text>
+		<text name="label_area_price">Preis: L$ [PRICE] für [AREA] m2.</text>
+		<text name="label_area">Fläche: [AREA] m2</text>
+		<button label="Land-Info..." label_selected="Land-Info..." name="button about land"/>
+		<check_box tool_tip="Parzellen nach Eigentümer farbig kennzeichnen" label="Eigentümer anzeigen" name="checkbox show owners"/>
+			<button label="?" label_selected="?" name="button show owners help"/>
+	<!-- Modify Parcel -->
+		<text name="label_parcel_modify">Parzelle ändern</text>
+		<button label="Unterteilen..." label_selected="Unterteilen..." name="button subdivide land"/>
+		<button label="Zusammenlegen" label_selected="Zusammenlegen" name="button join land"/>
+	<!-- Land Transactions -->
+		<text name="label_parcel_trans">Land-Transaktionen</text>
+		<button label="Land kaufen..." label_selected="Land kaufen..." name="button buy land"/>
+		<button label="Land aufgeben..." label_selected="Land aufgeben..." name="button abandon land"/>
+	</panel>
+	<string name="status_rotate">An den farbigen Bändern ziehen, um das Objekt zu drehen</string>
+	<string name="status_scale">Klicken und ziehen, um die ausgewählte Seite zu dehnen</string>
+	<string name="status_move">Zum Verschieben ziehen, zum Kopieren Umschalttaste-Ziehen</string>
+	<string name="status_align">Klicke einen Pfeil um Objekte in dieser Richtung auszurichten.</string>
+	<string name="status_modifyland">Klicken und halten, um das Land zu bearbeiten</string>
+	<string name="status_camera">Klicken und ziehen, um die Ansicht zu ändern</string>
+	<string name="status_grab">Ziehen, um Objekte zu verschieben, Strg zum Heben, Strg-Umschalt zum Drehen</string>
+	<string name="status_place">Inworld klicken, um zu bauen.</string>
+	<string name="status_selectland">Klicken und ziehen, um Land auszuwählen</string>
+	<string name="grid_screen_text">Bildschirm</string>
+	<string name="grid_local_text">Lokal</string>
+	<string name="grid_world_text">Welt</string>
+	<string name="grid_reference_text">Referenz</string>
+	<string name="grid_attachment_text">Anhang</string>
+  <string name="status_selectprimequiv">, Kosten: [SEL_WEIGHT]</string>
+  <string name="status_selectcount">Prims: [COUNT][PE_STRING]</string>
+</floater>
