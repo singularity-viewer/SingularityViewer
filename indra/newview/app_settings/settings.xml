@@ -17228,7 +17228,7 @@ This should be as low as possible, but too low may break functionality</string>
     <key>DerenderHugeAttachments</key>
     <map>
       <key>Comment</key>
-      <string>Allow the viewer to automatically hide attachmnets that are really just way too big</string>
+      <string>Allow the viewer to automatically hide attachments that are really just way too big</string>
       <key>Persist</key>
       <integer>1</integer>
       <key>Type</key>
