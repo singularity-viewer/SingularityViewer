@@ -17234,7 +17234,7 @@ This should be as low as possible, but too low may break functionality</string>
       <key>Type</key>
       <string>Boolean</string>
       <key>Value</key>
-      <integer>1</integer>
+      <integer>0</integer>
     </map>
     <key>MaxAttachmentSpan</key>
     <map>
