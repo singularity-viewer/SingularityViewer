@@ -2,36 +2,6 @@
 <panel name="Panel Avatar" width="495">
 	<tab_container name="tab" width="484">
 		<panel label="2nd Life" name="2nd Life" width="483">
-			<string name="AcctTypeResident">
-				Residente
-			</string>
-			<string name="AcctTypeTrial">
-				Teste
-			</string>
-			<string name="AcctTypeCharterMember">
-				Estatuto do membro
-			</string>
-			<string name="AcctTypeEmployee">
-				Contratado da Linden Lab.
-			</string>
-			<string name="PaymentInfoUsed">
-				Infor. de pagamento utilizadas
-			</string>
-			<string name="PaymentInfoOnFile">
-				Infor. de pagamento no arquivo.
-			</string>
-			<string name="NoPaymentInfoOnFile">
-				Sem infor. de pagamento no arquivo
-			</string>
-			<string name="AgeVerified">
-				Idade Verificada
-			</string>
-			<string name="NotAgeVerified">
-				Idade não Verificada
-			</string>
-			<text name="Name:">
-				Nome:
-			</text>
 			<text name="online_yes" width="176">
 				Atualmente Online
 			</text>

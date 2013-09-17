@@ -7,36 +7,6 @@
 [PAYMENTINFO]
 [AGEVERIFICATION]
 			</string>
-			<string name="AcctTypeResident">
-				Résident
-			</string>
-			<string name="AcctTypeTrial">
-				Essai
-			</string>
-			<string name="AcctTypeCharterMember">
-				Membre originaire
-			</string>
-			<string name="AcctTypeEmployee">
-				Employé(e) de Linden Lab
-			</string>
-			<string name="PaymentInfoUsed">
-				Infos de paiement utilisées
-			</string>
-			<string name="PaymentInfoOnFile">
-				Infos de paiement enregistrées
-			</string>
-			<string name="NoPaymentInfoOnFile">
-				Aucune info de paiement
-			</string>
-			<string name="AgeVerified">
-				Âge vérifié
-			</string>
-			<string name="NotAgeVerified">
-				Âge non vérifié
-			</string>
-			<text name="Name:">
-				Nom:
-			</text>
 			<text name="online_yes" width="151">
 				Actuellement connecté(e)
 			</text>

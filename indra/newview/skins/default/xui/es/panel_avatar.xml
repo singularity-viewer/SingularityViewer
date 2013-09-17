@@ -7,33 +7,6 @@
 [PAYMENTINFO]
 [AGEVERIFICATION]
 			</string>
-			<string name="AcctTypeResident">
-				Residente
-			</string>
-			<string name="AcctTypeTrial">
-				Prueba
-			</string>
-			<string name="AcctTypeCharterMember">
-				Miembro Fundador
-			</string>
-			<string name="AcctTypeEmployee">
-				Empleado de Linden Lab
-			</string>
-			<string name="PaymentInfoUsed">
-				Información de Pago utilizada
-			</string>
-			<string name="PaymentInfoOnFile">
-				Información de Pago en Archivo
-			</string>
-			<string name="NoPaymentInfoOnFile">
-				Sin Información de Pago
-			</string>
-			<string name="AgeVerified">
-				Edad Verificada
-			</string>
-			<string name="NotAgeVerified">
-				Edad No Verificada
-			</string>
 			<button label="Copiar Key:" tool_tip="Copyiar key al portapapeles" name="copy_key"/>
 			<name_editor name="avatar_key"/>
 			<button name="web_profile" label="Perfil Web"/>

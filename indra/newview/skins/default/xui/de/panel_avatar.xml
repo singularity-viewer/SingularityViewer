@@ -5,15 +5,6 @@
 			<string name="CaptionTextAcctInfo">[ACCTTYPE]
 [PAYMENTINFO]
 [AGEVERIFICATION]</string>
-			<string name="AcctTypeResident">Einwohner</string>
-			<string name="AcctTypeTrial">Test</string>
-			<string name="AcctTypeCharterMember">Charta-Mitglied</string>
-			<string name="AcctTypeEmployee">Linden Lab-Mitarbeiter</string>
-			<string name="PaymentInfoUsed">Zahlungsinfo verwendet</string>
-			<string name="PaymentInfoOnFile">Zahlungsinfo archiviert</string>
-			<string name="NoPaymentInfoOnFile">Keine Zahlungsinfo archiviert</string>
-			<string name="AgeVerified">Altersgeprüft</string>
-			<string name="NotAgeVerified">Nicht altersgeprüft</string>
       <button label="Kopiere Schlüssel" tool_tip="Schlüssel in die Zwischenablage kopieren" name="copy_key"/>
       
       <button name="web_profile" label="Web Profil"/>

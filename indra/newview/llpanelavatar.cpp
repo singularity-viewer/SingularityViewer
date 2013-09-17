@@ -46,6 +46,7 @@
 
 #include "llagent.h"
 #include "llavataractions.h"
+#include "llavatarpropertiesprocessor.h"
 #include "llcallingcard.h"
 #include "lldroptarget.h"
 #include "llfloatergroupinfo.h"
@@ -183,56 +184,11 @@ void LLPanelAvatarSecondLife::processProperties(void* data, EAvatarProcessorType
 		if (pAvatarData && (mAvatarID == pAvatarData->avatar_id) && (pAvatarData->avatar_id != LLUUID::null))
 		{
 			LLStringUtil::format_map_t args;
-
-			U8 caption_index = 0;
-			std::string caption_text = getString("CaptionTextAcctInfo");
-				
-			const char* ACCT_TYPE[] = 
-			{
-				"AcctTypeResident",
-				"AcctTypeTrial",
-				"AcctTypeCharterMember",
-				"AcctTypeEmployee"
-			};
-
-
-			caption_index = llclamp(caption_index, (U8)0, (U8)(LL_ARRAY_SIZE(ACCT_TYPE)-1));
-			args["[ACCTTYPE]"] = getString(ACCT_TYPE[caption_index]);
+			args["[ACCTTYPE]"] = LLAvatarPropertiesProcessor::accountType(pAvatarData);
+			args["[PAYMENTINFO]"] = LLAvatarPropertiesProcessor::paymentInfo(pAvatarData);
+			args["[AGEVERIFICATION]"] = " ";
 			
-			std::string payment_text = " ";
-			const S32 DEFAULT_CAPTION_LINDEN_INDEX = 3;
-			if(caption_index != DEFAULT_CAPTION_LINDEN_INDEX)
-			{
-				if(pAvatarData->flags & AVATAR_TRANSACTED)
-				{
-					payment_text = "PaymentInfoUsed";
-				}
-				else if (pAvatarData->flags & AVATAR_IDENTIFIED)
-				{
-					payment_text = "PaymentInfoOnFile";
-				}
-				else
-				{
-					payment_text = "NoPaymentInfoOnFile";
-				}
-				args["[PAYMENTINFO]"] = getString(payment_text);
-
-				// Do not display age verification status at this time - Mostly because it /doesn't work/. -HgB
-				/*bool age_verified = (pAvatarData->flags & AVATAR_AGEVERIFIED); // Not currently getting set in dataserver/lldataavatar.cpp for privacy consideration
-				std::string age_text = age_verified ? "AgeVerified" : "NotAgeVerified";
-
-				args["[AGEVERIFICATION]"] = getString(age_text);
-				*/
-				args["[AGEVERIFICATION]"] = " ";
-			}
-			else
-			{
-				args["[PAYMENTINFO]"] = " ";
-				args["[AGEVERIFICATION]"] = " ";
-			}
-			LLStringUtil::format(caption_text, args);
-			
-			childSetValue("acct", caption_text);
+			getChild<LLUICtrl>("acct")->setValue(getString("CaptionTextAcctInfo", args));
 
 			getChild<LLTextureCtrl>("img")->setImageAssetID(pAvatarData->image_id);
 
