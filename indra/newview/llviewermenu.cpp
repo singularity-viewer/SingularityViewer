@@ -1204,6 +1204,7 @@ void init_debug_ui_menu(LLMenuGL* menu)
 	menu->addChild(new LLMenuItemCheckGL("Show Render Info", menu_toggle_control, NULL, menu_check_control, (void*)"DebugShowRenderInfo"));
 	menu->addChild(new LLMenuItemCheckGL("Show Matrices", menu_toggle_control, NULL, menu_check_control, (void*)"DebugShowRenderMatrices"));
 	menu->addChild(new LLMenuItemCheckGL("Show Color Under Cursor", menu_toggle_control, NULL, menu_check_control, (void*)"DebugShowColor"));
+	menu->addChild(new LLMenuItemCheckGL("Show FPS", menu_toggle_control, NULL, menu_check_control, (void*)"SLBShowFPS"));
 	
 	menu->createJumpKeys();
 }
