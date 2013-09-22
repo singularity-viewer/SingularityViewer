@@ -104,12 +104,12 @@ void LLDrawPoolTree::render(S32 pass)
 	LLGLState test(GL_ALPHA_TEST, LLGLSLShader::sNoFixedFunction ? 0 : 1);
 	LLOverrideFaceColor color(this, 1.f, 1.f, 1.f, 1.f);
 
-	/*static const LLCachedControl<bool> render_animate_trees("RenderAnimateTrees",false); 
-	if (render_animate_trees)
+	static LLCachedControl<bool> sRenderAnimateTrees("RenderAnimateTrees", false);
+	if (sRenderAnimateTrees)
 	{
 		renderTree();
 	}
-	else*/
+	else
 	gGL.getTexUnit(sDiffTex)->bind(mTexturep);
 					
 	for (std::vector<LLFace*>::iterator iter = mDrawFace.begin();
@@ -209,7 +209,7 @@ void LLDrawPoolTree::endShadowPass(S32 pass)
 	gDeferredTreeShadowProgram.unbind();
 }
 
-/*
+//
 void LLDrawPoolTree::renderTree(BOOL selecting)
 {
 	LLGLState normalize(GL_NORMALIZE, TRUE);
@@ -331,7 +331,7 @@ void LLDrawPoolTree::renderTree(BOOL selecting)
 			//gGL.popMatrix();
 		}
 	}
-}*/
+}//
 
 BOOL LLDrawPoolTree::verify() const
 {
