@@ -4119,6 +4119,11 @@ LLViewerObject* LLViewerWindow::cursorIntersect(S32 mouse_x, S32 mouse_y, F32 de
 			found = gPipeline.lineSegmentIntersectInWorld(mw_start, mw_end, pick_transparent,
 														  face_hit, intersection, uv, normal, tangent);
 
+			if (found && !pick_transparent)
+			{
+				gDebugRaycastIntersection = *intersection;
+			}
+
 // [RLVa:KB] - Checked: 2010-01-02 (RLVa-1.1.0l) | Added: RLVa-1.1.0l
 #ifdef RLV_EXTENSION_CMD_INTERACT
 			if ( (rlv_handler_t::isEnabled()) && (found) && (gRlvHandler.hasBehaviour(RLV_BHVR_INTERACT)) )
