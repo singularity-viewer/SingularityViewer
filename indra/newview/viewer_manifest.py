@@ -283,9 +283,9 @@ class WindowsManifest(ViewerManifest):
         if self.prefix(src=self.args['configuration'], dst=""):
             try:
                 self.path('llcommon.dll')
-            except RuntimeError, err:
-                print err.message
-                print "Skipping llcommon.dll (assuming llcommon was linked statically)"
+            except RuntimeError as err:
+                print(err.message)
+                print("Skipping llcommon.dll (assuming llcommon was linked statically)")
             self.end_prefix()
         if self.prefix(src=release_lib_dir, dst=""):
             self.path("libeay32.dll")
@@ -294,7 +294,7 @@ class WindowsManifest(ViewerManifest):
                 self.path('libapr-1.dll')
                 self.path('libaprutil-1.dll')
                 self.path('libapriconv-1.dll')
-            except RuntimeError, err:
+            except RuntimeError as err:
                 pass
             self.end_prefix()
 
@@ -326,7 +326,7 @@ class WindowsManifest(ViewerManifest):
             self.end_prefix()
 
         if 'extra_libraries' in self.args:
-            print self.args['extra_libraries']
+            print(self.args['extra_libraries'])
             path_list = self.args['extra_libraries'].split('|')
             for path in path_list:
                 path_pair = path.rsplit('/', 1)
@@ -451,7 +451,7 @@ class WindowsManifest(ViewerManifest):
         # We use the Unicode version of NSIS, available from
         # http://www.scratchpaper.com/
         try:
-            import _winreg as reg
+            import winreg as reg
             NSIS_path = reg.QueryValue(reg.HKEY_LOCAL_MACHINE, r"SOFTWARE\NSIS\Unicode") + '\\makensis.exe'
             self.run_command([proper_windows_path(NSIS_path), self.dst_path_of(tempfile)])
         except:
@@ -469,7 +469,7 @@ class WindowsManifest(ViewerManifest):
         if os.path.exists(sign_py):
             self.run_command('python ' + sign_py + ' ' + self.dst_path_of(installer_file))
         else:
-            print "Skipping code signing,", sign_py, "does not exist"
+            print("Skipping code signing,", sign_py, "does not exist")
         self.created_path(self.dst_path_of(installer_file))
         self.package_file = installer_file
 
@@ -543,7 +543,7 @@ class DarwinManifest(ViewerManifest):
                     self.path(self.args['configuration'] + "/libfmodwrapper.dylib", "libfmodwrapper.dylib")
                     pass
                 except:
-                    print "Skipping libfmodwrapper.dylib - not found"
+                    print("Skipping libfmodwrapper.dylib - not found")
                     pass
 
                 # And now FMOD Ex!
@@ -551,7 +551,7 @@ class DarwinManifest(ViewerManifest):
                     self.path("libfmodex.dylib", "libfmodex.dylib")
                     pass
                 except:
-                    print "Skipping libfmodex.dylib - not found"
+                    print("Skipping libfmodex.dylib - not found")
                     pass
 
                 # plugin launcher
@@ -663,11 +663,11 @@ class DarwinManifest(ViewerManifest):
         if not os.path.exists (self.src_path_of(dmg_template)):
             dmg_template = os.path.join ('installers', 'darwin', 'release-dmg')
 
-        for s,d in {self.get_dst_prefix():app_name + ".app",
+        for s,d in list({self.get_dst_prefix():app_name + ".app",
                     os.path.join(dmg_template, "_VolumeIcon.icns"): ".VolumeIcon.icns",
                     os.path.join(dmg_template, "background.jpg"): "background.jpg",
-                    os.path.join(dmg_template, "_DS_Store"): ".DS_Store"}.items():
-            print "Copying to dmg", s, d
+                    os.path.join(dmg_template, "_DS_Store"): ".DS_Store"}.items()):
+            print("Copying to dmg", s, d)
             self.copy_action(self.src_path_of(s), os.path.join(volpath, d))
 
         # Hide the background image, DS_Store file, and volume icon file (set their "visible" bit)
@@ -687,7 +687,7 @@ class DarwinManifest(ViewerManifest):
         # Unmount the image
         self.run_command('hdiutil detach -force "' + devfile + '"')
 
-        print "Converting temp disk image to final disk image"
+        print("Converting temp disk image to final disk image")
         self.run_command('hdiutil convert "%(sparse)s" -format UDZO -imagekey zlib-level=9 -o "%(final)s"' % {'sparse':sparsename, 'final':finalname})
         # get rid of the temp file
         self.package_file = finalname
@@ -787,7 +787,7 @@ class LinuxManifest(ViewerManifest):
                 'dir': self.get_build_prefix(),
                 'inst_name': installer_name,
                 'inst_path':self.build_path_of(installer_name)})
-            print ''
+            print('')
         finally:
             self.run_command("mv '%(inst)s' '%(dst)s'" % {
                 'dst': self.get_dst_prefix(),
@@ -795,7 +795,7 @@ class LinuxManifest(ViewerManifest):
 
     def strip_binaries(self):
         if self.args['buildtype'].lower() in ['release', 'releasesse2']:
-            print "* Going strip-crazy on the packaged binaries, since this is a RELEASE build"
+            print("* Going strip-crazy on the packaged binaries, since this is a RELEASE build")
             # makes some small assumptions about our packaged dir structure
             self.run_command("find %(d)r/bin %(d)r/lib* -type f | xargs -d '\n' --no-run-if-empty strip --strip-unneeded" % {'d': self.get_dst_prefix()} )
             self.run_command("find %(d)r/bin %(d)r/lib* -type f -not -name \\*.so | xargs -d '\n' --no-run-if-empty strip -s" % {'d': self.get_dst_prefix()} )
@@ -812,7 +812,7 @@ class Linux_i686Manifest(LinuxManifest):
                 self.path("libfmod-3.75.so")
                 pass
             except:
-                print "Skipping libfmod-3.75.so - not found"
+                print("Skipping libfmod-3.75.so - not found")
                 pass
 
             self.path("libELFIO.so")

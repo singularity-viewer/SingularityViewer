@@ -44,7 +44,7 @@ def _int2binstr(i,l):
     return s
 
 def _binstr2int(s):
-    i = long(0)
+    i = int(0)
     for c in s:
         i = (i<<8) + ord(c)
     return i
@@ -78,7 +78,7 @@ class UUID(object):
         ip = '10'
         for i in range(3):
             ip += '.' + str(rand.randrange(1,254))
-    hexip = ''.join(["%04x" % long(i) for i in ip.split('.')])
+    hexip = ''.join(["%04x" % int(i) for i in ip.split('.')])
     lastid = ''
 
     def __init__(self, possible_uuid=None):
@@ -111,7 +111,7 @@ class UUID(object):
         """
         return 36
 
-    def __nonzero__(self):
+    def __bool__(self):
         return self._bits != "\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0\0"
 
     def __str__(self):
@@ -124,7 +124,7 @@ class UUID(object):
         return str(self)[index]
 
     def __eq__(self, other):
-        if isinstance(other, (str, unicode)):
+        if isinstance(other, str):
             return other == str(self)
         return self._bits == getattr(other, '_bits', '')
 
@@ -240,7 +240,7 @@ def printTranslatedMemory(four_hex_uints):
     """
     uuid = UUID()
     uuid.setFromMemoryDump(four_hex_uints)
-    print uuid.toString()
+    print(uuid.toString())
 
 def isUUID(id_str):
     """
