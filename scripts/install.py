@@ -58,7 +58,7 @@ def add_indra_lib_path():
                 sys.path.insert(0, dir)
             return root
     else:
-        print >>sys.stderr, "This script is not inside a valid installation."
+        print("This script is not inside a valid installation.", file=sys.stderr)
         sys.exit(1)
 
 base_dir = add_indra_lib_path()
@@ -73,8 +73,8 @@ import re
 import shutil
 import tarfile
 import tempfile
-import urllib2
-import urlparse
+import urllib.request, urllib.error, urllib.parse
+import urllib.parse
 
 from indra.base import llsd
 from indra.util import helpformatter
@@ -92,7 +92,7 @@ class InstallFile(object):
         self.pkgname = pkgname
         self.url = url
         self.md5sum = md5sum
-        filename = urlparse.urlparse(url)[2].split('/')[-1]
+        filename = urllib.parse.urlparse(url)[2].split('/')[-1]
         self.filename = os.path.join(cache_dir, filename)
         self.platform_path = platform_path
 
@@ -100,7 +100,7 @@ class InstallFile(object):
         return "ifile{%s:%s}" % (self.pkgname, self.url)
 
     def _is_md5sum_match(self):
-        hasher = md5(file(self.filename, 'rb').read())
+        hasher = md5(open(self.filename, 'rb').read())
         if hasher.hexdigest() == self.md5sum:
             return  True
         return False
@@ -128,19 +128,19 @@ class InstallFile(object):
         if not os.path.exists(self.filename):
             pass
         elif self.md5sum and not self._is_md5sum_match():
-            print "md5 mismatch:", self.filename
+            print("md5 mismatch:", self.filename)
             os.remove(self.filename)
         else:
-            print "Found matching package:", self.filename
+            print("Found matching package:", self.filename)
             return
-        print "Downloading",self.url,"to local file",self.filename
+        print("Downloading",self.url,"to local file",self.filename)
 
-        request = urllib2.Request(self.url)
+        request = urllib.request.Request(self.url)
 
         if re.match("/^http:\/\/github.com/", self.url):
             request.add_header('User-agent', defaultUserAgent)
 
-        file(self.filename, 'wb').write(urllib2.urlopen(request).read())
+        open(self.filename, 'wb').write(urllib.request.urlopen(request).read())
         if self.md5sum and not self._is_md5sum_match():
             raise RuntimeError("Error matching md5 for %s" % self.url)
 
@@ -219,7 +219,7 @@ class InstalledPackage(object):
             self._installed[url] = definition[url]
 
     def urls(self):
-        return self._installed.keys()
+        return list(self._installed.keys())
 
     def files_in(self, url):
         return self._installed[url].get('files', [])
@@ -254,7 +254,7 @@ class Installer(object):
 
     def load(self):
         if os.path.exists(self._install_filename):
-            install = llsd.parse(file(self._install_filename, 'rb').read())
+            install = llsd.parse(open(self._install_filename, 'rb').read())
             try:
                 for name in install['installables']:
                     self._installables[name] = InstallableDefinition(
@@ -267,7 +267,7 @@ class Installer(object):
             except KeyError:
                 pass
         if os.path.exists(self._installed_filename):
-            installed = llsd.parse(file(self._installed_filename, 'rb').read())
+            installed = llsd.parse(open(self._installed_filename, 'rb').read())
             try:
                 bins = installed['installables']
                 for name in bins:
@@ -276,9 +276,9 @@ class Installer(object):
                 pass
 
     def _write(self, filename, state):
-        print "Writing state to",filename
+        print("Writing state to",filename)
         if not self._dryrun:
-            file(filename, 'wb').write(llsd.format_pretty_xml(state))
+            open(filename, 'wb').write(llsd.format_pretty_xml(state).encode())
 
     def save(self):
         if self._install_changed:
@@ -305,17 +305,17 @@ class Installer(object):
         "@brief retrun true if we have valid license info for installable."
         installable = self._installables[bin]._definition
         if 'license' not in installable:
-            print >>sys.stderr, "No license info found for", bin
-            print >>sys.stderr, 'Please add the license with the',
-            print >>sys.stderr, '--add-installable option. See', \
-                                 sys.argv[0], '--help'
+            print("No license info found for", bin, file=sys.stderr)
+            print('Please add the license with the', end=' ', file=sys.stderr)
+            print('--add-installable option. See', \
+                                 sys.argv[0], '--help', file=sys.stderr)
             return False
         if installable['license'] not in self._licenses:
             lic = installable['license']
-            print >>sys.stderr, "Missing license info for '" + lic + "'.",
-            print >>sys.stderr, 'Please add the license with the',
-            print >>sys.stderr, '--add-license option. See', sys.argv[0],
-            print >>sys.stderr, '--help'
+            print("Missing license info for '" + lic + "'.", end=' ', file=sys.stderr)
+            print('Please add the license with the', end=' ', file=sys.stderr)
+            print('--add-license option. See', sys.argv[0], end=' ', file=sys.stderr)
+            print('--help', file=sys.stderr)
             return False
         return True
 
@@ -342,7 +342,7 @@ class Installer(object):
     def detail_installed(self, name):
         "Return file list for specific installed package."
         filelist = []
-        for url in self._installed[name]._installed.keys():
+        for url in list(self._installed[name]._installed.keys()):
             filelist.extend(self._installed[name].files_in(url))
         return filelist
 
@@ -358,15 +358,15 @@ class Installer(object):
             description[field] = value
         else:
             if field in description:
-                print "Update value for '" + field + "'"
-                print "(Leave blank to keep current value)"
-                print "Current Value:  '" + description[field] + "'"
+                print("Update value for '" + field + "'")
+                print("(Leave blank to keep current value)")
+                print("Current Value:  '" + description[field] + "'")
             else:
-                print "Specify value for '" + field + "'"
+                print("Specify value for '" + field + "'")
             if not multiline:
-                new_value = raw_input("Enter New Value: ")
+                new_value = input("Enter New Value: ")
             else:
-                print "Please enter " + field + ". End input with EOF (^D)."
+                print("Please enter " + field + ". End input with EOF (^D).")
                 new_value = sys.stdin.read()
 
             if field in description and not new_value:
@@ -412,17 +412,17 @@ linux -- specify a package for all arch and compilers on linux
 darwin/universal -- specify a mac os x universal
 windows/i686/vs/2003 -- specify a windows visual studio 2003 package"""
         if name not in self._installables:
-            print "Error: must add library with --add-installable or " \
+            print("Error: must add library with --add-installable or " \
                   +"--add-installable-metadata before using " \
-                  +"--add-installable-package option"
+                  +"--add-installable-package option")
             return False
         else:
-            print "Updating installable '" + name + "'."
+            print("Updating installable '" + name + "'.")
         for arg in ('platform', 'url', 'md5sum'):
             if not kwargs[arg]:
                 if arg == 'platform':
-                    print platform_help_str
-                kwargs[arg] = raw_input("Package "+arg+":")
+                    print(platform_help_str)
+                kwargs[arg] = input("Package "+arg+":")
         #path = kwargs['platform'].split('/')
 
         return self._update_installable(name, kwargs['platform'],
@@ -432,14 +432,14 @@ windows/i686/vs/2003 -- specify a windows visual studio 2003 package"""
         """Interactively add (only) library metadata into install,
         w/o adding installable"""
         if name not in self._installables:
-            print "Adding installable '" + name + "'."
+            print("Adding installable '" + name + "'.")
             self._installables[name] = InstallableDefinition({})
         else:
-            print "Updating installable '" + name + "'."
+            print("Updating installable '" + name + "'.")
         installable  = self._installables[name]._definition
         for field in ('copyright', 'license', 'description'):
             self._update_field(installable, field, kwargs[field])
-        print "Added installable '" + name + "':"
+        print("Added installable '" + name + "':")
         pprint.pprint(self._installables[name])
 
         return True
@@ -456,10 +456,10 @@ windows/i686/vs/2003 -- specify a windows visual studio 2003 package"""
 
     def add_license(self, name, **kwargs):
         if name not in self._licenses:
-            print "Adding license '" + name + "'."
+            print("Adding license '" + name + "'.")
             self._licenses[name] = LicenseDefinition({})
         else:
-            print "Updating license '" + name + "'."
+            print("Updating license '" + name + "'.")
         the_license  = self._licenses[name]._definition
         for field in ('url', 'text'):
             multiline = False
@@ -492,7 +492,7 @@ windows/i686/vs/2003 -- specify a windows visual studio 2003 package"""
                 self._installed.pop(pkgname)
         remove_dir_set = set()
         for filename in remove_file_list:
-            print "rm",filename
+            print("rm",filename)
             if not self._dryrun:
                 if os.path.lexists(filename):
                     remove_dir_set.add(os.path.dirname(filename))
@@ -515,8 +515,8 @@ windows/i686/vs/2003 -- specify a windows visual studio 2003 package"""
         @param installables The package names to remove
         @param install_dir The directory to work from
         """
-        print "uninstall",installables,"from",install_dir
-        cwd = os.getcwdu()
+        print("uninstall",installables,"from",install_dir)
+        cwd = os.getcwd()
         os.chdir(install_dir)
         try:
             self._uninstall(installables)
@@ -557,7 +557,7 @@ windows/i686/vs/2003 -- specify a windows visual studio 2003 package"""
     def _install(self, to_install, install_dir):
         for ifile in to_install:
             tar = tarfile.open(ifile.filename, 'r')
-            print "Extracting",ifile.filename,"to",install_dir
+            print("Extracting",ifile.filename,"to",install_dir)
             if not self._dryrun:
                 # *NOTE: try to call extractall, which first appears
                 # in python 2.5. Phoenix 2008-01-28
@@ -575,7 +575,7 @@ windows/i686/vs/2003 -- specify a windows visual studio 2003 package"""
                         if not os.path.exists(link_name):
                             if first == 1:
                                 first = 0
-                                print "Adding missing symlink(s) for package %s:" % ifile.filename
+                                print("Adding missing symlink(s) for package %s:" % ifile.filename)
                             target = os.path.basename(tfile)
                             soname = os.popen("readelf -d \"%(install_dir)s/%(tfile)s\" %(stderr_redirect)s"
                                 " | grep SONAME | sed -e 's/.*\[//;s/\].*//'" %
@@ -586,11 +586,11 @@ windows/i686/vs/2003 -- specify a windows visual studio 2003 package"""
                                 if os.path.exists(install_dir + "/" + tmpfname):
                                     target = soname
                                 else:
-                                    print "WARNING: SONAME %s doesn't exist!" % tmpfname
+                                    print("WARNING: SONAME %s doesn't exist!" % tmpfname)
                             if not self._dryrun:
                                 os.symlink(target, link_name)
                             symlinks += [LINK]
-                            print "    %s --> %s" % (LINK, target)
+                            print("    %s --> %s" % (LINK, target))
             if ifile.pkgname in self._installed:
                 self._installed[ifile.pkgname].add_files(
                     ifile.url,
@@ -662,10 +662,10 @@ windows/i686/vs/2003 -- specify a windows visual studio 2003 package"""
                     return 1
 
         # Set up the 'scp' handler
-        opener = urllib2.build_opener()
+        opener = urllib.request.build_opener()
         scp_or_http = SCPOrHTTPHandler(scp)
         opener.add_handler(scp_or_http)
-        urllib2.install_opener(opener)
+        urllib.request.install_opener(opener)
 
         # Do the work of installing the requested installables.
         self.install(
@@ -696,7 +696,7 @@ windows/i686/vs/2003 -- specify a windows visual studio 2003 package"""
                                        (installable,))
         self.uninstall(uninstall_installables, install_dir)
 
-class SCPOrHTTPHandler(urllib2.BaseHandler):
+class SCPOrHTTPHandler(urllib.request.BaseHandler):
     """Evil hack to allow both the build system and developers consume
     proprietary binaries.
     To use http, export the environment variable:
@@ -724,10 +724,10 @@ class SCPOrHTTPHandler(urllib2.BaseHandler):
             url.insert(1, '/')
         url.insert(0, "http://")
         url = ''.join(url)
-        print "Using HTTP:",url
-        request = urllib2.Request(url)
+        print("Using HTTP:",url)
+        request = urllib.request.Request(url)
         request.add_header('User-agent', defaultUserAgent)
-        return urllib2.urlopen(request)
+        return urllib.request.urlopen(request)
 
     def do_scp(self, remote):
         if not self._dir:
@@ -746,7 +746,7 @@ class SCPOrHTTPHandler(urllib2.BaseHandler):
         rv = os.system(' '.join(command))
         if rv != 0:
             raise RuntimeError("Cannot fetch: %s" % remote)
-        return file(local, 'rb')
+        return open(local, 'rb')
 
     def cleanup(self):
         if self._dir:
@@ -773,7 +773,7 @@ def _extractall(tar, path=".", members=None):
             # Extract directory with a safe mode, so that
             # all files below can be extracted as well.
             try:
-                os.makedirs(os.path.join(path, tarinfo.name), 0777)
+                os.makedirs(os.path.join(path, tarinfo.name), 0o777)
             except EnvironmentError:
                 pass
             directories.append(tarinfo)
@@ -791,7 +791,7 @@ def _extractall(tar, path=".", members=None):
             tar.chown(tarinfo, path)
             tar.utime(tarinfo, path)
             tar.chmod(tarinfo, path)
-        except tarfile.ExtractError, e:
+        except tarfile.ExtractError as e:
             if tar.errorlevel > 1:
                 raise
             else:
@@ -808,6 +808,7 @@ def _get_platform():
     platform_map = {
         'darwin': 'darwin',
         'linux2': 'linux',
+        'linux': 'linux',
         'win32' : 'windows',
         'cygwin' : 'windows',
         'solaris' : 'solaris'
@@ -1093,48 +1094,48 @@ def main():
     # Handle the queries for information
     #
     if options.list_installed:
-        print "installed list:", installer.list_installed()
+        print("installed list:", installer.list_installed())
         return 0
     if options.list_installables:
-        print "installable list:", installer.list_installables()
+        print("installable list:", installer.list_installables())
         return 0
     if options.detail_installable:
         try:
             detail = installer.detail_installable(options.detail_installable)
-            print "Detail on installable",options.detail_installable+":"
+            print("Detail on installable",options.detail_installable+":")
             pprint.pprint(detail)
         except KeyError:
-            print "Installable '"+options.detail_installable+"' not found in",
-            print "install file."
+            print("Installable '"+options.detail_installable+"' not found in", end=' ')
+            print("install file.")
         return 0
     if options.detail_installed:
         try:
             detail = installer.detail_installed(options.detail_installed)
             #print "Detail on installed",options.detail_installed+":"
             for line in detail:
-                print line
+                print(line)
         except:
             raise
-            print "Installable '"+options.detail_installed+"' not found in ",
-            print "install file."
+            print("Installable '"+options.detail_installed+"' not found in ", end=' ')
+            print("install file.")
         return 0
     if options.list_licenses:
-        print "license list:", installer.list_licenses()
+        print("license list:", installer.list_licenses())
         return 0
     if options.detail_license:
         try:
             detail = installer.detail_license(options.detail_license)
-            print "Detail on license",options.detail_license+":"
+            print("Detail on license",options.detail_license+":")
             pprint.pprint(detail)
         except KeyError:
-            print "License '"+options.detail_license+"' not defined in",
-            print "install file."
+            print("License '"+options.detail_license+"' not defined in", end=' ')
+            print("install file.")
         return 0
     if options.export_manifest:
         # *HACK: just re-parse the install manifest and pretty print
         # it. easier than looking at the datastructure designed for
         # actually determining what to install
-        install = llsd.parse(file(options.install_filename, 'rb').read())
+        install = llsd.parse(open(options.install_filename, 'rb').read())
         pprint.pprint(install)
         return 0
 

@@ -175,12 +175,12 @@ class LLSDXMLFormatter(object):
             type(None) : self.UNDEF,
             bool : self.BOOLEAN,
             int : self.INTEGER,
-            long : self.INTEGER,
+            int : self.INTEGER,
             float : self.REAL,
             lluuid.UUID : self.UUID,
             binary : self.BINARY,
             str : self.STRING,
-            unicode : self.STRING,
+            str : self.STRING,
             uri : self.URI,
             datetime.datetime : self.DATE,
             list : self.ARRAY,
@@ -194,14 +194,14 @@ class LLSDXMLFormatter(object):
         if(contents is None or contents is ''):
             return "<%s />" % (name,)
         else:
-            if type(contents) is unicode:
+            if type(contents) is str:
                 contents = contents.encode('utf-8')
             return "<%s>%s</%s>" % (name, contents, name)
 
     def xml_esc(self, v):
-        if type(v) is unicode:
+        if type(v) is str:
             v = v.encode('utf-8')
-        return v.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
+        return v.replace(b'&', b'&amp;').replace(b'<', b'&lt;').replace(b'>', b'&gt;')
 
     def LLSD(self, v):
         return self.generate(v.thing)
@@ -235,12 +235,12 @@ class LLSDXMLFormatter(object):
         return self.elt(
             'map',
             ''.join(["%s%s" % (self.elt('key', key), self.generate(value))
-             for key, value in v.items()]))
+             for key, value in list(v.items())]))
 
     typeof = type
     def generate(self, something):
         t = self.typeof(something)
-        if self.type_map.has_key(t):
+        if t in self.type_map:
             return self.type_map[t](something)
         else:
             raise LLSDSerializationError("Cannot serialize unknown type: %s (%s)" % (
@@ -301,7 +301,7 @@ class LLSDXMLPrettyFormatter(LLSDXMLFormatter):
         rv = []
         rv.append('<map>\n')
         self._indent_level = self._indent_level + 1
-        keys = v.keys()
+        keys = list(v.keys())
         keys.sort()
         rv.extend(["%s%s\n%s%s\n" %
                    (self._indent(),
@@ -339,12 +339,12 @@ class LLSDNotationFormatter(object):
             type(None) : self.UNDEF,
             bool : self.BOOLEAN,
             int : self.INTEGER,
-            long : self.INTEGER,
+            int : self.INTEGER,
             float : self.REAL,
             lluuid.UUID : self.UUID,
             binary : self.BINARY,
             str : self.STRING,
-            unicode : self.STRING,
+            str : self.STRING,
             uri : self.URI,
             datetime.datetime : self.DATE,
             list : self.ARRAY,
@@ -372,7 +372,7 @@ class LLSDNotationFormatter(object):
     def BINARY(self, v):
         return 'b64"' + base64.encodestring(v) + '"'
     def STRING(self, v):
-        if isinstance(v, unicode):
+        if isinstance(v, str):
             v = v.encode('utf-8')
         return "'%s'" % v.replace("\\", "\\\\").replace("'", "\\'")
     def URI(self, v):
@@ -383,11 +383,11 @@ class LLSDNotationFormatter(object):
         return "[%s]" % ','.join([self.generate(item) for item in v])
     def MAP(self, v):
         def fix(key):
-            if isinstance(key, unicode):
+            if isinstance(key, str):
                 return key.encode('utf-8')
             return key
         return "{%s}" % ','.join(["'%s':%s" % (fix(key).replace("\\", "\\\\").replace("'", "\\'"), self.generate(value))
-             for key, value in v.items()])
+             for key, value in list(v.items())])
 
     def generate(self, something):
         t = type(something)
@@ -610,8 +610,8 @@ class LLSDNotationParser(object):
         @param ignore_binary parser throws away data in llsd binary nodes.
         @return returns a python object.
         """
-        if buffer == "":
-            return False
+        if len(buffer) == 0:
+            return { }
 
         self._buffer = buffer
         self._index = 0
@@ -885,7 +885,7 @@ def _format_binary_recurse(something):
             return '1'
         else:
             return '0'
-    elif isinstance(something, (int, long)):
+    elif isinstance(something, int):
         return 'i' + struct.pack('!i', something)
     elif isinstance(something, float):
         return 'r' + struct.pack('!d', something)
@@ -895,7 +895,7 @@ def _format_binary_recurse(something):
         return 'b' + struct.pack('!i', len(something)) + something
     elif isinstance(something, str):
         return 's' + struct.pack('!i', len(something)) + something
-    elif isinstance(something, unicode):
+    elif isinstance(something, str):
         something = something.encode('utf-8')
         return 's' + struct.pack('!i', len(something)) + something
     elif isinstance(something, uri):
@@ -908,8 +908,8 @@ def _format_binary_recurse(something):
     elif isinstance(something, dict):
         map_builder = []
         map_builder.append('{' + struct.pack('!i', len(something)))
-        for key, value in something.items():
-            if isinstance(key, unicode):
+        for key, value in list(something.items()):
+            if isinstance(key, str):
                 key = key.encode('utf-8')
             map_builder.append('k' + struct.pack('!i', len(key)) + key)
             map_builder.append(_format_binary_recurse(value))
@@ -933,7 +933,7 @@ def parse_binary(something):
 def parse_xml(something):
     try:
         return to_python(fromstring(something)[0])
-    except ElementTreeError, err:
+    except ElementTreeError as err:
         raise LLSDParseError(*err.args)
 
 def parse_notation(something):
@@ -941,15 +941,15 @@ def parse_notation(something):
 
 def parse(something):
     try:
-        something = string.lstrip(something)   #remove any pre-trailing whitespace
-        if something.startswith('<?llsd/binary?>'):
+        something = something.lstrip()   #remove any pre-trailing whitespace
+        if something.startswith(b'<?llsd/binary?>'):
             return parse_binary(something)
         # This should be better.
-        elif something.startswith('<'):
+        elif something.startswith(b'<'):
             return parse_xml(something)
         else:
             return parse_notation(something)
-    except KeyError, e:
+    except KeyError as e:
         raise Exception('LLSD could not be parsed: %s' % (e,))
 
 class LLSD(object):
@@ -989,7 +989,7 @@ else:
     def llsd_convert_binary(llsd_stuff, request):
         request.write(format_binary(llsd_stuff))
 
-    for typ in [LLSD, dict, list, tuple, str, int, long, float, bool, unicode, type(None)]:
+    for typ in [LLSD, dict, list, tuple, str, int, int, float, bool, str, type(None)]:
         stacked.add_producer(typ, llsd_convert_xml, XML_MIME_TYPE)
         stacked.add_producer(typ, llsd_convert_xml, 'application/xml')
         stacked.add_producer(typ, llsd_convert_xml, 'text/xml')

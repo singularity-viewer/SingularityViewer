@@ -27,7 +27,7 @@ THE SOFTWARE.
 $/LicenseInfo$
 """
 
-import commands
+import subprocess
 import errno
 import filecmp
 import fnmatch
@@ -71,6 +71,7 @@ def proper_windows_path(path, current_platform = sys.platform):
 def get_default_platform(dummy):
     return {'linux2':'linux',
             'linux1':'linux',
+            'linux':'linux',
             'cygwin':'windows',
             'win32':'windows',
             'darwin':'darwin'
@@ -177,24 +178,24 @@ ARGUMENTS=[
 
 def usage(srctree=""):
     nd = {'name':sys.argv[0]}
-    print """Usage:
+    print("""Usage:
     %(name)s [options] [destdir]
     Options:
-    """ % nd
+    """ % nd)
     for arg in ARGUMENTS:
         default = arg['default']
         if hasattr(default, '__call__'):
             default = "(computed value) \"" + str(default(srctree)) + '"'
         elif default is not None:
             default = '"' + default + '"'
-        print "\t--%s        Default: %s\n\t%s\n" % (
+        print("\t--%s        Default: %s\n\t%s\n" % (
             arg['name'],
             default,
-            arg['description'] % nd)
+            arg['description'] % nd))
 
 def main():
-    print "cwd:", os.getcwd()
-    print " ".join(sys.argv)
+    print("cwd:", os.getcwd())
+    print(" ".join(sys.argv))
     option_names = [arg['name'] + '=' for arg in ARGUMENTS]
     option_names.append('help')
     options, remainder = getopt.getopt(sys.argv[1:], "", option_names)
@@ -210,10 +211,10 @@ def main():
     for k in 'artwork build dest source'.split():
         args[k] = os.path.normpath(args[k])
 
-    print "Source tree:", args['source']
-    print "Artwork tree:", args['artwork']
-    print "Build tree:", args['build']
-    print "Destination tree:", args['dest']
+    print("Source tree:", args['source'])
+    print("Artwork tree:", args['artwork'])
+    print("Build tree:", args['build'])
+    print("Destination tree:", args['dest'])
 
     # early out for help
     if 'help' in args:
@@ -243,7 +244,7 @@ def main():
 
     # debugging
     for opt in args:
-        print "Option:", opt, "=", args[opt]
+        print("Option:", opt, "=", args[opt])
 
     wm = LLManifest.for_platform(args['platform'], args.get('arch'))(args)
     wm.do(*args['actions'])
@@ -255,7 +256,7 @@ def main():
         fp = open(touch, 'w')
         fp.write('set package_file=%s\n' % wm.package_file)
         fp.close()
-        print 'touched', touch
+        print('touched', touch)
     return 0
 
 class LLManifestRegistry(type):
@@ -265,8 +266,7 @@ class LLManifestRegistry(type):
         if match:
            cls.manifests[match.group(1).lower()] = cls
 
-class LLManifest(object):
-    __metaclass__ = LLManifestRegistry
+class LLManifest(object, metaclass=LLManifestRegistry):
     manifests = {}
     def for_platform(self, platform, arch = None):
         if arch and platform != "windows":
@@ -339,7 +339,7 @@ class LLManifest(object):
         build = self.build_prefix.pop()
         dst = self.dst_prefix.pop()
         if descr and not(src == descr or build == descr or dst == descr):
-            raise ValueError, "End prefix '" + descr + "' didn't match '" +src+ "' or '" +dst + "'"
+            raise ValueError("End prefix '" + descr + "' didn't match '" +src+ "' or '" +dst + "'")
 
     def get_src_prefix(self):
         """ Returns the current source prefix."""
@@ -393,7 +393,7 @@ class LLManifest(object):
         an exception if the command reurns a nonzero status code.  For
         debugging/informational purpoases, prints out the command's
         output as it is received."""
-        print "Running command:", command
+        print("Running command:", command)
         fd = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
         lines = []
         while True:
@@ -401,7 +401,7 @@ class LLManifest(object):
             if lines[-1] == '':
                 break
             else:
-                print lines[-1].rstrip('\n'),
+                print(lines[-1].rstrip('\n'), end=' ')
         output = ''.join(lines)
         if fd.returncode:
             raise RuntimeError(
@@ -414,13 +414,13 @@ class LLManifest(object):
           a) verify that you really have created it
           b) schedule it for cleanup"""
         if not os.path.exists(path):
-            raise RuntimeError, "Should be something at path " + path
+            raise RuntimeError("Should be something at path " + path)
         self.created_paths.append(path)
 
     def put_in_file(self, contents, dst):
         # write contents as dst
         f = open(self.dst_path_of(dst), "wb")
-        f.write(contents)
+        f.write(contents.encode())
         f.close()
 
     def replace_in(self, src, dst=None, searchdict={}):
@@ -431,7 +431,7 @@ class LLManifest(object):
         contents = f.read()
         f.close()
         # apply dict replacements
-        for old, new in searchdict.iteritems():
+        for old, new in searchdict.items():
             contents = contents.replace(old, new)
         self.put_in_file(contents, dst)
         self.created_paths.append(dst)
@@ -447,7 +447,7 @@ class LLManifest(object):
                 # src is a dir
                 self.ccopytree(src,dst)
         else:
-            print "Doesn't exist:", src
+            print("Doesn't exist:", src)
 
     def package_action(self, src, dst):
         pass
@@ -462,7 +462,7 @@ class LLManifest(object):
         unpacked_file_name = "unpacked_%(plat)s_%(vers)s.tar" % {
             'plat':self.args['platform'],
             'vers':'_'.join(self.args['version'])}
-        print "Creating unpacked file:", unpacked_file_name
+        print("Creating unpacked file:", unpacked_file_name)
         # could add a gz here but that doubles the time it takes to do this step
         tf = tarfile.open(self.src_path_of(unpacked_file_name), 'w:')
         # add the entire installation package, at the very top level
@@ -473,7 +473,7 @@ class LLManifest(object):
         """ Delete paths that were specified to have been created by this script"""
         for c in self.created_paths:
             # *TODO is this gonna be useful?
-            print "Cleaning up " + c
+            print("Cleaning up " + c)
 
     def process_file(self, src, dst):
         if self.includes(src, dst):
@@ -518,7 +518,7 @@ class LLManifest(object):
     def remove(self, *paths):
         for path in paths:
             if os.path.exists(path):
-                print "Removing path", path
+                print("Removing path", path)
                 if os.path.isdir(path):
                     shutil.rmtree(path)
                 else:
@@ -541,7 +541,7 @@ class LLManifest(object):
             if self.includes(src, dst):
                 try:
                     os.unlink(dst)
-                except OSError, err:
+                except OSError as err:
                     if err.errno != errno.ENOENT:
                         raise
 
@@ -566,10 +566,10 @@ class LLManifest(object):
                 else:
                     self.ccopy(srcname, dstname)
                     # XXX What about devices, sockets etc.?
-            except (IOError, os.error), why:
+            except (IOError, os.error) as why:
                 errors.append((srcname, dstname, why))
         if errors:
-            raise RuntimeError, errors
+            raise RuntimeError(errors)
 
 
     def cmakedirs(self, path):
@@ -663,7 +663,7 @@ class LLManifest(object):
         if count == 0 and not is_glob:
             raise RuntimeError("No files match %s\n" % str(paths))
 
-        print "%d files" % count
+        print("%d files" % count)
 
     def do(self, *actions):
         self.actions = actions
