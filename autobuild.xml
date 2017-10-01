@@ -2918,7 +2918,7 @@
                 <key>options</key>
                 <array>
                   <string>-G</string>
-                  <string>'Unix Makefiles'</string>
+                  <string>Unix Makefiles</string>
                 </array>
               </map>
               <key>default</key>
@@ -2942,7 +2942,7 @@
                 <key>options</key>
                 <array>
                   <string>-G</string>
-                  <string>'Unix Makefiles'</string>
+                  <string>Unix Makefiles</string>
                 </array>
               </map>
               <key>name</key>
@@ -2974,7 +2974,7 @@
                 <key>options</key>
                 <array>
                   <string>-G</string>
-                  <string>'Unix Makefiles'</string>
+                  <string>Unix Makefiles</string>
                   <string>-DWORD_SIZE:STRING=64</string>
                 </array>
               </map>
@@ -2999,7 +2999,7 @@
                 <key>options</key>
                 <array>
                   <string>-G</string>
-                  <string>'Unix Makefiles'</string>
+                  <string>Unix Makefiles</string>
                   <string>-DWORD_SIZE:STRING=64</string>
                 </array>
               </map>
