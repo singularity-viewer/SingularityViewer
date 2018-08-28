@@ -1637,7 +1637,7 @@ U32 LLViewerObject::processUpdateMessage(LLMessageSystem *mesgsys,
 		}
 		else
 		{
-			// BUG: this is a bad assumption once border crossing is alowed
+			// BUG: this is a bad assumption once border crossing is allowed
 			if (  (parent_id == cur_parentp->mLocalID)
 				&&(update_type == OUT_TERSE_IMPROVED))
 			{
@@ -1674,7 +1674,7 @@ U32 LLViewerObject::processUpdateMessage(LLMessageSystem *mesgsys,
 					if (isAvatar())
 					{
 						// This logic is meant to handle the case where a sitting avatar has reached a new sim
-						// ahead of the object she was sitting on (which is common as objects are transfered through
+						// ahead of the object she was sitting on (which is common as objects are transferred through
 						// a slower route than agents)...
 						// In this case, the local id for the object will not be valid, since the viewer has not received
 						// a full update for the object from that sim yet, so we assume that the agent is still sitting
@@ -2391,7 +2391,7 @@ void LLViewerObject::deleteInventoryItem(const LLUUID& item_id)
 		{
 			if((*it)->getUUID() == item_id)
 			{
-				// This is safe only because we return immediatly.
+				// This is safe only because we return immediately.
 				mInventory->erase(it); // will deref and delete it
 				return;
 			}
@@ -2489,7 +2489,7 @@ void LLViewerObject::saveScript(
 	bool is_new)
 {
 	/*
-	 * XXXPAM Investigate not making this copy.  Seems unecessary, but I'm unsure about the
+	 * XXXPAM Investigate not making this copy.  Seems unnecessary, but I'm unsure about the
 	 * interaction with doUpdateInventory() called below.
 	 */
 	LL_DEBUGS() << "LLViewerObject::saveScript() " << item->getUUID() << " " << item->getAssetUUID() << LL_ENDL;
