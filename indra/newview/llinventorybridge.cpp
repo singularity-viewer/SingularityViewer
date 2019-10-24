@@ -1738,7 +1738,7 @@ void LLItemBridge::restoreToWorld()
 		//Similar functionality to the drag and drop rez logic
 		bool no_copy = !itemp->getPermissions().allowCopyBy(gAgentID);
 		if (no_copy && gHippoGridManager->getCurrentGrid()->isSecondLife())
-			LLNotificationsUtil::add("RestoreToWorldConfirm", LLSD(), LLSD(), boost::bind(restore_to_world, itemp, true, !boost::bind(LLNotification::getSelectedOption, _1, _2)));
+			LLNotificationsUtil::add("RezRestoreToWorld", LLSD(), LLSD(), boost::bind(restore_to_world, itemp, true, !boost::bind(LLNotification::getSelectedOption, _1, _2)));
 		else
 			restore_to_world(itemp, no_copy);
 	}
