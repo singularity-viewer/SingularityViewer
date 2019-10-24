@@ -546,8 +546,8 @@ void LLFloaterSettingsDebug::updateControl()
 		  case TYPE_COL4U:
 		  {
 			LLColor4U clr(sd);
-			color_swatch->setVisible(TRUE);
-			if (LLColor4(clr) != LLColor4(color_swatch->getValue()))
+			mValColor->setVisible(TRUE);
+			if (LLColor4(clr) != LLColor4(mValColor->getValue()))
 			{
 				mValColor->set(LLColor4(clr), TRUE, FALSE);
 			}
