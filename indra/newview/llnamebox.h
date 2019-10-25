@@ -50,6 +50,7 @@ public:
 	LLSD getValue() const override final { return LLNameUI::getValue(); }
 
 	BOOL handleRightMouseDown(S32 x, S32 y, MASK mask) override final;
+	BOOL handleHover(S32 x, S32 y, MASK mask) override final;
 
 protected:
 	LLNameBox(const std::string& name);

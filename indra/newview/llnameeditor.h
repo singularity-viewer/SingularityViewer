@@ -53,6 +53,7 @@ public:
 
 	BOOL handleMouseDown(S32 x, S32 y, MASK mask) override final;
 	BOOL handleRightMouseDown(S32 x, S32 y, MASK mask) override final;
+	BOOL handleHover(S32 x, S32 y, MASK mask) override final;
 
 	LLXMLNodePtr getXML(bool save_children = true) const override final;
 	static LLView* fromXML(LLXMLNodePtr node, LLView *parent, LLUICtrlFactory *factory);
