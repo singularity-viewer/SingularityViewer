@@ -66,7 +66,7 @@ public:
 
 protected:
 
-	void processElement(daeElement* element, bool& badElement, DAE* dae);
+	void processElement(daeElement* element, bool& badElement, DAE* dae, daeElement* domRoot);
 	void processDomModel(LLModel* model, DAE* dae, daeElement* pRoot, domMesh* mesh, domSkin* skin);
 
 	material_map getMaterials(LLModel* model, domInstance_geometry* instance_geo, DAE* dae);
