@@ -1709,7 +1709,9 @@ void LLDAELoader::processJointToNodeMapping( domNode* pNode )
 		{
 			mJointsFromNode.push_front(nodeName);
 			// Alias joint node SIDs to joint names for compatibility
-			mJointMap[pNode->getSid()] = mJointMap[nodeName];
+			std::string nodeSID = pNode->getSid();
+			if(!nodeSID.empty())
+				mJointMap[nodeSID] = mJointMap[nodeName];
 		}
 		//2. Handle the kiddo's
 		processChildJoints(pNode);
