@@ -180,7 +180,7 @@ public:
 	//-----------------------------------------------------------------------------
 	// isNodeAJoint()
 	//-----------------------------------------------------------------------------
-	bool isNodeAJoint(const char* name)
+	bool isNodeAJoint(const char* name) const
 	{
 		return name != NULL && mJointMap.find(name) != mJointMap.end();
 	}
